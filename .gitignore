@@ -1,0 +1,19 @@
+# Visual Studio and .NET build artifacts
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.userosscache
+*.resharper
+*.bak
+
+# NuGet packages
+packages/
+*.nupkg
+
+# IDE specific files
+.vs/
+.idea/
+
+# Environment specific files
+appsettings.{Development,Production}.json
