@@ -14,6 +14,8 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<Library>()
             .HasMany(lib => lib.LibraryTags)
             .WithMany(tag => tag.Libraries)
@@ -32,5 +34,10 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
                     j.ToTable("applied_library_tags");
                     j.HasKey("library_id", "tag_id");
                 });
+
+        modelBuilder.Entity<Library>()
+            .HasOne(l => l.User)
+            .WithMany()
+            .HasForeignKey(l => l.UserId);
     }
 }

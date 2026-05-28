@@ -16,7 +16,7 @@ packages/
 .vscode/
 .idea/
 .env
-
+.DS_Store
 
 # Environment specific files
 appsettings.{Development,Production}.json
