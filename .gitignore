@@ -13,7 +13,9 @@ packages/
 
 # IDE specific files
 .vs/
+.vscode/
 .idea/
+
 
 # Environment specific files
 appsettings.{Development,Production}.json
