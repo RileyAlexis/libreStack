@@ -15,7 +15,8 @@ public class Library
     public string? AmazonId { get; set; } = null;
     public string? WorkId { get; set; } = null;
     public int CollectionId { get; set; }
-    public string? epubPath { get; set; } = null;
+    public string? EpubPath { get; set; } = null;
+
 
     public ICollection<LibraryTags> LibraryTags { get; set; } = new HashSet<LibraryTags>();
 }

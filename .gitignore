@@ -15,6 +15,7 @@ packages/
 .vs/
 .vscode/
 .idea/
+.env
 
 
 # Environment specific files

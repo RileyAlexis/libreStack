@@ -1,9 +1,11 @@
 using Librestack.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Librestack.Database;
 
-public class LibrestackDbContext : DbContext
+public class LibrestackDbContext : IdentityDbContext<IdentityUser>
 {
     public LibrestackDbContext(DbContextOptions<LibrestackDbContext> options) : base(options) { }
 
