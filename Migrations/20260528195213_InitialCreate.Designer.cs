@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace libreStack.Migrations
 {
     [DbContext(typeof(LibrestackDbContext))]
-    [Migration("20260528191954_InitialCreate")]
+    [Migration("20260528195213_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -23,32 +23,6 @@ namespace libreStack.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("Librestack.Models.AppliedLibraryTags", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("LibraryId")
-                        .HasColumnType("integer")
-                        .HasColumnName("library_id");
-
-                    b.Property<int>("TagId")
-                        .HasColumnType("integer")
-                        .HasColumnName("tag_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LibraryId");
-
-                    b.HasIndex("TagId");
-
-                    b.ToTable("applied_library_tags", (string)null);
-                });
 
             modelBuilder.Entity("Librestack.Models.Library", b =>
                 {
@@ -138,31 +112,34 @@ namespace libreStack.Migrations
                     b.ToTable("library_tags", (string)null);
                 });
 
-            modelBuilder.Entity("Librestack.Models.AppliedLibraryTags", b =>
+            modelBuilder.Entity("applied_library_tags", b =>
+                {
+                    b.Property<int>("library_id")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("tag_id")
+                        .HasColumnType("integer");
+
+                    b.HasKey("library_id", "tag_id");
+
+                    b.HasIndex("tag_id");
+
+                    b.ToTable("applied_library_tags", (string)null);
+                });
+
+            modelBuilder.Entity("applied_library_tags", b =>
                 {
                     b.HasOne("Librestack.Models.Library", null)
-                        .WithMany("AppliedLibraryTags")
-                        .HasForeignKey("LibraryId")
+                        .WithMany()
+                        .HasForeignKey("library_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Librestack.Models.LibraryTags", "LibraryTags")
-                        .WithMany("AppliedLibraryTags")
-                        .HasForeignKey("TagId")
+                    b.HasOne("Librestack.Models.LibraryTags", null)
+                        .WithMany()
+                        .HasForeignKey("tag_id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("LibraryTags");
-                });
-
-            modelBuilder.Entity("Librestack.Models.Library", b =>
-                {
-                    b.Navigation("AppliedLibraryTags");
-                });
-
-            modelBuilder.Entity("Librestack.Models.LibraryTags", b =>
-                {
-                    b.Navigation("AppliedLibraryTags");
                 });
 #pragma warning restore 612, 618
         }

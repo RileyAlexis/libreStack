@@ -53,14 +53,12 @@ namespace libreStack.Migrations
                 name: "applied_library_tags",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     library_id = table.Column<int>(type: "integer", nullable: false),
                     tag_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_applied_library_tags", x => x.id);
+                    table.PrimaryKey("PK_applied_library_tags", x => new { x.library_id, x.tag_id });
                     table.ForeignKey(
                         name: "FK_applied_library_tags_library_library_id",
                         column: x => x.library_id,
@@ -74,11 +72,6 @@ namespace libreStack.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_applied_library_tags_library_id",
-                table: "applied_library_tags",
-                column: "library_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_applied_library_tags_tag_id",

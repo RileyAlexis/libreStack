@@ -30,26 +30,23 @@ public class LibrestackDbContext : DbContext
         modelBuilder.Entity<LibraryTags>().Property(l => l.Id).HasColumnName("id");
         modelBuilder.Entity<LibraryTags>().Property(l => l.Tag).HasColumnName("tag");
 
-        modelBuilder.Entity<AppliedLibraryTags>().ToTable("applied_library_tags");
-        modelBuilder.Entity<AppliedLibraryTags>().Property(l => l.Id).HasColumnName("id");
-        modelBuilder.Entity<AppliedLibraryTags>().Property(l => l.LibraryId).HasColumnName("library_id");
-        modelBuilder.Entity<AppliedLibraryTags>().Property(l => l.TagId).HasColumnName("tag_id");
-
-        modelBuilder.Entity<AppliedLibraryTags>()
-            .HasOne(applied => applied.LibraryTags)
-            .WithMany(l => l.AppliedLibraryTags)
-            .HasForeignKey(applied => applied.LibraryId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<AppliedLibraryTags>()
-            .HasOne(applied => applied.LibraryTags)
-            .WithMany(lt => lt.AppliedLibraryTags)
-            .HasForeignKey(applied => applied.TagId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-
-
-
-
+        modelBuilder.Entity<Library>()
+            .HasMany(lib => lib.LibraryTags)
+            .WithMany(tag => tag.Libraries)
+            .UsingEntity<Dictionary<string, object>>(
+                "applied_library_tags",
+                j => j
+                    .HasOne<LibraryTags>()
+                    .WithMany()
+                    .HasForeignKey("tag_id"),
+                j => j
+                    .HasOne<Library>()
+                    .WithMany()
+                    .HasForeignKey("library_id"),
+                j =>
+                {
+                    j.ToTable("applied_library_tags");
+                    j.HasKey("library_id", "tag_id");
+                });
     }
 }
