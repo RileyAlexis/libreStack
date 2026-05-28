@@ -75,7 +75,8 @@ namespace libreStack.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("title");
 
                     b.Property<string>("WorkId")
                         .HasColumnType("text")
@@ -85,7 +86,8 @@ namespace libreStack.Migrations
                         .HasColumnType("text")
                         .HasColumnName("epub_path");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_library");
 
                     b.ToTable("library", (string)null);
                 });
@@ -104,7 +106,8 @@ namespace libreStack.Migrations
                         .HasColumnType("text")
                         .HasColumnName("tag");
 
-                    b.HasKey("Id");
+                    b.HasKey("Id")
+                        .HasName("pk_library_tags");
 
                     b.ToTable("library_tags", (string)null);
                 });
@@ -112,14 +115,18 @@ namespace libreStack.Migrations
             modelBuilder.Entity("applied_library_tags", b =>
                 {
                     b.Property<int>("library_id")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("library_id");
 
                     b.Property<int>("tag_id")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("tag_id");
 
-                    b.HasKey("library_id", "tag_id");
+                    b.HasKey("library_id", "tag_id")
+                        .HasName("pk_applied_library_tags");
 
-                    b.HasIndex("tag_id");
+                    b.HasIndex("tag_id")
+                        .HasDatabaseName("ix_applied_library_tags_tag_id");
 
                     b.ToTable("applied_library_tags", (string)null);
                 });
@@ -130,13 +137,15 @@ namespace libreStack.Migrations
                         .WithMany()
                         .HasForeignKey("library_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_applied_library_tags_library_library_id");
 
                     b.HasOne("Librestack.Models.LibraryTags", null)
                         .WithMany()
                         .HasForeignKey("tag_id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("fk_applied_library_tags_library_tags_tag_id");
                 });
 #pragma warning restore 612, 618
         }

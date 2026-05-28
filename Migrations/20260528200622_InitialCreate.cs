@@ -17,7 +17,7 @@ namespace libreStack.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Title = table.Column<string>(type: "text", nullable: false),
+                    title = table.Column<string>(type: "text", nullable: false),
                     author = table.Column<string>(type: "text", nullable: false),
                     publisher = table.Column<string>(type: "text", nullable: false),
                     series_title = table.Column<string>(type: "text", nullable: true),
@@ -33,7 +33,7 @@ namespace libreStack.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_library", x => x.id);
+                    table.PrimaryKey("pk_library", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -46,7 +46,7 @@ namespace libreStack.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_library_tags", x => x.id);
+                    table.PrimaryKey("pk_library_tags", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -58,15 +58,15 @@ namespace libreStack.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_applied_library_tags", x => new { x.library_id, x.tag_id });
+                    table.PrimaryKey("pk_applied_library_tags", x => new { x.library_id, x.tag_id });
                     table.ForeignKey(
-                        name: "FK_applied_library_tags_library_library_id",
+                        name: "fk_applied_library_tags_library_library_id",
                         column: x => x.library_id,
                         principalTable: "library",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_applied_library_tags_library_tags_tag_id",
+                        name: "fk_applied_library_tags_library_tags_tag_id",
                         column: x => x.tag_id,
                         principalTable: "library_tags",
                         principalColumn: "id",
@@ -74,7 +74,7 @@ namespace libreStack.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_applied_library_tags_tag_id",
+                name: "ix_applied_library_tags_tag_id",
                 table: "applied_library_tags",
                 column: "tag_id");
         }
