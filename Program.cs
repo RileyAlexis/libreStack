@@ -1,6 +1,7 @@
 using System.Text;
 using DotNetEnv;
 using Librestack.Database;
+using Librestack.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<LibrestackDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -30,7 +33,7 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
         ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY")))
+            Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY") ?? throw new InvalidOperationException("JWT_KEY is not configured")))
     };
 });
 
