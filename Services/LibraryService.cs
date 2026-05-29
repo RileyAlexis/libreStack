@@ -1,7 +1,7 @@
 using Librestack.Models;
 using Librestack.Database;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Librestack.Models.APIModels;
 
 
 namespace Librestack.Services;
@@ -55,9 +55,9 @@ public class LibraryService : InterfaceLibraryService
         return true;
     }
 
-    public async Task<bool> DeleteLibraryEntry(int id)
+    public async Task<bool> DeleteLibraryEntry(int id, string userId)
     {
-        var libraryEntry = await _db.Library.FindAsync(id);
+        var libraryEntry = await _db.Library.FirstOrDefaultAsync(l => l.Id == id && l.UserId == userId);
         if (libraryEntry is null)
             return false;
 
@@ -70,22 +70,55 @@ public class LibraryService : InterfaceLibraryService
         return true;
     }
 
-    public async Task<List<Library>> GetLibrary()
+    public async Task<List<Library>> GetLibrary(string userId)
     {
-        return await _db.Library.ToListAsync();
+        return await _db.Library.Where(l => l.UserId == userId).ToListAsync();
     }
 
-    public async Task<Library?> GetLibraryEntry(int id)
+    public async Task<Library?> GetLibraryEntry(int id, string userId)
     {
-        var result = await _db.Library.FindAsync(id);
+        var result = await _db.Library.FirstOrDefaultAsync(l => l.Id == id && l.UserId == userId);
         if (result is null)
             return null;
 
         return result;
     }
 
-    public Task<bool> UpdateLibraryMetaData(Library library)
+    public async Task<bool> UpdateLibraryMetaData(APILibrary library, string userId)
     {
-        throw new NotImplementedException();
+        var existing = await _db.Library.FirstOrDefaultAsync(l => l.Id == library.Id && l.UserId == userId);
+        if (existing is null)
+            return false;
+
+        // Only update properties that were provided (not null/default)
+        if (!string.IsNullOrEmpty(library.Title))
+            existing.Title = library.Title;
+        if (!string.IsNullOrEmpty(library.Author))
+            existing.Author = library.Author;
+        if (!string.IsNullOrEmpty(library.Publisher))
+            existing.Publisher = library.Publisher;
+        if (library.SeriesTitle is not null)
+            existing.SeriesTitle = library.SeriesTitle;
+        if (library.SeriesOrder.HasValue && library.SeriesOrder != 0)
+            existing.SeriesOrder = library.SeriesOrder;
+        if (library.SeriesTotal.HasValue && library.SeriesTotal != 0)
+            existing.SeriesTotal = library.SeriesTotal;
+        if (!string.IsNullOrEmpty(library.ISBN))
+            existing.ISBN = library.ISBN;
+        if (library.LCCN is not null)
+            existing.LCCN = library.LCCN;
+        if (library.OCLCWorldCat is not null)
+            existing.OCLCWorldCat = library.OCLCWorldCat;
+        if (library.AmazonId is not null)
+            existing.AmazonId = library.AmazonId;
+        if (library.WorkId is not null)
+            existing.WorkId = library.WorkId;
+        if (library.CollectionId.HasValue && library.CollectionId != 0)
+            existing.CollectionId = library.CollectionId;
+
+        _db.Library.Update(existing);
+        await _db.SaveChangesAsync();
+        return true;
     }
+
 }

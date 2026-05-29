@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Librestack.Models.APIModels;
 using Librestack.Models;
 using Librestack.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -22,15 +23,16 @@ public class LibraryController : ControllerBase
     [Authorize]
     public async Task<ActionResult<List<Library>>> GetLibrary()
     {
-        var result = await _interfaceLibraryService.GetLibrary();
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
+            return Unauthorized();
+
+        var result = await _interfaceLibraryService.GetLibrary(userId);
         if (result is null)
             return BadRequest("Library does not exist");
 
         if (result.Count() == 0)
             return BadRequest("Library has no entries");
-
-        if (result.Count() > 1)
-            return StatusCode(418);
 
         return result;
     }
@@ -44,24 +46,33 @@ public class LibraryController : ControllerBase
         if (id == 0)
             return BadRequest("id parameter cannot be 0");
 
-        var result = await _interfaceLibraryService.GetLibraryEntry(id);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
+            return Unauthorized();
+
+        var result = await _interfaceLibraryService.GetLibraryEntry(id, userId);
         if (result is null)
             return BadRequest($"id {id} not found");
 
         return result;
     }
 
-    [HttpPost("updateLibraryEntry")]
+    [HttpPatch("updateLibraryEntry")]
     [Authorize]
-    public async Task<IActionResult> UpdateLibraryEntry(Library library)
+    public async Task<IActionResult> UpdateLibraryEntry(APILibrary library)
     {
-        var id = library.Id;
+        if (library.Id == 0)
+            return BadRequest("id parameter cannot be 0");
 
-        var updated = await _interfaceLibraryService.UpdateLibraryMetaData(library);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
+            return Unauthorized();
+
+        var updated = await _interfaceLibraryService.UpdateLibraryMetaData(library, userId);
         if (!updated)
-            return NotFound($"title {library.Title} not found");
+            return NotFound($"Library entry with id {library.Id} not found");
 
-        var result = new { message = "Library entry updated" };
+        var result = new { message = "Library entry updated successfully" };
         return new JsonResult(result);
     }
 
@@ -83,8 +94,12 @@ public class LibraryController : ControllerBase
         if (id == 0)
             return BadRequest("id parameter cannot be 0");
 
-        var data = await _interfaceLibraryService.GetLibraryEntry(id);
-        var deleted = await _interfaceLibraryService.DeleteLibraryEntry(id);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
+            return Unauthorized();
+
+        var data = await _interfaceLibraryService.GetLibraryEntry(id, userId);
+        var deleted = await _interfaceLibraryService.DeleteLibraryEntry(id, userId);
 
         if (!deleted || data is null)
             return NotFound($"id {id} not found in database");
