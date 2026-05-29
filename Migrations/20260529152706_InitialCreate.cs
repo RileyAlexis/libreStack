@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace libreStack.Migrations
 {
     /// <inheritdoc />
-    public partial class AddIdentity : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -49,6 +49,19 @@ namespace libreStack.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_asp_net_users", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "library_tags",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    tag = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_library_tags", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -157,6 +170,67 @@ namespace libreStack.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "library",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    user_id = table.Column<string>(type: "text", nullable: false),
+                    title = table.Column<string>(type: "text", nullable: false),
+                    author = table.Column<string>(type: "text", nullable: false),
+                    publisher = table.Column<string>(type: "text", nullable: false),
+                    series_title = table.Column<string>(type: "text", nullable: true),
+                    series_order = table.Column<int>(type: "integer", nullable: false),
+                    series_total = table.Column<int>(type: "integer", nullable: false),
+                    isbn = table.Column<string>(type: "text", nullable: false),
+                    lccn = table.Column<string>(type: "text", nullable: true),
+                    oclc_world_cat = table.Column<string>(type: "text", nullable: true),
+                    amazon_id = table.Column<string>(type: "text", nullable: true),
+                    work_id = table.Column<string>(type: "text", nullable: true),
+                    collection_id = table.Column<int>(type: "integer", nullable: false),
+                    epub_path = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_library", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_library_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "applied_library_tags",
+                columns: table => new
+                {
+                    library_id = table.Column<int>(type: "integer", nullable: false),
+                    tag_id = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_applied_library_tags", x => new { x.library_id, x.tag_id });
+                    table.ForeignKey(
+                        name: "fk_applied_library_tags_library_library_id",
+                        column: x => x.library_id,
+                        principalTable: "library",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_applied_library_tags_library_tags_tag_id",
+                        column: x => x.tag_id,
+                        principalTable: "library_tags",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_applied_library_tags_tag_id",
+                table: "applied_library_tags",
+                column: "tag_id");
+
             migrationBuilder.CreateIndex(
                 name: "ix_asp_net_role_claims_role_id",
                 table: "AspNetRoleClaims",
@@ -193,11 +267,19 @@ namespace libreStack.Migrations
                 table: "AspNetUsers",
                 column: "normalized_user_name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_library_user_id",
+                table: "library",
+                column: "user_id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "applied_library_tags");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -212,6 +294,12 @@ namespace libreStack.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "library");
+
+            migrationBuilder.DropTable(
+                name: "library_tags");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

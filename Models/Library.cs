@@ -21,6 +21,5 @@ public class Library
     public int CollectionId { get; set; }
     public string? EpubPath { get; set; } = null;
 
-
     public ICollection<LibraryTags> LibraryTags { get; set; } = new HashSet<LibraryTags>();
 }

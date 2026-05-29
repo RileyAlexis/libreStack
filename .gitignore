@@ -17,6 +17,7 @@ packages/
 .idea/
 .env
 .DS_Store
+Library/
 
 # Environment specific files
 appsettings.{Development,Production}.json

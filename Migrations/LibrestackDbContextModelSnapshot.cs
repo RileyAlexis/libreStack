@@ -83,12 +83,20 @@ namespace libreStack.Migrations
                         .HasColumnType("text")
                         .HasColumnName("title");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("user_id");
+
                     b.Property<string>("WorkId")
                         .HasColumnType("text")
                         .HasColumnName("work_id");
 
                     b.HasKey("Id")
                         .HasName("pk_library");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_library_user_id");
 
                     b.ToTable("library", (string)null);
                 });
@@ -374,6 +382,18 @@ namespace libreStack.Migrations
                         .HasDatabaseName("ix_applied_library_tags_tag_id");
 
                     b.ToTable("applied_library_tags", (string)null);
+                });
+
+            modelBuilder.Entity("Librestack.Models.Library", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_library_users_user_id");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
