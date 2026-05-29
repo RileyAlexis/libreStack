@@ -17,8 +17,6 @@ public class LibraryService : InterfaceLibraryService
         _epubParser = epubParser;
     }
 
-
-
     public async Task<bool> AddLibraryEntry(IFormFile file, string UserId)
     {
         var LibraryStoragePath = "./Library";

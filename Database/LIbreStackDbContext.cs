@@ -10,7 +10,7 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
     public LibrestackDbContext(DbContextOptions<LibrestackDbContext> options) : base(options) { }
 
     public DbSet<Library> Library { get; set; }
-    public DbSet<LibraryTags> LibraryTags { get; set; }
+    public DbSet<LibraryTag> LibraryTags { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -22,7 +22,7 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
             .UsingEntity<Dictionary<string, object>>(
                 "applied_library_tags",
                 j => j
-                    .HasOne<LibraryTags>()
+                    .HasOne<LibraryTag>()
                     .WithMany()
                     .HasForeignKey("tag_id"),
                 j => j

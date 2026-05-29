@@ -40,6 +40,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddScoped<InterfaceLibraryService, LibraryService>();
+builder.Services.AddScoped<InterfaceLibraryTagService, LibraryTagService>();
 builder.Services.AddScoped<IEpubParseService, EpubParserService>();
 
 builder.Services.AddDbContext<LibrestackDbContext>(options =>

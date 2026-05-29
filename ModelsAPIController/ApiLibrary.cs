@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Librestack.Models.APIModels;
 
 public class APILibrary
@@ -17,5 +19,6 @@ public class APILibrary
     public int? CollectionId { get; set; }
     public string? EpubPath { get; set; } = null;
 
-    public ICollection<LibraryTags> LibraryTags { get; set; } = new List<LibraryTags>();
+    [JsonIgnore]
+    public ICollection<LibraryTag> LibraryTags { get; set; } = new List<LibraryTag>();
 }

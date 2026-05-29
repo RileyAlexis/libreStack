@@ -2,9 +2,10 @@ using System.Text.Json.Serialization;
 
 namespace Librestack.Models;
 
-public class LibraryTags
+public class LibraryTag
 {
     public int Id { get; set; }
+    public string? UserId { get; set; } = null;
     public string Tag { get; set; } = null!;
 
     [JsonIgnore]
