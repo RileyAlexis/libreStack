@@ -55,9 +55,19 @@ public class LibraryService : InterfaceLibraryService
         return true;
     }
 
-    public Task<bool> DeleteLibraryEntry(int id)
+    public async Task<bool> DeleteLibraryEntry(int id)
     {
-        throw new NotImplementedException();
+        var libraryEntry = await _db.Library.FindAsync(id);
+        if (libraryEntry is null)
+            return false;
+
+        var FilePath = libraryEntry.EpubPath;
+        if (FilePath is not null && File.Exists(FilePath))
+            File.Delete(FilePath);
+
+        _db.Library.Remove(libraryEntry);
+        await _db.SaveChangesAsync();
+        return true;
     }
 
     public async Task<List<Library>> GetLibrary()
