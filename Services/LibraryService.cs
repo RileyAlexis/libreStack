@@ -1,6 +1,7 @@
 using Librestack.Models;
 using Librestack.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 
 namespace Librestack.Services;
@@ -59,14 +60,18 @@ public class LibraryService : InterfaceLibraryService
         throw new NotImplementedException();
     }
 
-    public Task<List<Library>> GetLibrary()
+    public async Task<List<Library>> GetLibrary()
     {
-        throw new NotImplementedException();
+        return await _db.Library.ToListAsync();
     }
 
-    public Task<Library> GetLibraryEntry(int id)
+    public async Task<Library?> GetLibraryEntry(int id)
     {
-        throw new NotImplementedException();
+        var result = await _db.Library.FindAsync(id);
+        if (result is null)
+            return null;
+
+        return result;
     }
 
     public Task<bool> UpdateLibraryMetaData(Library library)
