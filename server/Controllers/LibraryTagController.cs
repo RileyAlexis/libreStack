@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Librestack.Models;
+using Librestack.Models.APIModels;
 using Librestack.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,7 +34,6 @@ public class LibraryTagController : ControllerBase
     [Authorize]
     public async Task<IActionResult> UpdateUserTag(LibraryTag libraryTag)
     {
-        Console.WriteLine($"*************************{libraryTag.Id} - {libraryTag.Tag}");
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
             return Unauthorized();
@@ -76,6 +76,20 @@ public class LibraryTagController : ControllerBase
 
         var tags = await _interfaceLibraryTagService.GetAllTags(userId);
         return tags;
+    }
+
+    [HttpPost("applyTag")]
+    [Authorize]
+    public async Task<IActionResult> ApplyTag(ApiApplyTag applyTag)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
+            return Unauthorized();
+
+        var result = await _interfaceLibraryTagService.ApplyTag(
+            userId: userId, libraryId: applyTag.LibraryId, tagId: applyTag.TagId);
+
+        return result ? Ok("Tag Updated") : BadRequest("Unable to add tag");
     }
 
     [HttpDelete("deleteUserTag")]

@@ -1,7 +1,6 @@
 using Librestack.Models;
 using Librestack.Database;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Librestack.Services;
 
@@ -69,8 +68,22 @@ public class LibraryTagService : InterfaceLibraryTagService
         return true;
     }
 
-    public Task<bool> ApplyTag(string userId, int libraryTagId, int libraryId)
+    public async Task<bool> ApplyTag(string userId, int libraryId, int tagId)
     {
-        throw new NotImplementedException();
+        Console.WriteLine($"{tagId}, userId, libraryId");
+
+        var tagToApply = await _db.LibraryTags.FirstOrDefaultAsync(l => l.Id == tagId);
+        Console.WriteLine(tagToApply);
+        if (tagToApply is null)
+            return false;
+
+        var libraryEntry = await _db.Library.FirstOrDefaultAsync(l => l.Id == libraryId && l.UserId == userId);
+        Console.WriteLine(libraryEntry);
+        if (libraryEntry is null)
+            return false;
+
+        libraryEntry.LibraryTags.Add(tagToApply);
+        await _db.SaveChangesAsync();
+        return true;
     }
 }

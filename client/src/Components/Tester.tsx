@@ -93,10 +93,26 @@ export const Tester: React.FC = () => {
       });
   };
 
+  const handleApplyTag = () => {
+    api
+      .post("/libraryTag/applyTag", { libraryId: libraryId, tagId: tagId })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   useEffect(() => {
     console.log("useEffect data");
     console.log(data);
   }, [data]);
+
+  useEffect(() => {
+    console.log(`LibraryId ${libraryId}`);
+    console.log(`TagId ${tagId}`);
+  }, [libraryId, tagId]);
 
   return (
     <div className="testerContainer">
@@ -173,12 +189,29 @@ export const Tester: React.FC = () => {
             <TextField.Slot />
           </TextField.Root>
         </div>
+
+        <div className="testingCombo">
+          <Button onClick={handleApplyTag}>Apply Tag</Button>
+          <TextField.Root
+            value={libraryId}
+            onChange={(e) => setLibraryId(Number(e.target.value))}
+          >
+            <TextField.Slot />
+          </TextField.Root>
+          <TextField.Root
+            value={tagId}
+            onChange={(e) => setTagId(Number(e.target.value))}
+          >
+            <TextField.Slot />
+          </TextField.Root>
+        </div>
       </div>
       <div className="responseContainer">
         {data.length > 0 &&
           data.map((item: any, index: number) => (
             <div key={index}>
               {item.id} - {item.title}
+              {JSON.stringify(item.libraryTags)}
               {item.tag}
             </div>
           ))}
