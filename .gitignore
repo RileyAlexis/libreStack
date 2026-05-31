@@ -1,23 +1,18 @@
-# Visual Studio and .NET build artifacts
-[Bb]in/
-[Oo]bj/
-*.user
-*.suo
-*.userosscache
-*.resharper
-*.bak
+# OS
+.DS_Store
+Thumbs.db
 
-# NuGet packages
-packages/
-*.nupkg
+# Environment
+.env
+.env.local
+.env.*.local
 
-# IDE specific files
-.vs/
+# Logs
+*.log
+npm-debug.log*
+
+# IDE
 .vscode/
 .idea/
-.env
-.DS_Store
-Library/
-
-# Environment specific files
-appsettings.{Development,Production}.json
+*.suo
+*.user

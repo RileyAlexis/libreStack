@@ -4,12 +4,11 @@ using Librestack.Models;
 using Librestack.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Superpower.Model;
 
 namespace Librestack.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class LibraryController : ControllerBase
 {
     private readonly InterfaceLibraryService _interfaceLibraryService;
@@ -77,14 +76,14 @@ public class LibraryController : ControllerBase
     }
 
     [HttpPost("addLibraryEntry")]
-    // [Authorize]
+    [Authorize]
     public async Task<IActionResult> AddLibraryEntry(IFormFile file)
     {
         var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (UserId is null) return Unauthorized();
 
         var result = await _interfaceLibraryService.AddLibraryEntry(file, UserId);
-        return result ? Ok() : BadRequest("Upload failed");
+        return result ? Ok("Added to Library") : BadRequest("Upload failed");
     }
 
     [HttpDelete("libraryEntry")]
