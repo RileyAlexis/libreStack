@@ -36,6 +36,7 @@
 .testingCombo {
   display: flex;
   flex-direction: row;
+  margin: 0.2em;
 }
 
 .testingContainer {

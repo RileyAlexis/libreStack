@@ -4,7 +4,6 @@ namespace Librestack.Models;
 
 public class LibraryTag
 {
-    [JsonIgnore]
     public int Id { get; set; }
 
     [JsonIgnore]

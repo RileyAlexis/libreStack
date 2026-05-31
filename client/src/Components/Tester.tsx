@@ -5,6 +5,7 @@ import { Button, TextField } from "@radix-ui/themes";
 export const Tester: React.FC = () => {
   const [data, setData] = useState<any>([]);
   const [libraryId, setLibraryId] = useState<number>(0);
+  const [tagId, setTagId] = useState<number>(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [newTag, setNewTag] = useState<string>();
@@ -69,6 +70,29 @@ export const Tester: React.FC = () => {
       });
   };
 
+  const handleGetUserTag = () => {
+    api
+      .get("LibraryTag/getUserTag", { params: { id: tagId } })
+      .then((response) => {
+        console.log(response.data);
+        setData(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const handleUpdateTag = () => {
+    api
+      .post("/libraryTag/updateUserTag", { id: tagId, tag: newTag })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   useEffect(() => {
     console.log("useEffect data");
     console.log(data);
@@ -109,8 +133,10 @@ export const Tester: React.FC = () => {
             </Button>
           </div>
         </div>
+
         <div className="testingButtonContainer">
           <Button onClick={handleGetAllTags}>Get All Tags</Button>
+
           <div className="testingCombo">
             <Button onClick={handleCreateUserTag}>Create Tag</Button>
             <TextField.Root
@@ -121,12 +147,39 @@ export const Tester: React.FC = () => {
             </TextField.Root>
           </div>
         </div>
+
+        <div className="testingCombo">
+          <Button onClick={handleGetUserTag}>Get User Tag</Button>
+          <TextField.Root
+            value={tagId}
+            onChange={(e) => setTagId(Number(e.target.value))}
+          >
+            <TextField.Slot />
+          </TextField.Root>
+        </div>
+
+        <div className="testingCombo">
+          <Button onClick={handleUpdateTag}>Update Tag</Button>
+          <TextField.Root
+            value={tagId}
+            onChange={(e) => setTagId(Number(e.target.value))}
+          >
+            <TextField.Slot />
+          </TextField.Root>
+          <TextField.Root
+            value={newTag}
+            onChange={(e) => setNewTag(e.target.value)}
+          >
+            <TextField.Slot />
+          </TextField.Root>
+        </div>
       </div>
       <div className="responseContainer">
         {data.length > 0 &&
           data.map((item: any, index: number) => (
             <div key={index}>
               {item.id} - {item.title}
+              {item.tag}
             </div>
           ))}
       </div>

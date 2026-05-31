@@ -1,6 +1,7 @@
 using Librestack.Models;
 using Librestack.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Librestack.Services;
 
@@ -15,30 +16,40 @@ public class LibraryTagService : InterfaceLibraryTagService
 
     public async Task<List<LibraryTag>> GetAllTags(string userId)
     {
-        var tags = await _db.LibraryTags.Where(l => l.UserId == userId && l.UserId == null).ToListAsync();
+        var tags = await _db.LibraryTags.Where(l => l.UserId == userId || l.UserId == null).OrderBy(l => l.Id).ToListAsync();
         return tags;
     }
 
     public async Task<List<LibraryTag>> GetAllUserTags(string userId)
     {
-        return await _db.LibraryTags.Where(l => l.UserId == userId).ToListAsync();
+        return await _db.LibraryTags.Where(l => l.UserId == userId).OrderBy(l => l.Id).ToListAsync();
+    }
+
+    public async Task<LibraryTag?> GetUserTag(string userId, int id)
+    {
+        var tag = await _db.LibraryTags.FirstOrDefaultAsync(l => l.UserId == userId && l.Id == id);
+        if (tag is null)
+            return null;
+
+        return tag;
     }
 
 
     public async Task<bool> UpdateUserTag(string userId, LibraryTag libraryTag)
     {
-        var existingTag = await _db.LibraryTags.FirstOrDefaultAsync(l => l.Id == libraryTag.Id || l.UserId == userId);
+        var existingTag = await _db.LibraryTags.FirstOrDefaultAsync(l => l.Id == libraryTag.Id && l.UserId == userId);
         if (existingTag is null)
             return false;
+        existingTag.Tag = libraryTag.Tag;
 
         _db.LibraryTags.Update(existingTag);
         await _db.SaveChangesAsync();
         return true;
     }
 
-    public async Task<bool> DeleteUserTag(string userId, LibraryTag libraryTag)
+    public async Task<bool> DeleteUserTag(string userId, int id)
     {
-        var tagEntry = await _db.LibraryTags.FirstOrDefaultAsync(l => l.Id == libraryTag.Id && l.UserId == userId);
+        var tagEntry = await _db.LibraryTags.FirstOrDefaultAsync(l => l.Id == id && l.UserId == userId);
         if (tagEntry is null)
             return false;
 
