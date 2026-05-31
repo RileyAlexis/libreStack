@@ -70,7 +70,7 @@ public class LibraryService : InterfaceLibraryService
 
     public async Task<List<Library>> GetLibrary(string userId)
     {
-        return await _db.Library.Where(l => l.UserId == userId).ToListAsync();
+        return await _db.Library.Where(l => l.UserId == userId).Include(l => l.LibraryTags).ToListAsync();
     }
 
     public async Task<Library?> GetLibraryEntry(int id, string userId)
