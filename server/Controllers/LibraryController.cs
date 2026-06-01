@@ -11,11 +11,11 @@ namespace Librestack.Controllers;
 [Route("api/[controller]")]
 public class LibraryController : ControllerBase
 {
-    private readonly InterfaceLibraryService _interfaceLibraryService;
+    private readonly ILibraryService _iLibraryService;
 
-    public LibraryController(InterfaceLibraryService libraryService)
+    public LibraryController(ILibraryService libraryService)
     {
-        _interfaceLibraryService = libraryService;
+        _iLibraryService = libraryService;
     }
 
     [HttpGet("getLibrary")]
@@ -26,7 +26,7 @@ public class LibraryController : ControllerBase
         if (userId is null)
             return Unauthorized();
 
-        var result = await _interfaceLibraryService.GetLibrary(userId);
+        var result = await _iLibraryService.GetLibrary(userId);
         if (result is null)
             return BadRequest("Library does not exist");
 
@@ -49,7 +49,7 @@ public class LibraryController : ControllerBase
         if (userId is null)
             return Unauthorized();
 
-        var result = await _interfaceLibraryService.GetLibraryEntry(id, userId);
+        var result = await _iLibraryService.GetLibraryEntry(id, userId);
         if (result is null)
             return BadRequest($"id {id} not found");
 
@@ -67,7 +67,7 @@ public class LibraryController : ControllerBase
         if (userId is null)
             return Unauthorized();
 
-        var updated = await _interfaceLibraryService.UpdateLibraryMetaData(library, userId);
+        var updated = await _iLibraryService.UpdateLibraryMetaData(library, userId);
         if (!updated)
             return NotFound($"Library entry with id {library.Id} not found");
 
@@ -82,7 +82,7 @@ public class LibraryController : ControllerBase
         var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (UserId is null) return Unauthorized();
 
-        var result = await _interfaceLibraryService.AddLibraryEntry(file, UserId);
+        var result = await _iLibraryService.AddLibraryEntry(file, UserId);
         return result ? Ok("Added to Library") : BadRequest("Upload failed");
     }
 
@@ -93,7 +93,7 @@ public class LibraryController : ControllerBase
         var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (UserId is null) return Unauthorized();
 
-        var result = await _interfaceLibraryService.DownloadLibraryEntry(UserId, id);
+        var result = await _iLibraryService.DownloadLibraryEntry(UserId, id);
         if (result is null)
             return NotFound();
 
@@ -111,8 +111,8 @@ public class LibraryController : ControllerBase
         if (userId is null)
             return Unauthorized();
 
-        var data = await _interfaceLibraryService.GetLibraryEntry(id, userId);
-        var deleted = await _interfaceLibraryService.DeleteLibraryEntry(id, userId);
+        var data = await _iLibraryService.GetLibraryEntry(id, userId);
+        var deleted = await _iLibraryService.DeleteLibraryEntry(id, userId);
 
         if (!deleted || data is null)
             return NotFound($"id {id} not found in database");

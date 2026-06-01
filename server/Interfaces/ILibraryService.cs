@@ -3,7 +3,7 @@ using Librestack.Models;
 using Microsoft.AspNetCore.Mvc;
 namespace Librestack.Services;
 
-public interface InterfaceLibraryService
+public interface ILibraryService
 {
     Task<List<Library>> GetLibrary(string userId);
     Task<Library?> GetLibraryEntry(int id, string userId);

@@ -39,8 +39,8 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddScoped<InterfaceLibraryService, LibraryService>();
-builder.Services.AddScoped<InterfaceLibraryTagService, LibraryTagService>();
+builder.Services.AddScoped<ILibraryService, LibraryService>();
+builder.Services.AddScoped<ILibraryTagService, LibraryTagService>();
 builder.Services.AddScoped<IEpubParseService, EpubParserService>();
 builder.Services.AddScoped<IReadingProgressService, ReadingProgressService>();
 builder.Services.AddScoped<IBookmarkService, BookmarkService>();

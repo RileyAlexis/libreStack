@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Librestack.Services;
 
-public class LibraryService : InterfaceLibraryService
+public class LibraryService : ILibraryService
 {
     private readonly LibrestackDbContext _db;
     private readonly IEpubParseService _epubParser;

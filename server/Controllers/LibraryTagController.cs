@@ -11,9 +11,9 @@ namespace Librestack.Controllers;
 [Route("api/[controller]")]
 public class LibraryTagController : ControllerBase
 {
-    private readonly InterfaceLibraryTagService _interfaceLibraryTagService;
+    private readonly ILibraryTagService _interfaceLibraryTagService;
 
-    public LibraryTagController(InterfaceLibraryTagService libraryTagService)
+    public LibraryTagController(ILibraryTagService libraryTagService)
     {
         _interfaceLibraryTagService = libraryTagService;
     }

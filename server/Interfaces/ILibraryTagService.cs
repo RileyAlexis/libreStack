@@ -2,7 +2,7 @@ using Librestack.Models;
 
 namespace Librestack.Services;
 
-public interface InterfaceLibraryTagService
+public interface ILibraryTagService
 {
     Task<List<LibraryTag>> GetAllTags(string userId);
     Task<List<LibraryTag>> GetAllUserTags(string userId);

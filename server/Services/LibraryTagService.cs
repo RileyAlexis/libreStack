@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Librestack.Services;
 
-public class LibraryTagService : InterfaceLibraryTagService
+public class LibraryTagService : ILibraryTagService
 {
     private readonly LibrestackDbContext _db;
 
