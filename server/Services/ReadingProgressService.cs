@@ -10,6 +10,11 @@ public class ReadingProgressService : IReadingProgressService
 {
     private readonly LibrestackDbContext _db;
 
+    public ReadingProgressService(LibrestackDbContext db)
+    {
+        _db = db;
+    }
+
     public async Task<bool> ResetProgress(int libraryId, string userId)
     {
         var entry = await _db.ReadingProgress.FirstOrDefaultAsync(l => l.Id == libraryId && l.UserId == userId);
@@ -21,10 +26,6 @@ public class ReadingProgressService : IReadingProgressService
         return true;
     }
 
-    public ReadingProgressService(LibrestackDbContext db)
-    {
-        _db = db;
-    }
 
     public async Task<bool> UpdateProgress(int libraryId, string userId, APIReadingProgress readingProgress)
     {

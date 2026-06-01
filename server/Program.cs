@@ -43,6 +43,7 @@ builder.Services.AddScoped<InterfaceLibraryService, LibraryService>();
 builder.Services.AddScoped<InterfaceLibraryTagService, LibraryTagService>();
 builder.Services.AddScoped<IEpubParseService, EpubParserService>();
 builder.Services.AddScoped<IReadingProgressService, ReadingProgressService>();
+builder.Services.AddScoped<IBookmarkService, BookmarkService>();
 
 builder.Services.AddDbContext<LibrestackDbContext>(options =>
         options.UseNpgsql(Environment.GetEnvironmentVariable("DEFAULT_CONNECTION"))

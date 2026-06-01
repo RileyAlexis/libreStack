@@ -24,4 +24,5 @@ public class Library
 
     public ICollection<LibraryTag> LibraryTags { get; set; } = new List<LibraryTag>();
     public ICollection<ReadingProgress> ReadingProgress { get; set; } = new List<ReadingProgress>();
+    public ICollection<BookmarkModel> Bookmarks { get; set; } = new List<BookmarkModel>();
 }

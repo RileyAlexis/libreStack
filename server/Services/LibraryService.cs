@@ -92,12 +92,17 @@ public class LibraryService : InterfaceLibraryService
         return await _db.Library.Where(l => l.UserId == userId)
             .Include(l => l.LibraryTags)
             .Include(l => l.ReadingProgress)
+            .Include(l => l.Bookmarks)
             .ToListAsync();
     }
 
     public async Task<Library?> GetLibraryEntry(int id, string userId)
     {
-        var result = await _db.Library.FirstOrDefaultAsync(l => l.Id == id && l.UserId == userId);
+        var result = await _db.Library.Where(l => l.UserId == userId && l.Id == id)
+            .Include(l => l.LibraryTags)
+            .Include(l => l.Bookmarks)
+            .Include(l => l.ReadingProgress).FirstOrDefaultAsync();
+
         if (result is null)
             return null;
 
