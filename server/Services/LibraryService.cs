@@ -2,7 +2,7 @@ using Librestack.Models;
 using Librestack.Database;
 using Microsoft.EntityFrameworkCore;
 using Librestack.Models.APIModels;
-
+using Microsoft.AspNetCore.Mvc;
 
 namespace Librestack.Services;
 
@@ -68,6 +68,25 @@ public class LibraryService : InterfaceLibraryService
         return true;
     }
 
+    public async Task<FileResult?> DownloadLibraryEntry(string userId, int id)
+    {
+        var libraryEntry = await _db.Library.FirstOrDefaultAsync(l => l.Id == id && l.UserId == userId);
+        if (libraryEntry is null)
+            return null;
+        var filePath = libraryEntry.EpubPath;
+        var filename = Path.GetFileName(filePath);
+
+        if (!System.IO.File.Exists(filePath.ToString()))
+            return null;
+
+        var stream = System.IO.File.OpenRead(filePath.ToString());
+        return new FileStreamResult(stream, "application/octet-stream")
+        {
+            FileDownloadName = filename
+        };
+
+    }
+
     public async Task<List<Library>> GetLibrary(string userId)
     {
         return await _db.Library.Where(l => l.UserId == userId).Include(l => l.LibraryTags).ToListAsync();
@@ -118,5 +137,7 @@ public class LibraryService : InterfaceLibraryService
         await _db.SaveChangesAsync();
         return true;
     }
+
+
 
 }

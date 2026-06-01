@@ -30,6 +30,26 @@ export const Tester: React.FC = () => {
       .catch((error) => console.error(error));
   };
 
+  const handleDownloadEntry = () => {
+    api
+      .get("/Library/downloadLibraryEntry", {
+        params: { id: libraryId },
+        responseType: "blob",
+      })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        const disposition = response.headers["content-disposition"];
+        const filename = disposition?.split("filename=")[1] ?? "book.epub";
+        link.setAttribute("download", filename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      });
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) setSelectedFile(e.target.files[0]);
   };
@@ -132,6 +152,17 @@ export const Tester: React.FC = () => {
           </div>
 
           <div className="testingCombo">
+            <Button onClick={handleDownloadEntry}>Download Entry</Button>
+            <TextField.Root
+              placeholder="id"
+              value={libraryId}
+              onChange={(e) => setLibraryId(Number(e.target.value))}
+            >
+              <TextField.Slot />
+            </TextField.Root>
+          </div>
+
+          <div className="testingCombo">
             <input
               type="file"
               ref={fileInputRef}
@@ -151,6 +182,7 @@ export const Tester: React.FC = () => {
         </div>
 
         <div className="testingButtonContainer">
+          <h2>Tags</h2>
           <Button onClick={handleGetAllTags}>Get All Tags</Button>
 
           <div className="testingCombo">

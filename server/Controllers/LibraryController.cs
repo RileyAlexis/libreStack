@@ -86,6 +86,20 @@ public class LibraryController : ControllerBase
         return result ? Ok("Added to Library") : BadRequest("Upload failed");
     }
 
+    [HttpGet("downloadLibraryEntry")]
+    [Authorize]
+    public async Task<IActionResult> DownloadLibraryEntry(int id)
+    {
+        var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (UserId is null) return Unauthorized();
+
+        var result = await _interfaceLibraryService.DownloadLibraryEntry(UserId, id);
+        if (result is null)
+            return NotFound();
+
+        return result;
+    }
+
     [HttpDelete("libraryEntry")]
     [Authorize]
     public async Task<IActionResult> DeleteLibraryEntry(int id)
