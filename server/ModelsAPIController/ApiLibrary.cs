@@ -21,4 +21,7 @@ public class APILibrary
 
     [JsonIgnore]
     public ICollection<LibraryTag> LibraryTags { get; set; } = new List<LibraryTag>();
+    [JsonIgnore]
+    public ICollection<ReadingProgress> ReadingProgress { get; set; } = new List<ReadingProgress>();
+
 }

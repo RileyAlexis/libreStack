@@ -23,4 +23,5 @@ public class Library
     public required string EpubPath { get; set; }
 
     public ICollection<LibraryTag> LibraryTags { get; set; } = new List<LibraryTag>();
+    public ICollection<ReadingProgress> ReadingProgress { get; set; } = new List<ReadingProgress>();
 }

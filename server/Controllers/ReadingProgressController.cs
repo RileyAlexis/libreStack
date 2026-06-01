@@ -8,7 +8,7 @@ using Librestack.Services;
 namespace Librestack.Controllers;
 
 [ApiController]
-[Route("api/[controller]")];
+[Route("api/[controller]")]
 public class ReadingProgressController : ControllerBase
 {
     private readonly IReadingProgressService _iReadingProgressService;
