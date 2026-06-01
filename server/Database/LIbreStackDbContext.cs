@@ -11,6 +11,7 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
 
     public DbSet<Library> Library { get; set; }
     public DbSet<LibraryTag> LibraryTags { get; set; }
+    public DbSet<ReadingProgress> ReadingProgress { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
