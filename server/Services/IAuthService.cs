@@ -10,4 +10,7 @@ public interface IAuthService
     Task<string?> LoginAsync(LoginRequest request);
     Task LogoutAsync();
     Task<AuthUserResponse?> GetCurrentUserAsync(ClaimsPrincipal user);
+    Task<bool> RoleExistsAsync(string roleName);
+    Task<IdentityResult> RegisterAdminUserAsync(RegisterRequest request);
+    Task<bool> AssignRoleToUserAsync(string userId, string roleName);
 }

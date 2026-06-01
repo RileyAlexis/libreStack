@@ -74,17 +74,27 @@ builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
-app.UseAuthentication();
-app.UseAuthorization();
-// Configure the HTTP request pipeline.
-// if (app.Environment.IsDevelopment())
-// {
-app.MapOpenApi();
+// --- START OF CRITICAL CHANGE ---
+// Swagger must be used before authentication middleware
 app.UseSwagger();
 app.UseSwaggerUI();
-// }
+// --- END OF CRITICAL CHANGE ---
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+// Seed roles and users
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<LibrestackDbContext>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    // Seed Admin Role
+    if (!await roleManager.RoleExistsAsync("Admin"))
+    {
+        await roleManager.CreateAsync(new IdentityRole("Admin"));
+    }
+}
 
 app.UseAuthorization();
 

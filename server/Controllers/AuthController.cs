@@ -37,22 +37,25 @@ public class AuthController : ControllerBase
         return Ok(new { token });
     }
 
-    [HttpPost("logout")]
-    [Authorize]
-    public async Task<IActionResult> Logout()
+    [HttpPost("admin/register")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> RegisterAdminUser([FromBody] RegisterRequest request)
     {
-        await _authService.LogoutAsync();
-        return Ok(new { message = "Logged out successfully" });
+        var result = await _authService.RegisterAdminUserAsync(request);
+        if (!result.Succeeded)
+            return BadRequest(result.Errors);
+
+        return Ok(new { message = "Admin user created and role assigned successfully" });
     }
 
-    [HttpGet("me")]
-    [Authorize]
-    public async Task<IActionResult> Me()
+    [HttpPost("admin/assign-role")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> AssignRoleToUser([FromBody] AssignRoleRequest request)
     {
-        var user = await _authService.GetCurrentUserAsync(User);
-        if (user is null)
-            return NotFound();
+        var success = await _authService.AssignRoleToUserAsync(request.UserId, "Admin");
+        if (!success)
+            return BadRequest(new { message = "Failed to assign role. User or role might not exist." });
 
-        return Ok(user);
+        return Ok(new { message = $"Role 'Admin' assigned to user {request.UserId} successfully." });
     }
 }
