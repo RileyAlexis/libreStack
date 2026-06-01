@@ -18,7 +18,7 @@ public class ReadingProgressController : ControllerBase
         _iReadingProgressService = readingProgressService;
     }
 
-    [HttpPost]
+    [HttpPost("updateProgress")]
     [Authorize]
     public async Task<IActionResult> UpdateProgress(int libraryId, APIReadingProgress aPIReadingProgress)
     {
@@ -29,7 +29,7 @@ public class ReadingProgressController : ControllerBase
         return result ? Ok("Reading Progress Updated") : BadRequest("Reading Progress update failed");
     }
 
-    [HttpPost]
+    [HttpPost("resetProgress")]
     [Authorize]
     public async Task<IActionResult> ResetProgress(int libraryId)
     {
