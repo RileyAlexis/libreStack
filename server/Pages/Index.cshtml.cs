@@ -13,6 +13,7 @@ public class IndexModel : PageModel
 {
     private readonly LibrestackDbContext _db;
     private readonly ILibraryService _libraryService;
+
     public List<Library> LibraryData { get; set; } = new List<Library>();
 
     public string? Message { get; set; }

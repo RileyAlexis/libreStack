@@ -5,9 +5,12 @@
 <html>
     <head>
         <Title>LibreStack</Title>
+        <link rel="stylesheet" href="/css/index.css" />
     </head>
     <body>
+        <div class="primaryContainer">
         <H1>LibreStack</H1>
+        <div class="secondaryContainer">
         <p>LibraryData is null: @(Model.LibraryData == null)</p>
         <p>LibraryData count: @(Model.LibraryData?.Count ?? 0)</p>
         @if (Model.LibraryData != null && Model.LibraryData.Count > 0) {
@@ -17,5 +20,7 @@
         } else {
             <p>No library data found</p>
         }
+        </div>
+        </div>
     </body>
 </html>
