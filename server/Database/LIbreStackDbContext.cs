@@ -13,6 +13,7 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
     public DbSet<LibraryTag> LibraryTags { get; set; }
     public DbSet<ReadingProgress> ReadingProgress { get; set; }
     public DbSet<BookmarkModel> Bookmarks { get; set; }
+    public DbSet<LibreStackConfig> LibreStackConfig { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

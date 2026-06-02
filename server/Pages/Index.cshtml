@@ -1,0 +1,21 @@
+@page
+@model IndexModel
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <Title>LibreStack</Title>
+    </head>
+    <body>
+        <H1>LibreStack</H1>
+        <p>LibraryData is null: @(Model.LibraryData == null)</p>
+        <p>LibraryData count: @(Model.LibraryData?.Count ?? 0)</p>
+        @if (Model.LibraryData != null && Model.LibraryData.Count > 0) {
+            @foreach (Librestack.Models.Library item in Model.LibraryData){
+                <p>Title: @item.Title</p>
+            }
+        } else {
+            <p>No library data found</p>
+        }
+    </body>
+</html>

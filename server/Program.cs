@@ -74,32 +74,41 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy =>
+        policy.RequireRole("Admin"));
+});
+
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AuthorizeAreaFolder("Admin", "/", "AdminOnly");
+    options.Conventions.AllowAnonymousToAreaPage("Admin", "/Setup");
+});
+
 var app = builder.Build();
 
-// --- START OF CRITICAL CHANGE ---
-// Swagger must be used before authentication middleware
-app.UseSwagger();
-app.UseSwaggerUI();
-// --- END OF CRITICAL CHANGE ---
-
-app.UseHttpsRedirection();
-
-app.UseAuthentication();
-// Seed roles and users
+// 1. Seed data (runs once at startup, before pipeline is live)
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<LibrestackDbContext>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-    // Seed Admin Role
     if (!await roleManager.RoleExistsAsync("Admin"))
     {
         await roleManager.CreateAsync(new IdentityRole("Admin"));
     }
 }
 
+// 2. Developer/diagnostic middleware
+app.UseSwagger();
+app.UseSwaggerUI();
+
+// 3. Core pipeline middleware
+app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 
+// 4. Endpoint mappings
+app.MapRazorPages();
 app.MapControllers();
 
 app.Run();
