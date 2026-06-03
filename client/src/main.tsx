@@ -1,6 +1,8 @@
 import React, { useState, useEffect, createContext, useContext } from "react";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router";
+
 import { Theme } from "@radix-ui/themes";
 import App from "./App";
 import "@radix-ui/themes/styles.css";
@@ -78,7 +80,9 @@ if (!rootElement.hasAttribute("data-rooted")) {
   createRoot(rootElement).render(
     <StrictMode>
       <ThemedContainer>
-        <App />
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
       </ThemedContainer>
     </StrictMode>,
   );
