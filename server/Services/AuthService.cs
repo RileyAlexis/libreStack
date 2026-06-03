@@ -128,4 +128,10 @@ public class AuthService : IAuthService
 
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
+
+    public async Task<bool> AdminUserExists()
+    {
+        var admins = await _userManager.GetUsersInRoleAsync("Admin");
+        return admins != null && admins.Any();
+    }
 }

@@ -15,6 +15,17 @@ public class LibreStackConfigService : ILibreStackConfigService
         _db = db;
     }
 
+    public async Task<bool> CheckIfSetupComplete()
+    {
+        var configData = await _db.LibreStackConfig.FirstOrDefaultAsync();
+
+        if (configData is null || configData.IsSetupComplete == false)
+            return false;
+
+        return true;
+
+    }
+
     public async Task<List<LibreStackConfig>> GetConfigData()
     {
         var configData = await _db.LibreStackConfig.ToListAsync();
@@ -24,7 +35,7 @@ public class LibreStackConfigService : ILibreStackConfigService
         return configData;
     }
 
-    public void SaveConfig(LibreStackConfig config)
+    public async Task<bool> SaveConfig(LibreStackConfig config)
     {
         if (config.Id == 0)
         {
@@ -35,13 +46,14 @@ public class LibreStackConfigService : ILibreStackConfigService
             _db.LibreStackConfig.Update(config);
         }
         _db.SaveChanges();
+        return true;
 
     }
 
-    public async Task<bool> SetCompleteSetup(bool isComplete)
+    public async Task<bool> MarkSetupAsComplete(bool isComplete)
     {
         var config = await _db.LibreStackConfig.FirstOrDefaultAsync();
-        if (config is null)
+        if (config is null || config.IsSetupComplete == true)
             return false;
 
         config.IsSetupComplete = isComplete;

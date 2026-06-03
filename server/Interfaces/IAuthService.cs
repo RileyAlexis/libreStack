@@ -13,4 +13,5 @@ public interface IAuthService
     Task<bool> RoleExistsAsync(string roleName);
     Task<IdentityResult> RegisterAdminUserAsync(RegisterRequest request);
     Task<bool> AssignRoleToUserAsync(string userId, string roleName);
+    Task<bool> AdminUserExists();
 }
