@@ -91,13 +91,6 @@ builder.Services.AddAuthorization(options =>
     });
 });
 
-builder.Services.AddRazorPages(options =>
-{
-    options.Conventions.AuthorizePage("/Index");
-    options.Conventions.AllowAnonymousToPage("/Login");
-    options.Conventions.AllowAnonymousToFolder("/Pages/Setup");
-});
-
 var app = builder.Build();
 
 // 1. Seed data (runs once at startup, before pipeline is live)
@@ -121,7 +114,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // 4. Endpoint mappings
-app.MapRazorPages();
+app.MapFallbackToFile("index.html");
 app.MapControllers();
 
 app.Run();

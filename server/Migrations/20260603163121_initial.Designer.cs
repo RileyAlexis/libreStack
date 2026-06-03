@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace libreStack.Migrations
 {
     [DbContext(typeof(LibrestackDbContext))]
-    [Migration("20260601135003_InitialAdminSetup")]
-    partial class InitialAdminSetup
+    [Migration("20260603163121_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,43 @@ namespace libreStack.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("Librestack.Models.BookmarkModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CfiLocation")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("cfi_location");
+
+                    b.Property<int>("LibraryId")
+                        .HasColumnType("integer")
+                        .HasColumnName("library_id");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_bookmarks");
+
+                    b.HasIndex("LibraryId")
+                        .HasDatabaseName("ix_bookmarks_library_id");
+
+                    b.ToTable("bookmarks", (string)null);
+                });
 
             modelBuilder.Entity("Librestack.Models.Library", b =>
                 {
@@ -46,6 +83,14 @@ namespace libreStack.Migrations
                     b.Property<int?>("CollectionId")
                         .HasColumnType("integer")
                         .HasColumnName("collection_id");
+
+                    b.Property<string>("CoverContentType")
+                        .HasColumnType("text")
+                        .HasColumnName("cover_content_type");
+
+                    b.Property<byte[]>("CoverImage")
+                        .HasColumnType("bytea")
+                        .HasColumnName("cover_image");
 
                     b.Property<string>("EpubPath")
                         .IsRequired()
@@ -126,6 +171,69 @@ namespace libreStack.Migrations
                         .HasName("pk_library_tags");
 
                     b.ToTable("library_tags", (string)null);
+                });
+
+            modelBuilder.Entity("Librestack.Models.LibreStackConfig", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsSetupComplete")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_setup_complete");
+
+                    b.Property<string>("LibraryPath")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("library_path");
+
+                    b.HasKey("Id")
+                        .HasName("pk_libre_stack_config");
+
+                    b.ToTable("libre_stack_config", (string)null);
+                });
+
+            modelBuilder.Entity("Librestack.Models.ReadingProgress", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CfiLocation")
+                        .HasColumnType("text")
+                        .HasColumnName("cfi_location");
+
+                    b.Property<DateTime>("LastRead")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_read");
+
+                    b.Property<int>("LibraryId")
+                        .HasColumnType("integer")
+                        .HasColumnName("library_id");
+
+                    b.Property<float>("Progress")
+                        .HasColumnType("real")
+                        .HasColumnName("progress");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_reading_progress");
+
+                    b.HasIndex("LibraryId")
+                        .HasDatabaseName("ix_reading_progress_library_id");
+
+                    b.ToTable("reading_progress", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -391,6 +499,16 @@ namespace libreStack.Migrations
                     b.ToTable("applied_library_tags", (string)null);
                 });
 
+            modelBuilder.Entity("Librestack.Models.BookmarkModel", b =>
+                {
+                    b.HasOne("Librestack.Models.Library", null)
+                        .WithMany("Bookmarks")
+                        .HasForeignKey("LibraryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_bookmarks_library_library_id");
+                });
+
             modelBuilder.Entity("Librestack.Models.Library", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
@@ -401,6 +519,16 @@ namespace libreStack.Migrations
                         .HasConstraintName("fk_library_users_user_id");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Librestack.Models.ReadingProgress", b =>
+                {
+                    b.HasOne("Librestack.Models.Library", null)
+                        .WithMany("ReadingProgress")
+                        .HasForeignKey("LibraryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_reading_progress_library_library_id");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -475,6 +603,13 @@ namespace libreStack.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_applied_library_tags_library_tags_tag_id");
+                });
+
+            modelBuilder.Entity("Librestack.Models.Library", b =>
+                {
+                    b.Navigation("Bookmarks");
+
+                    b.Navigation("ReadingProgress");
                 });
 #pragma warning restore 612, 618
         }

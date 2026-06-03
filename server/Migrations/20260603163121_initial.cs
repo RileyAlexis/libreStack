@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace libreStack.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -57,11 +57,26 @@ namespace libreStack.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    user_id = table.Column<string>(type: "text", nullable: true),
                     tag = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_library_tags", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "libre_stack_config",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    library_path = table.Column<string>(type: "text", nullable: false),
+                    is_setup_complete = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_libre_stack_config", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -180,16 +195,18 @@ namespace libreStack.Migrations
                     title = table.Column<string>(type: "text", nullable: false),
                     author = table.Column<string>(type: "text", nullable: false),
                     publisher = table.Column<string>(type: "text", nullable: false),
+                    cover_image = table.Column<byte[]>(type: "bytea", nullable: true),
+                    cover_content_type = table.Column<string>(type: "text", nullable: true),
                     series_title = table.Column<string>(type: "text", nullable: true),
-                    series_order = table.Column<int>(type: "integer", nullable: false),
-                    series_total = table.Column<int>(type: "integer", nullable: false),
-                    isbn = table.Column<string>(type: "text", nullable: false),
+                    series_order = table.Column<int>(type: "integer", nullable: true),
+                    series_total = table.Column<int>(type: "integer", nullable: true),
+                    isbn = table.Column<string>(type: "text", nullable: true),
                     lccn = table.Column<string>(type: "text", nullable: true),
                     oclc_world_cat = table.Column<string>(type: "text", nullable: true),
                     amazon_id = table.Column<string>(type: "text", nullable: true),
                     work_id = table.Column<string>(type: "text", nullable: true),
-                    collection_id = table.Column<int>(type: "integer", nullable: false),
-                    epub_path = table.Column<string>(type: "text", nullable: true)
+                    collection_id = table.Column<int>(type: "integer", nullable: true),
+                    epub_path = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -222,6 +239,51 @@ namespace libreStack.Migrations
                         name: "fk_applied_library_tags_library_tags_tag_id",
                         column: x => x.tag_id,
                         principalTable: "library_tags",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "bookmarks",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    library_id = table.Column<int>(type: "integer", nullable: false),
+                    user_id = table.Column<string>(type: "text", nullable: false),
+                    name = table.Column<string>(type: "text", nullable: false),
+                    cfi_location = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_bookmarks", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_bookmarks_library_library_id",
+                        column: x => x.library_id,
+                        principalTable: "library",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "reading_progress",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    user_id = table.Column<string>(type: "text", nullable: false),
+                    library_id = table.Column<int>(type: "integer", nullable: false),
+                    cfi_location = table.Column<string>(type: "text", nullable: true),
+                    progress = table.Column<float>(type: "real", nullable: false),
+                    last_read = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_reading_progress", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_reading_progress_library_library_id",
+                        column: x => x.library_id,
+                        principalTable: "library",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -269,9 +331,19 @@ namespace libreStack.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "ix_bookmarks_library_id",
+                table: "bookmarks",
+                column: "library_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_library_user_id",
                 table: "library",
                 column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_reading_progress_library_id",
+                table: "reading_progress",
+                column: "library_id");
         }
 
         /// <inheritdoc />
@@ -296,13 +368,22 @@ namespace libreStack.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "library");
+                name: "bookmarks");
+
+            migrationBuilder.DropTable(
+                name: "libre_stack_config");
+
+            migrationBuilder.DropTable(
+                name: "reading_progress");
 
             migrationBuilder.DropTable(
                 name: "library_tags");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "library");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

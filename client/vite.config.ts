@@ -5,6 +5,10 @@ import babel from "@rolldown/plugin-babel";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), babel({ presets: [reactCompilerPreset()] })],
+  build: {
+    outDir: "../server/wwwroot",
+    emptyOutDir: true,
+  },
   server: {
     proxy: {
       "/api": {

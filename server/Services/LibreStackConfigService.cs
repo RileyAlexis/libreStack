@@ -15,6 +15,29 @@ public class LibreStackConfigService : ILibreStackConfigService
         _db = db;
     }
 
+    public async Task<List<LibreStackConfig>> GetConfigData()
+    {
+        var configData = await _db.LibreStackConfig.ToListAsync();
+        if (configData is null)
+            return null;
+
+        return configData;
+    }
+
+    public void SaveConfig(LibreStackConfig config)
+    {
+        if (config.Id == 0)
+        {
+            _db.LibreStackConfig.Add(config);
+        }
+        else
+        {
+            _db.LibreStackConfig.Update(config);
+        }
+        _db.SaveChanges();
+
+    }
+
     public async Task<bool> SetCompleteSetup(bool isComplete)
     {
         var config = await _db.LibreStackConfig.FirstOrDefaultAsync();
