@@ -2,7 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Librestack.Models;
 
-namespace Librestack.Services;
+namespace Librestack.Interfaces;
 
 public interface IAuthService
 {

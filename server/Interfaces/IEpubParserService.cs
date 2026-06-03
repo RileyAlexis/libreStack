@@ -1,6 +1,6 @@
 using Librestack.Models;
 
-namespace Librestack.Services;
+namespace Librestack.Interfaces;
 
 public interface IEpubParseService
 {

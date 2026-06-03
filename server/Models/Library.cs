@@ -11,6 +11,8 @@ public class Library
     public string Title { get; set; } = "";
     public string Author { get; set; } = "";
     public string Publisher { get; set; } = "";
+    public byte[]? CoverImage { get; set; } = null;
+    public string? CoverContentType { get; set; } = null;
     public string? SeriesTitle { get; set; } = null;
     public int? SeriesOrder { get; set; }
     public int? SeriesTotal { get; set; }

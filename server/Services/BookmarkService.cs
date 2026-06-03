@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Librestack.Database;
 using Librestack.Models;
 using Librestack.Models.APIModels;
+using Librestack.Interfaces;
 
 namespace Librestack.Services;
 

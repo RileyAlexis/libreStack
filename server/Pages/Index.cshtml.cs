@@ -1,18 +1,22 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Authorization;
 
 using Librestack.Database;
-using Librestack.Services;
-using Microsoft.EntityFrameworkCore;
+using Librestack.Interfaces;
 using Librestack.Models;
 
 namespace Librestack.Pages;
 
+[Authorize(AuthenticationSchemes = "AdminCookie")]
 public class IndexModel : PageModel
 {
     private readonly LibrestackDbContext _db;
     private readonly ILibraryService _libraryService;
+
+    public string GetCoverBase64(byte[] cover)
+    {
+        return Convert.ToBase64String(cover);
+    }
 
     public List<Library> LibraryData { get; set; } = new List<Library>();
 
@@ -26,17 +30,8 @@ public class IndexModel : PageModel
 
     public async Task OnGetAsync()
     {
-        LibraryData = await _db.Library
-            .Include(l => l.LibraryTags)
-            .Include(l => l.Bookmarks)
-            .Include(l => l.ReadingProgress)
-            .ToListAsync();
+        LibraryData = await _libraryService.GetAllLibraryEntries();
+
     }
 
-    public IActionResult OnPostHandleButtonOne()
-    {
-        Message = "Button was clicked";
-
-        return Page();
-    }
 }

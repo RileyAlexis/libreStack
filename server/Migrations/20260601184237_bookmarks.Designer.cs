@@ -13,7 +13,7 @@ namespace libreStack.Migrations
 {
     [DbContext(typeof(LibrestackDbContext))]
     [Migration("20260601184237_bookmarks")]
-    partial class bookmarks
+    partial class Bookmarks
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

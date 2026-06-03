@@ -1,26 +1,23 @@
 @page
 @model IndexModel
-
 <!DOCTYPE html>
 <html>
-    <head>
-        <Title>LibreStack</Title>
-        <link rel="stylesheet" href="/css/index.css" />
-    </head>
-    <body>
-        <div class="primaryContainer">
-        <H1>LibreStack</H1>
+<head>
+    <Title>LibreStack</Title>
+    <link rel="stylesheet" href="/css/index.css" />
+</head>
+<body>
+    <div class="primaryContainer">
+        <h1>LibreStack</h1>
         <div class="secondaryContainer">
-        <p>LibraryData is null: @(Model.LibraryData == null)</p>
-        <p>LibraryData count: @(Model.LibraryData?.Count ?? 0)</p>
-        @if (Model.LibraryData != null && Model.LibraryData.Count > 0) {
-            @foreach (Librestack.Models.Library item in Model.LibraryData){
-                <p>Title: @item.Title</p>
+            @foreach (Librestack.Models.Library item in Model.LibraryData)
+            {
+                <div class="bookContainer">
+                    <p>@item.Title</p>
+                    <img width="140px" id="cover-@item.Id" src="data:image/jpeg;base64, @Html.Raw(Model.GetCoverBase64(item.CoverImage))" />
+                </div>
             }
-        } else {
-            <p>No library data found</p>
-        }
         </div>
-        </div>
-    </body>
+    </div>
+</body>
 </html>

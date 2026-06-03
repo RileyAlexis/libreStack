@@ -13,7 +13,7 @@ namespace libreStack.Migrations
 {
     [DbContext(typeof(LibrestackDbContext))]
     [Migration("20260602162258_config")]
-    partial class config
+    partial class Config
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

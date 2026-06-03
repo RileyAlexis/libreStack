@@ -1,5 +1,7 @@
 using Librestack.Models;
 using Librestack.Database;
+using Librestack.Interfaces;
+
 using Microsoft.EntityFrameworkCore;
 using Librestack.Models.APIModels;
 using Microsoft.AspNetCore.Mvc;
@@ -85,6 +87,15 @@ public class LibraryService : ILibraryService
             FileDownloadName = filename
         };
 
+    }
+
+    public async Task<List<Library>> GetAllLibraryEntries()
+    {
+        return await _db.Library
+        .Include(l => l.LibraryTags)
+        .Include(l => l.Bookmarks)
+        .Include(l => l.ReadingProgress)
+        .ToListAsync();
     }
 
     public async Task<List<Library>> GetLibrary(string userId)

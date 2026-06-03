@@ -242,9 +242,15 @@ export const Tester: React.FC = () => {
         {data.length > 0 &&
           data.map((item: any, index: number) => (
             <div key={index}>
-              {item.id} - {item.title}
-              {JSON.stringify(item.libraryTags)}
-              {item.tag}
+              <img
+                style={{ maxWidth: "160px" }}
+                src={`data:${item.contentType};base64,${item.coverImage}`}
+              />
+              <div>
+                {item.id} - {item.title}
+                {JSON.stringify(item.libraryTags)}
+                {item.tag}
+              </div>
             </div>
           ))}
       </div>

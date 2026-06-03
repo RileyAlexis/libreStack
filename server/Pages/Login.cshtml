@@ -1,0 +1,24 @@
+@page
+@model LoginModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LibreStack Login</title>
+</head>
+<body>
+    <h1>Admin Login</h1>
+    @if (Model.Error != null)
+    {
+        <p>@Model.Error</p>
+    }
+    <form method="post">
+        <input asp-for="Username" placeholder="Username" />
+        <input asp-for="Password" type="password" placeholder="Password" />
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>

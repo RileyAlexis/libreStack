@@ -2,6 +2,7 @@ using System.Text;
 using DotNetEnv;
 using Librestack.Database;
 using Librestack.Services;
+using Librestack.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +38,12 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY") ?? throw new InvalidOperationException("JWT_KEY is not configured")))
     };
+})
+.AddCookie("AdminCookie", options =>
+{
+    options.LoginPath = "/Login";
+    options.AccessDeniedPath = "/Login";
+    options.ExpireTimeSpan = TimeSpan.FromHours(8);
 });
 
 builder.Services.AddScoped<ILibraryService, LibraryService>();
@@ -44,6 +51,7 @@ builder.Services.AddScoped<ILibraryTagService, LibraryTagService>();
 builder.Services.AddScoped<IEpubParseService, EpubParserService>();
 builder.Services.AddScoped<IReadingProgressService, ReadingProgressService>();
 builder.Services.AddScoped<IBookmarkService, BookmarkService>();
+builder.Services.AddScoped<ILibreStackConfigService, LibreStackConfigService>();
 
 builder.Services.AddDbContext<LibrestackDbContext>(options =>
         options.UseNpgsql(Environment.GetEnvironmentVariable("DEFAULT_CONNECTION"))
@@ -77,13 +85,17 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy =>
-        policy.RequireRole("Admin"));
+    {
+        policy.AddAuthenticationSchemes("AdminCookie");
+        policy.RequireRole("Admin");
+    });
 });
 
 builder.Services.AddRazorPages(options =>
 {
-    options.Conventions.AuthorizeAreaFolder("Admin", "/", "AdminOnly");
-    options.Conventions.AllowAnonymousToAreaPage("Admin", "/Setup");
+    options.Conventions.AuthorizePage("/Index");
+    options.Conventions.AllowAnonymousToPage("/Login");
+    options.Conventions.AllowAnonymousToFolder("/Pages/Setup");
 });
 
 var app = builder.Build();

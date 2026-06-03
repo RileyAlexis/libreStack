@@ -1,5 +1,5 @@
 using Librestack.Models.APIModels;
-namespace Librestack.Services;
+namespace Librestack.Interfaces;
 
 public interface IReadingProgressService
 {
