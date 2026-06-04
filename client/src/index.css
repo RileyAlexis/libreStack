@@ -1,17 +1,5 @@
 @layer base {
   :root {
-    --blue: #5bcefa;
-    --pink: #f5a9b8;
-    --warningColor: #ff496e;
-    --highlightColor: #205b00;
-    --primary-color: #f5a9b8;
-    --secondary-color: ##5bcefa;
-    --textColor: dimgray;
-    --backgroundColor: silver;
-    --border-color: black;
-    --sans: "Open Sans", sans-serif;
-    font-family: var(--sans);
-
     /* Font Scale */
     --base-size: 1rem;
     --scale: 1.25;
@@ -44,9 +32,6 @@
   }
 
   body {
-    font-family: var(--sans);
-    line-height: 1.5;
-    font-size: var(--base-size);
     padding: 0;
     margin: 0;
   }
@@ -67,7 +52,6 @@
     align-items: center;
     height: 100vh;
     width: 100vw;
-    background: radial-gradient(rgba(255, 75, 190, 0.07), rgba(0, 0, 0, 1));
   }
 
   .secondaryContainer {

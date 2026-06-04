@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-import { Button, TextField, Text } from "@radix-ui/themes";
+import { Button, Field } from "@base-ui/react";
 
 export const LoginScreen: React.FC = () => {
   const [username, setUsername] = useState<string>("");
@@ -57,42 +57,36 @@ export const LoginScreen: React.FC = () => {
     <div className="loginInputsContainer">
       {errMessage !== "" && (
         <div className="errorContainer">
-          <Text size="3" color="red">
+          <p size="3" color="red">
             {errMessage}
-          </Text>
+          </p>
         </div>
       )}
 
-      <TextField.Root
-        placeholder="User Name"
-        variant="soft"
-        radius="large"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      >
-        <TextField.Slot />
-      </TextField.Root>
-      <TextField.Root
-        placeholder="Password"
-        type="password"
-        variant="soft"
-        radius="large"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      >
-        <TextField.Slot />
-      </TextField.Root>
-      {registerNew && (
-        <TextField.Root
-          placeholder="Confirm Password"
+      <Field.Root>
+        <Field.Control
+          placeholder="User Name"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+      </Field.Root>
+      <Field.Root>
+        <Field.Control
+          placeholder="Password"
           type="password"
-          variant="soft"
-          radius="large"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-        >
-          <TextField.Slot />
-        </TextField.Root>
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </Field.Root>
+      {registerNew && (
+        <Field.Root>
+          <Field.Control
+            placeholder="Confirm Password"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+        </Field.Root>
       )}
       <div className="loginButtons">
         <Button onClick={submitLogin}>Submit</Button>

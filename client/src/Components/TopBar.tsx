@@ -1,4 +1,5 @@
-import { Button } from "@radix-ui/themes";
+import { Button } from "@base-ui/react";
+
 import { useState } from "react";
 import { LoginScreen } from "./LoginScreen";
 

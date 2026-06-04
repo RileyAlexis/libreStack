@@ -20,10 +20,10 @@ public class ConfigController : ControllerBase
     }
 
     [HttpGet("checkIfSetupComplete")]
-    public async Task<IActionResult> CheckIfSetupComplete()
+    public async Task<ActionResult<object>> CheckIfSetupComplete()
     {
         var result = await _iLibreStackConfigService.CheckIfSetupComplete();
-        return result ? Ok(true) : Ok(false);
+        return Ok(new { isSetupComplete = result });
     }
 
     [HttpGet("getConfig")]

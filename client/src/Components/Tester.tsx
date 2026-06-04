@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { api } from "../api";
-import { Button, TextField } from "@radix-ui/themes";
+
+import { Button, Field } from "@fluentui/react-components";
+import { ArrowUploadRegular } from "@fluentui/react-icons";
 
 export const Tester: React.FC = () => {
   const [data, setData] = useState<any>([]);
@@ -139,27 +141,28 @@ export const Tester: React.FC = () => {
       <div>
         <div className="testingButtonContainer">
           <h2>Library</h2>
-          <Button onClick={handleGetLibrary}>Get Library</Button>
+          <Button onClick={handleGetLibrary} appearance="primary">
+            Get Library
+          </Button>
           <div className="testingCombo">
             <Button onClick={handleGetLibraryEntry}>Get Library Entry</Button>
-            <TextField.Root
+            <Field
               placeholder="id"
               value={libraryId}
               onChange={(e) => setLibraryId(Number(e.target.value))}
-            >
-              <TextField.Slot />
-            </TextField.Root>
+            />
           </div>
 
           <div className="testingCombo">
-            <Button onClick={handleDownloadEntry}>Download Entry</Button>
-            <TextField.Root
+            <Button onClick={handleDownloadEntry} appearance="subtle">
+              Download Entry
+            </Button>
+
+            <Field
               placeholder="id"
               value={libraryId}
               onChange={(e) => setLibraryId(Number(e.target.value))}
-            >
-              <TextField.Slot />
-            </TextField.Root>
+            />
           </div>
 
           <div className="testingCombo">
@@ -170,7 +173,9 @@ export const Tester: React.FC = () => {
               style={{ display: "none" }}
             />
             <Button
-              variant="soft"
+              appearance="secondary"
+              icon={<ArrowUploadRegular />}
+              size="medium"
               onClick={() => fileInputRef.current?.click()}
             >
               Add Book
@@ -187,55 +192,39 @@ export const Tester: React.FC = () => {
 
           <div className="testingCombo">
             <Button onClick={handleCreateUserTag}>Create Tag</Button>
-            <TextField.Root
-              value={newTag}
-              onChange={(e) => setNewTag(e.target.value)}
-            >
-              <TextField.Slot />
-            </TextField.Root>
+            <Field value={newTag} onChange={(e) => setNewTag(e.target.value)} />
           </div>
         </div>
 
         <div className="testingCombo">
-          <Button onClick={handleGetUserTag}>Get User Tag</Button>
-          <TextField.Root
+          <Button onClick={handleGetUserTag} shape="circular">
+            Get User Tag
+          </Button>
+          <Field
             value={tagId}
             onChange={(e) => setTagId(Number(e.target.value))}
-          >
-            <TextField.Slot />
-          </TextField.Root>
+          />
         </div>
 
         <div className="testingCombo">
           <Button onClick={handleUpdateTag}>Update Tag</Button>
-          <TextField.Root
+          <Field
             value={tagId}
             onChange={(e) => setTagId(Number(e.target.value))}
-          >
-            <TextField.Slot />
-          </TextField.Root>
-          <TextField.Root
-            value={newTag}
-            onChange={(e) => setNewTag(e.target.value)}
-          >
-            <TextField.Slot />
-          </TextField.Root>
+          />
+          <Field value={newTag} onChange={(e) => setNewTag(e.target.value)} />
         </div>
 
         <div className="testingCombo">
           <Button onClick={handleApplyTag}>Apply Tag</Button>
-          <TextField.Root
+          <Field
             value={libraryId}
             onChange={(e) => setLibraryId(Number(e.target.value))}
-          >
-            <TextField.Slot />
-          </TextField.Root>
-          <TextField.Root
+          />
+          <Field
             value={tagId}
             onChange={(e) => setTagId(Number(e.target.value))}
-          >
-            <TextField.Slot />
-          </TextField.Root>
+          />
         </div>
       </div>
       <div className="responseContainer">
