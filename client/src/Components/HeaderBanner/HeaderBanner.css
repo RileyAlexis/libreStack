@@ -1,10 +1,22 @@
 .headerBannerContainer {
   display: flex;
   flex-direction: row;
-  justify-content: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
   align-items: center;
   margin-top: 0.2em;
-  margin-left: 0.5em;
+  margin-left: 1em;
+  margin-right: 1.5em;
+  margin-bottom: 0;
+  padding-bottom: 0;
 
   /* border: 1px solid orange; */
+}
+
+.menuContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  gap: 0.5em;
 }

@@ -7,28 +7,29 @@ interface ThemeConfig {
 
 // Light theme tokens
 const LIGHT_THEME_TOKEN = {
-  colorPrimary: "#fcc153",
-  colorInfo: "#fcc153",
+  colorPrimary: "#ffb968",
+  colorInfo: "#03fff2",
   colorSuccess: "#a5ce91",
   colorWarning: "#ec7a00",
   colorError: "#c10003",
   colorBgBase: "#e7ddcc",
   colorBgContainer: "#e6e6e6",
   colorBgElevated: "#e4e1db",
+  colorTextBase: "#121212",
   borderRadius: 8,
   wireframe: false,
 };
 
 // Dark theme tokens
 const DARK_THEME_TOKEN = {
-  colorPrimary: "#ffd689",
-  colorInfo: "#ffd689",
+  colorPrimary: "#ffb968",
+  colorInfo: "#03fff2",
   colorSuccess: "#a5ce91",
-  colorWarning: "#e47703",
+  colorWarning: "#ec7a00",
   colorError: "#c10003",
-  colorBgBase: "#3e2905",
-  colorBgContainer: "#231703",
+  colorBgContainer: "#5e523c",
   colorBgElevated: "#3b2705",
+  colorBgBase: "#181611",
   borderRadius: 8,
   wireframe: false,
   colorLink: "#ffd689",

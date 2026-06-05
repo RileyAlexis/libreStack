@@ -1,17 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
-
-import { Button, Modal, Typography } from "antd";
-
-import "./HeaderBanner.css";
-import { LoginScreen } from "../LoginScreen/LoginScreen";
 import type { LibreRootState } from "../../types/LibreRootState";
+
+import { Avatar, Divider, Modal, Typography, Button } from "antd";
+import { LoginOutlined } from "@ant-design/icons";
+
+import { LoginScreen } from "../LoginScreen/LoginScreen";
+import "./HeaderBanner.css";
+import { MainMenu } from "./MainMenu";
 
 export const HeaderBanner: React.FC = () => {
   const navigate = useNavigate();
   const user = useSelector((state: LibreRootState) => state.user);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(true);
 
   const handleNavigateToMain = () => {
     navigate("/");
@@ -24,23 +26,33 @@ export const HeaderBanner: React.FC = () => {
         onClick={handleNavigateToMain}
         style={{
           cursor: "pointer",
+          paddingTop: "0.1em",
         }}
       >
         LibreStack
       </Typography.Title>
-      <Typography.Title level={3}>{user.userName}</Typography.Title>
-      {user.isLoggedIn === false && (
-        <Button onClick={() => setIsLoginOpen(true)}>Log In</Button>
-      )}
+      <div className="menuContainer">
+        <MainMenu />
+        {user.isLoggedIn && (
+          <Avatar>{user.userName.charAt(0).toUpperCase()}</Avatar>
+        )}
+        {!user.isLoggedIn && (
+          <Button ghost onClick={() => setIsLoginOpen(true)}>
+            <Avatar>
+              <LoginOutlined onClick={() => setIsLoginOpen(true)} />
+            </Avatar>
+          </Button>
+        )}
+      </div>
       <Modal
-        title="Login"
         closable={{ "aria-label": "Custom Close Button" }}
         open={isLoginOpen}
-        onOk={() => setIsLoginOpen(false)}
-        onCancel={() => setIsLoginOpen(false)}
+        okButtonProps={{}}
+        footer={[]}
       >
-        <LoginScreen />
+        <LoginScreen setIsLoginOpen={setIsLoginOpen} />
       </Modal>
+      <Divider size="small" style={{ marginTop: "-0.2em" }} />
     </div>
   );
 };
