@@ -39,8 +39,6 @@ public class AuthService : IAuthService
         return await _userManager.CreateAsync(user, request.Password);
     }
 
-
-
     public Task LogoutAsync()
     {
         return _signInManager.SignOutAsync();
@@ -66,13 +64,18 @@ public class AuthService : IAuthService
 
     public async Task<IdentityResult> RegisterAdminUserAsync(RegisterRequest request)
     {
+        if (await AdminUserExists())
+            return IdentityResult.Failed(new IdentityError
+            {
+                Code = "AdminAlreadyExists",
+                Description = "An admin user already exists."
+            });
+
         var user = new IdentityUser { UserName = request.Username, Email = request.Email };
         var result = await _userManager.CreateAsync(user, request.Password);
-
         if (!result.Succeeded)
             return result;
 
-        // Assign Admin role
         var roleResult = await _userManager.AddToRoleAsync(user, "Admin");
         return roleResult;
     }

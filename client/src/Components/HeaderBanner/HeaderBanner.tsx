@@ -13,7 +13,7 @@ import { MainMenu } from "./MainMenu";
 export const HeaderBanner: React.FC = () => {
   const navigate = useNavigate();
   const user = useSelector((state: LibreRootState) => state.user);
-  const [isLoginOpen, setIsLoginOpen] = useState(true);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   const handleNavigateToMain = () => {
     navigate("/");
@@ -37,9 +37,9 @@ export const HeaderBanner: React.FC = () => {
           <Avatar>{user.userName.charAt(0).toUpperCase()}</Avatar>
         )}
         {!user.isLoggedIn && (
-          <Button ghost onClick={() => setIsLoginOpen(true)}>
+          <Button ghost type="text" onClick={() => setIsLoginOpen(true)}>
             <Avatar>
-              <LoginOutlined onClick={() => setIsLoginOpen(true)} />
+              <LoginOutlined />
             </Avatar>
           </Button>
         )}
@@ -47,6 +47,7 @@ export const HeaderBanner: React.FC = () => {
       <Modal
         closable={{ "aria-label": "Custom Close Button" }}
         open={isLoginOpen}
+        onCancel={() => setIsLoginOpen(false)}
         okButtonProps={{}}
         footer={[]}
       >

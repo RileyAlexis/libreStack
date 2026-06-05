@@ -1,10 +1,10 @@
-import { useEffect, useContext } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
 import { api } from "./api";
 import { Route, Routes } from "react-router";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { logoutUser, setUser } from "./redux/reducers/userReducer";
 
 import "./App.css";
@@ -12,12 +12,12 @@ import { Setup } from "./Components/Setup/ Setup";
 import { Tester } from "./Components/Tester";
 import { HeaderBanner } from "./Components/HeaderBanner/HeaderBanner";
 import axios from "axios";
-import type { LibreRootState } from "./types/LibreRootState";
+// import type { LibreRootState } from "./types/LibreRootState";
 
 function App() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const user = useSelector((state: LibreRootState) => state.user);
+  // const user = useSelector((state: LibreRootState) => state.user);
 
   useEffect(() => {
     api

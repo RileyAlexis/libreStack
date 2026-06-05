@@ -29,7 +29,7 @@ const DARK_THEME_TOKEN = {
   colorError: "#c10003",
   colorBgContainer: "#5e523c",
   colorBgElevated: "#3b2705",
-  colorBgBase: "#181611",
+  colorBgBase: "#342c19",
   borderRadius: 8,
   wireframe: false,
   colorLink: "#ffd689",

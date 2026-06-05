@@ -1,10 +1,11 @@
 .setupContainer {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  /* justify-content: center;
+  align-items: center; */
   gap: 1em;
-  /* border: 1px solid orange; */
+  margin-left: 1em;
+  margin-right: 1em;
 }
 
 .setupTitle {
@@ -18,6 +19,16 @@
 .setupArea {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
+  /* border: 1px solid green; */
+}
+
+.setupEntry {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  /* border: 1px solid lightgreen; */
 }
