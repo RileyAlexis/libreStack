@@ -1,49 +1,102 @@
-import { StrictMode } from "react";
+import {
+  StrictMode,
+  useEffect,
+  useState,
+  createContext,
+  useContext,
+} from "react";
+import { Provider } from "react-redux";
+import { getThemeConfig } from "./utils/themeLoader";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
-import {
-  FluentProvider,
-  createLightTheme,
-  createDarkTheme,
-} from "@fluentui/react-components";
-import type { BrandVariants, Theme } from "@fluentui/react-components";
-
+import { ConfigProvider } from "antd";
 import App from "./App";
 import "./index.css";
+import { storeInstance } from "./redux/store";
 
-const myTheme: BrandVariants = {
-  10: "#000000",
-  20: "#1B110A",
-  30: "#2D1C12",
-  40: "#402718",
-  50: "#53331D",
-  60: "#674022",
-  70: "#7A4D28",
-  80: "#8E5B2E",
-  90: "#A26934",
-  100: "#B5793B",
-  110: "#C88944",
-  120: "#DA9A4F",
-  130: "#EBAB5C",
-  140: "#FBBE6F",
-  150: "#FFD49B",
-  160: "#FFEACF",
-};
+type ThemePreference = "light" | "dark" | "system";
 
-const lightTheme: Theme = {
-  ...createLightTheme(myTheme),
-};
+export interface ThemeContextValue {
+  themeConfig: any;
+  preference: ThemePreference;
+  setPreference: (p: ThemePreference) => void;
+  isDark: boolean;
+}
 
-const darkTheme: Theme = {
-  ...createDarkTheme(myTheme),
-};
+export const ThemeContext = createContext<ThemeContextValue>(null!);
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <FluentProvider theme={darkTheme} style={{ minHeight: "100vh" }}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </FluentProvider>
-  </StrictMode>,
-);
+export const useTheme = () => useContext(ThemeContext);
+
+function Root() {
+  const [osDark, setOsDark] = useState(
+    () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+  );
+  const [preference, setPreference] = useState<ThemePreference>(
+    () => (localStorage.getItem("theme") as ThemePreference) ?? "system",
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (e: MediaQueryListEvent) => setOsDark(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  const handleSetPreference = (p: ThemePreference) => {
+    setPreference(p);
+    localStorage.setItem("theme", p);
+  };
+
+  const isDark = preference === "dark" || (preference === "system" && osDark);
+  const themeConfig = getThemeConfig(isDark);
+
+  useEffect(() => {
+    document.documentElement.setAttribute(
+      "data-theme",
+      isDark ? "dark" : "light",
+    );
+    document.documentElement.style.colorScheme = isDark ? "dark" : "light";
+    document.documentElement.setAttribute(
+      "data-theme",
+      isDark ? "dark" : "light",
+    );
+    document.documentElement.style.colorScheme = isDark ? "dark" : "light";
+
+    const bg =
+      themeConfig?.token?.colorBgBase ?? (isDark ? "#181611" : "#f9f4d8");
+    const text =
+      themeConfig?.token?.colorTextBase ?? (isDark ? "#e9e9e9" : "#000000");
+
+    document.body.style.background = bg;
+    document.body.style.color = text;
+  }, [isDark, themeConfig]);
+
+  return (
+    <ThemeContext.Provider
+      value={{
+        themeConfig,
+        preference,
+        setPreference: handleSetPreference,
+        isDark,
+      }}
+    >
+      <ConfigProvider theme={themeConfig}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </ConfigProvider>
+    </ThemeContext.Provider>
+  );
+}
+
+const container = document.getElementById("root");
+if (container) {
+  const root = createRoot(container);
+  root.render(
+    <StrictMode>
+      <Provider store={storeInstance}>
+        <Root />
+      </Provider>
+    </StrictMode>,
+  );
+}

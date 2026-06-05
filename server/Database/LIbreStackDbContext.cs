@@ -14,6 +14,7 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
     public DbSet<ReadingProgress> ReadingProgress { get; set; }
     public DbSet<BookmarkModel> Bookmarks { get; set; }
     public DbSet<LibreStackConfig> LibreStackConfig { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -1,9 +1,12 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Security.Cryptography;
 using Librestack.Models;
 using Librestack.Interfaces;
+using Librestack.Database;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Librestack.Services;
@@ -14,17 +17,20 @@ public class AuthService : IAuthService
     private readonly SignInManager<IdentityUser> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IConfiguration _configuration;
+    private readonly LibrestackDbContext _dbContext;
 
     public AuthService(
         UserManager<IdentityUser> userManager,
         SignInManager<IdentityUser> signInManager,
         RoleManager<IdentityRole> roleManager,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        LibrestackDbContext dbContext)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _roleManager = roleManager;
         _configuration = configuration;
+        _dbContext = dbContext;
     }
 
     public async Task<IdentityResult> RegisterAsync(RegisterRequest request)
@@ -33,18 +39,7 @@ public class AuthService : IAuthService
         return await _userManager.CreateAsync(user, request.Password);
     }
 
-    public async Task<string?> LoginAsync(LoginRequest request)
-    {
-        var user = await _userManager.FindByNameAsync(request.Username);
-        if (user is null)
-            return null;
 
-        var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
-        if (!result.Succeeded)
-            return null;
-
-        return await GenerateJwtToken(user);
-    }
 
     public Task LogoutAsync()
     {
@@ -133,5 +128,96 @@ public class AuthService : IAuthService
     {
         var admins = await _userManager.GetUsersInRoleAsync("Admin");
         return admins != null && admins.Any();
+    }
+
+    private static string CreateRandomToken()
+    {
+        var bytes = new byte[64];
+        using var rng = RandomNumberGenerator.Create();
+        rng.GetBytes(bytes);
+        return Convert.ToBase64String(bytes);
+    }
+
+    private static string HashToken(string token)
+    {
+        using var sha = SHA256.Create();
+        var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(token));
+        return Convert.ToBase64String(bytes);
+    }
+
+    public async Task<LoginResponse?> LoginWithRefreshAsync(LoginRequest request)
+    {
+        var user = await _userManager.FindByNameAsync(request.Username);
+        if (user is null)
+            return null;
+
+        var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
+        if (!result.Succeeded)
+            return null;
+
+        var accessToken = await GenerateJwtToken(user);
+
+        var rawRefresh = CreateRandomToken();
+        var hashed = HashToken(rawRefresh);
+        var expiryDays = int.Parse(_configuration["JWT_REFRESH_EXPIRY_DAYS"] ?? "14");
+
+        var refreshEntity = new RefreshToken
+        {
+            HashedToken = hashed,
+            UserId = user.Id,
+            Created = DateTime.UtcNow,
+            Expires = DateTime.UtcNow.AddDays(expiryDays)
+        };
+
+        _dbContext.RefreshTokens.Add(refreshEntity);
+        await _dbContext.SaveChangesAsync();
+
+        return new LoginResponse(accessToken, rawRefresh);
+    }
+
+    public async Task<RefreshResponse?> RefreshAccessTokenAsync(string refreshToken)
+    {
+        var hashed = HashToken(refreshToken);
+        var tokenEntity = await _dbContext.RefreshTokens.FirstOrDefaultAsync(t => t.HashedToken == hashed);
+        if (tokenEntity == null || !tokenEntity.IsActive)
+            return null;
+
+        var user = await _userManager.FindByIdAsync(tokenEntity.UserId);
+        if (user == null)
+            return null;
+
+        // Revoke current and rotate
+        tokenEntity.Revoked = DateTime.UtcNow;
+
+        var newRaw = CreateRandomToken();
+        var newHashed = HashToken(newRaw);
+        tokenEntity.ReplacedByHash = newHashed;
+
+        var expiryDays = int.Parse(_configuration["JWT_REFRESH_EXPIRY_DAYS"] ?? "14");
+        var newEntity = new RefreshToken
+        {
+            HashedToken = newHashed,
+            UserId = user.Id,
+            Created = DateTime.UtcNow,
+            Expires = DateTime.UtcNow.AddDays(expiryDays)
+        };
+
+        _dbContext.RefreshTokens.Add(newEntity);
+        await _dbContext.SaveChangesAsync();
+
+        var newJwt = await GenerateJwtToken(user);
+        return new RefreshResponse(newJwt, newRaw);
+    }
+
+    public async Task<bool> RevokeRefreshTokenAsync(string refreshToken)
+    {
+        var hashed = HashToken(refreshToken);
+        var tokenEntity = await _dbContext.RefreshTokens.FirstOrDefaultAsync(t => t.HashedToken == hashed);
+        if (tokenEntity == null || tokenEntity.Revoked != null)
+            return false;
+
+        tokenEntity.Revoked = DateTime.UtcNow;
+        await _dbContext.SaveChangesAsync();
+        return true;
     }
 }

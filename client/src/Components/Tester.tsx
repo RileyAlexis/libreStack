@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { api } from "../api";
 
-import { Button, Field } from "@fluentui/react-components";
-import { ArrowUploadRegular } from "@fluentui/react-icons";
+import { Button, Input } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 
 export const Tester: React.FC = () => {
   const [data, setData] = useState<any>([]);
@@ -141,25 +141,25 @@ export const Tester: React.FC = () => {
       <div>
         <div className="testingButtonContainer">
           <h2>Library</h2>
-          <Button onClick={handleGetLibrary} appearance="primary">
+          <Button type="primary" onClick={handleGetLibrary}>
             Get Library
           </Button>
           <div className="testingCombo">
             <Button onClick={handleGetLibraryEntry}>Get Library Entry</Button>
-            <Field
+            <Input
               placeholder="id"
+              type="number"
               value={libraryId}
               onChange={(e) => setLibraryId(Number(e.target.value))}
             />
           </div>
 
           <div className="testingCombo">
-            <Button onClick={handleDownloadEntry} appearance="subtle">
-              Download Entry
-            </Button>
+            <Button onClick={handleDownloadEntry}>Download Entry</Button>
 
-            <Field
+            <Input
               placeholder="id"
+              type="number"
               value={libraryId}
               onChange={(e) => setLibraryId(Number(e.target.value))}
             />
@@ -173,14 +173,16 @@ export const Tester: React.FC = () => {
               style={{ display: "none" }}
             />
             <Button
-              appearance="secondary"
-              icon={<ArrowUploadRegular />}
-              size="medium"
+              icon={<UploadOutlined />}
               onClick={() => fileInputRef.current?.click()}
             >
               Add Book
             </Button>
-            <Button onClick={handleUpload} disabled={!selectedFile}>
+            <Button
+              type="primary"
+              onClick={handleUpload}
+              disabled={!selectedFile}
+            >
               Upload
             </Button>
           </div>
@@ -192,15 +194,16 @@ export const Tester: React.FC = () => {
 
           <div className="testingCombo">
             <Button onClick={handleCreateUserTag}>Create Tag</Button>
-            <Field value={newTag} onChange={(e) => setNewTag(e.target.value)} />
+            <Input value={newTag} onChange={(e) => setNewTag(e.target.value)} />
           </div>
         </div>
 
         <div className="testingCombo">
-          <Button onClick={handleGetUserTag} shape="circular">
+          <Button onClick={handleGetUserTag} shape="round">
             Get User Tag
           </Button>
-          <Field
+          <Input
+            type="number"
             value={tagId}
             onChange={(e) => setTagId(Number(e.target.value))}
           />
@@ -208,20 +211,23 @@ export const Tester: React.FC = () => {
 
         <div className="testingCombo">
           <Button onClick={handleUpdateTag}>Update Tag</Button>
-          <Field
+          <Input
+            type="number"
             value={tagId}
             onChange={(e) => setTagId(Number(e.target.value))}
           />
-          <Field value={newTag} onChange={(e) => setNewTag(e.target.value)} />
+          <Input value={newTag} onChange={(e) => setNewTag(e.target.value)} />
         </div>
 
         <div className="testingCombo">
           <Button onClick={handleApplyTag}>Apply Tag</Button>
-          <Field
+          <Input
+            type="number"
             value={libraryId}
             onChange={(e) => setLibraryId(Number(e.target.value))}
           />
-          <Field
+          <Input
+            type="number"
             value={tagId}
             onChange={(e) => setTagId(Number(e.target.value))}
           />

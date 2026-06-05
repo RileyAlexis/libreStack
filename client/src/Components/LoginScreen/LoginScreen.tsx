@@ -1,9 +1,16 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
+import { setUser } from "../../redux/reducers/userReducer";
 
-import { Button, Field } from "@base-ui/react";
+import { Button, Input, Alert } from "antd";
+
+import "./LoginScreen.css";
+import type { LibreRootState } from "../../types/LibreRootState";
 
 export const LoginScreen: React.FC = () => {
+  const dispatch = useDispatch();
+  const userData = useSelector((state: LibreRootState) => state.user);
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -25,6 +32,7 @@ export const LoginScreen: React.FC = () => {
               setPassword("");
               setConfirmPassword("");
               setRegisterNew(false);
+              dispatch(setUser({ userName: username, isLoggedIn: true }));
             })
             .catch((error) => {
               setErrMessage(error.response.message);
@@ -37,9 +45,12 @@ export const LoginScreen: React.FC = () => {
         axios
           .post("/api/auth/login", { username: username, password: password })
           .then((response) => {
-            const token = response.data.token;
-            console.log(response);
-            localStorage.setItem("authToken", token);
+            const token = response.data.accessToken;
+            const refreshToken = response.data.refreshToken;
+            console.log(response.data);
+            localStorage.setItem("accessToken", token);
+            localStorage.setItem("refreshToken", refreshToken);
+            dispatch(setUser({ userName: username, isLoggedIn: true }));
           })
           .catch((error) => {
             if (error.response.message === "User not Found") {
@@ -56,40 +67,32 @@ export const LoginScreen: React.FC = () => {
   return (
     <div className="loginInputsContainer">
       {errMessage !== "" && (
-        <div className="errorContainer">
-          <p size="3" color="red">
-            {errMessage}
-          </p>
-        </div>
+        <Alert message={errMessage} type="error" showIcon />
       )}
 
-      <Field.Root>
-        <Field.Control
-          placeholder="User Name"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-      </Field.Root>
-      <Field.Root>
-        <Field.Control
-          placeholder="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-      </Field.Root>
+      <Input
+        placeholder="User Name"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+      <Input
+        placeholder="Password"
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
       {registerNew && (
-        <Field.Root>
-          <Field.Control
-            placeholder="Confirm Password"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-        </Field.Root>
+        <Input
+          placeholder="Confirm Password"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
       )}
       <div className="loginButtons">
-        <Button onClick={submitLogin}>Submit</Button>
+        <Button type="primary" onClick={submitLogin}>
+          Submit
+        </Button>
         <Button onClick={() => setRegisterNew(!registerNew)}>
           {!registerNew ? "Register New User" : "Log In Existing User"}
         </Button>

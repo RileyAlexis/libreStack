@@ -1,7 +1,7 @@
-import { Button } from "@base-ui/react";
+import { Button } from "antd";
 
 import { useState } from "react";
-import { LoginScreen } from "./LoginScreen";
+import { LoginScreen } from "./LoginScreen/LoginScreen";
 
 export const TopBar: React.FC = () => {
   const [isLogin, setIsLogin] = useState(false);
@@ -12,7 +12,9 @@ export const TopBar: React.FC = () => {
 
   return (
     <div>
-      <Button onClick={handleSetLogin}>Login</Button>
+      <Button color="primary" variant="solid" onClick={handleSetLogin}>
+        Login
+      </Button>
       {isLogin && <LoginScreen />}
     </div>
   );

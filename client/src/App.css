@@ -3,34 +3,6 @@
   flex-direction: row;
   justify-content: flex-end;
   padding-top: 0.2em;
-  border: 1px solid lightgreen;
-}
-
-.loginContainer {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  min-height: 60vh;
-  padding-left: 3rem;
-  padding-right: 3rem;
-}
-
-.loginInputsContainer {
-  display: flex;
-  flex-direction: column;
-  padding-top: 3rem;
-  gap: 1rem;
-  justify-content: center;
-  align-items: center;
-  margin-top: 4rem;
-}
-
-.loginButtons {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 3rem;
 }
 
 .testingCombo {

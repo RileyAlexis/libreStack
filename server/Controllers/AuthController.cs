@@ -2,6 +2,7 @@ using Librestack.Models;
 using Librestack.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+// removed ambiguous Identity.Data using
 
 namespace Librestack.Controllers;
 
@@ -29,11 +30,45 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        var token = await _authService.LoginAsync(request);
-        if (token is null)
+        var response = await _authService.LoginWithRefreshAsync(request);
+        if (response is null)
             return Unauthorized(new { message = "Invalid username or password" });
 
-        return Ok(new { token });
+        return Ok(new { accessToken = response.AccessToken, refreshToken = response.RefreshToken });
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Refresh([FromBody] RefreshRequest request)
+    {
+        var result = await _authService.RefreshAccessTokenAsync(request.RefreshToken);
+        if (result is null)
+            return Unauthorized(new { message = "Invalid or expired refresh token" });
+
+        return Ok(new { accessToken = result.AccessToken, refreshToken = result.RefreshToken });
+    }
+
+    [HttpPost("revoke")]
+    public async Task<IActionResult> Revoke([FromBody] RefreshRequest request)
+    {
+        var ok = await _authService.RevokeRefreshTokenAsync(request.RefreshToken);
+        if (!ok)
+            return BadRequest(new { message = "Token not found or already revoked." });
+
+        return Ok(new { message = "Refresh token revoked" });
+    }
+
+    [HttpGet("user")]
+    [Authorize]
+    public async Task<IActionResult> GetUser()
+    {
+        var principal = HttpContext.User;
+        var userResponse = await _authService.GetCurrentUserAsync(principal);
+
+        if (userResponse == null)
+        {
+            return Unauthorized(new { message = "User details could not be retrieved." });
+        }
+        return Ok(userResponse);
     }
 
     [HttpPost("admin/register")]

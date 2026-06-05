@@ -7,7 +7,9 @@ namespace Librestack.Interfaces;
 public interface IAuthService
 {
     Task<IdentityResult> RegisterAsync(RegisterRequest request);
-    Task<string?> LoginAsync(LoginRequest request);
+    Task<LoginResponse?> LoginWithRefreshAsync(LoginRequest request);
+    Task<RefreshResponse?> RefreshAccessTokenAsync(string refreshToken);
+    Task<bool> RevokeRefreshTokenAsync(string refreshToken);
     Task LogoutAsync();
     Task<AuthUserResponse?> GetCurrentUserAsync(ClaimsPrincipal user);
     Task<bool> RoleExistsAsync(string roleName);

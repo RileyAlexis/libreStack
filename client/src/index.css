@@ -19,6 +19,7 @@
     --xSmall: calc(var(--small) / var(--scale));
     /* 0.96rem */
     --radius: 5px;
+    isolation: isolate;
   }
 
   html {
@@ -34,6 +35,7 @@
   body {
     padding: 0;
     margin: 0;
+    position: relative;
   }
 
   h1,
@@ -47,9 +49,9 @@
   }
 
   .primaryContainer {
-    display: flex;
+    /* display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: center; */
     height: 100vh;
     width: 100vw;
   }

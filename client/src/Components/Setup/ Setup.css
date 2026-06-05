@@ -1,0 +1,23 @@
+.setupContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+  /* border: 1px solid orange; */
+}
+
+.setupTitle {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 0.5em;
+  margin-bottom: 3em;
+}
+
+.setupArea {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
