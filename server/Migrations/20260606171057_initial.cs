@@ -66,6 +66,21 @@ namespace libreStack.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "libraries",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    user_id = table.Column<string>(type: "text", nullable: false),
+                    name = table.Column<string>(type: "text", nullable: false),
+                    library_path = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_libraries", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "libre_stack_config",
                 columns: table => new
                 {
@@ -284,6 +299,30 @@ namespace libreStack.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "library_books",
+                columns: table => new
+                {
+                    book_id = table.Column<int>(type: "integer", nullable: false),
+                    library_id = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_library_books", x => new { x.book_id, x.library_id });
+                    table.ForeignKey(
+                        name: "fk_library_books_books_book_id",
+                        column: x => x.book_id,
+                        principalTable: "books",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_library_books_libraries_library_id",
+                        column: x => x.library_id,
+                        principalTable: "libraries",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "reading_progress",
                 columns: table => new
                 {
@@ -359,6 +398,11 @@ namespace libreStack.Migrations
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_library_books_library_id",
+                table: "library_books",
+                column: "library_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_reading_progress_book_id",
                 table: "reading_progress",
                 column: "book_id");
@@ -389,6 +433,9 @@ namespace libreStack.Migrations
                 name: "bookmarks");
 
             migrationBuilder.DropTable(
+                name: "library_books");
+
+            migrationBuilder.DropTable(
                 name: "libre_stack_config");
 
             migrationBuilder.DropTable(
@@ -402,6 +449,9 @@ namespace libreStack.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "libraries");
 
             migrationBuilder.DropTable(
                 name: "books");

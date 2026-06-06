@@ -24,6 +24,7 @@ public class Book
     public int? CollectionId { get; set; }
     public required string EpubPath { get; set; }
 
+    public ICollection<Library> Libraries { get; set; } = new List<Library>();
     public ICollection<BookTag> BookTags { get; set; } = new List<BookTag>();
     public ICollection<ReadingProgress> ReadingProgress { get; set; } = new List<ReadingProgress>();
     public ICollection<BookmarkModel> Bookmarks { get; set; } = new List<BookmarkModel>();

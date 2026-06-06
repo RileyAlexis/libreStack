@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace libreStack.Migrations
 {
     [DbContext(typeof(LibrestackDbContext))]
-    [Migration("20260606164625_initial")]
+    [Migration("20260606171057_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -171,6 +171,36 @@ namespace libreStack.Migrations
                         .HasDatabaseName("ix_bookmarks_book_id");
 
                     b.ToTable("bookmarks", (string)null);
+                });
+
+            modelBuilder.Entity("Librestack.Models.Library", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("LibraryPath")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("library_path");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_libraries");
+
+                    b.ToTable("libraries", (string)null);
                 });
 
             modelBuilder.Entity("Librestack.Models.LibreStackConfig", b =>
@@ -540,6 +570,25 @@ namespace libreStack.Migrations
                     b.ToTable("applied_book_tags", (string)null);
                 });
 
+            modelBuilder.Entity("library_books", b =>
+                {
+                    b.Property<int>("book_id")
+                        .HasColumnType("integer")
+                        .HasColumnName("book_id");
+
+                    b.Property<int>("library_id")
+                        .HasColumnType("integer")
+                        .HasColumnName("library_id");
+
+                    b.HasKey("book_id", "library_id")
+                        .HasName("pk_library_books");
+
+                    b.HasIndex("library_id")
+                        .HasDatabaseName("ix_library_books_library_id");
+
+                    b.ToTable("library_books", (string)null);
+                });
+
             modelBuilder.Entity("Librestack.Models.Book", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
@@ -644,6 +693,23 @@ namespace libreStack.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_applied_book_tags_book_tags_tag_id");
+                });
+
+            modelBuilder.Entity("library_books", b =>
+                {
+                    b.HasOne("Librestack.Models.Book", null)
+                        .WithMany()
+                        .HasForeignKey("book_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_library_books_books_book_id");
+
+                    b.HasOne("Librestack.Models.Library", null)
+                        .WithMany()
+                        .HasForeignKey("library_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_library_books_libraries_library_id");
                 });
 
             modelBuilder.Entity("Librestack.Models.Book", b =>

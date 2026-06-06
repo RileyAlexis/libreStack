@@ -1,3 +1,4 @@
+using System.Runtime.Serialization;
 using Librestack.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -9,6 +10,7 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
 {
     public LibrestackDbContext(DbContextOptions<LibrestackDbContext> options) : base(options) { }
 
+    public DbSet<Library> Libraries { get; set; }
     public DbSet<Book> Books { get; set; }
     public DbSet<BookTag> BookTags { get; set; }
     public DbSet<ReadingProgress> ReadingProgress { get; set; }
@@ -43,5 +45,26 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
             .HasOne(l => l.User)
             .WithMany()
             .HasForeignKey(l => l.UserId);
+
+        modelBuilder.Entity<Library>()
+            .HasMany(lib => lib.Books)
+            .WithMany(book => book.Libraries)
+            .UsingEntity<Dictionary<string, object>>(
+                "library_books",
+                j => j
+                    .HasOne<Book>()
+                    .WithMany()
+                    .HasForeignKey("book_id"),
+                j => j
+                    .HasOne<Library>()
+                    .WithMany()
+                    .HasForeignKey("library_id"),
+                j =>
+                {
+                    j.ToTable("library_books");
+                    j.HasKey("book_id", "library_id");
+                }
+            );
+
     }
 }
