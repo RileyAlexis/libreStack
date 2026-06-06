@@ -6,15 +6,15 @@ import { UploadOutlined } from "@ant-design/icons";
 
 export const Tester: React.FC = () => {
   const [data, setData] = useState<any>([]);
-  const [libraryId, setLibraryId] = useState<number>(0);
+  const [bookId, setBookId] = useState<number>(0);
   const [tagId, setTagId] = useState<number>(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [newTag, setNewTag] = useState<string>();
 
-  const handleGetLibrary = () => {
+  const handleGetBook = () => {
     api
-      .get("/Library/getLibrary")
+      .get("/Book/getBook")
       .then((response) => {
         console.log(response.data);
         setData(response.data);
@@ -22,9 +22,9 @@ export const Tester: React.FC = () => {
       .catch((error) => console.log(error));
   };
 
-  const handleGetLibraryEntry = () => {
+  const handleGetBookEntry = () => {
     api
-      .get("/Library/getLibraryEntry", { params: { id: libraryId } })
+      .get("/Book/getBookEntry", { params: { id: bookId } })
       .then((response) => {
         console.log(response.data);
         setData(response.data);
@@ -34,8 +34,8 @@ export const Tester: React.FC = () => {
 
   const handleDownloadEntry = () => {
     api
-      .get("/Library/downloadLibraryEntry", {
-        params: { id: libraryId },
+      .get("/Book/downloadBookEntry", {
+        params: { id: bookId },
         responseType: "blob",
       })
       .then((response) => {
@@ -62,7 +62,7 @@ export const Tester: React.FC = () => {
     formData.append("file", selectedFile);
 
     api
-      .post("/Library/addLibraryEntry", formData, {
+      .post("/Book/addBookEntry", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((response) => console.log(response.data))
@@ -71,7 +71,7 @@ export const Tester: React.FC = () => {
 
   const handleGetAllTags = () => {
     api
-      .get("/LibraryTag/getAllTags")
+      .get("/BookTag/getAllTags")
       .then((response) => {
         console.log(response.data);
         setData(response.data);
@@ -83,7 +83,7 @@ export const Tester: React.FC = () => {
 
   const handleCreateUserTag = () => {
     api
-      .post("/LibraryTag/createUserTag", { tag: newTag })
+      .post("/BookTag/createUserTag", { tag: newTag })
       .then((response) => {
         console.log(response.data);
       })
@@ -94,7 +94,7 @@ export const Tester: React.FC = () => {
 
   const handleGetUserTag = () => {
     api
-      .get("LibraryTag/getUserTag", { params: { id: tagId } })
+      .get("BookTag/getUserTag", { params: { id: tagId } })
       .then((response) => {
         console.log(response.data);
         setData(response.data);
@@ -106,7 +106,7 @@ export const Tester: React.FC = () => {
 
   const handleUpdateTag = () => {
     api
-      .post("/libraryTag/updateUserTag", { id: tagId, tag: newTag })
+      .post("/bookTag/updateUserTag", { id: tagId, tag: newTag })
       .then((response) => {
         console.log(response.data);
       })
@@ -117,7 +117,7 @@ export const Tester: React.FC = () => {
 
   const handleApplyTag = () => {
     api
-      .post("/libraryTag/applyTag", { libraryId: libraryId, tagId: tagId })
+      .post("/bookTag/applyTag", { bookId: bookId, tagId: tagId })
       .then((response) => {
         console.log(response.data);
       })
@@ -132,25 +132,25 @@ export const Tester: React.FC = () => {
   }, [data]);
 
   useEffect(() => {
-    console.log(`LibraryId ${libraryId}`);
+    console.log(`BookId ${bookId}`);
     console.log(`TagId ${tagId}`);
-  }, [libraryId, tagId]);
+  }, [bookId, tagId]);
 
   return (
     <div className="testerContainer">
       <div>
         <div className="testingButtonContainer">
-          <h2>Library</h2>
-          <Button type="primary" onClick={handleGetLibrary}>
-            Get Library
+          <h2>Book</h2>
+          <Button type="primary" onClick={handleGetBook}>
+            Get Book
           </Button>
           <div className="testingCombo">
-            <Button onClick={handleGetLibraryEntry}>Get Library Entry</Button>
+            <Button onClick={handleGetBookEntry}>Get Book Entry</Button>
             <Input
               placeholder="id"
               type="number"
-              value={libraryId}
-              onChange={(e) => setLibraryId(Number(e.target.value))}
+              value={bookId}
+              onChange={(e) => setBookId(Number(e.target.value))}
             />
           </div>
 
@@ -160,8 +160,8 @@ export const Tester: React.FC = () => {
             <Input
               placeholder="id"
               type="number"
-              value={libraryId}
-              onChange={(e) => setLibraryId(Number(e.target.value))}
+              value={bookId}
+              onChange={(e) => setBookId(Number(e.target.value))}
             />
           </div>
 
@@ -223,8 +223,8 @@ export const Tester: React.FC = () => {
           <Button onClick={handleApplyTag}>Apply Tag</Button>
           <Input
             type="number"
-            value={libraryId}
-            onChange={(e) => setLibraryId(Number(e.target.value))}
+            value={bookId}
+            onChange={(e) => setBookId(Number(e.target.value))}
           />
           <Input
             type="number"
@@ -243,7 +243,7 @@ export const Tester: React.FC = () => {
               />
               <div>
                 {item.id} - {item.title}
-                {JSON.stringify(item.libraryTags)}
+                {JSON.stringify(item.bookTags)}
                 {item.tag}
               </div>
             </div>

@@ -9,8 +9,8 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
 {
     public LibrestackDbContext(DbContextOptions<LibrestackDbContext> options) : base(options) { }
 
-    public DbSet<Library> Library { get; set; }
-    public DbSet<LibraryTag> LibraryTags { get; set; }
+    public DbSet<Book> Books { get; set; }
+    public DbSet<BookTag> BookTags { get; set; }
     public DbSet<ReadingProgress> ReadingProgress { get; set; }
     public DbSet<BookmarkModel> Bookmarks { get; set; }
     public DbSet<LibreStackConfig> LibreStackConfig { get; set; }
@@ -20,26 +20,26 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.Entity<Library>()
-            .HasMany(lib => lib.LibraryTags)
-            .WithMany(tag => tag.Libraries)
+        modelBuilder.Entity<Book>()
+            .HasMany(lib => lib.BookTags)
+            .WithMany(tag => tag.Books)
             .UsingEntity<Dictionary<string, object>>(
-                "applied_library_tags",
+                "applied_book_tags",
                 j => j
-                    .HasOne<LibraryTag>()
+                    .HasOne<BookTag>()
                     .WithMany()
                     .HasForeignKey("tag_id"),
                 j => j
-                    .HasOne<Library>()
+                    .HasOne<Book>()
                     .WithMany()
-                    .HasForeignKey("library_id"),
+                    .HasForeignKey("book_id"),
                 j =>
                 {
-                    j.ToTable("applied_library_tags");
-                    j.HasKey("library_id", "tag_id");
+                    j.ToTable("applied_book_tags");
+                    j.HasKey("book_id", "tag_id");
                 });
 
-        modelBuilder.Entity<Library>()
+        modelBuilder.Entity<Book>()
             .HasOne(l => l.User)
             .WithMany()
             .HasForeignKey(l => l.UserId);

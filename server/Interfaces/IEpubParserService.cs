@@ -4,5 +4,5 @@ namespace Librestack.Interfaces;
 
 public interface IEpubParseService
 {
-    Task<Library> ParseMetadata(string filePath, string UserId);
+    Task<Book> ParseMetadata(string filePath, string UserId);
 }

@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Librestack.Models;
 
-public class LibraryTag
+public class BookTag
 {
     public int Id { get; set; }
 
@@ -11,5 +11,5 @@ public class LibraryTag
     public string Tag { get; set; } = null!;
 
     [JsonIgnore]
-    public ICollection<Library> Libraries { get; set; } = new List<Library>();
+    public ICollection<Book> Books { get; set; } = new List<Book>();
 }

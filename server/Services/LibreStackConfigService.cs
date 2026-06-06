@@ -3,7 +3,6 @@ using Librestack.Database;
 using Librestack.Interfaces;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Librestack.Services;
 
@@ -56,8 +55,6 @@ public class LibreStackConfigService : ILibreStackConfigService
         var config = await _db.LibreStackConfig.FirstOrDefaultAsync();
         if (config is null || config.IsSetupComplete == true)
             return false;
-
-        Console.WriteLine(config);
 
         config.IsSetupComplete = isComplete;
         _db.LibreStackConfig.Update(config);

@@ -8,7 +8,7 @@ namespace Librestack.Services;
 
 public class EpubParserService : IEpubParseService
 {
-    public async Task<Library> ParseMetadata(string filePath, string UserId)
+    public async Task<Book> ParseMetadata(string filePath, string UserId)
     {
         var options = new EpubReaderOptions(EpubReaderOptionsPreset.RELAXED)
         {
@@ -30,7 +30,7 @@ public class EpubParserService : IEpubParseService
             var book = await EpubReader.ReadBookAsync(filePath, options) ?? throw new Exception("Failed to Parse Epub File");
             var cover = book.CoverImage;
             var metaData = book.Schema.Package.Metadata;
-            return new Library
+            return new Book
             {
                 UserId = UserId,
                 EpubPath = filePath,

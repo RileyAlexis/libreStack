@@ -9,72 +9,72 @@ namespace Librestack.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class LibraryTagController : ControllerBase
+public class BookTagController : ControllerBase
 {
-    private readonly ILibraryTagService _interfaceLibraryTagService;
+    private readonly IBookTagService _iBookTagService;
 
-    public LibraryTagController(ILibraryTagService libraryTagService)
+    public BookTagController(IBookTagService bookTagService)
     {
-        _interfaceLibraryTagService = libraryTagService;
+        _iBookTagService = bookTagService;
     }
 
     [HttpPost("createUserTag")]
     [Authorize]
-    public async Task<IActionResult> CreateUserTag(LibraryTag libraryTag)
+    public async Task<IActionResult> CreateUserTag(BookTag bookTag)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
             return Unauthorized();
 
-        var result = await _interfaceLibraryTagService.CreateUserTag(userId, libraryTag);
+        var result = await _iBookTagService.CreateUserTag(userId, bookTag);
         return result ? Ok("Tag Created") : BadRequest("Adding new tag failed");
     }
 
     [HttpPost("updateUserTag")]
     [Authorize]
-    public async Task<IActionResult> UpdateUserTag(LibraryTag libraryTag)
+    public async Task<IActionResult> UpdateUserTag(BookTag bookTag)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
             return Unauthorized();
 
-        var result = await _interfaceLibraryTagService.UpdateUserTag(userId, libraryTag);
+        var result = await _iBookTagService.UpdateUserTag(userId, bookTag);
         return result ? Ok("User tag Updated") : BadRequest("Updating tag failed");
     }
 
     [HttpGet("getAllUserTags")]
     [Authorize]
-    public async Task<ActionResult<List<LibraryTag>>> GetAllUserTags()
+    public async Task<ActionResult<List<BookTag>>> GetAllUserTags()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
             return Unauthorized();
 
-        var result = await _interfaceLibraryTagService.GetAllUserTags(userId);
+        var result = await _iBookTagService.GetAllUserTags(userId);
         return result;
     }
 
     [HttpGet("getUserTag")]
     [Authorize]
-    public async Task<ActionResult<LibraryTag?>> GetUserTag(int id)
+    public async Task<ActionResult<BookTag?>> GetUserTag(int id)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
             return Unauthorized();
 
-        var tag = await _interfaceLibraryTagService.GetUserTag(userId, id);
+        var tag = await _iBookTagService.GetUserTag(userId, id);
         return tag;
     }
 
     [HttpGet("getAllTags")]
     [Authorize]
-    public async Task<ActionResult<List<LibraryTag>>> GeAllTags()
+    public async Task<ActionResult<List<BookTag>>> GetAllTags()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
             return Unauthorized();
 
-        var tags = await _interfaceLibraryTagService.GetAllTags(userId);
+        var tags = await _iBookTagService.GetAllTags(userId);
         return tags;
     }
 
@@ -86,8 +86,8 @@ public class LibraryTagController : ControllerBase
         if (userId is null)
             return Unauthorized();
 
-        var result = await _interfaceLibraryTagService.ApplyTag(
-            userId: userId, libraryId: applyTag.LibraryId, tagId: applyTag.TagId);
+        var result = await _iBookTagService.ApplyTag(
+            userId: userId, bookId: applyTag.BookId, tagId: applyTag.TagId);
 
         return result ? Ok("Tag Updated") : BadRequest("Unable to add tag");
     }
@@ -102,7 +102,7 @@ public class LibraryTagController : ControllerBase
         if (userId is null)
             return Unauthorized();
 
-        var result = await _interfaceLibraryTagService.DeleteUserTag(userId: userId, id: id);
+        var result = await _iBookTagService.DeleteUserTag(userId: userId, id: id);
         return result ? Ok($"Tag Deleted") : BadRequest("Error deleting tag");
     }
 }

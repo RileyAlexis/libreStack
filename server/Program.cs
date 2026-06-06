@@ -47,8 +47,8 @@ builder.Services.AddAuthentication(options =>
     options.ExpireTimeSpan = TimeSpan.FromHours(8);
 });
 
-builder.Services.AddScoped<ILibraryService, LibraryService>();
-builder.Services.AddScoped<ILibraryTagService, LibraryTagService>();
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IBookTagService, BookTagService>();
 builder.Services.AddScoped<IEpubParseService, EpubParserService>();
 builder.Services.AddScoped<IReadingProgressService, ReadingProgressService>();
 builder.Services.AddScoped<IBookmarkService, BookmarkService>();

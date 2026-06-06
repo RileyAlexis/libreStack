@@ -16,9 +16,9 @@ public class BookmarkService : IBookmarkService
         _db = db;
     }
 
-    public async Task<bool> CreateBookmark(int libraryId, string userId, ApiBookmarkModel apiBookmarkModel)
+    public async Task<bool> CreateBookmark(int BookId, string userId, ApiBookmarkModel apiBookmarkModel)
     {
-        var result = await _db.Library.FirstOrDefaultAsync(l => l.Id == libraryId && l.UserId == userId);
+        var result = await _db.Books.FirstOrDefaultAsync(l => l.Id == BookId && l.UserId == userId);
         if (result is null)
             return false;
 
@@ -26,7 +26,7 @@ public class BookmarkService : IBookmarkService
         {
             UserId = userId,
             Name = apiBookmarkModel.Name,
-            LibraryId = result.Id,
+            BookId = result.Id,
             CfiLocation = apiBookmarkModel.CfiLocation,
         };
 

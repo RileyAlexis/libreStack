@@ -9,38 +9,37 @@ namespace Librestack.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class LibraryController : ControllerBase
+public class BookController : ControllerBase
 {
-    private readonly ILibraryService _iLibraryService;
+    private readonly IBookService _bookService;
 
-    public LibraryController(ILibraryService libraryService)
+    public BookController(IBookService bookService)
     {
-        _iLibraryService = libraryService;
+        _bookService = bookService;
     }
 
-    [HttpGet("getLibrary")]
+    [HttpGet("getBook")]
     [Authorize]
-    public async Task<ActionResult<List<Library>>> GetLibrary()
+    public async Task<ActionResult<List<Book>>> GetBook()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
             return Unauthorized();
 
-        var result = await _iLibraryService.GetLibrary(userId);
+        var result = await _bookService.GetUserBooks(userId);
         if (result is null)
-            return BadRequest("Library does not exist");
+            return BadRequest("Book does not exist");
 
         if (result.Count() == 0)
-            return BadRequest("Library has no entries");
+            return BadRequest("Book has no entries");
 
         return result;
     }
 
-    [HttpGet("getLibraryEntry")]
+    [HttpGet("getBookEntry")]
     [Authorize]
-    public async Task<ActionResult<Library>> GetLibraryEntry(int id)
+    public async Task<ActionResult<Book>> GetBookEntry(int id)
     {
-        Console.WriteLine($"getLibraryEntry - int value: {id}");
 
         if (id == 0)
             return BadRequest("id parameter cannot be 0");
@@ -49,60 +48,60 @@ public class LibraryController : ControllerBase
         if (userId is null)
             return Unauthorized();
 
-        var result = await _iLibraryService.GetLibraryEntry(id, userId);
+        var result = await _bookService.GetBookEntry(id, userId);
         if (result is null)
             return BadRequest($"id {id} not found");
 
         return result;
     }
 
-    [HttpPatch("updateLibraryEntry")]
+    [HttpPatch("updateBookEntry")]
     [Authorize]
-    public async Task<IActionResult> UpdateLibraryEntry(APILibrary library)
+    public async Task<IActionResult> UpdateBookEntry(ApiBook book)
     {
-        if (library.Id == 0)
+        if (book.Id == 0)
             return BadRequest("id parameter cannot be 0");
 
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
             return Unauthorized();
 
-        var updated = await _iLibraryService.UpdateLibraryMetaData(library, userId);
+        var updated = await _bookService.UpdateBookMetaData(book, userId);
         if (!updated)
-            return NotFound($"Library entry with id {library.Id} not found");
+            return NotFound($"Book entry with id {book.Id} not found");
 
-        var result = new { message = "Library entry updated successfully" };
+        var result = new { message = "Book entry updated successfully" };
         return new JsonResult(result);
     }
 
-    [HttpPost("addLibraryEntry")]
+    [HttpPost("addBookEntry")]
     [Authorize]
-    public async Task<IActionResult> AddLibraryEntry(IFormFile file)
+    public async Task<IActionResult> AddBookEntry(IFormFile file)
     {
         var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (UserId is null) return Unauthorized();
 
-        var result = await _iLibraryService.AddLibraryEntry(file, UserId);
-        return result ? Ok("Added to Library") : BadRequest("Upload failed");
+        var result = await _bookService.AddBookEntry(file, UserId);
+        return result ? Ok("Added to collection") : BadRequest("Upload failed");
     }
 
-    [HttpGet("downloadLibraryEntry")]
+    [HttpGet("downloadBookEntry")]
     [Authorize]
-    public async Task<IActionResult> DownloadLibraryEntry(int id)
+    public async Task<IActionResult> DownloadBookEntry(int id)
     {
         var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (UserId is null) return Unauthorized();
 
-        var result = await _iLibraryService.DownloadLibraryEntry(UserId, id);
+        var result = await _bookService.DownloadBookEntry(UserId, id);
         if (result is null)
             return NotFound();
 
         return result;
     }
 
-    [HttpDelete("libraryEntry")]
+    [HttpDelete("bookEntry")]
     [Authorize]
-    public async Task<IActionResult> DeleteLibraryEntry(int id)
+    public async Task<IActionResult> DeleteBookEntry(int id)
     {
         if (id == 0)
             return BadRequest("id parameter cannot be 0");
@@ -111,8 +110,8 @@ public class LibraryController : ControllerBase
         if (userId is null)
             return Unauthorized();
 
-        var data = await _iLibraryService.GetLibraryEntry(id, userId);
-        var deleted = await _iLibraryService.DeleteLibraryEntry(id, userId);
+        var data = await _bookService.GetBookEntry(id, userId);
+        var deleted = await _bookService.DeleteBookEntry(id, userId);
 
         if (!deleted || data is null)
             return NotFound($"id {id} not found in database");

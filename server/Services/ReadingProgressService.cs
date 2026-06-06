@@ -17,9 +17,9 @@ public class ReadingProgressService : IReadingProgressService
         _db = db;
     }
 
-    public async Task<bool> ResetProgress(int libraryId, string userId)
+    public async Task<bool> ResetProgress(int bookId, string userId)
     {
-        var entry = await _db.ReadingProgress.FirstOrDefaultAsync(l => l.Id == libraryId && l.UserId == userId);
+        var entry = await _db.ReadingProgress.FirstOrDefaultAsync(l => l.BookId == bookId && l.UserId == userId);
         if (entry is null)
             return false;
 
@@ -29,17 +29,17 @@ public class ReadingProgressService : IReadingProgressService
     }
 
 
-    public async Task<bool> UpdateProgress(int libraryId, string userId, APIReadingProgress readingProgress)
+    public async Task<bool> UpdateProgress(int bookId, string userId, APIReadingProgress readingProgress)
     {
         var existing = await _db.ReadingProgress
-            .FirstOrDefaultAsync(p => p.LibraryId == libraryId && p.UserId == userId);
+            .FirstOrDefaultAsync(p => p.BookId == bookId && p.UserId == userId);
 
         if (existing is null)
         {
             var newProgress = new Models.ReadingProgress
             {
                 UserId = userId,
-                LibraryId = libraryId,
+                BookId = bookId,
                 CfiLocation = readingProgress.CfiLocation,
                 LastRead = DateTime.UtcNow
             };

@@ -20,12 +20,12 @@ public class BookmarkController : ControllerBase
 
     [HttpPost("createBookmark")]
     [Authorize]
-    public async Task<IActionResult> CreateBookmark(int libraryId, ApiBookmarkModel apiBookmarkModel)
+    public async Task<IActionResult> CreateBookmark(int bookId, ApiBookmarkModel apiBookmarkModel)
     {
         var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (UserId is null) return Unauthorized();
 
-        var result = await _iBookmarkService.CreateBookmark(libraryId, UserId, apiBookmarkModel);
+        var result = await _iBookmarkService.CreateBookmark(bookId, UserId, apiBookmarkModel);
         return result ? Ok("Bookmark Created") : BadRequest("Error creating bookmark");
     }
 

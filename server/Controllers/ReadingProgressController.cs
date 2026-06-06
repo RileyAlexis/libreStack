@@ -20,23 +20,23 @@ public class ReadingProgressController : ControllerBase
 
     [HttpPost("updateProgress")]
     [Authorize]
-    public async Task<IActionResult> UpdateProgress(int libraryId, APIReadingProgress aPIReadingProgress)
+    public async Task<IActionResult> UpdateProgress(int bookId, APIReadingProgress aPIReadingProgress)
     {
         var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (UserId is null) return Unauthorized();
 
-        var result = await _iReadingProgressService.UpdateProgress(libraryId, UserId, aPIReadingProgress);
+        var result = await _iReadingProgressService.UpdateProgress(bookId, UserId, aPIReadingProgress);
         return result ? Ok("Reading Progress Updated") : BadRequest("Reading Progress update failed");
     }
 
     [HttpPost("resetProgress")]
     [Authorize]
-    public async Task<IActionResult> ResetProgress(int libraryId)
+    public async Task<IActionResult> ResetProgress(int bookId)
     {
         var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (UserId is null) return Unauthorized();
 
-        var result = await _iReadingProgressService.ResetProgress(libraryId, UserId);
+        var result = await _iReadingProgressService.ResetProgress(bookId, UserId);
         return result ? Ok("Reading Progress Reset") : BadRequest("Unable to reset reading progress");
     }
 }

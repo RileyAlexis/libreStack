@@ -38,8 +38,6 @@ public class ConfigController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> MarkSetupAsComplete(bool isComplete)
     {
-        Console.WriteLine("*************************");
-        Console.WriteLine(isComplete);
         var result = await _iLibreStackConfigService.MarkSetupAsComplete(isComplete);
         return result ? Ok("Setup Completed") : BadRequest("Unable to mark setup as complete");
     }

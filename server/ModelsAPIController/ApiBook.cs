@@ -1,16 +1,13 @@
-using Microsoft.AspNetCore.Identity;
+using System.Text.Json.Serialization;
 
-namespace Librestack.Models;
+namespace Librestack.Models.APIModels;
 
-public class Library
+public class ApiBook
 {
     public int Id { get; set; }
-    public required string UserId { get; set; }
-    public IdentityUser User { get; set; }
-
-    public string Title { get; set; } = "";
-    public string Author { get; set; } = "";
-    public string Publisher { get; set; } = "";
+    public string? Title { get; set; } = "";
+    public string? Author { get; set; } = "";
+    public string? Publisher { get; set; } = "";
     public byte[]? CoverImage { get; set; } = null;
     public string? CoverContentType { get; set; } = null;
     public string? SeriesTitle { get; set; } = null;
@@ -22,9 +19,11 @@ public class Library
     public string? AmazonId { get; set; } = null;
     public string? WorkId { get; set; } = null;
     public int? CollectionId { get; set; }
-    public required string EpubPath { get; set; }
+    public string? EpubPath { get; set; } = null;
 
-    public ICollection<LibraryTag> LibraryTags { get; set; } = new List<LibraryTag>();
+    [JsonIgnore]
+    public ICollection<BookTag> BookTags { get; set; } = new List<BookTag>();
+    [JsonIgnore]
     public ICollection<ReadingProgress> ReadingProgress { get; set; } = new List<ReadingProgress>();
-    public ICollection<BookmarkModel> Bookmarks { get; set; } = new List<BookmarkModel>();
+
 }
