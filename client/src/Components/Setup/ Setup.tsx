@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
+import { setUser } from "../../redux/reducers/userReducer";
 import axios from "axios";
 
 import { Button, Form, Input, Card, Popover, Typography } from "antd";
@@ -6,6 +9,7 @@ import { InfoCircleOutlined } from "@ant-design/icons";
 import type { FormProps } from "antd";
 
 import "./ Setup.css";
+import { api } from "../../api";
 
 type AdminType = {
   username?: string;
@@ -14,11 +18,33 @@ type AdminType = {
   remember?: string;
 };
 
+type LibraryPath = {
+  path?: string;
+  remember?: string;
+};
+
 export const Setup: React.FC = () => {
-  // const [adminUser, setAdminUser] = useState<string>("");
-  // const [adminPassword, setAdminPassword] = useState<string>("");
-  // const [adminEmail, setAdminEmail] = useState<string>("");
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [isAdminPopoverOpen, setIsAdminPopoverOpen] = useState(false);
+  const [isLibPopoverOpen, setIsLibPopoverOpen] = useState(false);
+  const [isAdminRegistered, setIsAdminRegistered] = useState(false);
+
+  useEffect(() => {
+    axios
+      .post("/api/auth/admin/register", {
+        username: "",
+        email: "",
+        password: "",
+      })
+      .then((response) => {
+        console.log(response.data.code);
+      })
+      .catch((error) => {
+        const code = error.response.data[0].code;
+        if (code === "AdminAlreadyExists") setIsAdminRegistered(true);
+      });
+  }, [isAdminRegistered]);
 
   const onFinish: FormProps<AdminType>["onFinish"] = (values) => {
     console.log("Success:", values);
@@ -28,12 +54,48 @@ export const Setup: React.FC = () => {
         email: values.email,
         password: values.password,
       })
-      .then((response) => {
-        console.log(response.data);
+      .then((_) => {
+        setIsAdminRegistered(true);
+        axios
+          .post("/api/auth/login", {
+            username: values.username,
+            password: values.password,
+          })
+          .then((response) => {
+            const token = response.data.accessToken;
+            const refreshToken = response.data.refreshToken;
+            localStorage.setItem("accessToken", token);
+            localStorage.setItem("refreshToken", refreshToken);
+            dispatch(setUser({ userName: values.username!, isLoggedIn: true }));
+          })
+          .catch((error) => {
+            console.error(error.message);
+            console.error(error.response);
+          });
       })
       .catch((error) => {
         console.error(error);
         console.error(error.response.data.message);
+      });
+  };
+
+  const setPath: FormProps<LibraryPath>["onFinish"] = (values) => {
+    console.log(values.path);
+    api
+      .post(`/Config/updateLibraryPath?libraryPath=${values.path}`)
+      .then((_) => {
+        api
+          .post(`/Config/markSetupAsComplete?isComplete=true`)
+          .then((response) => {
+            console.log(response.data);
+            navigate("/");
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      })
+      .catch((error) => {
+        console.error(error);
       });
   };
 
@@ -55,8 +117,8 @@ export const Setup: React.FC = () => {
                 trigger="click"
                 autoAdjustOverflow={true}
                 placement="top"
-                open={isPopoverOpen}
-                onOpenChange={() => setIsPopoverOpen(false)}
+                open={isAdminPopoverOpen}
+                onOpenChange={() => setIsAdminPopoverOpen(false)}
                 content={
                   <Typography.Paragraph type="secondary">
                     Admin User account can only be created once on
@@ -66,53 +128,114 @@ export const Setup: React.FC = () => {
                 }
               >
                 <Button
-                  onClick={() => setIsPopoverOpen(true)}
+                  onClick={() => setIsAdminPopoverOpen(true)}
                   icon={<InfoCircleOutlined />}
+                  style={{ marginLeft: "0.5em" }}
+                ></Button>
+              </Popover>
+            }
+          >
+            {isAdminRegistered && (
+              <Typography.Paragraph>
+                Admin Account Registered
+              </Typography.Paragraph>
+            )}
+            {!isAdminRegistered && (
+              <Form
+                name="createAdmin"
+                labelCol={{ span: 12 }}
+                style={{ maxWidth: "100%" }}
+                initialValues={{ remember: true }}
+                onFinish={onFinish}
+                autoComplete="off"
+              >
+                <Form.Item<AdminType>
+                  label="Admin Username"
+                  name="username"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Input admin account user name",
+                    },
+                  ]}
+                >
+                  <Input placeholder="admin" />
+                </Form.Item>
+                <Form.Item<AdminType>
+                  label="Admin Email"
+                  name="email"
+                  rules={[
+                    { required: true, message: "Input admin account email" },
+                  ]}
+                >
+                  <Input type={"email"} />
+                </Form.Item>
+                <Form.Item<AdminType>
+                  label="Admin Password"
+                  name="password"
+                  rules={[
+                    { required: true, message: "Input admin account password" },
+                  ]}
+                >
+                  <Input.Password />
+                </Form.Item>
+                <Form.Item label={null}>
+                  <Button type="primary" htmlType="submit">
+                    Submit
+                  </Button>
+                </Form.Item>
+              </Form>
+            )}
+          </Card>
+        </div>
+        <div className="setupEntry">
+          <Card
+            title="Set Library Storage path"
+            variant="outlined"
+            size="medium"
+            style={{ textAlign: "center" }}
+            extra={
+              <Popover
+                title="Info"
+                trigger="click"
+                autoAdjustOverflow={true}
+                placement="top"
+                open={isLibPopoverOpen}
+                onOpenChange={() => setIsLibPopoverOpen(false)}
+                content={
+                  <Typography.Paragraph type="secondary">
+                    Path of primary storage location for books. Uploaded ebooks
+                    will be saved to this folder.
+                  </Typography.Paragraph>
+                }
+              >
+                <Button
+                  onClick={() => setIsLibPopoverOpen(true)}
+                  icon={<InfoCircleOutlined />}
+                  style={{ marginLeft: "0.5em" }}
                 ></Button>
               </Popover>
             }
           >
             <Form
-              name="createAdmin"
+              name="setLibraryPath"
               labelCol={{ span: 12 }}
               style={{ maxWidth: "100%" }}
               initialValues={{ remember: true }}
-              onFinish={onFinish}
+              onFinish={setPath}
               autoComplete="off"
             >
-              <Form.Item<AdminType>
-                label="Admin Username"
-                name="username"
+              <Form.Item<LibraryPath>
+                label="Library Path"
+                name="path"
                 rules={[
-                  { required: true, message: "Input admin account user name" },
+                  {
+                    required: true,
+                    message: "Input Library Path",
+                  },
                 ]}
               >
-                <Input
-                // onChange={(e) => setAdminUser(e.target.value)}
-                />
-              </Form.Item>
-              <Form.Item<AdminType>
-                label="Admin Email"
-                name="email"
-                rules={[
-                  { required: true, message: "Input admin account email" },
-                ]}
-              >
-                <Input
-                  type={"email"}
-                  // onChange={(e) => setAdminEmail(e.target.value)}
-                />
-              </Form.Item>
-              <Form.Item<AdminType>
-                label="Admin Password"
-                name="password"
-                rules={[
-                  { required: true, message: "Input admin account password" },
-                ]}
-              >
-                <Input.Password
-                // onChange={(e) => setAdminPassword(e.target.value)}
-                />
+                <Input />
               </Form.Item>
               <Form.Item label={null}>
                 <Button type="primary" htmlType="submit">

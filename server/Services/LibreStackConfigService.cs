@@ -3,6 +3,7 @@ using Librestack.Database;
 using Librestack.Interfaces;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Librestack.Services;
 
@@ -56,6 +57,8 @@ public class LibreStackConfigService : ILibreStackConfigService
         if (config is null || config.IsSetupComplete == true)
             return false;
 
+        Console.WriteLine(config);
+
         config.IsSetupComplete = isComplete;
         _db.LibreStackConfig.Update(config);
         await _db.SaveChangesAsync();
@@ -65,10 +68,22 @@ public class LibreStackConfigService : ILibreStackConfigService
     public async Task<bool> UpdateLibraryPath(string path)
     {
         var config = await _db.LibreStackConfig.FirstOrDefaultAsync();
-        if (config is null || path.IsWhiteSpace() || path is null)
+        if (path.IsWhiteSpace() || path is null)
             return false;
 
-        config.LibraryPath = path;
+        if (config is not null)
+        {
+            config.LibraryPath = path;
+
+        }
+        else
+        {
+            config = new LibreStackConfig
+            {
+                LibraryPath = path,
+                IsSetupComplete = false,
+            };
+        }
 
         _db.LibreStackConfig.Update(config);
         await _db.SaveChangesAsync();

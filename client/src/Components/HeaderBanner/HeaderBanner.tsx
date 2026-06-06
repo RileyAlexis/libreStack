@@ -33,16 +33,17 @@ export const HeaderBanner: React.FC = () => {
       </Typography.Title>
       <div className="menuContainer">
         <MainMenu />
-        {user.isLoggedIn && (
+        {user.isLoggedIn && user.userName && (
           <Avatar>{user.userName.charAt(0).toUpperCase()}</Avatar>
         )}
-        {!user.isLoggedIn && (
-          <Button ghost type="text" onClick={() => setIsLoginOpen(true)}>
-            <Avatar>
-              <LoginOutlined />
-            </Avatar>
-          </Button>
-        )}
+        {!user.isLoggedIn ||
+          (!user.userName && (
+            <Button ghost type="text" onClick={() => setIsLoginOpen(true)}>
+              <Avatar>
+                <LoginOutlined />
+              </Avatar>
+            </Button>
+          ))}
       </div>
       <Modal
         closable={{ "aria-label": "Custom Close Button" }}

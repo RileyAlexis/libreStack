@@ -38,6 +38,8 @@ public class ConfigController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> MarkSetupAsComplete(bool isComplete)
     {
+        Console.WriteLine("*************************");
+        Console.WriteLine(isComplete);
         var result = await _iLibreStackConfigService.MarkSetupAsComplete(isComplete);
         return result ? Ok("Setup Completed") : BadRequest("Unable to mark setup as complete");
     }
@@ -52,22 +54,10 @@ public class ConfigController : ControllerBase
 
     [HttpPost("updateLibraryPath")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> UpdateLibraryPath(string path)
+    public async Task<IActionResult> UpdateLibraryPath(string libraryPath)
     {
-        var result = await _iLibreStackConfigService.UpdateLibraryPath(path);
+        var result = await _iLibreStackConfigService.UpdateLibraryPath(libraryPath);
         return result ? Ok("Library path updated") : BadRequest("Error updating library path");
     }
 
-    [HttpPost("registerFirstAdmin")]
-    public async Task<ActionResult<IdentityResult>> RegisterFirstAdmin(RegisterRequest registerRequest)
-    {
-        var adminExists = await _iAuthService.AdminUserExists();
-        if (adminExists)
-            return Unauthorized();
-
-        var result = await _iAuthService.RegisterAdminUserAsync(registerRequest);
-        if (result is null)
-            return BadRequest("Admin User not registered");
-        return result;
-    }
 }

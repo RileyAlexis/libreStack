@@ -29,6 +29,7 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  margin-top: 1.5em;
 
   /* border: 1px solid lightgreen; */
 }
