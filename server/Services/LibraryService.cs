@@ -78,9 +78,19 @@ public class LibraryService : ILibraryService
     {
         if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
             return Result<List<Library>>.Failure("User Id is required", ErrorType.BadRequest);
+        var libraries = await _db.Libraries
+            .Where(l => l.UserId == userId)
+            .Include(l => l.Books)
+                .ThenInclude(b => b.BookTags)
+            .Include(l => l.Books)
+                .ThenInclude(b => b.ReadingProgress)
+            .Include(l => l.Books)
+                .ThenInclude(b => b.Bookmarks)
+            .ToListAsync();
 
-        var libraries = await _db.Libraries.Where(l => l.UserId == userId).Include(l => l.Books).ToListAsync();
-        if (libraries.Count() == 0) return Result<List<Library>>.Failure("Library not found", ErrorType.NotFound);
+        if (libraries.Count == 0)
+            return Result<List<Library>>.Failure("Library not found", ErrorType.NotFound);
+
         return Result<List<Library>>.Success(libraries);
     }
 
@@ -88,8 +98,15 @@ public class LibraryService : ILibraryService
     {
         if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
             return Result<Library>.Failure("User Id is required", ErrorType.BadRequest);
+        var result = await _db.Libraries
+            .Include(l => l.Books)
+                .ThenInclude(b => b.BookTags)
+            .Include(l => l.Books)
+                .ThenInclude(b => b.ReadingProgress)
+            .Include(l => l.Books)
+                .ThenInclude(b => b.Bookmarks)
+            .FirstOrDefaultAsync(l => l.UserId == userId && l.Id == id);
 
-        var result = await _db.Libraries.FirstOrDefaultAsync(l => l.UserId == userId && l.Id == id);
         return result is null
             ? Result<Library>.Failure("Library not found", ErrorType.NotFound)
             : Result<Library>.Success(result);

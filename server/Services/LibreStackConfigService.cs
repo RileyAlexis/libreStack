@@ -46,7 +46,6 @@ public class LibreStackConfigService : ILibreStackConfigService
         {
             _db.LibreStackConfig.Update(config);
             await _db.SaveChangesAsync();
-
         }
         _db.SaveChanges();
         return true;

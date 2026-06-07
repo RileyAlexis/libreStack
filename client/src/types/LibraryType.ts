@@ -1,14 +1,9 @@
+import type { BookType } from "./BookType";
+
 export interface LibraryType {
-  title: string;
-  author: string;
-  publisher: string;
-  coverImage: string;
-  seriesTitle: string;
-  seriesOrder: string;
-  isbn: string;
-  lccn: string;
-  oclcWorldCat: string;
-  amazonId: string;
-  workId: string;
-  collectionId: string;
+  id: number;
+  libraryPath: string;
+  name: string;
+  userId: string;
+  books: BookType[];
 }

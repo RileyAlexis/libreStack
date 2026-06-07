@@ -67,7 +67,6 @@ function App() {
           element={
             <>
               <HeaderBanner />
-
               <Tester />
             </>
           }

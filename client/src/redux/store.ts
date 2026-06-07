@@ -2,6 +2,7 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import type { Middleware, UnknownAction } from "@reduxjs/toolkit";
 
 import userSlice from "./reducers/userReducer";
+import librarySlice from "./reducers/LibraryReducer";
 
 const logger: Middleware = (store) => (next) => (action) => {
   if (import.meta.env.DEV) {
@@ -18,6 +19,7 @@ const logger: Middleware = (store) => (next) => (action) => {
 
 const allReducers = combineReducers({
   user: userSlice,
+  library: librarySlice,
 });
 
 const storeInstance = configureStore({
