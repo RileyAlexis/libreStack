@@ -39,7 +39,10 @@ public class ConfigController : ControllerBase
     public async Task<IActionResult> MarkSetupAsComplete(bool isComplete)
     {
         var result = await _iLibreStackConfigService.MarkSetupAsComplete(isComplete);
-        return result ? Ok("Setup Completed") : BadRequest("Unable to mark setup as complete");
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok(result);
     }
 
     [HttpPost("saveConfig")]
@@ -48,14 +51,6 @@ public class ConfigController : ControllerBase
     {
         var result = await _iLibreStackConfigService.SaveConfig(config);
         return result ? Ok("Config Saved") : BadRequest("Error saving config");
-    }
-
-    [HttpPost("updateLibraryPath")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> UpdateLibraryPath(string libraryPath)
-    {
-        var result = await _iLibreStackConfigService.UpdateLibraryPath(libraryPath);
-        return result ? Ok("Library path updated") : BadRequest("Error updating library path");
     }
 
 }

@@ -40,50 +40,41 @@ public class LibreStackConfigService : ILibreStackConfigService
         if (config.Id == 0)
         {
             _db.LibreStackConfig.Add(config);
+            await _db.SaveChangesAsync();
         }
         else
         {
             _db.LibreStackConfig.Update(config);
+            await _db.SaveChangesAsync();
+
         }
         _db.SaveChanges();
         return true;
 
     }
 
-    public async Task<bool> MarkSetupAsComplete(bool isComplete)
+    public async Task<Result> MarkSetupAsComplete(bool isComplete)
     {
         var config = await _db.LibreStackConfig.FirstOrDefaultAsync();
-        if (config is null || config.IsSetupComplete == true)
-            return false;
 
-        config.IsSetupComplete = isComplete;
-        _db.LibreStackConfig.Update(config);
-        await _db.SaveChangesAsync();
-        return true;
-    }
+        if (config is null)
+        {
+            var newConfig = new LibreStackConfig { IsSetupComplete = true };
+            await _db.LibreStackConfig.AddAsync(newConfig);
+            await _db.SaveChangesAsync();
+            return Result.Success();
+        }
 
-    public async Task<bool> UpdateLibraryPath(string path)
-    {
-        var config = await _db.LibreStackConfig.FirstOrDefaultAsync();
-        if (path.IsWhiteSpace() || path is null)
-            return false;
+        if (config.IsSetupComplete == true)
+            return Result.Failure("Setup already complete", ErrorType.BadRequest);
 
         if (config is not null)
         {
-            config.LibraryPath = path;
-
+            config.IsSetupComplete = isComplete;
+            _db.LibreStackConfig.Update(config);
+            await _db.SaveChangesAsync();
+            return Result.Success();
         }
-        else
-        {
-            config = new LibreStackConfig
-            {
-                LibraryPath = path,
-                IsSetupComplete = false,
-            };
-        }
-
-        _db.LibreStackConfig.Update(config);
-        await _db.SaveChangesAsync();
-        return true;
+        return Result.Failure("Failed to write config", ErrorType.Unexpected);
     }
 }

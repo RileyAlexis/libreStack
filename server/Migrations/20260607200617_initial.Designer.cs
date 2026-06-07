@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace libreStack.Migrations
 {
     [DbContext(typeof(LibrestackDbContext))]
-    [Migration("20260606171057_initial")]
+    [Migration("20260607200617_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -215,11 +215,6 @@ namespace libreStack.Migrations
                     b.Property<bool>("IsSetupComplete")
                         .HasColumnType("boolean")
                         .HasColumnName("is_setup_complete");
-
-                    b.Property<string>("LibraryPath")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("library_path");
 
                     b.HasKey("Id")
                         .HasName("pk_libre_stack_config");

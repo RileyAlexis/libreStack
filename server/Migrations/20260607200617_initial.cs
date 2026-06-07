@@ -86,7 +86,6 @@ namespace libreStack.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    library_path = table.Column<string>(type: "text", nullable: false),
                     is_setup_complete = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>

@@ -213,11 +213,6 @@ namespace libreStack.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_setup_complete");
 
-                    b.Property<string>("LibraryPath")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("library_path");
-
                     b.HasKey("Id")
                         .HasName("pk_libre_stack_config");
 

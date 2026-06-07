@@ -18,7 +18,8 @@ type AdminType = {
   remember?: string;
 };
 
-type LibraryPath = {
+type Library = {
+  name?: string;
   path?: string;
   remember?: string;
 };
@@ -79,10 +80,13 @@ export const Setup: React.FC = () => {
       });
   };
 
-  const setPath: FormProps<LibraryPath>["onFinish"] = (values) => {
+  const setPath: FormProps<Library>["onFinish"] = (values) => {
     console.log(values.path);
     api
-      .post(`/Config/updateLibraryPath?libraryPath=${values.path}`)
+      .post("/Library/createLibrary", {
+        name: values.name,
+        libraryPath: values.path,
+      })
       .then((_) => {
         api
           .post(`/Config/markSetupAsComplete?isComplete=true`)
@@ -190,7 +194,7 @@ export const Setup: React.FC = () => {
         </div>
         <div className="setupEntry">
           <Card
-            title="Set Library Storage path"
+            title="Create Initial Library"
             variant="outlined"
             size="medium"
             style={{ textAlign: "center" }}
@@ -204,8 +208,7 @@ export const Setup: React.FC = () => {
                 onOpenChange={() => setIsLibPopoverOpen(false)}
                 content={
                   <Typography.Paragraph type="secondary">
-                    Path of primary storage location for books. Uploaded ebooks
-                    will be saved to this folder.
+                    LibreStack requires at least one library.
                   </Typography.Paragraph>
                 }
               >
@@ -225,7 +228,15 @@ export const Setup: React.FC = () => {
               onFinish={setPath}
               autoComplete="off"
             >
-              <Form.Item<LibraryPath>
+              <Form.Item<Library>
+                label="Library Name"
+                name="name"
+                rules={[{ required: true, message: "Library Name" }]}
+              >
+                <Input />
+              </Form.Item>
+
+              <Form.Item<Library>
                 label="Library Path"
                 name="path"
                 rules={[

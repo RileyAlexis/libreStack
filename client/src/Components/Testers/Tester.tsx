@@ -8,6 +8,7 @@ import { LibraryTester } from "./LibraryTester";
 export const Tester: React.FC = () => {
   const [data, setData] = useState<any>([]);
   const [bookId, setBookId] = useState<number>(0);
+  const [libraryId, setLibraryId] = useState<number>();
   const [tagId, setTagId] = useState<number>(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -65,6 +66,7 @@ export const Tester: React.FC = () => {
     api
       .post("/Book/addBookEntry", formData, {
         headers: { "Content-Type": "multipart/form-data" },
+        params: { libraryId: libraryId },
       })
       .then((response) => console.log(response.data))
       .catch((error) => console.error(error.response.data.error));
@@ -187,6 +189,12 @@ export const Tester: React.FC = () => {
             >
               Upload
             </Button>
+            <Input
+              placeholder="libraryId"
+              type="number"
+              value={libraryId}
+              onChange={(e) => setLibraryId(Number(e.target.value))}
+            />
           </div>
         </div>
 
