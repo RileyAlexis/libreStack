@@ -12,6 +12,7 @@ import { Setup } from "./Components/Setup/ Setup";
 import { Tester } from "./Components/Testers/Tester";
 import { HeaderBanner } from "./Components/HeaderBanner/HeaderBanner";
 import axios from "axios";
+import { Reader } from "./Components/Reader";
 // import type { LibreRootState } from "./types/LibreRootState";
 
 function App() {
@@ -77,6 +78,15 @@ function App() {
             <div>
               <HeaderBanner />
               <Setup />
+            </div>
+          }
+        />
+        <Route
+          path="/reader"
+          element={
+            <div>
+              <HeaderBanner />
+              <Reader />
             </div>
           }
         />
