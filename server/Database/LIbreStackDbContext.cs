@@ -1,4 +1,3 @@
-using System.Runtime.Serialization;
 using Librestack.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -51,18 +50,18 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
             .WithMany(book => book.Libraries)
             .UsingEntity<Dictionary<string, object>>(
                 "library_books",
-                j => j
+                joinTable => joinTable
                     .HasOne<Book>()
                     .WithMany()
                     .HasForeignKey("book_id"),
-                j => j
+                jointTable => jointTable
                     .HasOne<Library>()
                     .WithMany()
                     .HasForeignKey("library_id"),
-                j =>
+                joinTable =>
                 {
-                    j.ToTable("library_books");
-                    j.HasKey("book_id", "library_id");
+                    joinTable.ToTable("library_books");
+                    joinTable.HasKey("book_id", "library_id");
                 }
             );
 

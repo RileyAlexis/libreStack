@@ -12,14 +12,25 @@ export const Tester: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [newTag, setNewTag] = useState<string>();
 
+  const handleGetLibraries = () => {
+    api
+      .get("/Library/getAllLibraries")
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error.response.data.error);
+      });
+  };
+
   const handleGetBook = () => {
     api
-      .get("/Book/getBook")
+      .get("/Book/getBooks")
       .then((response) => {
         console.log(response.data);
         setData(response.data);
       })
-      .catch((error) => console.log(error));
+      .catch((error) => console.log(error.response.data.error));
   };
 
   const handleGetBookEntry = () => {
@@ -29,7 +40,7 @@ export const Tester: React.FC = () => {
         console.log(response.data);
         setData(response.data);
       })
-      .catch((error) => console.error(error));
+      .catch((error) => console.error(error.response.data.error));
   };
 
   const handleDownloadEntry = () => {
@@ -66,7 +77,7 @@ export const Tester: React.FC = () => {
         headers: { "Content-Type": "multipart/form-data" },
       })
       .then((response) => console.log(response.data))
-      .catch((error) => console.error(error));
+      .catch((error) => console.error(error.response.data.error));
   };
 
   const handleGetAllTags = () => {
@@ -77,7 +88,7 @@ export const Tester: React.FC = () => {
         setData(response.data);
       })
       .catch((error) => {
-        console.error(error);
+        console.error(error.response.data.error);
       });
   };
 
@@ -88,7 +99,7 @@ export const Tester: React.FC = () => {
         console.log(response.data);
       })
       .catch((error) => {
-        console.error(error);
+        console.error(error.response.data.error);
       });
   };
 
@@ -100,7 +111,7 @@ export const Tester: React.FC = () => {
         setData(response.data);
       })
       .catch((error) => {
-        console.error(error);
+        console.error(error.response.data.error);
       });
   };
 
@@ -111,7 +122,7 @@ export const Tester: React.FC = () => {
         console.log(response.data);
       })
       .catch((error) => {
-        console.error(error);
+        console.error(error.response.data.error);
       });
   };
 
@@ -122,7 +133,7 @@ export const Tester: React.FC = () => {
         console.log(response.data);
       })
       .catch((error) => {
-        console.error(error);
+        console.error(error.response.data.error);
       });
   };
 
@@ -139,6 +150,12 @@ export const Tester: React.FC = () => {
   return (
     <div className="testerContainer">
       <div>
+        <div className="testingButtonContainer">
+          <h2>Library</h2>
+          <Button type="primary" onClick={handleGetLibraries}>
+            Get Libraries
+          </Button>
+        </div>
         <div className="testingButtonContainer">
           <h2>Book</h2>
           <Button type="primary" onClick={handleGetBook}>

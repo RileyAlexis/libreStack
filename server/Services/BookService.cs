@@ -19,7 +19,7 @@ public class BookService : IBookService
         _epubParser = epubParser;
     }
 
-    public async Task<bool> AddBookEntry(IFormFile file, string UserId)
+    public async Task<bool> AddBookEntry(IFormFile file, string userId, int libraryId)
     {
         var LibraryStoragePath = "./Library";
 
@@ -28,6 +28,12 @@ public class BookService : IBookService
 
         var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
         if (ext != ".epub")
+            return false;
+
+        var library = await _db.Libraries
+            .Include(l => l.Books)
+            .FirstOrDefaultAsync(l => l.Id == libraryId && l.UserId == userId);
+        if (library is null)
             return false;
 
         Directory.CreateDirectory(LibraryStoragePath);
@@ -41,7 +47,7 @@ public class BookService : IBookService
         Book entry;
         try
         {
-            entry = await _epubParser.ParseMetadata(filePath, UserId);
+            entry = await _epubParser.ParseMetadata(filePath, userId);
         }
         catch
         {
@@ -50,6 +56,7 @@ public class BookService : IBookService
         }
 
         _db.Books.Add(entry);
+        library.Books.Add(entry);
         await _db.SaveChangesAsync();
 
         return true;

@@ -9,7 +9,7 @@ public interface IBookService
     Task<Book?> GetBookEntry(int id, string userId);
     Task<bool> UpdateBookMetaData(ApiBook book, string userId);
     Task<bool> DeleteBookEntry(int id, string userId);
-    Task<bool> AddBookEntry(IFormFile file, string UserId);
+    Task<bool> AddBookEntry(IFormFile file, string UserId, int libraryId);
     Task<FileResult?> DownloadBookEntry(string userId, int id);
     Task<List<Book>> GetAllBooks();
 }

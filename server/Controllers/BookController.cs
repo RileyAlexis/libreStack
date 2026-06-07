@@ -18,9 +18,9 @@ public class BookController : ControllerBase
         _bookService = bookService;
     }
 
-    [HttpGet("getBook")]
+    [HttpGet("getBooks")]
     [Authorize]
-    public async Task<ActionResult<List<Book>>> GetBook()
+    public async Task<ActionResult<List<Book>>> GetBooks()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
@@ -76,12 +76,12 @@ public class BookController : ControllerBase
 
     [HttpPost("addBookEntry")]
     [Authorize]
-    public async Task<IActionResult> AddBookEntry(IFormFile file)
+    public async Task<IActionResult> AddBookEntry(IFormFile file, int libraryId)
     {
-        var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (UserId is null) return Unauthorized();
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null) return Unauthorized();
 
-        var result = await _bookService.AddBookEntry(file, UserId);
+        var result = await _bookService.AddBookEntry(file, userId, libraryId);
         return result ? Ok("Added to collection") : BadRequest("Upload failed");
     }
 

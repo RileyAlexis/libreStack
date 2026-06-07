@@ -52,6 +52,7 @@ builder.Services.AddScoped<IBookTagService, BookTagService>();
 builder.Services.AddScoped<IEpubParseService, EpubParserService>();
 builder.Services.AddScoped<IReadingProgressService, ReadingProgressService>();
 builder.Services.AddScoped<IBookmarkService, BookmarkService>();
+builder.Services.AddScoped<ILibraryService, LibraryService>();
 builder.Services.AddScoped<ILibreStackConfigService, LibreStackConfigService>();
 
 builder.Services.AddDbContext<LibrestackDbContext>(options =>

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 
 namespace Librestack.Models;
@@ -6,6 +7,7 @@ public class Book
 {
     public int Id { get; set; }
     public required string UserId { get; set; }
+    [JsonIgnore]
     public IdentityUser User { get; set; }
 
     public string Title { get; set; } = "";
@@ -24,6 +26,7 @@ public class Book
     public int? CollectionId { get; set; }
     public required string EpubPath { get; set; }
 
+    [JsonIgnore]
     public ICollection<Library> Libraries { get; set; } = new List<Library>();
     public ICollection<BookTag> BookTags { get; set; } = new List<BookTag>();
     public ICollection<ReadingProgress> ReadingProgress { get; set; } = new List<ReadingProgress>();
