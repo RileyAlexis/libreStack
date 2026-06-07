@@ -130,7 +130,8 @@ public class BookService : IBookService
         var result = await _db.Books.Where(l => l.UserId == userId && l.Id == id)
             .Include(l => l.BookTags)
             .Include(l => l.Bookmarks)
-            .Include(l => l.ReadingProgress).FirstOrDefaultAsync();
+            .Include(l => l.ReadingProgress)
+            .FirstOrDefaultAsync();
 
         if (result is null)
             return null;

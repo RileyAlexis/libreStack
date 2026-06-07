@@ -9,7 +9,7 @@ import { logoutUser, setUser } from "./redux/reducers/userReducer";
 
 import "./App.css";
 import { Setup } from "./Components/Setup/ Setup";
-import { Tester } from "./Components/Tester";
+import { Tester } from "./Components/Testers/Tester";
 import { HeaderBanner } from "./Components/HeaderBanner/HeaderBanner";
 import axios from "axios";
 // import type { LibreRootState } from "./types/LibreRootState";

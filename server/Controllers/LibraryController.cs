@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Librestack.Interfaces;
 using Librestack.Models;
+using Librestack.Models.APIModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,12 +32,28 @@ public class LibraryController : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpPost("addBookToLibrary")]
+    [HttpGet("getLibrary")]
     [Authorize]
-    public async Task<IActionResult> AddBookToLibrary(int libraryId, int bookId)
+    public async Task<IActionResult> GetLibrary(int libraryId)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null) return Unauthorized();
+
+        var result = await _iLibraryService.GetLibrary(userId, libraryId);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok(result.Value);
+    }
+
+    [HttpPost("addBookToLibrary")]
+    [Authorize]
+    public async Task<IActionResult> AddBookToLibrary([FromQuery] int libraryId, [FromQuery] int bookId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null) return Unauthorized();
+
+        Console.WriteLine($"**************** {libraryId} - {bookId}");
 
         var result = await _iLibraryService.AddBookToLibrary(userId, libraryId, bookId);
         if (!result.IsSuccess)
@@ -56,6 +73,54 @@ public class LibraryController : ControllerBase
         if (!result.IsSuccess)
             return BadRequest(new { error = result.Error });
 
+        return Ok(result);
+    }
+
+    [HttpPost("createLibrary")]
+    [Authorize]
+    public async Task<IActionResult> CreateLibrary([FromBody] ApiLibrary library)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null) return Unauthorized();
+
+        var newLib = new Library
+        {
+            Name = library.Name,
+            LibraryPath = library.LibraryPath,
+            UserId = userId
+        };
+
+        var result = await _iLibraryService.CreateLibrary(userId: userId, library: newLib);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok(result);
+    }
+
+    [HttpDelete("deleteLibrary")]
+    [Authorize]
+    public async Task<IActionResult> DeleteLibrary(int libraryId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null) return Unauthorized();
+
+        var result = await _iLibraryService.DeleteLibrary(userId, libraryId);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok(result);
+    }
+
+    [HttpPost("updateLibrary")]
+    [Authorize]
+    public async Task<IActionResult> UpdateLibrary(int libraryId, Library library)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null) return Unauthorized();
+
+        var result = await _iLibraryService.UpdateLibrary(userId, libraryId, library);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
         return Ok(result);
     }
 }

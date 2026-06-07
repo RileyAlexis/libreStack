@@ -36,14 +36,13 @@ export const HeaderBanner: React.FC = () => {
         {user.isLoggedIn && user.userName && (
           <Avatar>{user.userName.charAt(0).toUpperCase()}</Avatar>
         )}
-        {!user.isLoggedIn ||
-          (!user.userName && (
-            <Button ghost type="text" onClick={() => setIsLoginOpen(true)}>
-              <Avatar>
-                <LoginOutlined />
-              </Avatar>
-            </Button>
-          ))}
+        {!user.isLoggedIn && (
+          <Button ghost type="text" onClick={() => setIsLoginOpen(true)}>
+            <Avatar>
+              <LoginOutlined />
+            </Avatar>
+          </Button>
+        )}
       </div>
       <Modal
         closable={{ "aria-label": "Custom Close Button" }}

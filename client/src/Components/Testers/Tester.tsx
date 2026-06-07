@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { api } from "../api";
+import { api } from "../../api";
 
 import { Button, Input } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
+import { LibraryTester } from "./LibraryTester";
 
 export const Tester: React.FC = () => {
   const [data, setData] = useState<any>([]);
@@ -11,17 +12,6 @@ export const Tester: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [newTag, setNewTag] = useState<string>();
-
-  const handleGetLibraries = () => {
-    api
-      .get("/Library/getAllLibraries")
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.log(error.response.data.error);
-      });
-  };
 
   const handleGetBook = () => {
     api
@@ -150,16 +140,11 @@ export const Tester: React.FC = () => {
   return (
     <div className="testerContainer">
       <div>
-        <div className="testingButtonContainer">
-          <h2>Library</h2>
-          <Button type="primary" onClick={handleGetLibraries}>
-            Get Libraries
-          </Button>
-        </div>
+        <LibraryTester />
         <div className="testingButtonContainer">
           <h2>Book</h2>
           <Button type="primary" onClick={handleGetBook}>
-            Get Book
+            Get Books
           </Button>
           <div className="testingCombo">
             <Button onClick={handleGetBookEntry}>Get Book Entry</Button>

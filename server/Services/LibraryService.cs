@@ -22,12 +22,19 @@ public class LibraryService : ILibraryService
         if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
             return Result.Failure("UserId not found or is incorrect", ErrorType.NotFound);
 
-        var book = await _db.Books.FirstOrDefaultAsync(l => l.Id == bookId);
+        var book = await _db.Books.FirstOrDefaultAsync(l => l.Id == bookId && l.UserId == userId);
         if (book is null) return Result.Failure("Book Id not found", ErrorType.NotFound);
-        var library = await _db.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId);
+        var library = await _db.Libraries
+            .Include(l => l.Books)
+            .FirstOrDefaultAsync(l => l.Id == libraryId);
         if (library is null) return Result.Failure("Library Id not found", ErrorType.NotFound);
 
+
+        if (library.Books.Any(b => b.Id == bookId))
+            return Result.Failure("Book is already in this library", ErrorType.Conflict);
+
         library.Books.Add(book);
+        await _db.SaveChangesAsync();
         return Result.Success();
     }
 
@@ -41,6 +48,30 @@ public class LibraryService : ILibraryService
         await _db.Libraries.AddAsync(library);
         await _db.SaveChangesAsync();
         return Result<Library>.Success(library);
+    }
+
+    public async Task<Result> DeleteLibrary(string userId, int libraryId)
+    {
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
+            return Result.Failure("User Id is required", ErrorType.BadRequest);
+
+        var library = await _db.Libraries
+                .Include(l => l.Books)
+                .FirstOrDefaultAsync(l => l.UserId == userId && l.Id == libraryId);
+
+        if (library is null)
+            return Result.Failure("Library Not Found", ErrorType.NotFound);
+
+        if (library.Books.Any())
+            return Result.Failure("Library that contains any books cannot be deleted", ErrorType.BadRequest);
+
+        var allLibs = await _db.Libraries.Where(l => l.UserId == userId).ToListAsync();
+        if (allLibs.Count < 2)
+            return Result.Failure("Cannot delete only library for user", ErrorType.BadRequest);
+
+        _db.Libraries.Remove(library);
+        await _db.SaveChangesAsync();
+        return Result.Success();
     }
 
     public async Task<Result<List<Library>>> GetAllLibraries(string userId)
@@ -99,13 +130,15 @@ public class LibraryService : ILibraryService
         return Result.Success();
     }
 
-    public Task<Result> UpdateLibrary(string userId, int id, Library library)
+    public async Task<Result> UpdateLibrary(string userId, int libraryId, Library library)
     {
-        throw new NotImplementedException();
-    }
+        var existing = await _db.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId && l.UserId == userId);
+        if (library is null)
+            return Result.Failure("Library not found", ErrorType.NotFound);
 
-    public Task<Result<FileResult>> UploadBookToLibrary(string userId, IFormFile file)
-    {
-        throw new NotImplementedException();
+        existing = library;
+        _db.Libraries.Update(existing);
+        await _db.SaveChangesAsync();
+        return Result.Success();
     }
 }
