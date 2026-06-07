@@ -64,13 +64,24 @@ public class BookService : IBookService
 
     public async Task<bool> DeleteBookEntry(int id, string userId)
     {
-        var bookEntry = await _db.Books.FirstOrDefaultAsync(l => l.Id == id && l.UserId == userId);
+        var bookEntry = await _db.Books
+            .Include(b => b.Libraries)
+            .FirstOrDefaultAsync(l => l.Id == id && l.UserId == userId);
         if (bookEntry is null)
             return false;
 
-        var FilePath = bookEntry.EpubPath;
-        if (FilePath is not null && File.Exists(FilePath))
-            File.Delete(FilePath);
+        var filePath = bookEntry.EpubPath;
+        if (filePath is not null && File.Exists(filePath))
+            File.Delete(filePath);
+
+        if (bookEntry.Libraries is not null)
+        {
+            foreach (var library in bookEntry.Libraries.ToList())
+            {
+                library.Books.Remove(bookEntry);
+            }
+            bookEntry.Libraries.Clear();
+        }
 
         _db.Books.Remove(bookEntry);
         await _db.SaveChangesAsync();
