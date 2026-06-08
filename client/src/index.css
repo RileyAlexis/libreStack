@@ -25,6 +25,7 @@
   :root[data-theme="light"] {
     --library-active-bg: rgba(255, 209, 130, 0.51);
     --library-active-color: #ffbb55;
+    --elevated-bg: #e4e1db;
     --shadow-color: rgba(40, 40, 40, 0.5);
   }
 
@@ -32,6 +33,7 @@
     --library-active-bg: rgba(255, 162, 130, 0.563);
     --library-active-color: #ffbb55;
     --shadow-color: rgba(240, 240, 240, 0.5);
+    --elevated-bg: "#3b2705";
   }
 
   html {

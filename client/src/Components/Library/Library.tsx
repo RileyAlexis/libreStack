@@ -20,7 +20,7 @@ export const Library: React.FC = () => {
 
   return (
     <div className="libraryContainer">
-      <Splitter style={{ height: "100%" }}>
+      <Splitter style={{ height: "90vh" }}>
         <Splitter.Panel defaultSize={"15%"} min={"5%"} max={"50%"}>
           <div className="libraryListing">
             {library &&
