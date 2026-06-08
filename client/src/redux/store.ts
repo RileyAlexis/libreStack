@@ -3,6 +3,7 @@ import type { Middleware, UnknownAction } from "@reduxjs/toolkit";
 
 import userSlice from "./reducers/userReducer";
 import librarySlice from "./reducers/LibraryReducer";
+import appSettingsSlice from "./reducers/AppSettingsReducer";
 
 const logger: Middleware = (store) => (next) => (action) => {
   if (import.meta.env.DEV) {
@@ -20,6 +21,7 @@ const logger: Middleware = (store) => (next) => (action) => {
 const allReducers = combineReducers({
   user: userSlice,
   library: librarySlice,
+  appSettings: appSettingsSlice,
 });
 
 const storeInstance = configureStore({
