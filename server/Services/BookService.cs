@@ -21,8 +21,6 @@ public class BookService : IBookService
 
     public async Task<bool> AddBookEntry(IFormFile file, string userId, int libraryId)
     {
-        var LibraryStoragePath = "./Library";
-
         if (file is null || file.Length == 0)
             return false;
 
@@ -35,6 +33,8 @@ public class BookService : IBookService
             .FirstOrDefaultAsync(l => l.Id == libraryId && l.UserId == userId);
         if (library is null)
             return false;
+
+        var LibraryStoragePath = library.LibraryPath;
 
         Directory.CreateDirectory(LibraryStoragePath);
 

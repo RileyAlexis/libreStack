@@ -28,7 +28,7 @@ export const Reader: React.FC = () => {
     if (!book || !renderAreaRef.current) return;
     const rendition = book.renderTo(renderAreaRef.current, {
       flow: "paginated",
-      spread: "auto",
+      spread: "none",
       width: "100%",
       height: "100%",
     });
