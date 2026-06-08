@@ -3,7 +3,6 @@ import { useNavigate } from "react-router";
 
 import { api } from "./api";
 import { Route, Routes } from "react-router";
-import { useSyncQueue } from "./hooks/useSyncQueue";
 
 import { useDispatch } from "react-redux";
 import { logoutUser, setUser } from "./redux/reducers/userReducer";
@@ -20,7 +19,6 @@ function App() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // const user = useSelector((state: LibreRootState) => state.user);
-  useSyncQueue();
 
   useEffect(() => {
     api
@@ -48,14 +46,24 @@ function App() {
         axios
           .post("/api/auth/refresh", { refreshToken: refreshToken })
           .then((response) => {
-            console.log(response.data);
             const token = response.data.token;
             const refreshToken = response.data.refreshToken;
             localStorage.setItem("authToken", token);
             localStorage.setItem("refreshToken", refreshToken);
-            dispatch(
-              setUser({ userName: response.data.userName, isLoggedIn: true }),
-            );
+            api
+              .get("/auth/user")
+              .then((response) => {
+                console.log(`*********************** ${response.data}`);
+                dispatch(
+                  setUser({
+                    userName: response.data.userName,
+                    isLoggedIn: true,
+                  }),
+                );
+              })
+              .catch((error) => {
+                console.error(error.response.data);
+              });
           });
         dispatch(logoutUser());
       });

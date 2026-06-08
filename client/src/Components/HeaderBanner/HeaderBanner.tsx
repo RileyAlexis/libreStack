@@ -5,6 +5,7 @@ import type { LibreRootState } from "../../types/LibreRootState";
 
 import { Avatar, Divider, Modal, Typography, Button } from "antd";
 import { LoginOutlined } from "@ant-design/icons";
+import "../../assets/book-line-svgrepo-com.svg";
 
 import { LoginScreen } from "../LoginScreen/LoginScreen";
 import "./HeaderBanner.css";
@@ -34,7 +35,13 @@ export const HeaderBanner: React.FC = () => {
       <div className="menuContainer">
         <MainMenu />
         {user.isLoggedIn && (
-          <Avatar>{/* {user.userName.charAt(0).toUpperCase()} */}</Avatar>
+          <Avatar>
+            {user.userName && user.userName.length > 0 ? (
+              user.userName.charAt(0).toUpperCase()
+            ) : (
+              <LoginOutlined />
+            )}
+          </Avatar>
         )}
         {!user.isLoggedIn && (
           <Button ghost type="text" onClick={() => setIsLoginOpen(true)}>
