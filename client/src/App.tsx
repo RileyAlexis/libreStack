@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 
 import { api } from "./api";
 import { Route, Routes } from "react-router";
+import { useSyncQueue } from "./hooks/useSyncQueue";
 
 import { useDispatch } from "react-redux";
 import { logoutUser, setUser } from "./redux/reducers/userReducer";
@@ -19,6 +20,7 @@ function App() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   // const user = useSelector((state: LibreRootState) => state.user);
+  useSyncQueue();
 
   useEffect(() => {
     api

@@ -33,8 +33,8 @@ export const HeaderBanner: React.FC = () => {
       </Typography.Title>
       <div className="menuContainer">
         <MainMenu />
-        {user.isLoggedIn && user.userName && (
-          <Avatar>{user.userName.charAt(0).toUpperCase()}</Avatar>
+        {user.isLoggedIn && (
+          <Avatar>{/* {user.userName.charAt(0).toUpperCase()} */}</Avatar>
         )}
         {!user.isLoggedIn && (
           <Button ghost type="text" onClick={() => setIsLoginOpen(true)}>

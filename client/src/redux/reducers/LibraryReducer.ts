@@ -7,8 +7,8 @@ const LibrarySlice = createSlice({
   name: "library",
   initialState: initialState,
   reducers: {
-    setLibrary(state, action: PayloadAction<LibraryType[]>) {
-      state = action.payload;
+    setLibrary(_, action: PayloadAction<LibraryType[]>) {
+      return action.payload;
     },
   },
 });

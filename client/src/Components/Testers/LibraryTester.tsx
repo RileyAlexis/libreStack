@@ -5,7 +5,7 @@ import { Button, Input } from "antd";
 export const LibraryTester: React.FC = () => {
   const [libraryId, setLibraryId] = useState<number>();
   const [libName, setLibName] = useState<string>();
-  const [libPath, setLibPath] = useState<string>("./Library");
+  const [libPath, _] = useState<string>("./Library");
   const [bookId, setBookId] = useState<number>();
 
   const handleGetLibraries = () => {
