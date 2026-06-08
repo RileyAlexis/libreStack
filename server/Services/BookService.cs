@@ -19,20 +19,20 @@ public class BookService : IBookService
         _epubParser = epubParser;
     }
 
-    public async Task<bool> AddBookEntry(IFormFile file, string userId, int libraryId)
+    public async Task<Result> AddBookEntry(IFormFile file, string userId, int libraryId)
     {
         if (file is null || file.Length == 0)
-            return false;
+            return Result.Failure("File not found", ErrorType.NotFound);
 
         var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
         if (ext != ".epub")
-            return false;
+            return Result.Failure("LibreStack currently only supports epub files", ErrorType.BadRequest);
 
         var library = await _db.Libraries
             .Include(l => l.Books)
             .FirstOrDefaultAsync(l => l.Id == libraryId && l.UserId == userId);
         if (library is null)
-            return false;
+            return Result.Failure("Library not found", ErrorType.NotFound);
 
         var LibraryStoragePath = library.LibraryPath;
 
@@ -59,16 +59,16 @@ public class BookService : IBookService
         library.Books.Add(entry);
         await _db.SaveChangesAsync();
 
-        return true;
+        return Result.Success();
     }
 
-    public async Task<bool> DeleteBookEntry(int id, string userId)
+    public async Task<Result> DeleteBookEntry(int id, string userId)
     {
         var bookEntry = await _db.Books
             .Include(b => b.Libraries)
             .FirstOrDefaultAsync(l => l.Id == id && l.UserId == userId);
         if (bookEntry is null)
-            return false;
+            return Result.Failure("Book id not found", ErrorType.NotFound);
 
         var filePath = bookEntry.EpubPath;
         if (filePath is not null && File.Exists(filePath))
@@ -85,47 +85,44 @@ public class BookService : IBookService
 
         _db.Books.Remove(bookEntry);
         await _db.SaveChangesAsync();
-        return true;
+        return Result.Success();
     }
 
-    public async Task<FileResult?> DownloadBookEntry(string userId, int id)
+    public async Task<Result<FileStreamResult>> DownloadBookEntry(string userId, int id)
     {
-        var bookEntry = await _db.Books.FirstOrDefaultAsync(l => l.Id == id && l.UserId == userId);
+        var bookEntry = await _db.Books.FirstOrDefaultAsync(b => b.Id == id && b.UserId == userId);
         if (bookEntry is null)
-            return null;
+            return Result<FileStreamResult>.Failure("Book not found", ErrorType.NotFound);
+
         var filePath = bookEntry.EpubPath;
-        var filename = Path.GetFileName(filePath);
+        if (filePath is null || !File.Exists(filePath))
+            return Result<FileStreamResult>.Failure("File not found on disk", ErrorType.NotFound);
 
-        if (!System.IO.File.Exists(filePath.ToString()))
-            return null;
-
-        var stream = System.IO.File.OpenRead(filePath.ToString());
-        return new FileStreamResult(stream, "application/octet-stream")
+        var stream = File.OpenRead(filePath);
+        var fileResult = new FileStreamResult(stream, "application/octet-stream")
         {
-            FileDownloadName = filename
+            FileDownloadName = Path.GetFileName(filePath)
         };
 
+        return Result<FileStreamResult>.Success(fileResult);
     }
 
-    public async Task<List<Book>> GetAllBooks()
-    {
-        return await _db.Books
-        .Include(l => l.BookTags)
-        .Include(l => l.Bookmarks)
-        .Include(l => l.ReadingProgress)
-        .ToListAsync();
-    }
 
-    public async Task<List<Book>> GetUserBooks(string userId)
+    public async Task<Result<List<Book>>> GetUserBooks(string userId)
     {
-        return await _db.Books.Where(l => l.UserId == userId)
+        var result = await _db.Books.Where(l => l.UserId == userId)
             .Include(l => l.BookTags)
             .Include(l => l.ReadingProgress)
             .Include(l => l.Bookmarks)
             .ToListAsync();
+
+        if (result is null)
+            return Result<List<Book>>.Failure("No books found for user", ErrorType.NotFound);
+
+        return Result<List<Book>>.Success(result);
     }
 
-    public async Task<Book?> GetBookEntry(int id, string userId)
+    public async Task<Result<Book>> GetBookEntry(int id, string userId)
     {
         var result = await _db.Books.Where(l => l.UserId == userId && l.Id == id)
             .Include(l => l.BookTags)
@@ -134,16 +131,16 @@ public class BookService : IBookService
             .FirstOrDefaultAsync();
 
         if (result is null)
-            return null;
+            return Result<Book>.Failure("Book not found", ErrorType.NotFound);
 
-        return result;
+        return Result<Book>.Success(result);
     }
 
-    public async Task<bool> UpdateBookMetaData(ApiBook book, string userId)
+    public async Task<Result> UpdateBookMetaData(ApiBook book, string userId)
     {
         var existing = await _db.Books.FirstOrDefaultAsync(l => l.Id == book.Id && l.UserId == userId);
         if (existing is null)
-            return false;
+            return Result.Failure("Book not found", ErrorType.NotFound);
 
         // Only update properties that were provided (not null/default)
         if (!string.IsNullOrEmpty(book.Title))
@@ -173,9 +170,6 @@ public class BookService : IBookService
 
         _db.Books.Update(existing);
         await _db.SaveChangesAsync();
-        return true;
+        return Result.Success();
     }
-
-
-
 }

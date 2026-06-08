@@ -21,7 +21,7 @@ export const Tester: React.FC = () => {
         console.log(response.data);
         setData(response.data);
       })
-      .catch((error) => console.log(error.response.data.error));
+      .catch((error) => console.log(error.response.data));
   };
 
   const handleGetBookEntry = () => {
@@ -31,7 +31,7 @@ export const Tester: React.FC = () => {
         console.log(response.data);
         setData(response.data);
       })
-      .catch((error) => console.error(error.response.data.error));
+      .catch((error) => console.error(error.response.data));
   };
 
   const handleDownloadEntry = () => {
@@ -51,6 +51,9 @@ export const Tester: React.FC = () => {
         link.click();
         link.remove();
         window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => {
+        console.error(error.response.data);
       });
   };
 
@@ -69,7 +72,7 @@ export const Tester: React.FC = () => {
         params: { libraryId: libraryId },
       })
       .then((response) => console.log(response.data))
-      .catch((error) => console.error(error.response.data.error));
+      .catch((error) => console.error(error.response.data));
   };
 
   const handleGetAllTags = () => {
@@ -80,7 +83,7 @@ export const Tester: React.FC = () => {
         setData(response.data);
       })
       .catch((error) => {
-        console.error(error.response.data.error);
+        console.error(error.response.data);
       });
   };
 
@@ -91,7 +94,7 @@ export const Tester: React.FC = () => {
         console.log(response.data);
       })
       .catch((error) => {
-        console.error(error.response.data.error);
+        console.error(error.response.data);
       });
   };
 
@@ -103,7 +106,7 @@ export const Tester: React.FC = () => {
         setData(response.data);
       })
       .catch((error) => {
-        console.error(error.response.data.error);
+        console.error(error.response.data);
       });
   };
 
@@ -114,7 +117,7 @@ export const Tester: React.FC = () => {
         console.log(response.data);
       })
       .catch((error) => {
-        console.error(error.response.data.error);
+        console.error(error.response.data);
       });
   };
 
@@ -125,7 +128,7 @@ export const Tester: React.FC = () => {
         console.log(response.data);
       })
       .catch((error) => {
-        console.error(error.response.data.error);
+        console.error(error.response.data);
       });
   };
 

@@ -5,11 +5,10 @@ namespace Librestack.Interfaces;
 
 public interface IBookService
 {
-    Task<List<Book>> GetUserBooks(string userId);
-    Task<Book?> GetBookEntry(int id, string userId);
-    Task<bool> UpdateBookMetaData(ApiBook book, string userId);
-    Task<bool> DeleteBookEntry(int id, string userId);
-    Task<bool> AddBookEntry(IFormFile file, string UserId, int libraryId);
-    Task<FileResult?> DownloadBookEntry(string userId, int id);
-    Task<List<Book>> GetAllBooks();
+    Task<Result<List<Book>>> GetUserBooks(string userId);
+    Task<Result<Book>> GetBookEntry(int id, string userId);
+    Task<Result> UpdateBookMetaData(ApiBook book, string userId);
+    Task<Result> DeleteBookEntry(int id, string userId);
+    Task<Result> AddBookEntry(IFormFile file, string UserId, int libraryId);
+    Task<Result<FileStreamResult>> DownloadBookEntry(string userId, int id);
 }

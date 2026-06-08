@@ -27,13 +27,11 @@ public class BookController : ControllerBase
             return Unauthorized();
 
         var result = await _bookService.GetUserBooks(userId);
+
         if (result is null)
-            return BadRequest("Book does not exist");
+            return BadRequest(new { error = result?.Error });
 
-        if (result.Count() == 0)
-            return BadRequest("Book has no entries");
-
-        return result;
+        return Ok(result);
     }
 
     [HttpGet("getBookEntry")]
@@ -52,7 +50,7 @@ public class BookController : ControllerBase
         if (result is null)
             return BadRequest($"id {id} not found");
 
-        return result;
+        return Ok(result);
     }
 
     [HttpPatch("updateBookEntry")]
@@ -66,12 +64,11 @@ public class BookController : ControllerBase
         if (userId is null)
             return Unauthorized();
 
-        var updated = await _bookService.UpdateBookMetaData(book, userId);
-        if (!updated)
-            return NotFound($"Book entry with id {book.Id} not found");
+        var result = await _bookService.UpdateBookMetaData(book, userId);
+        if (result is null)
+            return BadRequest(new { error = result?.Error });
 
-        var result = new { message = "Book entry updated successfully" };
-        return new JsonResult(result);
+        return Ok(result);
     }
 
     [HttpPost("addBookEntry")]
@@ -82,7 +79,10 @@ public class BookController : ControllerBase
         if (userId is null) return Unauthorized();
 
         var result = await _bookService.AddBookEntry(file, userId, libraryId);
-        return result ? Ok("Added to collection") : BadRequest("Upload failed");
+        if (result is null)
+            return BadRequest(new { error = result?.Error });
+
+        return Ok(result);
     }
 
     [HttpGet("downloadBookEntry")]
@@ -94,9 +94,9 @@ public class BookController : ControllerBase
 
         var result = await _bookService.DownloadBookEntry(UserId, id);
         if (result is null)
-            return NotFound();
+            return BadRequest(new { error = result?.Error });
 
-        return result;
+        return Ok(result);
     }
 
     [HttpDelete("bookEntry")]
@@ -110,13 +110,12 @@ public class BookController : ControllerBase
         if (userId is null)
             return Unauthorized();
 
-        var data = await _bookService.GetBookEntry(id, userId);
-        var deleted = await _bookService.DeleteBookEntry(id, userId);
+        var result = await _bookService.DeleteBookEntry(id, userId);
 
-        if (!deleted || data is null)
-            return NotFound($"id {id} not found in database");
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
 
-        return Ok($"{data.Title} removed from database");
+        return Ok(result);
     }
 
 }
