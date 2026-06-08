@@ -22,6 +22,18 @@
     isolation: isolate;
   }
 
+  :root[data-theme="light"] {
+    --library-active-bg: rgba(255, 209, 130, 0.51);
+    --library-active-color: #ffbb55;
+    --shadow-color: rgba(40, 40, 40, 0.5);
+  }
+
+  :root[data-theme="dark"] {
+    --library-active-bg: rgba(255, 162, 130, 0.563);
+    --library-active-color: #ffbb55;
+    --shadow-color: rgba(240, 240, 240, 0.5);
+  }
+
   html {
     box-sizing: border-box;
   }

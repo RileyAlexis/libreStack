@@ -1,0 +1,58 @@
+.libraryContainer {
+  height: 100%;
+  /* border: 1px solid orange; */
+}
+
+.drawerContainer {
+}
+
+.libraryListing {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 0.2em;
+}
+
+.libraryButton {
+  min-width: 100%;
+}
+
+.libraryButtonActive {
+  font-weight: 600;
+  color: #1677ff !important;
+  background-color: rgba(22, 119, 255, 0.08) !important;
+}
+
+.booksContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  column-gap: 1.5em;
+  row-gap: 1.5em;
+  margin: 0.5em;
+}
+
+.bookCover {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+
+  padding-top: 0.4em;
+  padding-bottom: 0.4em;
+  padding-left: 0.4em;
+  padding-right: 0.4em;
+  overflow: hidden;
+  background-color: var(--library-active-bg);
+  box-shadow: inset 0px 0px 1px 2px var(--shadow-color);
+}
+
+.bookCover img {
+  width: 90%;
+  height: auto;
+  object-fit: contain;
+}

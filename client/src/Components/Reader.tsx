@@ -1,15 +1,15 @@
 import { useState, useRef, useEffect } from "react";
+import { useSelector } from "react-redux";
 import Epub, { Book, Rendition } from "epubjs";
 import { Button, Select, Slider } from "antd";
 import { UploadOutlined, LeftOutlined, RightOutlined } from "@ant-design/icons";
-
-const FONTS = [
-  { label: "Georgia", value: "Georgia, serif" },
-  { label: "Arial", value: "Arial, sans-serif" },
-  { label: "Times New Roman", value: "'Times New Roman', serif" },
-];
+import type { LibreRootState } from "../types/LibreRootState";
 
 export const Reader: React.FC = () => {
+  const FONTS = useSelector(
+    (state: LibreRootState) => state.appSettings.availableReadingFonts,
+  );
+  const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const [book, setBook] = useState<Book | null>(null);
   const [fontSize, setFontSize] = useState(18);
   const [fontFamily, setFontFamily] = useState("Georgia, serif");
@@ -28,7 +28,7 @@ export const Reader: React.FC = () => {
     if (!book || !renderAreaRef.current) return;
     const rendition = book.renderTo(renderAreaRef.current, {
       flow: "paginated",
-      spread: "none",
+      spread: appSettings.spread,
       width: "100%",
       height: "100%",
     });

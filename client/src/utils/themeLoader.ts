@@ -7,7 +7,7 @@ interface ThemeConfig {
 
 // Light theme tokens
 const LIGHT_THEME_TOKEN = {
-  colorPrimary: "#ffb968",
+  colorPrimary: "#fc941e",
   colorInfo: "#03fff2",
   colorSuccess: "#a5ce91",
   colorWarning: "#ec7a00",

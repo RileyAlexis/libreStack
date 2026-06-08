@@ -6,6 +6,7 @@ import { Route, Routes } from "react-router";
 
 import { useDispatch } from "react-redux";
 import { logoutUser, setUser } from "./redux/reducers/userReducer";
+import { setLibrary } from "./redux/reducers/LibraryReducer";
 
 import "./App.css";
 import { Setup } from "./Components/Setup/ Setup";
@@ -13,6 +14,7 @@ import { Tester } from "./Components/Testers/Tester";
 import { HeaderBanner } from "./Components/HeaderBanner/HeaderBanner";
 import axios from "axios";
 import { Reader } from "./Components/Reader";
+import { Library } from "./Components/Library/Library";
 // import type { LibreRootState } from "./types/LibreRootState";
 
 function App() {
@@ -53,7 +55,6 @@ function App() {
             api
               .get("/auth/user")
               .then((response) => {
-                console.log(`*********************** ${response.data}`);
                 dispatch(
                   setUser({
                     userName: response.data.userName,
@@ -66,6 +67,18 @@ function App() {
               });
           });
         dispatch(logoutUser());
+      });
+  }, []);
+
+  useEffect(() => {
+    api
+      .get("/Library/getAllLibraries")
+      .then((response) => {
+        console.log(response.data);
+        dispatch(setLibrary(response.data));
+      })
+      .catch((error) => {
+        console.log(error.response.data);
       });
   }, []);
 
@@ -97,6 +110,15 @@ function App() {
             <div>
               <HeaderBanner />
               <Reader />
+            </div>
+          }
+        />
+        <Route
+          path="/library"
+          element={
+            <div>
+              <HeaderBanner />
+              <Library />
             </div>
           }
         />

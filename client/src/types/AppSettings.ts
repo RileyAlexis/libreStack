@@ -6,6 +6,12 @@ export interface AppSettings {
   availableReadingFonts: ReadingFontType[];
   readingFontSize: number;
   lineHeight: number;
+  libraryCoverSize: LibraryCoverSize;
+}
+
+interface LibraryCoverSize {
+  width: number;
+  height: number;
 }
 
 export interface ReadingFontType {

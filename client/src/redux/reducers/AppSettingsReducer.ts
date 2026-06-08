@@ -16,6 +16,10 @@ const initialState: AppSettings = {
   ],
   readingFontSize: 18,
   lineHeight: 1.5,
+  libraryCoverSize: {
+    width: 200,
+    height: 300,
+  },
 };
 
 const AppSettingsSlice = createSlice({
@@ -24,6 +28,11 @@ const AppSettingsSlice = createSlice({
   reducers: {
     setAppSettings(_, action: PayloadAction<AppSettings>) {
       return action.payload;
+    },
+    setCoverSize(state, action: PayloadAction<AppSettings>) {
+      state.libraryCoverSize.width = action.payload.libraryCoverSize.width;
+      state.libraryCoverSize.height =
+        (action.payload.libraryCoverSize.width / 2) * 3;
     },
   },
 });

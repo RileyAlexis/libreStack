@@ -1,10 +1,4 @@
-import {
-  StrictMode,
-  useEffect,
-  useState,
-  createContext,
-  useContext,
-} from "react";
+import { StrictMode, useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import { getThemeConfig } from "./utils/themeLoader";
 import { createRoot } from "react-dom/client";
@@ -14,18 +8,8 @@ import App from "./App";
 import "./index.css";
 import { storeInstance } from "./redux/store";
 
-type ThemePreference = "light" | "dark" | "system";
-
-export interface ThemeContextValue {
-  themeConfig: any;
-  preference: ThemePreference;
-  setPreference: (p: ThemePreference) => void;
-  isDark: boolean;
-}
-
-export const ThemeContext = createContext<ThemeContextValue>(null!);
-
-export const useTheme = () => useContext(ThemeContext);
+import { ThemeContext } from "./utils/ThemeContext";
+import type { ThemePreference } from "./utils/ThemeContext";
 
 function Root() {
   const [osDark, setOsDark] = useState(
