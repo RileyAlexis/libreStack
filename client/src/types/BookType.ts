@@ -15,6 +15,7 @@ export interface ReadingProgress {
 }
 
 export interface BookType {
+  id: number;
   title: string;
   author: string;
   publisher: string;

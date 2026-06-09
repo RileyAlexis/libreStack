@@ -2,7 +2,9 @@ import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import type { Middleware, UnknownAction } from "@reduxjs/toolkit";
 
 import userSlice from "./reducers/userReducer";
-import librarySlice from "./reducers/LibraryReducer";
+import bookReducer from "./slices/bookSlice";
+import readerReducer from "./slices/readerSlice";
+import libraryReducer from "./reducers/LibraryReducer";
 import appSettingsSlice from "./reducers/AppSettingsReducer";
 
 const logger: Middleware = (store) => (next) => (action) => {
@@ -20,7 +22,9 @@ const logger: Middleware = (store) => (next) => (action) => {
 
 const allReducers = combineReducers({
   user: userSlice,
-  library: librarySlice,
+  book: bookReducer,
+  reader: readerReducer,
+  library: libraryReducer,
   appSettings: appSettingsSlice,
 });
 
@@ -34,3 +38,9 @@ const storeInstance = configureStore({
 
 export { storeInstance };
 export type AppDispatch = typeof storeInstance.dispatch;
+
+// Export the book slice actions and types for easy access in components
+export {
+  setLocalBookMetadata,
+  removeLocalBookRecord,
+} from "./slices/bookSlice";
