@@ -20,12 +20,12 @@ public class ReadingProgressController : ControllerBase
 
     [HttpPost("updateProgress")]
     [Authorize]
-    public async Task<IActionResult> UpdateProgress(int bookId, APIReadingProgress aPIReadingProgress)
+    public async Task<IActionResult> UpdateProgress(APIReadingProgress aPIReadingProgress)
     {
         var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (UserId is null) return Unauthorized();
 
-        var result = await _iReadingProgressService.UpdateProgress(bookId, UserId, aPIReadingProgress);
+        var result = await _iReadingProgressService.UpdateProgress(UserId, aPIReadingProgress);
         return result ? Ok("Reading Progress Updated") : BadRequest("Reading Progress update failed");
     }
 

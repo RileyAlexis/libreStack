@@ -36,7 +36,7 @@ function App() {
       .get("/Auth/user")
       .then((response) => {
         if (response.status === 200) {
-          console.log(response);
+          // console.log(response);
           dispatch(
             setUser({ userName: response.data.userName, isLoggedIn: true }),
           );
@@ -74,7 +74,7 @@ function App() {
     api
       .get("/Library/getAllLibraries")
       .then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
         dispatch(setLibrary(response.data));
       })
       .catch((error) => {

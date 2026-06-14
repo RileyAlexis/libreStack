@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace Librestack.Models.APIModels;
 
 public class APIReadingProgress

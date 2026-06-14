@@ -29,17 +29,17 @@ public class ReadingProgressService : IReadingProgressService
     }
 
 
-    public async Task<bool> UpdateProgress(int bookId, string userId, APIReadingProgress readingProgress)
+    public async Task<bool> UpdateProgress(string userId, APIReadingProgress readingProgress)
     {
         var existing = await _db.ReadingProgress
-            .FirstOrDefaultAsync(p => p.BookId == bookId && p.UserId == userId);
+            .FirstOrDefaultAsync(p => p.BookId == readingProgress.BookId && p.UserId == userId);
 
         if (existing is null)
         {
             var newProgress = new Models.ReadingProgress
             {
                 UserId = userId,
-                BookId = bookId,
+                BookId = readingProgress.BookId,
                 CfiLocation = readingProgress.CfiLocation,
                 LastRead = DateTime.UtcNow
             };

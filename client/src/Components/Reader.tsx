@@ -25,11 +25,10 @@ export const Reader: React.FC = () => {
     api
       .get(`/Book/downloadBookEntry?id=${id}`, { responseType: "arraybuffer" })
       .then((response) => {
-        const text = new TextDecoder().decode(response.data);
-        console.log(text);
-
         const book = Epub(response.data);
         setBookInstance(book);
+
+        console.log(book.spine);
       })
       .catch((error) => {
         console.log(error.response.data);
@@ -45,12 +44,23 @@ export const Reader: React.FC = () => {
     });
 
     rendition.display();
+    rendition.on("relocated", (location) => {
+      console.log(location.start.cfi);
+    });
     renditionRef.current = rendition;
 
     return () => {
       rendition.destroy();
     };
-  }, [bookInstance, renderAreaRef.current]);
+  }, [bookInstance]);
+
+  useEffect(() => {
+    // const location = renditionRef.current?.currentLocation();
+    // console.log("global location?", location);
+    // console.log(renditionRef.current?.location);
+    //  const data = bookInstance?.locations.cfiFromLocation(location);
+    // console.log(data);
+  }, [renditionRef.current]);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
@@ -66,20 +76,6 @@ export const Reader: React.FC = () => {
           <Button
             icon={<RightOutlined />}
             onClick={() => renditionRef.current?.next()}
-          />
-          <Select
-            value={fontFamily}
-            onChange={setFontFamily}
-            options={FONTS}
-            style={{ width: 160 }}
-          />
-          <span>Font size</span>
-          <Slider
-            min={12}
-            max={32}
-            value={fontSize}
-            onChange={setFontSize}
-            style={{ width: 120 }}
           />
         </div>
       )}

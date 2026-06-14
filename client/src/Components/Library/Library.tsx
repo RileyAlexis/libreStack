@@ -1,16 +1,14 @@
 import { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 import { Button, Splitter } from "antd";
 // Import necessary utilities and actions
 import type { LibreRootState } from "../../types/LibreRootState";
-import { api } from "../../api";
 
 import "./Library.css";
 import type { BookType } from "../../types/BookType";
 
 export const Library: React.FC = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const libraryData = useSelector((state: LibreRootState) => state.library);
@@ -21,15 +19,6 @@ export const Library: React.FC = () => {
   const handleSelectBook = (book: BookType) => {
     console.log(book.id);
     navigate(`/reader/${book.id}`);
-    // api
-    //   .get(`/Book/downloadBookEntry?id=${book.id}`)
-    //   .then((response) => {
-    //     console.log(response.data);
-
-    //   })
-    //   .catch((error) => {
-    //     console.log(error.response.data);
-    //   });
   };
 
   return (
