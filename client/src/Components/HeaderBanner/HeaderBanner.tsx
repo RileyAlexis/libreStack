@@ -5,7 +5,6 @@ import type { LibreRootState } from "../../types/LibreRootState";
 
 import { Avatar, Divider, Modal, Typography, Button } from "antd";
 import { LoginOutlined } from "@ant-design/icons";
-import "../../assets/book-line-svgrepo-com.svg";
 
 import { LoginScreen } from "../LoginScreen/LoginScreen";
 import "./HeaderBanner.css";

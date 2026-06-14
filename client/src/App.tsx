@@ -105,7 +105,7 @@ function App() {
           }
         />
         <Route
-          path="/reader"
+          path="/reader/:id"
           element={
             <div>
               <HeaderBanner />

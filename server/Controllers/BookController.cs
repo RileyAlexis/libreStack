@@ -93,10 +93,11 @@ public class BookController : ControllerBase
         if (UserId is null) return Unauthorized();
 
         var result = await _bookService.DownloadBookEntry(UserId, id);
-        if (result is null)
+        if (!result.IsSuccess)
             return BadRequest(new { error = result?.Error });
 
-        return Ok(result);
+        var (stream, fileName) = result.Value;
+        return File(stream, "application/epub+zip", fileName);
     }
 
     [HttpDelete("bookEntry")]
