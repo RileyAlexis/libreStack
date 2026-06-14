@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using Librestack.Models.APIModels;
 using Librestack.Interfaces;
+using Librestack.Models;
 
 namespace Librestack.Controllers;
 
@@ -18,15 +19,32 @@ public class ReadingProgressController : ControllerBase
         _iReadingProgressService = readingProgressService;
     }
 
+    [HttpGet("readingProgress")]
+    [Authorize]
+    public async Task<IActionResult> GetReadingProgress(int bookId)
+    {
+        var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (UserId is null) return Unauthorized();
+
+        var result = await _iReadingProgressService.GetReadingProgress(bookId, UserId);
+        if (result is null)
+            return BadRequest(new { error = result?.Error });
+
+        return Ok(result);
+    }
+
     [HttpPost("updateProgress")]
     [Authorize]
-    public async Task<IActionResult> UpdateProgress(APIReadingProgress aPIReadingProgress)
+    public async Task<IActionResult> UpdateProgress([FromBody] APIReadingProgress aPIReadingProgress)
     {
         var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (UserId is null) return Unauthorized();
 
         var result = await _iReadingProgressService.UpdateProgress(UserId, aPIReadingProgress);
-        return result ? Ok("Reading Progress Updated") : BadRequest("Reading Progress update failed");
+        if (result is null)
+            return BadRequest(new { error = result?.Error });
+
+        return Ok(result);
     }
 
     [HttpPost("resetProgress")]
@@ -37,6 +55,9 @@ public class ReadingProgressController : ControllerBase
         if (UserId is null) return Unauthorized();
 
         var result = await _iReadingProgressService.ResetProgress(bookId, UserId);
-        return result ? Ok("Reading Progress Reset") : BadRequest("Unable to reset reading progress");
+        if (result is null)
+            return BadRequest(new { error = result?.Error });
+
+        return Ok(result);
     }
 }

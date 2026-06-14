@@ -1,6 +1,5 @@
 using Librestack.Models.APIModels;
 using Librestack.Models;
-using Microsoft.AspNetCore.Mvc;
 namespace Librestack.Interfaces;
 
 public interface IBookService

@@ -3,9 +3,10 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { api } from "../api";
 import Epub, { Book, Rendition } from "epubjs";
-import { Button, Select, Slider } from "antd";
+import { Button } from "antd";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 import type { LibreRootState } from "../types/LibreRootState";
+import type { EpubLocation } from "../types/EpubLocation";
 
 export const Reader: React.FC = () => {
   const { id } = useParams();
@@ -13,6 +14,7 @@ export const Reader: React.FC = () => {
     (state: LibreRootState) => state.appSettings.availableReadingFonts,
   );
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  const [progress, setProgress] = useState<string>("");
 
   const [bookInstance, setBookInstance] = useState<Book | null>(null);
 
@@ -21,17 +23,36 @@ export const Reader: React.FC = () => {
   const renderAreaRef = useRef<HTMLDivElement>(null);
   const renditionRef = useRef<Rendition | null>(null);
 
-  useEffect(() => {
+  const updateLocation = (cfiLocation: EpubLocation) => {
     api
-      .get(`/Book/downloadBookEntry?id=${id}`, { responseType: "arraybuffer" })
+      .post("/ReadingProgress/updateProgress", {
+        bookId: parseInt(id!),
+        cfiLocation: cfiLocation.start.cfi,
+      })
       .then((response) => {
-        const book = Epub(response.data);
-        setBookInstance(book);
-
-        console.log(book.spine);
+        console.log(response.data);
       })
       .catch((error) => {
-        console.log(error.response.data);
+        console.error(error.response.data);
+      });
+  };
+
+  useEffect(() => {
+    Promise.all([
+      api.get(`/Book/downloadBookEntry?id=${id}`, {
+        responseType: "arraybuffer",
+      }),
+      api.get(`/ReadingProgress/readingProgress?bookId=${id}`),
+    ])
+      .then(([bookResponse, progressResponse]) => {
+        setBookInstance(Epub(bookResponse.data));
+
+        console.log(progressResponse);
+
+        setProgress(progressResponse.data?.value?.cfiLocation ?? null);
+      })
+      .catch((error) => {
+        console.log(error);
       });
   }, [id]);
 
@@ -43,9 +64,9 @@ export const Reader: React.FC = () => {
       height: "100%",
     });
 
-    rendition.display();
-    rendition.on("relocated", (location) => {
-      console.log(location.start.cfi);
+    rendition.display(progress ?? undefined);
+    rendition.on("relocated", (location: EpubLocation) => {
+      updateLocation(location);
     });
     renditionRef.current = rendition;
 

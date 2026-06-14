@@ -10,7 +10,6 @@ export interface BookmarkType {
 
 export interface ReadingProgress {
   cfiLocation: string;
-  progress: string;
   lastRead: Date;
 }
 
