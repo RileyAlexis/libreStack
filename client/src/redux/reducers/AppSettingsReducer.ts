@@ -2,7 +2,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { AppSettings } from "../../types/AppSettings";
 
 const initialState: AppSettings = {
-  showLibraryAsHome: false,
+  showLibraryAsHome: true,
   spread: "none",
   readingTheme: "base",
   readingFont: {

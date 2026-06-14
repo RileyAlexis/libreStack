@@ -13,10 +13,15 @@ import { MainMenu } from "./MainMenu";
 export const HeaderBanner: React.FC = () => {
   const navigate = useNavigate();
   const user = useSelector((state: LibreRootState) => state.user);
+  const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   const handleNavigateToMain = () => {
-    navigate("/");
+    if (appSettings.showLibraryAsHome) {
+      navigate("/library");
+    } else {
+      navigate("/");
+    }
   };
 
   return (
