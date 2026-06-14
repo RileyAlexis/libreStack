@@ -25,15 +25,17 @@
   :root[data-theme="light"] {
     --library-active-bg: rgba(255, 209, 130, 0.51);
     --library-active-color: #ffbb55;
-    --elevated-bg: #e4e1db;
+    --elevated-bg: #ac9f8953;
     --shadow-color: rgba(40, 40, 40, 0.5);
+    --border-color: rgba(120, 120, 120, 0.3);
   }
 
   :root[data-theme="dark"] {
-    --library-active-bg: rgba(255, 162, 130, 0.563);
+    --library-active-bg: rgba(133, 89, 19, 0.563);
     --library-active-color: #ffbb55;
+    --elevated-bg: #64430b98;
     --shadow-color: rgba(240, 240, 240, 0.5);
-    --elevated-bg: "#3b2705";
+    --border-color: rgba(198, 198, 198, 0.3);
   }
 
   html {

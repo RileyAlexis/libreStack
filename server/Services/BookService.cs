@@ -88,23 +88,18 @@ public class BookService : IBookService
         return Result.Success();
     }
 
-    public async Task<Result<FileStreamResult>> DownloadBookEntry(string userId, int id)
+    public async Task<Result<(Stream, string)>> DownloadBookEntry(string userId, int id)
     {
         var bookEntry = await _db.Books.FirstOrDefaultAsync(b => b.Id == id && b.UserId == userId);
         if (bookEntry is null)
-            return Result<FileStreamResult>.Failure("Book not found", ErrorType.NotFound);
+            return Result<(Stream, string)>.Failure("Book not found", ErrorType.NotFound);
 
         var filePath = bookEntry.EpubPath;
         if (filePath is null || !File.Exists(filePath))
-            return Result<FileStreamResult>.Failure("File not found on disk", ErrorType.NotFound);
+            return Result<(Stream, string)>.Failure("File not found on disk", ErrorType.NotFound);
 
         var stream = File.OpenRead(filePath);
-        var fileResult = new FileStreamResult(stream, "application/octet-stream")
-        {
-            FileDownloadName = Path.GetFileName(filePath)
-        };
-
-        return Result<FileStreamResult>.Success(fileResult);
+        return Result<(Stream, string)>.Success((stream, Path.GetFileName(filePath)));
     }
 
 
