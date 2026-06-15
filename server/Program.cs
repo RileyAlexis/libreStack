@@ -95,6 +95,12 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<LibrestackDbContext>();
+    db.Database.Migrate();
+}
+
 // 1. Seed data (runs once at startup, before pipeline is live)
 using (var scope = app.Services.CreateScope())
 {
@@ -119,10 +125,6 @@ app.UseAuthorization();
 app.MapFallbackToFile("index.html");
 app.MapControllers();
 
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<LibrestackDbContext>();
-    db.Database.Migrate();
-}
+
 
 app.Run();
