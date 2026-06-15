@@ -1,19 +1,21 @@
 import { useState, useRef, useEffect } from "react";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { api } from "../../api";
 import Epub, { Book, Rendition } from "epubjs";
-import type { LibreRootState } from "../../types/LibreRootState";
+// import type { LibreRootState } from "../../types/LibreRootState";
 import type { EpubLocation } from "../../types/EpubLocation";
 
 import "./Reader.css";
 
 export const Reader: React.FC = () => {
   const { id } = useParams();
-  const FONTS = useSelector(
-    (state: LibreRootState) => state.appSettings.availableReadingFonts,
-  );
-  const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+
+  // const FONTS = useSelector(
+  //   (state: LibreRootState) => state.appSettings.availableReadingFonts,
+  // );
+  // const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+
   const [progress, setProgress] = useState<string>("");
 
   const [bookInstance, setBookInstance] = useState<Book | null>(null);
