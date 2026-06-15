@@ -119,4 +119,10 @@ app.UseAuthorization();
 app.MapFallbackToFile("index.html");
 app.MapControllers();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<LibrestackDbContext>();
+    db.Database.Migrate();
+}
+
 app.Run();

@@ -27,5 +27,4 @@ COPY --from=frontend-build /app/client/dist ./wwwroot_assets
 
 # Expose port and set the custom entrypoint script
 EXPOSE 8080
-ENTRYPOINT ["/entrypoint.sh"]
 CMD []
