@@ -117,7 +117,7 @@ app.UseSwaggerUI();
 
 // 3. Core pipeline middleware
 app.UseStaticFiles();
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
