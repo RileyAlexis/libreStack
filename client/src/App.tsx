@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
 import { api } from "./api";
-import { Route, Routes } from "react-router";
+import { Route, Routes, useLocation } from "react-router";
 
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser, setUser } from "./redux/reducers/userReducer";
@@ -21,6 +21,7 @@ import type { LibreRootState } from "./types/LibreRootState";
 function App() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const location = useLocation();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
 
   useEffect(() => {
@@ -70,9 +71,9 @@ function App() {
         dispatch(logoutUser());
       });
 
-    if (appSettings.showLibraryAsHome) {
+    if (appSettings.showLibraryAsHome && location.pathname === "/") {
       navigate("/library");
-    } else {
+    } else if (location.pathname === "/") {
       navigate("/serverStats");
     }
   }, []);
@@ -115,7 +116,6 @@ function App() {
           path="/reader/:id"
           element={
             <div>
-              {/* <HeaderBanner /> */}
               <Reader />
             </div>
           }

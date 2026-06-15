@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 // import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { api } from "../../api";
-import Epub, { Book, Rendition } from "epubjs";
+import Epub, { Book, Rendition } from "@likecoin/epub-ts";
 // import type { LibreRootState } from "../../types/LibreRootState";
 import type { EpubLocation } from "../../types/EpubLocation";
 
