@@ -56,9 +56,9 @@ builder.Services.AddScoped<ILibraryService, LibraryService>();
 builder.Services.AddScoped<ILibreStackConfigService, LibreStackConfigService>();
 
 builder.Services.AddDbContext<LibrestackDbContext>(options =>
-        options.UseNpgsql(Environment.GetEnvironmentVariable("DEFAULT_CONNECTION"))
-        .UseSnakeCaseNamingConvention()
-        );
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .UseSnakeCaseNamingConvention()
+);
 
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen(options =>
