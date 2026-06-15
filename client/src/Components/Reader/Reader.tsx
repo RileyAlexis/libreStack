@@ -18,8 +18,6 @@ export const Reader: React.FC = () => {
 
   const [bookInstance, setBookInstance] = useState<Book | null>(null);
 
-  const [fontSize, setFontSize] = useState(18);
-  const [fontFamily, setFontFamily] = useState("Georgia, serif");
   const renderAreaRef = useRef<HTMLDivElement>(null);
   const renditionRef = useRef<Rendition | null>(null);
 
