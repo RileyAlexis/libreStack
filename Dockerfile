@@ -10,8 +10,6 @@ run npm run build
 from mcr.microsoft.com/dotnet/sdk:10.0 as backend-build
 WORKDIR /app
 copy server/ ./
-# Copy the built static assets from the frontend stage into a temporary location for later use
-COPY --from=frontend-build /app/client/dist ./wwwroot_assets
 
 # CRITICAL FIX: Restore dependencies before publishing
 RUN dotnet restore libreStack.csproj && \
@@ -23,8 +21,9 @@ WORKDIR /app
 # Copy published API code
 COPY --from=backend-build /publish .
 # Copy the static assets into the webroot directory for ASP.NET Core to serve them from root path (/)
-COPY --from=frontend-build /app/client/dist ./wwwroot_assets
+COPY --from=frontend-build /app/client/dist ./wwwroot
 
 # Expose port and set the custom entrypoint script
 EXPOSE 8080
+ENTRYPOINT ["dotnet", "libreStack.dll"]
 CMD []
