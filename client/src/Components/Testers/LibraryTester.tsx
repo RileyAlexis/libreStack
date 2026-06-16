@@ -3,6 +3,16 @@ import { api } from "../../api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel, FieldDescription } from "../ui/field";
+import {
+  Card,
+  CardAction,
+  CardTitle,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardFooter,
+} from "../ui/card";
+import { Popover } from "../ui/popover";
 
 export const LibraryTester: React.FC = () => {
   const [libraryId, setLibraryId] = useState<number>();
@@ -85,6 +95,20 @@ export const LibraryTester: React.FC = () => {
   return (
     <div className="testingButtonContainer">
       <h2>Library</h2>
+      <Card size="sm">
+        <CardHeader>
+          <CardTitle>Card Header</CardTitle>
+          <CardDescription>Card Description</CardDescription>
+          <CardAction>Card Action</CardAction>
+        </CardHeader>
+        <CardContent>
+          <Button variant="default">Default</Button>
+          <Button size="lg">Large</Button>
+          <Button size="xs"> Extra Small</Button>
+          <Button variant="destructive">Destructive</Button>
+        </CardContent>
+        <CardFooter>Card Footer</CardFooter>
+      </Card>
       <Button variant="default" onClick={handleGetLibraries}>
         Get Libraries
       </Button>
@@ -104,7 +128,9 @@ export const LibraryTester: React.FC = () => {
         </Field>
       </div>
       <div className="testingCombo">
-        <Button onClick={handleDeleteLibrary}>Delete Library</Button>
+        <Button variant="secondary" onClick={handleDeleteLibrary}>
+          Delete Library
+        </Button>
         <Input
           placeholder="libraryId"
           type="number"
@@ -113,7 +139,9 @@ export const LibraryTester: React.FC = () => {
         />
       </div>
       <div className="testingCombo">
-        <Button onClick={handleAddBookToLibrary}>Add Book To Library</Button>
+        <Button variant="ghost" onClick={handleAddBookToLibrary}>
+          Add Book To Library
+        </Button>
         <Input
           placeholder="libraryId"
           type="number"
@@ -128,7 +156,7 @@ export const LibraryTester: React.FC = () => {
         />
       </div>
       <div className="testingCombo">
-        <Button onClick={handleRemoveBookFromLibrary}>
+        <Button variant="outline" onClick={handleRemoveBookFromLibrary}>
           Remove Book From Library
         </Button>
         <Input
