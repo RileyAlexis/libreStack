@@ -2,10 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import type { LibreRootState } from "../../types/LibreRootState";
-
-import { Avatar, Divider, Modal, Typography, Button } from "antd";
-import { LoginOutlined } from "@ant-design/icons";
-
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { LogIn } from "lucide-react";
 import { LoginScreen } from "../LoginScreen/LoginScreen";
 import "./HeaderBanner.css";
 import { MainMenu } from "./MainMenu";
@@ -26,45 +26,45 @@ export const HeaderBanner: React.FC = () => {
 
   return (
     <div className="headerBannerContainer">
-      <Typography.Title
-        level={1}
+      <h1
         onClick={handleNavigateToMain}
-        style={{
-          cursor: "pointer",
-          paddingTop: "0.1em",
-        }}
+        style={{ cursor: "pointer", paddingTop: "0.1em" }}
       >
         LibreStack
-      </Typography.Title>
+      </h1>
       <div className="menuContainer">
         <MainMenu />
         {user.isLoggedIn && (
           <Avatar>
-            {user.userName && user.userName.length > 0 ? (
-              user.userName.charAt(0).toUpperCase()
-            ) : (
-              <LoginOutlined />
-            )}
+            <AvatarFallback>
+              {user.userName && user.userName.length > 0 ? (
+                user.userName.charAt(0).toUpperCase()
+              ) : (
+                <LogIn size={16} />
+              )}
+            </AvatarFallback>
           </Avatar>
         )}
         {!user.isLoggedIn && (
-          <Button ghost type="text" onClick={() => setIsLoginOpen(true)}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsLoginOpen(true)}
+          >
             <Avatar>
-              <LoginOutlined />
+              <AvatarFallback>
+                <LogIn size={16} />
+              </AvatarFallback>
             </Avatar>
           </Button>
         )}
       </div>
-      <Modal
-        closable={{ "aria-label": "Custom Close Button" }}
-        open={isLoginOpen}
-        onCancel={() => setIsLoginOpen(false)}
-        okButtonProps={{}}
-        footer={[]}
-      >
-        <LoginScreen setIsLoginOpen={setIsLoginOpen} />
-      </Modal>
-      <Divider size="small" style={{ marginTop: "-0.2em" }} />
+      <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
+        <DialogContent>
+          <LoginScreen setIsLoginOpen={setIsLoginOpen} />
+        </DialogContent>
+      </Dialog>
+      <hr className="mt-[-0.2em]" />
     </div>
   );
 };

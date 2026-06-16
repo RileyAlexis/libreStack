@@ -1,6 +1,8 @@
 import { defineConfig } from "vite";
 import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import babel from "@rolldown/plugin-babel";
+import tailwindcss from "@tailwindcss/vite";
+import path from "path";
 import { visualizer } from "rollup-plugin-visualizer";
 import { VitePWA } from "vite-plugin-pwa";
 
@@ -10,6 +12,7 @@ export default defineConfig({
     react(),
     babel({ presets: [reactCompilerPreset()] }),
     visualizer({ open: true }),
+    tailwindcss(),
     VitePWA({
       includeAssets: ["favicon.ico", "apple-touch-icon.png"],
       manifest: {
@@ -36,6 +39,11 @@ export default defineConfig({
       },
     }),
   ],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
 
   // build: {
   //   outDir: "../server/wwwroot",

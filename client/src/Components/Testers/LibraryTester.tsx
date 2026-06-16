@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "../../api";
-import { Button, Input } from "antd";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export const LibraryTester: React.FC = () => {
   const [libraryId, setLibraryId] = useState<number>();
@@ -83,7 +84,7 @@ export const LibraryTester: React.FC = () => {
   return (
     <div className="testingButtonContainer">
       <h2>Library</h2>
-      <Button type="primary" onClick={handleGetLibraries}>
+      <Button variant="default" onClick={handleGetLibraries}>
         Get Libraries
       </Button>
       <div className="testingCombo">

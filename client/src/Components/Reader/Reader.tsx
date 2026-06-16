@@ -2,9 +2,8 @@ import { useState, useRef, useEffect } from "react";
 // import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { api } from "../../api";
-import Epub, { Book, Rendition } from "@likecoin/epub-ts";
+import Epub, { Book, Rendition, type Location } from "@likecoin/epub-ts";
 // import type { LibreRootState } from "../../types/LibreRootState";
-import type { EpubLocation } from "../../types/EpubLocation";
 
 import "./Reader.css";
 
@@ -23,7 +22,7 @@ export const Reader: React.FC = () => {
   const renderAreaRef = useRef<HTMLDivElement>(null);
   const renditionRef = useRef<Rendition | null>(null);
 
-  const updateLocation = (cfiLocation: EpubLocation) => {
+  const updateLocation = (cfiLocation: Location) => {
     api
       .post("/ReadingProgress/updateProgress", {
         bookId: parseInt(id!),
@@ -67,7 +66,8 @@ export const Reader: React.FC = () => {
 
     rendition.display(progress ?? undefined);
 
-    rendition.on("relocated", (location: EpubLocation) => {
+    rendition.on("relocated", (location) => {
+      console.log(location);
       updateLocation(location);
     });
 

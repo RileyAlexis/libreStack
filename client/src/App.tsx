@@ -9,12 +9,12 @@ import { logoutUser, setUser } from "./redux/reducers/userReducer";
 import { setLibrary } from "./redux/reducers/LibraryReducer";
 
 import "./App.css";
-import { Setup } from "./Components/Setup/ Setup";
-import { Tester } from "./Components/Testers/Tester";
-import { HeaderBanner } from "./Components/HeaderBanner/HeaderBanner";
+import { Setup } from "./components/Setup/ Setup";
+import { Tester } from "./components/Testers/Tester";
+import { HeaderBanner } from "./components/HeaderBanner/HeaderBanner";
 import axios from "axios";
-import { Reader } from "./Components/Reader/Reader";
-import { Library } from "./Components/Library/Library";
+import { Reader } from "./components/Reader/Reader";
+import { Library } from "./components/Library/Library";
 import type { LibreRootState } from "./types/LibreRootState";
 // import type { LibreRootState } from "./types/LibreRootState";
 

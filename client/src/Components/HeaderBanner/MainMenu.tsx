@@ -1,72 +1,51 @@
-import { useState } from "react";
-
-import { Dropdown, Button, Segmented } from "antd";
-import type { MenuProps } from "antd";
-import { SmileOutlined, MenuOutlined } from "@ant-design/icons";
+import { Menu, Smile } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const MainMenu: React.FC = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const items: MenuProps["items"] = [
-    {
-      key: "1",
-      label: <Button>Button</Button>,
-    },
-    {
-      key: "2",
-      label: (
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.aliyun.com"
-        >
-          2nd menu item (disabled)
-        </a>
-      ),
-      icon: <SmileOutlined />,
-      disabled: true,
-    },
-    {
-      key: "3",
-      label: (
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://www.luohanacademy.com"
-        >
-          3rd menu item (disabled)
-        </a>
-      ),
-      disabled: true,
-    },
-    {
-      key: "5",
-      label: (
-        <Segmented
-          options={["Light", "Dark", "System"]}
-          onChange={(value) => {
-            console.log(value);
-          }}
-        ></Segmented>
-      ),
-    },
-  ];
-
   return (
-    <Dropdown
-      placement="bottomLeft"
-      trigger={["click"]}
-      menu={{ items }}
-      open={isOpen}
-    >
-      <Button
-        variant="solid"
-        color="primary"
-        ghost
-        size="large"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <MenuOutlined />
-      </Button>
-    </Dropdown>
+    <DropdownMenu>
+      <DropdownMenuTrigger>
+        <Button variant="outline" size="lg">
+          <Menu />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start">
+        <DropdownMenuItem>
+          <Button>Button</Button>
+        </DropdownMenuItem>
+        <DropdownMenuItem disabled>
+          <Smile />
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://www.aliyun.com"
+          >
+            2nd menu item (disabled)
+          </a>
+        </DropdownMenuItem>
+        <DropdownMenuItem disabled>
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href="https://www.luohanacademy.com"
+          >
+            3rd menu item (disabled)
+          </a>
+        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+          <select onChange={(e) => console.log(e.target.value)}>
+            <option>Light</option>
+            <option>Dark</option>
+            <option>System</option>
+          </select>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };

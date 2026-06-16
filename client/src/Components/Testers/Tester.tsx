@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { api } from "../../api";
 
-import { Button, Input } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Upload } from "lucide-react";
 import { LibraryTester } from "./LibraryTester";
 
 export const Tester: React.FC = () => {
@@ -148,9 +149,7 @@ export const Tester: React.FC = () => {
         <LibraryTester />
         <div className="testingButtonContainer">
           <h2>Book</h2>
-          <Button type="primary" onClick={handleGetBook}>
-            Get Books
-          </Button>
+          <Button onClick={handleGetBook}>Get Books</Button>
           <div className="testingCombo">
             <Button onClick={handleGetBookEntry}>Get Book Entry</Button>
             <Input
@@ -179,17 +178,11 @@ export const Tester: React.FC = () => {
               onChange={handleFileChange}
               style={{ display: "none" }}
             />
-            <Button
-              icon={<UploadOutlined />}
-              onClick={() => fileInputRef.current?.click()}
-            >
+            <Button onClick={() => fileInputRef.current?.click()}>
+              <Upload />
               Add Book
             </Button>
-            <Button
-              type="primary"
-              onClick={handleUpload}
-              disabled={!selectedFile}
-            >
+            <Button onClick={handleUpload} disabled={!selectedFile}>
               Upload
             </Button>
             <Input
@@ -212,9 +205,7 @@ export const Tester: React.FC = () => {
         </div>
 
         <div className="testingCombo">
-          <Button onClick={handleGetUserTag} shape="round">
-            Get User Tag
-          </Button>
+          <Button onClick={handleGetUserTag}>Get User Tag</Button>
           <Input
             type="number"
             value={tagId}

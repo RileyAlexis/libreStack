@@ -3,33 +3,33 @@ import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { setUser } from "../../redux/reducers/userReducer";
 import axios from "axios";
+import { Info } from "lucide-react";
 
-import { Button, Form, Input, Card, Popover, Typography } from "antd";
-import { InfoCircleOutlined } from "@ant-design/icons";
-import type { FormProps } from "antd";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 import "./ Setup.css";
 import { api } from "../../api";
 
-type AdminType = {
-  username?: string;
-  password?: string;
-  email?: string;
-  remember?: string;
-};
-
-type Library = {
-  name?: string;
-  path?: string;
-  remember?: string;
-};
-
 export const Setup: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [isAdminPopoverOpen, setIsAdminPopoverOpen] = useState(false);
-  const [isLibPopoverOpen, setIsLibPopoverOpen] = useState(false);
   const [isAdminRegistered, setIsAdminRegistered] = useState(false);
+
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [adminError, setAdminError] = useState("");
+
+  const [libName, setLibName] = useState("");
+  const [libPath, setLibPath] = useState("");
+  const [libError, setLibError] = useState("");
 
   useEffect(() => {
     axios
@@ -38,69 +38,51 @@ export const Setup: React.FC = () => {
         email: "",
         password: "",
       })
-      .then((response) => {
-        console.log(response.data.code);
-      })
       .catch((error) => {
         const code = error.response.data[0].code;
         if (code === "AdminAlreadyExists") setIsAdminRegistered(true);
       });
   }, [isAdminRegistered]);
 
-  const onFinish: FormProps<AdminType>["onFinish"] = (values) => {
-    console.log("Success:", values);
+  const onFinish = () => {
+    if (!username || !email || !password) {
+      setAdminError("All fields are required");
+      return;
+    }
+    setAdminError("");
     axios
-      .post("/api/auth/admin/register", {
-        username: values.username,
-        email: values.email,
-        password: values.password,
-      })
-      .then((_) => {
+      .post("/api/auth/admin/register", { username, email, password })
+      .then(() => {
         setIsAdminRegistered(true);
         axios
-          .post("/api/auth/login", {
-            username: values.username,
-            password: values.password,
-          })
+          .post("/api/auth/login", { username, password })
           .then((response) => {
-            const token = response.data.accessToken;
-            const refreshToken = response.data.refreshToken;
-            localStorage.setItem("accessToken", token);
-            localStorage.setItem("refreshToken", refreshToken);
-            dispatch(setUser({ userName: values.username!, isLoggedIn: true }));
+            localStorage.setItem("accessToken", response.data.accessToken);
+            localStorage.setItem("refreshToken", response.data.refreshToken);
+            dispatch(setUser({ userName: username, isLoggedIn: true }));
           })
-          .catch((error) => {
-            console.error(error.message);
-            console.error(error.response);
-          });
+          .catch((error) => console.error(error));
       })
       .catch((error) => {
-        console.error(error);
-        console.error(error.response.data.message);
+        setAdminError(error.response.data.message);
       });
   };
 
-  const setPath: FormProps<Library>["onFinish"] = (values) => {
-    console.log(values.path);
+  const setPath = () => {
+    if (!libName || !libPath) {
+      setLibError("All fields are required");
+      return;
+    }
+    setLibError("");
     api
-      .post("/Library/createLibrary", {
-        name: values.name,
-        libraryPath: values.path,
-      })
-      .then((_) => {
+      .post("/Library/createLibrary", { name: libName, libraryPath: libPath })
+      .then(() => {
         api
           .post(`/Config/markSetupAsComplete?isComplete=true`)
-          .then((response) => {
-            console.log(response.data);
-            navigate("/");
-          })
-          .catch((error) => {
-            console.error(error);
-          });
+          .then(() => navigate("/"))
+          .catch((error) => console.error(error));
       })
-      .catch((error) => {
-        console.error(error);
-      });
+      .catch((error) => console.error(error));
   };
 
   return (
@@ -110,150 +92,101 @@ export const Setup: React.FC = () => {
       </div>
       <div className="setupArea">
         <div className="setupEntry">
-          <Card
-            title="Create Admin User"
-            variant="outlined"
-            size="medium"
-            style={{ textAlign: "center" }}
-            extra={
-              <Popover
-                title="Info"
-                trigger="click"
-                autoAdjustOverflow={true}
-                placement="top"
-                open={isAdminPopoverOpen}
-                onOpenChange={() => setIsAdminPopoverOpen(false)}
-                content={
-                  <Typography.Paragraph type="secondary">
-                    Admin User account can only be created once on
-                    initialization of LibreStack. Other user accounts can be
-                    assigned admin access later.
-                  </Typography.Paragraph>
-                }
-              >
-                <Button
-                  onClick={() => setIsAdminPopoverOpen(true)}
-                  icon={<InfoCircleOutlined />}
-                  style={{ marginLeft: "0.5em" }}
-                ></Button>
-              </Popover>
-            }
-          >
-            {isAdminRegistered && (
-              <Typography.Paragraph>
-                Admin Account Registered
-              </Typography.Paragraph>
-            )}
-            {!isAdminRegistered && (
-              <Form
-                name="createAdmin"
-                labelCol={{ span: 12 }}
-                style={{ maxWidth: "100%" }}
-                initialValues={{ remember: true }}
-                onFinish={onFinish}
-                autoComplete="off"
-              >
-                <Form.Item<AdminType>
-                  label="Admin Username"
-                  name="username"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Input admin account user name",
-                    },
-                  ]}
-                >
-                  <Input placeholder="admin" />
-                </Form.Item>
-                <Form.Item<AdminType>
-                  label="Admin Email"
-                  name="email"
-                  rules={[
-                    { required: true, message: "Input admin account email" },
-                  ]}
-                >
-                  <Input type={"email"} />
-                </Form.Item>
-                <Form.Item<AdminType>
-                  label="Admin Password"
-                  name="password"
-                  rules={[
-                    { required: true, message: "Input admin account password" },
-                  ]}
-                >
-                  <Input.Password />
-                </Form.Item>
-                <Form.Item label={null}>
-                  <Button type="primary" htmlType="submit">
-                    Submit
-                  </Button>
-                </Form.Item>
-              </Form>
-            )}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                Create Admin User
+                <Popover>
+                  <PopoverTrigger>
+                    <Button variant="ghost" size="icon">
+                      <Info />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <p>
+                      Admin User account can only be created once on
+                      initialization of LibreStack. Other user accounts can be
+                      assigned admin access later.
+                    </p>
+                  </PopoverContent>
+                </Popover>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isAdminRegistered ? (
+                <p>Admin Account Registered</p>
+              ) : (
+                <div className="setupForm">
+                  {adminError && (
+                    <span className="setupError">{adminError}</span>
+                  )}
+                  <div className="setupField">
+                    <label>Admin Username</label>
+                    <Input
+                      placeholder="admin"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                    />
+                  </div>
+                  <div className="setupField">
+                    <label>Admin Email</label>
+                    <Input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                  <div className="setupField">
+                    <label>Admin Password</label>
+                    <Input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </div>
+                  <Button onClick={onFinish}>Submit</Button>
+                </div>
+              )}
+            </CardContent>
           </Card>
         </div>
         <div className="setupEntry">
-          <Card
-            title="Create Initial Library"
-            variant="outlined"
-            size="medium"
-            style={{ textAlign: "center" }}
-            extra={
-              <Popover
-                title="Info"
-                trigger="click"
-                autoAdjustOverflow={true}
-                placement="top"
-                open={isLibPopoverOpen}
-                onOpenChange={() => setIsLibPopoverOpen(false)}
-                content={
-                  <Typography.Paragraph type="secondary">
-                    LibreStack requires at least one library.
-                  </Typography.Paragraph>
-                }
-              >
-                <Button
-                  onClick={() => setIsLibPopoverOpen(true)}
-                  icon={<InfoCircleOutlined />}
-                  style={{ marginLeft: "0.5em" }}
-                ></Button>
-              </Popover>
-            }
-          >
-            <Form
-              name="setLibraryPath"
-              labelCol={{ span: 12 }}
-              style={{ maxWidth: "100%" }}
-              initialValues={{ remember: true }}
-              onFinish={setPath}
-              autoComplete="off"
-            >
-              <Form.Item<Library>
-                label="Library Name"
-                name="name"
-                rules={[{ required: true, message: "Library Name" }]}
-              >
-                <Input />
-              </Form.Item>
-
-              <Form.Item<Library>
-                label="Library Path"
-                name="path"
-                rules={[
-                  {
-                    required: true,
-                    message: "Input Library Path",
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item label={null}>
-                <Button type="primary" htmlType="submit">
-                  Submit
-                </Button>
-              </Form.Item>
-            </Form>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                Create Initial Library
+                <Popover>
+                  <PopoverTrigger>
+                    <Button variant="ghost" size="icon">
+                      <Info />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <p>LibreStack requires at least one library.</p>
+                  </PopoverContent>
+                </Popover>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="setupForm">
+                {libError && <span className="setupError">{libError}</span>}
+                <div className="setupField">
+                  <label>Library Name</label>
+                  <Input
+                    value={libName}
+                    onChange={(e) => setLibName(e.target.value)}
+                  />
+                </div>
+                <div className="setupField">
+                  <label>Library Path</label>
+                  <Input
+                    value={libPath}
+                    onChange={(e) => setLibPath(e.target.value)}
+                  />
+                </div>
+                <Button onClick={setPath}>Submit</Button>
+              </div>
+            </CardContent>
           </Card>
         </div>
       </div>
