@@ -6,6 +6,8 @@ import App from "./App";
 import "./index.css";
 import { storeInstance } from "./redux/store";
 
+import { ThemeProvider } from "./components/themeProvider";
+
 function Root() {
   return (
     <BrowserRouter>
@@ -19,9 +21,11 @@ if (container) {
   const root = createRoot(container);
   root.render(
     <StrictMode>
-      <Provider store={storeInstance}>
-        <Root />
-      </Provider>
+      <ThemeProvider defaultTheme="light" storageKey="libreStack-theme">
+        <Provider store={storeInstance}>
+          <Root />
+        </Provider>
+      </ThemeProvider>
     </StrictMode>,
   );
 }

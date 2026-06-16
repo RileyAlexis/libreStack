@@ -2,6 +2,7 @@ import { useState } from "react";
 import { api } from "../../api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Field, FieldLabel, FieldDescription } from "../ui/field";
 
 export const LibraryTester: React.FC = () => {
   const [libraryId, setLibraryId] = useState<number>();
@@ -89,12 +90,18 @@ export const LibraryTester: React.FC = () => {
       </Button>
       <div className="testingCombo">
         <Button onClick={handleCreateLibrary}>Create Library</Button>
-        <Input
-          placeholder="name"
-          type="string"
-          value={libName}
-          onChange={(e) => setLibName(e.target.value)}
-        />
+        <Field orientation="responsive">
+          <FieldLabel htmlFor="libraryName">
+            <Input
+              id="libraryName"
+              placeholder="name"
+              type="string"
+              value={libName}
+              onChange={(e) => setLibName(e.target.value)}
+            />
+            <FieldDescription>Name for the new Library</FieldDescription>
+          </FieldLabel>
+        </Field>
       </div>
       <div className="testingCombo">
         <Button onClick={handleDeleteLibrary}>Delete Library</Button>

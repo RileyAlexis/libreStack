@@ -6,8 +6,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTheme } from "../themeProvider";
 
 export const MainMenu: React.FC = () => {
+  const { setTheme } = useTheme();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
@@ -40,9 +43,9 @@ export const MainMenu: React.FC = () => {
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           <select onChange={(e) => console.log(e.target.value)}>
-            <option>Light</option>
-            <option>Dark</option>
-            <option>System</option>
+            <option onClick={() => setTheme("light")}>Light</option>
+            <option onClick={() => setTheme("dark")}>Dark</option>
+            <option onClick={() => setTheme("system")}>System</option>
           </select>
         </DropdownMenuItem>
       </DropdownMenuContent>
