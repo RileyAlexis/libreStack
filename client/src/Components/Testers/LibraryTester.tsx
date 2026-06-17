@@ -12,7 +12,6 @@ import {
   CardHeader,
   CardFooter,
 } from "../ui/card";
-import { Popover } from "../ui/popover";
 
 export const LibraryTester: React.FC = () => {
   const [libraryId, setLibraryId] = useState<number>();

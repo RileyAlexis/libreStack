@@ -1,4 +1,8 @@
-import { Menu, Smile } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { switchLibraryAsHome } from "@/redux/reducers/AppSettingsReducer";
+import type { LibreRootState } from "@/types/LibreRootState";
+
+// UI
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -7,9 +11,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTheme } from "../themeProvider";
+import { ButtonGroup, ButtonGroupText } from "../ui/button-group";
+import { Menu, Sun, Moon, Rainbow } from "lucide-react";
+import { Switch } from "../ui/switch";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Label } from "../ui/label";
 
 export const MainMenu: React.FC = () => {
+  const dispatch = useDispatch();
+  const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const { setTheme } = useTheme();
+  const { theme } = useTheme();
 
   return (
     <DropdownMenu>
@@ -18,35 +34,76 @@ export const MainMenu: React.FC = () => {
           <Menu />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start">
+      <DropdownMenuContent align="start" className="mainDropDownMenu">
         <DropdownMenuItem>
-          <Button>Button</Button>
-        </DropdownMenuItem>
-        <DropdownMenuItem disabled>
-          <Smile />
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://www.aliyun.com"
-          >
-            2nd menu item (disabled)
-          </a>
-        </DropdownMenuItem>
-        <DropdownMenuItem disabled>
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://www.luohanacademy.com"
-          >
-            3rd menu item (disabled)
-          </a>
+          <Switch
+            id="librarySwitch"
+            size="default"
+            checked={appSettings.showLibraryAsHome ? true : false}
+            onCheckedChange={() => dispatch(switchLibraryAsHome())}
+          />
+          <Label htmlFor="librarySwitch">Library as Home Page</Label>
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-          <select onChange={(e) => console.log(e.target.value)}>
-            <option onClick={() => setTheme("light")}>Light</option>
-            <option onClick={() => setTheme("dark")}>Dark</option>
-            <option onClick={() => setTheme("system")}>System</option>
-          </select>
+          <ButtonGroup>
+            <ButtonGroupText>
+              <Label htmlFor="name">Theme</Label>
+            </ButtonGroupText>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    disabled={theme === "light"}
+                    variant="outline"
+                    size="icon"
+                    aria-label="light mode"
+                    onClick={() => setTheme("light")}
+                  >
+                    <Sun />
+                  </Button>
+                }
+              />
+              <TooltipContent>
+                <p>Light Mode</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    disabled={theme === "system"}
+                    variant="outline"
+                    size="icon"
+                    aria-label="system mode"
+                    onClick={() => setTheme("system")}
+                  >
+                    <Rainbow />
+                  </Button>
+                }
+              />
+              <TooltipContent>
+                <p>System Preference</p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    disabled={theme === "dark"}
+                    variant="outline"
+                    size="icon"
+                    aria-label="dark mode"
+                    onClick={() => setTheme("dark")}
+                  >
+                    <Moon />
+                  </Button>
+                }
+              />
+              <TooltipContent>
+                <p>Dark Mode</p>
+              </TooltipContent>
+            </Tooltip>
+          </ButtonGroup>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
