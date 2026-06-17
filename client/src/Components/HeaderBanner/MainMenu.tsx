@@ -30,9 +30,7 @@ export const MainMenu: React.FC = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <Button variant="outline" size="lg">
-          <Menu />
-        </Button>
+        <Menu style={{ cursor: "pointer" }} />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="mainDropDownMenu">
         <DropdownMenuItem>

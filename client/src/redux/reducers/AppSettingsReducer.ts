@@ -29,10 +29,9 @@ const AppSettingsSlice = createSlice({
     setAppSettings(_, action: PayloadAction<AppSettings>) {
       return action.payload;
     },
-    setCoverSize(state, action: PayloadAction<AppSettings>) {
-      state.libraryCoverSize.width = action.payload.libraryCoverSize.width;
-      state.libraryCoverSize.height =
-        (action.payload.libraryCoverSize.width / 2) * 3;
+    setCoverSize(state, action: PayloadAction<number>) {
+      state.libraryCoverSize.width = action.payload;
+      state.libraryCoverSize.height = (action.payload / 2) * 3;
     },
     switchLibraryAsHome(state) {
       state.showLibraryAsHome = !state.showLibraryAsHome;

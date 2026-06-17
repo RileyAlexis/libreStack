@@ -1,5 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { LibraryType } from "../../types/LibraryType";
+import type { BookType } from "@/types/BookType";
 
 const initialState: LibraryType[] = [];
 
@@ -10,8 +11,17 @@ const LibrarySlice = createSlice({
     setLibrary(_, action: PayloadAction<LibraryType[]>) {
       return action.payload;
     },
+    setSelectedBooks(
+      state,
+      action: PayloadAction<{ libraryId: number; books: BookType[] }>,
+    ) {
+      const library = state.find((l) => l.id === action.payload.libraryId);
+      if (library) {
+        library.selectedBooks = action.payload.books;
+      }
+    },
   },
 });
 
-export const { setLibrary } = LibrarySlice.actions;
+export const { setLibrary, setSelectedBooks } = LibrarySlice.actions;
 export default LibrarySlice.reducer;

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import type { LibreRootState } from "../../types/LibreRootState";
 
@@ -13,9 +13,11 @@ import { LogIn } from "lucide-react";
 import { LoginScreen } from "../LoginScreen/LoginScreen";
 import { MainMenu } from "./MainMenu";
 import "./HeaderBanner.css";
+import { LibraryControls } from "../Library/LibraryControls";
 
 export const HeaderBanner: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const user = useSelector((state: LibreRootState) => state.user);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -34,6 +36,7 @@ export const HeaderBanner: React.FC = () => {
         <h1 onClick={handleNavigateToMain} style={{ cursor: "pointer" }}>
           LibreStack
         </h1>
+        {location.pathname === "/library" && <LibraryControls />}
         <div className="menuContainer">
           <MainMenu />
           {user.isLoggedIn && (

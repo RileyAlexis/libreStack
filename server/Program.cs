@@ -116,14 +116,14 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 // 3. Core pipeline middleware
-app.UseStaticFiles();
 // app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
 // 4. Endpoint mappings
-app.MapFallbackToFile("index.html");
 app.MapControllers();
+app.UseStaticFiles();
+app.MapFallbackToFile("index.html");
 
 
 

@@ -1,0 +1,29 @@
+.libraryControlsIconLink {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5em;
+  /* width: 100%; */
+  cursor: pointer;
+  margin-top: 0.2em;
+}
+
+.selectedMenu {
+  background-color: lightgreen;
+}
+
+.layoutMenu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.libraryControlSlider {
+  padding: 1em;
+}
+
+.slider-track {
+  position: relative;
+  background: var(--primary);
+  height: 4px;
+  border-radius: 20px;
+}
