@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
 
 import { api } from "./api";
@@ -6,7 +6,6 @@ import { Route, Routes, useLocation } from "react-router";
 
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser, setUser } from "./redux/reducers/userReducer";
-import { setLibrary } from "./redux/reducers/LibraryReducer";
 
 import "./App.css";
 import { Setup } from "./components/Setup/ Setup";
@@ -16,7 +15,6 @@ import axios from "axios";
 import { Reader } from "./components/Reader/Reader";
 import { Library } from "./components/Library/Library";
 import type { LibreRootState } from "./types/LibreRootState";
-import { LogIn } from "lucide-react";
 // import type { LibreRootState } from "./types/LibreRootState";
 
 function App() {

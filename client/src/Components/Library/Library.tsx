@@ -10,6 +10,7 @@ import type { BookType } from "../../types/BookType";
 //Actions
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 import "./Library.css";
+import { BookCard } from "./BookCard";
 
 export const Library: React.FC = () => {
   const navigate = useNavigate();
@@ -35,25 +36,7 @@ export const Library: React.FC = () => {
           libraryData[selections.selectedLibrary] &&
           libraryData[selections.selectedLibrary].books &&
           libraryData[selections.selectedLibrary].books.map(
-            (book: BookType) => (
-              <div
-                key={book.id}
-                className="bookCover"
-                style={{
-                  width: appSettings.libraryCoverSize.width,
-                  height: appSettings.libraryCoverSize.height,
-                  cursor: "pointer",
-                }}
-                onClick={() => handleSelectBook(book)}
-              >
-                <center>
-                  <img
-                    src={`data:${book.contentType};base64,${book.coverImage}`}
-                    alt={book.title}
-                  />
-                </center>
-              </div>
-            ),
+            (book: BookType) => <BookCard key={book.id} book={book} />,
           )}
       </div>
     </div>
