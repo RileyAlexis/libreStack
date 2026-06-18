@@ -17,6 +17,8 @@ const userSlice = createSlice({
     logoutUser(state) {
       state.userName = "";
       state.isLoggedIn = false;
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
     },
   },
 });

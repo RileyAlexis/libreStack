@@ -16,6 +16,7 @@ import axios from "axios";
 import { Reader } from "./components/Reader/Reader";
 import { Library } from "./components/Library/Library";
 import type { LibreRootState } from "./types/LibreRootState";
+import { LogIn } from "lucide-react";
 // import type { LibreRootState } from "./types/LibreRootState";
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
   const dispatch = useDispatch();
   const location = useLocation();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  const user = useSelector((state: LibreRootState) => state.user);
 
   useEffect(() => {
     api
@@ -38,7 +40,6 @@ function App() {
       .get("/Auth/user")
       .then((response) => {
         if (response.status === 200) {
-          // console.log(response);
           dispatch(
             setUser({ userName: response.data.userName, isLoggedIn: true }),
           );
@@ -47,6 +48,7 @@ function App() {
       .catch((error) => {
         console.error(error);
         const refreshToken = localStorage.getItem("refreshToken");
+        if (!refreshToken) navigate("/login");
         axios
           .post("/api/auth/refresh", { refreshToken: refreshToken })
           .then((response) => {
@@ -64,8 +66,8 @@ function App() {
                   }),
                 );
               })
-              .catch((error) => {
-                console.error(error.response.data);
+              .catch((_) => {
+                navigate("/login");
               });
           });
         dispatch(logoutUser());
@@ -76,19 +78,7 @@ function App() {
     } else if (location.pathname === "/") {
       navigate("/serverStats");
     }
-  }, []);
-
-  useEffect(() => {
-    api
-      .get("/Library/getAllLibraries")
-      .then((response) => {
-        // console.log(response.data);
-        dispatch(setLibrary(response.data));
-      })
-      .catch((error) => {
-        console.log(error.response.data);
-      });
-  }, []);
+  }, [location.pathname, user.isLoggedIn]);
 
   return (
     <div className="primaryContainer">
@@ -126,6 +116,15 @@ function App() {
             <div>
               <HeaderBanner />
               <Library />
+            </div>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <div>
+              <HeaderBanner />
+              {/* <LogIn /> */}
             </div>
           }
         />

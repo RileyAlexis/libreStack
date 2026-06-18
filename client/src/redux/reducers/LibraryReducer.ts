@@ -1,6 +1,23 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  type PayloadAction,
+  createAsyncThunk,
+} from "@reduxjs/toolkit";
 import type { LibraryType } from "../../types/LibraryType";
 import type { BookType } from "@/types/BookType";
+import { api } from "@/api";
+
+export const fetchLibraryData = createAsyncThunk(
+  "library/fetchLibraryData",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("/Library/getAllLibraries");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue((error as Error).message);
+    }
+  },
+);
 
 const initialState: LibraryType[] = [];
 
@@ -20,6 +37,11 @@ const LibrarySlice = createSlice({
         library.selectedBooks = action.payload.books;
       }
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchLibraryData.fulfilled, (_, action) => {
+      return action.payload;
+    });
   },
 });
 

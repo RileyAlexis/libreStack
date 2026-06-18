@@ -1,22 +1,27 @@
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../redux/reducers/userReducer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Field, FieldDescription, FieldLabel } from "../ui/field";
+import { Field, FieldLabel } from "../ui/field";
 import { AlertCircle } from "lucide-react";
 import "./LoginScreen.css";
+import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
+import type { AppDispatch } from "@/redux/store";
 
 interface LoginScreenProps {
   setIsLoginOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const LoginScreen: React.FC<LoginScreenProps> = ({ setIsLoginOpen }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
+  const naviagate = useNavigate();
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [errMessage, setErrMessage] = useState("");
   const [registerNew, setRegisterNew] = useState(false);
@@ -27,7 +32,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ setIsLoginOpen }) => {
       if (registerNew) {
         if (password === confirmPassword) {
           axios
-            .post("/api/auth/register", { username, password })
+            .post("/api/auth/register", { username, email, password })
             .then(() => {
               setErrMessage("");
               setPassword("");
@@ -35,6 +40,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ setIsLoginOpen }) => {
               setRegisterNew(false);
               dispatch(setUser({ userName: username, isLoggedIn: true }));
               setIsLoginOpen(false);
+              naviagate("/");
             })
             .catch((error) => {
               setErrMessage(error.response.data.message);
@@ -52,7 +58,9 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ setIsLoginOpen }) => {
             localStorage.setItem("accessToken", token);
             localStorage.setItem("refreshToken", refreshToken);
             dispatch(setUser({ userName: username, isLoggedIn: true }));
+            dispatch(fetchLibraryData());
             setIsLoginOpen(false);
+            naviagate("/");
           })
           .catch((error) => {
             if (error.response.message === "User not Found") {
@@ -78,15 +86,30 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ setIsLoginOpen }) => {
         <Field>
           <FieldLabel htmlFor="username">Username:</FieldLabel>
           <Input
+            required
             id="username"
             placeholder="User Name"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
         </Field>
+        {registerNew && (
+          <Field>
+            <FieldLabel htmlFor="email">Email:</FieldLabel>
+            <Input
+              required
+              id="email"
+              placeholder="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Field>
+        )}
         <Field>
           <FieldLabel htmlFor="password">Password:</FieldLabel>
           <Input
+            required
             id="password"
             placeholder="Password"
             type="password"
@@ -98,6 +121,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ setIsLoginOpen }) => {
           <Field>
             <FieldLabel htmlFor="confirmPassword">Confirm Password:</FieldLabel>
             <Input
+              required
               id="confirmPassword"
               placeholder="Confirm Password"
               type="password"

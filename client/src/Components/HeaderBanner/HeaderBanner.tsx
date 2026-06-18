@@ -1,13 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import type { LibreRootState } from "../../types/LibreRootState";
 
 // UI
-import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { LogIn } from "lucide-react";
 
 // Components
 import { LoginScreen } from "../LoginScreen/LoginScreen";
@@ -21,6 +18,7 @@ export const HeaderBanner: React.FC = () => {
   const user = useSelector((state: LibreRootState) => state.user);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [showClose, setShowClose] = useState<boolean>(true);
 
   const handleNavigateToMain = () => {
     if (appSettings.showLibraryAsHome) {
@@ -30,6 +28,13 @@ export const HeaderBanner: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (!user.isLoggedIn) {
+      setIsLoginOpen(true);
+      setShowClose(false);
+    }
+  }, [user.isLoggedIn]);
+
   return (
     <>
       <div className="headerBannerContainer">
@@ -38,35 +43,11 @@ export const HeaderBanner: React.FC = () => {
         </h1>
         {location.pathname === "/library" && <LibraryControls />}
         <div className="menuContainer">
-          <MainMenu />
-          {user.isLoggedIn && (
-            <Avatar>
-              <AvatarFallback>
-                {user.userName && user.userName.length > 0 ? (
-                  user.userName.charAt(0).toUpperCase()
-                ) : (
-                  <LogIn size={16} />
-                )}
-              </AvatarFallback>
-            </Avatar>
-          )}
-          {!user.isLoggedIn && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsLoginOpen(true)}
-            >
-              <Avatar>
-                <AvatarFallback>
-                  <LogIn size={16} />
-                </AvatarFallback>
-              </Avatar>
-            </Button>
-          )}
+          <MainMenu setIsLoginOpen={setIsLoginOpen} />
         </div>
       </div>
       <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-        <DialogContent>
+        <DialogContent showCloseButton={showClose}>
           <LoginScreen setIsLoginOpen={setIsLoginOpen} />
         </DialogContent>
       </Dialog>
