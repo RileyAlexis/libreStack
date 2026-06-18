@@ -4,7 +4,7 @@ import {
   createAsyncThunk,
 } from "@reduxjs/toolkit";
 import type { LibraryType } from "../../types/LibraryType";
-import type { BookType } from "@/types/BookType";
+// import type { BookType } from "@/types/BookType";
 import { api } from "@/api";
 
 export const fetchLibraryData = createAsyncThunk(
@@ -28,15 +28,15 @@ const LibrarySlice = createSlice({
     setLibrary(_, action: PayloadAction<LibraryType[]>) {
       return action.payload;
     },
-    setSelectedBooks(
-      state,
-      action: PayloadAction<{ libraryId: number; books: BookType[] }>,
-    ) {
-      const library = state.find((l) => l.id === action.payload.libraryId);
-      if (library) {
-        library.selectedBooks = action.payload.books;
-      }
-    },
+    // setSelectedBooks(
+    //   state,
+    //   action: PayloadAction<{ libraryId: number; books: BookType[] }>,
+    // ) {
+    //   const library = state.find((l) => l.id === action.payload.libraryId);
+    //   if (library) {
+    //     library.selectedBooks = action.payload.books;
+    //   }
+    // },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchLibraryData.fulfilled, (_, action) => {
@@ -45,5 +45,5 @@ const LibrarySlice = createSlice({
   },
 });
 
-export const { setLibrary, setSelectedBooks } = LibrarySlice.actions;
+export const { setLibrary } = LibrarySlice.actions;
 export default LibrarySlice.reducer;

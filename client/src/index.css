@@ -36,6 +36,23 @@
     --foreground: oklch(0.145 0 0);
     --card: oklch(96.114% 0.02198 80.643);
     --card-foreground: oklch(0.145 0 0);
+    --select-color: rgba(83, 137, 255, 1);
+
+    --shadow-color: 0deg 0% 0%;
+    --shadow-elevation-low:
+      0.4px 0.3px 0.4px hsl(var(--shadow-color) / 0.18),
+      1.1px 0.9px 1.1px -4.6px hsl(var(--shadow-color) / 0.09);
+    --shadow-elevation-medium:
+      0.4px 0.3px 0.4px hsl(var(--shadow-color) / 0.16),
+      1.1px 0.9px 1.1px -2.3px hsl(var(--shadow-color) / 0.11),
+      5.7px 4.5px 5.8px -4.6px hsl(var(--shadow-color) / 0.06);
+    --shadow-elevation-high:
+      0.4px 0.3px 0.4px hsl(var(--shadow-color) / 0.15),
+      0.7px 0.6px 0.7px -0.9px hsl(var(--shadow-color) / 0.13),
+      2px 1.6px 2.1px -1.9px hsl(var(--shadow-color) / 0.1),
+      5.3px 4.2px 5.4px -2.8px hsl(var(--shadow-color) / 0.08),
+      11.5px 9.2px 11.8px -3.7px hsl(var(--shadow-color) / 0.06),
+      21.9px 17.4px 22.4px -4.6px hsl(var(--shadow-color) / 0.03);
     --popover: oklch(96.114% 0.02198 80.643);
     --popover-foreground: oklch(0.145 0 0);
     --primary: oklch(74.281% 0.14454 77.173);
@@ -71,6 +88,7 @@
     --foreground: oklch(0.985 0 0);
     --card: oklch(49.133% 0.02929 86.876);
     --card-foreground: oklch(0.985 0 0);
+    --shadow-color: 0deg 100% 100%;
     --popover: oklch(49.133% 0.02929 86.876);
     --popover-foreground: oklch(0.985 0 0);
     --primary: oklch(59.226% 0.11396 77.691);

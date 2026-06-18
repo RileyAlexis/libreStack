@@ -6,5 +6,4 @@ export interface LibraryType {
   name: string;
   userId: string;
   books: BookType[];
-  selectedBooks: BookType[];
 }

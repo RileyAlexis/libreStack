@@ -1,6 +1,4 @@
-import type { BookType } from "./BookType";
-
 export interface SelectType {
-  selectedBooks: BookType[];
+  selectedBooks: number[];
   selectedLibrary: number;
 }
