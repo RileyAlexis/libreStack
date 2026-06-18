@@ -5,6 +5,7 @@ import { setUser } from "../../redux/reducers/userReducer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Field, FieldDescription, FieldLabel } from "../ui/field";
 import { AlertCircle } from "lucide-react";
 import "./LoginScreen.css";
 
@@ -65,38 +66,55 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ setIsLoginOpen }) => {
   };
 
   return (
-    <div className="loginInputsContainer">
+    <div className="loginContainer">
       <h1>Login</h1>
-      {errMessage !== "" && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{errMessage}</AlertDescription>
-        </Alert>
-      )}
-      <Input
-        placeholder="User Name"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <Input
-        placeholder="Password"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      {registerNew && (
-        <Input
-          placeholder="Confirm Password"
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-        />
-      )}
-      <div className="loginButtons">
-        <Button onClick={submitLogin}>Submit</Button>
-        <Button variant="outline" onClick={() => setRegisterNew(!registerNew)}>
-          {!registerNew ? "Register New User" : "Log In Existing User"}
-        </Button>
+      <div className="loginInputsContainer">
+        {errMessage !== "" && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{errMessage}</AlertDescription>
+          </Alert>
+        )}
+        <Field>
+          <FieldLabel htmlFor="username">Username:</FieldLabel>
+          <Input
+            id="username"
+            placeholder="User Name"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </Field>
+        <Field>
+          <FieldLabel htmlFor="password">Password:</FieldLabel>
+          <Input
+            id="password"
+            placeholder="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </Field>
+        {registerNew && (
+          <Field>
+            <FieldLabel htmlFor="confirmPassword">Confirm Password:</FieldLabel>
+            <Input
+              id="confirmPassword"
+              placeholder="Confirm Password"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </Field>
+        )}
+        <div className="loginButtons">
+          <Button onClick={submitLogin}>Submit</Button>
+          <Button
+            variant="outline"
+            onClick={() => setRegisterNew(!registerNew)}
+          >
+            {!registerNew ? "Register New User" : "Log In Existing User"}
+          </Button>
+        </div>
       </div>
     </div>
   );
