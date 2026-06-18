@@ -29,11 +29,13 @@ export const HeaderBanner: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!user.isLoggedIn) {
+    if (user.isLoggedIn === false) {
       setIsLoginOpen(true);
       setShowClose(false);
+    } else {
+      setIsLoginOpen(false);
     }
-  }, [user.isLoggedIn]);
+  }, [user]);
 
   return (
     <>

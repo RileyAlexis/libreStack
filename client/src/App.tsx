@@ -5,7 +5,7 @@ import { api } from "./api";
 import { Route, Routes, useLocation } from "react-router";
 
 import { useDispatch, useSelector } from "react-redux";
-import { logoutUser, setUser } from "./redux/reducers/userReducer";
+import { setUser } from "./redux/reducers/userReducer";
 
 import "./App.css";
 import { Setup } from "./components/Setup/ Setup";
@@ -34,42 +34,45 @@ function App() {
       })
       .catch((error) => console.error(error));
 
-    api
-      .get("/Auth/user")
-      .then((response) => {
-        if (response.status === 200) {
-          dispatch(
-            setUser({ userName: response.data.userName, isLoggedIn: true }),
-          );
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        const refreshToken = localStorage.getItem("refreshToken");
-        if (!refreshToken) navigate("/login");
-        axios
-          .post("/api/auth/refresh", { refreshToken: refreshToken })
-          .then((response) => {
-            const token = response.data.token;
-            const refreshToken = response.data.refreshToken;
-            localStorage.setItem("authToken", token);
-            localStorage.setItem("refreshToken", refreshToken);
-            api
-              .get("/auth/user")
-              .then((response) => {
-                dispatch(
-                  setUser({
-                    userName: response.data.userName,
-                    isLoggedIn: true,
-                  }),
-                );
-              })
-              .catch((_) => {
-                navigate("/login");
-              });
-          });
-        dispatch(logoutUser());
-      });
+    const runLogin = () => {
+      api
+        .get("/Auth/user")
+        .then((response) => {
+          if (response.status === 200) {
+            dispatch(
+              setUser({ userName: response.data.userName, isLoggedIn: true }),
+            );
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          const refreshToken = localStorage.getItem("refreshToken");
+          if (!refreshToken) navigate("/login");
+          axios
+            .post("/api/auth/refresh", { refreshToken: refreshToken })
+            .then((response) => {
+              const token = response.data.token;
+              const refreshToken = response.data.refreshToken;
+              localStorage.setItem("authToken", token);
+              localStorage.setItem("refreshToken", refreshToken);
+              api
+                .get("/auth/user")
+                .then((response) => {
+                  dispatch(
+                    setUser({
+                      userName: response.data.userName,
+                      isLoggedIn: true,
+                    }),
+                  );
+                })
+                .catch((_) => {
+                  navigate("/login");
+                });
+            });
+        });
+    };
+
+    if (!user.isLoggedIn) runLogin();
 
     if (appSettings.showLibraryAsHome && location.pathname === "/") {
       navigate("/library");
