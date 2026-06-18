@@ -1,0 +1,29 @@
+.bottomControlsContainer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5em 1em;
+  padding-bottom: calc(0.5em + env(safe-area-inset-bottom));
+  background: var(--card);
+  box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.15);
+}
+
+.bottomControlsContainer > * {
+  width: 100%;
+  max-width: 600px;
+}
+
+.bottomControlOption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2em;
+  font-size: 0.75rem;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}

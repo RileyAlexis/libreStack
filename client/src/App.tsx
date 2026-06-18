@@ -14,6 +14,7 @@ import { HeaderBanner } from "./components/HeaderBanner/HeaderBanner";
 import axios from "axios";
 import { Reader } from "./components/Reader/Reader";
 import { Library } from "./components/Library/Library";
+import { BottomControls } from "./components/BottomControls/BottomControls";
 import type { LibreRootState } from "./types/LibreRootState";
 // import type { LibreRootState } from "./types/LibreRootState";
 
@@ -21,6 +22,7 @@ function App() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
+  const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const user = useSelector((state: LibreRootState) => state.user);
 
@@ -88,18 +90,20 @@ function App() {
         <Route
           path="/tester"
           element={
-            <>
+            <div className="pageContent">
               <HeaderBanner />
               <Tester />
-            </>
+              {isTouchDevice && <BottomControls />}
+            </div>
           }
         />
         <Route
           path="/setup"
           element={
-            <div>
+            <div className="pageContent">
               <HeaderBanner />
               <Setup />
+              {isTouchDevice && <BottomControls />}
             </div>
           }
         />
@@ -114,9 +118,10 @@ function App() {
         <Route
           path="/library"
           element={
-            <div>
+            <div className="pageContent">
               <HeaderBanner />
               <Library />
+              {isTouchDevice && <BottomControls />}
             </div>
           }
         />

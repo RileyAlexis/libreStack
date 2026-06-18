@@ -15,6 +15,7 @@ import { LibraryControls } from "../Library/LibraryControls";
 export const HeaderBanner: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
   const user = useSelector((state: LibreRootState) => state.user);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -43,11 +44,14 @@ export const HeaderBanner: React.FC = () => {
         <h1 onClick={handleNavigateToMain} style={{ cursor: "pointer" }}>
           LibreStack
         </h1>
-        {location.pathname === "/library" && <LibraryControls />}
+        {location.pathname === "/library" && !isTouchDevice && (
+          <LibraryControls />
+        )}
         <div className="menuContainer">
           <MainMenu setIsLoginOpen={setIsLoginOpen} />
         </div>
       </div>
+
       <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
         <DialogContent showCloseButton={showClose}>
           <LoginScreen setIsLoginOpen={setIsLoginOpen} />

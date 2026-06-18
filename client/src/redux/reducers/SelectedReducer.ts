@@ -21,9 +21,16 @@ const SelectSlice = createSlice({
         (book) => book !== action.payload,
       );
     },
+    clearSelectedBooks(state) {
+      state.selectedBooks = [];
+    },
   },
 });
 
-export const { setSelectedLibrary, selectBook, unSelectBook } =
-  SelectSlice.actions;
+export const {
+  setSelectedLibrary,
+  selectBook,
+  unSelectBook,
+  clearSelectedBooks,
+} = SelectSlice.actions;
 export default SelectSlice.reducer;
