@@ -6,7 +6,7 @@ import "./LibraryControls.css";
 
 //UI
 import { Slider } from "../ui/slider";
-import { DeleteIcon, PlusIcon, UploadIcon } from "lucide-react";
+import { DeleteIcon, PlusIcon, ScanText, UploadIcon } from "lucide-react";
 import {
   Menubar,
   MenubarContent,
@@ -17,6 +17,7 @@ import {
   MenubarSubTrigger,
   MenubarTrigger,
 } from "../ui/menubar";
+import { api } from "@/api";
 
 export const LibraryControls: React.FC = () => {
   const dispatch = useDispatch();
@@ -31,6 +32,19 @@ export const LibraryControls: React.FC = () => {
 
   const handleSelectLibrary = (index: number) => {
     dispatch(setSelectedLibrary(index));
+  };
+
+  const handleMetadataRefresh = () => {
+    api
+      .get(
+        `metadata/refreshLibraryMetaData?libraryId=${library[selections.selectedLibrary].id}`,
+      )
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   return (
@@ -59,6 +73,10 @@ export const LibraryControls: React.FC = () => {
       <MenubarMenu>
         <MenubarTrigger>Manage</MenubarTrigger>
         <MenubarContent>
+          <MenubarItem onClick={handleMetadataRefresh}>
+            <ScanText />
+            Refresh All Metadata
+          </MenubarItem>
           <MenubarItem>
             <UploadIcon />
             Upload Book

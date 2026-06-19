@@ -30,4 +30,18 @@ public class MetadataController : ControllerBase
 
         return Ok();
     }
+
+    [HttpGet("refreshLibraryMetaData")]
+    [Authorize]
+    public async Task<IActionResult> RefreshLibraryMetaData(int libraryId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null) return Unauthorized();
+
+        var result = await _iOpenLibraryService.RefreshLibraryMetadata(userId, libraryId);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok();
+    }
 }

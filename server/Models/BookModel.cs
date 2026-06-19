@@ -34,6 +34,7 @@ public class Book
     public string? WorkId { get; set; } = null;
     public int? CollectionId { get; set; }
     public required string EpubPath { get; set; }
+    public DateTime MetadataLastUpdated { get; set; }
 
     [JsonIgnore]
     public ICollection<Library> Libraries { get; set; } = new List<Library>();
