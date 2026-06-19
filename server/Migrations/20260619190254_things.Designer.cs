@@ -3,6 +3,7 @@ using System;
 using Librestack.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace libreStack.Migrations
 {
     [DbContext(typeof(LibrestackDbContext))]
-    partial class LibrestackDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260619190254_things")]
+    partial class things
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,10 +55,6 @@ namespace libreStack.Migrations
                         .HasColumnType("bytea")
                         .HasColumnName("cover_image");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text")
-                        .HasColumnName("description");
-
                     b.Property<string>("EpubPath")
                         .IsRequired()
                         .HasColumnType("text")
@@ -64,10 +63,6 @@ namespace libreStack.Migrations
                     b.Property<string>("ISBN")
                         .HasColumnType("text")
                         .HasColumnName("isbn");
-
-                    b.Property<string>("ISBN13")
-                        .HasColumnType("text")
-                        .HasColumnName("isbn13");
 
                     b.Property<string>("LCCN")
                         .HasColumnType("text")
@@ -97,10 +92,6 @@ namespace libreStack.Migrations
                         .HasColumnType("text")
                         .HasColumnName("open_library_work_id");
 
-                    b.Property<string>("PublishDate")
-                        .HasColumnType("text")
-                        .HasColumnName("publish_date");
-
                     b.Property<string>("Publisher")
                         .IsRequired()
                         .HasColumnType("text")
@@ -127,10 +118,6 @@ namespace libreStack.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("user_id");
-
-                    b.Property<string>("WikiDataIdentifier")
-                        .HasColumnType("text")
-                        .HasColumnName("wiki_data_identifier");
 
                     b.Property<string>("WorkId")
                         .HasColumnType("text")

@@ -41,17 +41,19 @@ public class LibraryMonitorService : BackgroundService
         using var scope = _services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<LibrestackDbContext>();
         var scanService = scope.ServiceProvider.GetRequiredService<IlibraryScanService>();
-        var libraryIds = await db.Libraries.Select(l => l.Id).ToListAsync();
+        var libraryIds = await db.Libraries.Select(l => new { l.Id, l.UserId }).ToListAsync();
 
-        foreach (var id in libraryIds)
+
+        foreach (var library in libraryIds)
         {
-            _logger.LogInformation("Scanning library {id}", id);
-            var result = await scanService.ScanLibraryFiles(id);
+            _logger.LogInformation("Scanning library {id}", library.Id);
+
+            var result = await scanService.ScanLibraryFiles(library.UserId, library.Id);
 
             if (result.IsSuccess)
-                _logger.LogInformation("Scan complete for library {id}", id);
+                _logger.LogInformation("Scan complete for library {id}", library.Id);
             else
-                _logger.LogError("Scan failed for library {id}: {error}", id, result.Error);
+                _logger.LogError("Scan failed for library {id}: {error}", library.Id, result.Error);
         }
     }
 }

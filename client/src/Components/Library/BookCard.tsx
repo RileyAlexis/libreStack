@@ -6,7 +6,8 @@ import type { BookType } from "@/types/BookType";
 import type { LibreRootState } from "@/types/LibreRootState";
 import "./BookCard.css";
 import { Button } from "../ui/button";
-import { Circle, CircleCheck } from "lucide-react";
+import { Circle, CircleCheck, ScanText } from "lucide-react";
+import { api } from "@/api";
 
 interface BookCardProps {
   book: BookType;
@@ -46,6 +47,18 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
 
   const handleUnselectBook = (bookId: number) => {
     dispatch(unSelectBook(bookId));
+  };
+
+  const handleGetOpenLibraryData = (bookId: number) => {
+    console.log(bookId);
+    api
+      .get(`metadata/applyOpenLibraryData?bookId=${bookId}`)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error.response.data);
+      });
   };
 
   const isInSelectionZone = (e: React.MouseEvent | React.TouchEvent) => {
@@ -146,6 +159,19 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
             />
           </Button>
         )}
+        <div className="getMetaData">
+          <Button
+            variant="link"
+            size="icon"
+            className="rounded-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleGetOpenLibraryData(book.id);
+            }}
+          >
+            <ScanText className="bookIcon" style={iconSize} />
+          </Button>
+        </div>
       </div>
       <div className={`bookCover ${isSelected ? "selected" : ""}`}>
         <img

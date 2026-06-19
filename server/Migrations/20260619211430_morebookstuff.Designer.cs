@@ -3,6 +3,7 @@ using System;
 using Librestack.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace libreStack.Migrations
 {
     [DbContext(typeof(LibrestackDbContext))]
-    partial class LibrestackDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260619211430_morebookstuff")]
+    partial class morebookstuff
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,9 +131,9 @@ namespace libreStack.Migrations
                         .HasColumnType("text")
                         .HasColumnName("user_id");
 
-                    b.Property<string>("WikiDataIdentifier")
+                    b.Property<string>("WikieDataIdentifier")
                         .HasColumnType("text")
-                        .HasColumnName("wiki_data_identifier");
+                        .HasColumnName("wikie_data_identifier");
 
                     b.Property<string>("WorkId")
                         .HasColumnType("text")

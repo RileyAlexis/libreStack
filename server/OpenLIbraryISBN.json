@@ -1,0 +1,105 @@
+{
+  "ISBN:9780062936011": {
+    "url": "http://openlibrary.org/books/OL27907474M/To_Be_Taught_If_Fortunate",
+    "key": "/books/OL27907474M",
+    "title": "To Be Taught, If Fortunate",
+    "authors": [
+      {
+        "url": "http://openlibrary.org/authors/OL7387940A/Becky_Chambers",
+        "name": "Becky Chambers"
+      }
+    ],
+    "number_of_pages": 153,
+    "identifiers": {
+      "isbn_13": ["9780062936011"],
+      "oclc": ["1100054207"],
+      "openlibrary": ["OL27907474M"]
+    },
+    "classifications": { "lc_classifications": ["PS3603.H347 T6 2019b"] },
+    "publishers": [{ "name": "Harper Voyager" }],
+    "publish_date": "2019",
+    "subjects": [
+      { "name": "Fiction", "url": "https://openlibrary.org/subjects/fiction" },
+      {
+        "name": "Science fiction",
+        "url": "https://openlibrary.org/subjects/science_fiction"
+      },
+      {
+        "name": "American literature",
+        "url": "https://openlibrary.org/subjects/american_literature"
+      },
+      {
+        "name": "Fiction, science fiction, general",
+        "url": "https://openlibrary.org/subjects/fiction,_science_fiction,_general"
+      },
+      {
+        "name": "Life on other planets",
+        "url": "https://openlibrary.org/subjects/life_on_other_planets"
+      },
+      {
+        "name": "Astronauts",
+        "url": "https://openlibrary.org/subjects/astronauts"
+      },
+      {
+        "name": "Time dilatation",
+        "url": "https://openlibrary.org/subjects/time_dilatation"
+      },
+      {
+        "name": "Genetic engineering",
+        "url": "https://openlibrary.org/subjects/genetic_engineering"
+      },
+      {
+        "name": "Exploration",
+        "url": "https://openlibrary.org/subjects/exploration"
+      },
+      {
+        "name": "Moral and ethical aspects",
+        "url": "https://openlibrary.org/subjects/moral_and_ethical_aspects"
+      },
+      {
+        "name": "Discoveries in geography",
+        "url": "https://openlibrary.org/subjects/discoveries_in_geography"
+      },
+      {
+        "name": "Interplanetary voyages",
+        "url": "https://openlibrary.org/subjects/interplanetary_voyages"
+      },
+      {
+        "name": "Cultural relations",
+        "url": "https://openlibrary.org/subjects/cultural_relations"
+      }
+    ],
+    "subject_places": [
+      {
+        "name": "Aecor",
+        "url": "https://openlibrary.org/subjects/place:aecor"
+      },
+      {
+        "name": "Mirabilis",
+        "url": "https://openlibrary.org/subjects/place:mirabilis"
+      },
+      {
+        "name": "Opera",
+        "url": "https://openlibrary.org/subjects/place:opera"
+      },
+      { "name": "Votum", "url": "https://openlibrary.org/subjects/place:votum" }
+    ],
+    "subject_people": [
+      {
+        "name": "Ariadne O'Neill",
+        "url": "https://openlibrary.org/subjects/person:ariadne_o'neill"
+      }
+    ],
+    "subject_times": [
+      {
+        "name": "22nd century",
+        "url": "https://openlibrary.org/subjects/time:22nd_century"
+      }
+    ],
+    "cover": {
+      "small": "https://covers.openlibrary.org/b/id/9319277-S.jpg",
+      "medium": "https://covers.openlibrary.org/b/id/9319277-M.jpg",
+      "large": "https://covers.openlibrary.org/b/id/9319277-L.jpg"
+    }
+  }
+}
