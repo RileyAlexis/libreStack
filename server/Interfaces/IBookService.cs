@@ -9,5 +9,6 @@ public interface IBookService
     Task<Result> UpdateBookMetaData(ApiBook book, string userId);
     Task<Result> DeleteBookEntry(int id, string userId);
     Task<Result> AddBookEntry(IFormFile file, string UserId, int libraryId);
+    Task<Result> AddBookEntryFromPath(string filePath, string userId, int libraryId);
     Task<Result<(Stream, string)>> DownloadBookEntry(string userId, int id);
 }

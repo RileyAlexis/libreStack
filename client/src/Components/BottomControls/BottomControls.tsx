@@ -5,7 +5,7 @@ import type { LibreRootState } from "@/types/LibreRootState";
 import { setSelectedLibrary } from "@/redux/reducers/SelectedReducer";
 
 // UI
-import { LibraryBig, PlusIcon } from "lucide-react";
+import { LibraryBig, PlusIcon, ScanSearch } from "lucide-react";
 import {
   Menubar,
   MenubarContent,
@@ -15,6 +15,7 @@ import {
 } from "../ui/menubar";
 
 import "./BottomControls.css";
+import { api } from "@/api";
 
 export const BottomControls: React.FC = () => {
   const dispatch = useDispatch();
@@ -23,6 +24,19 @@ export const BottomControls: React.FC = () => {
 
   const handleSelectLibrary = (index: number) => {
     dispatch(setSelectedLibrary(index));
+  };
+
+  const handleScanLibrary = () => {
+    api
+      .post(
+        `/LibraryScan/scanLibrary?libraryId=${library[selections.selectedLibrary].id}`,
+      )
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error.response.data);
+      });
   };
 
   return (
@@ -57,6 +71,10 @@ export const BottomControls: React.FC = () => {
             <MenubarItem>
               <PlusIcon />
               Create New Library
+            </MenubarItem>
+            <MenubarItem onClick={handleScanLibrary}>
+              <ScanSearch />
+              Scan Library
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>

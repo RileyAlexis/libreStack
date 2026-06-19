@@ -4,7 +4,6 @@ using Librestack.Interfaces;
 
 using Microsoft.EntityFrameworkCore;
 using Librestack.Models.APIModels;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Librestack.Services;
 
@@ -165,6 +164,32 @@ public class BookService : IBookService
 
         _db.Books.Update(existing);
         await _db.SaveChangesAsync();
+        return Result.Success();
+    }
+
+    public async Task<Result> AddBookEntryFromPath(string filePath, string userId, int libraryId)
+    {
+        var library = await _db.Libraries
+        .Include(l => l.Books)
+        .FirstOrDefaultAsync(l => l.Id == libraryId && l.UserId == userId);
+
+        if (library is null)
+            return Result.Failure("Library not found", ErrorType.NotFound);
+
+        Book entry;
+        try
+        {
+            entry = await _epubParser.ParseMetadata(filePath, userId);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure($"Failed to parse epub: {ex.Message}", ErrorType.BadRequest);
+        }
+
+        _db.Books.Add(entry);
+        library.Books.Add(entry);
+        await _db.SaveChangesAsync();
+
         return Result.Success();
     }
 }

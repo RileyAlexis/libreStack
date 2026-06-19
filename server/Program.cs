@@ -54,6 +54,7 @@ builder.Services.AddScoped<IReadingProgressService, ReadingProgressService>();
 builder.Services.AddScoped<IBookmarkService, BookmarkService>();
 builder.Services.AddScoped<ILibraryService, LibraryService>();
 builder.Services.AddScoped<ILibreStackConfigService, LibreStackConfigService>();
+builder.Services.AddScoped<IlibraryScanService, LibraryScanService>();
 
 builder.Services.AddDbContext<LibrestackDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
