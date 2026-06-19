@@ -8,4 +8,6 @@ public class LibreStackConfig
     [JsonIgnore]
     public int Id { get; set; }
     public required bool IsSetupComplete { get; set; } = false;
+    public bool ScanLibrariesService { get; set; } = true;
+    public int LibraryScanInterval { get; set; } = 15;
 }

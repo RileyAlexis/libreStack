@@ -56,6 +56,8 @@ builder.Services.AddScoped<ILibraryService, LibraryService>();
 builder.Services.AddScoped<ILibreStackConfigService, LibreStackConfigService>();
 builder.Services.AddScoped<IlibraryScanService, LibraryScanService>();
 
+builder.Services.AddHostedService<LibraryMonitorService>();
+
 builder.Services.AddDbContext<LibrestackDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"))
            .UseSnakeCaseNamingConvention()
