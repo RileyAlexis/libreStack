@@ -8,7 +8,7 @@ public class Book
     public int Id { get; set; }
     public required string UserId { get; set; }
     [JsonIgnore]
-    public IdentityUser User { get; set; }
+    public IdentityUser? User { get; set; }
 
     public string Title { get; set; } = "";
     public string Author { get; set; } = "";
@@ -22,6 +22,7 @@ public class Book
     public string? LCCN { get; set; } = null;
     public string? OCLCWorldCat { get; set; } = null;
     public string? AmazonId { get; set; } = null;
+    public string? OpenLibraryId { get; set; } = null;
     public string? WorkId { get; set; } = null;
     public int? CollectionId { get; set; }
     public required string EpubPath { get; set; }
