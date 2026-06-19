@@ -4,6 +4,6 @@ namespace Librestack.Interfaces;
 
 public interface IlibraryScanService
 {
-    Task<Result> ScanLibraryFiles(int libraryId);
+    Task<Result> ScanLibraryFiles(string userId, int libraryId);
 }
 

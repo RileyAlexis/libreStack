@@ -21,7 +21,10 @@ public class LibraryScanController : ControllerBase
     [Authorize]
     public async Task<IActionResult> ScanLibrary(int libraryId)
     {
-        var result = await _libraryScanService.ScanLibraryFiles(libraryId);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null) return Unauthorized();
+
+        var result = await _libraryScanService.ScanLibraryFiles(userId, libraryId);
         if (!result.IsSuccess)
             return BadRequest(new { error = result.Error });
 

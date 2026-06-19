@@ -19,13 +19,14 @@ public class LibraryScanService : IlibraryScanService
         _bookService = bookService;
     }
 
-    public async Task<Result> ScanLibraryFiles(int libraryId)
+    public async Task<Result> ScanLibraryFiles(string userId, int libraryId)
     {
         var library = await _db.Libraries
             .Include(l => l.Books)
             .FirstOrDefaultAsync(l => l.Id == libraryId);
 
         if (library is null) return Result.Failure("Library not found", ErrorType.NotFound);
+        if (library.UserId != userId) return Result.Failure("Library not owned by user", ErrorType.Forbidden);
         var libraryPath = library.LibraryPath;
         if (!Directory.Exists(libraryPath))
             return Result.Failure("Library Path not found on disk", ErrorType.NotFound);

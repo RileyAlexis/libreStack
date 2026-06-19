@@ -53,8 +53,6 @@ public class LibraryController : ControllerBase
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null) return Unauthorized();
 
-        Console.WriteLine($"**************** {libraryId} - {bookId}");
-
         var result = await _iLibraryService.AddBookToLibrary(userId, libraryId, bookId);
         if (!result.IsSuccess)
             return BadRequest(new { error = result.Error });
