@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
 using Librestack.Interfaces;
 using Microsoft.AspNetCore.Components.Endpoints;
+using System.Globalization;
 
 namespace Librestack.Services;
 
@@ -12,6 +13,7 @@ namespace Librestack.Services;
 // * Id Url - https://www.wikidata.org/wiki/Special:EntityData/Q42.json
 //  * Id via ApI https://www.wikidata.org/w/api.php?action=wbgetentities&ids=Q42&format=json
 //  * The wbgetentities one supports multiple IDs at once (ids=Q42|Q43|Q44).
+//  * SPARQL query https://query.wikidata.org/sparql?query=YOUR_SPARQL&format=json
 
 public class WikidataService : IWikidataService
 {
@@ -83,6 +85,7 @@ public class WikidataService : IWikidataService
             return Result<Book>.Failure("No Wikidata results found", ErrorType.NotFound);
 
         var firstResult = search[0];
+
         var wikiId = firstResult.TryGetProperty("id", out var i) ? i.GetString() : null;
 
         if (wikiId != null) book.WikiDataIdentifier = wikiId;
@@ -94,24 +97,70 @@ public class WikidataService : IWikidataService
 
     }
 
-    // https://www.wikidata.org/wiki/Special:EntityData/q5019811$A922D5DB-9E6E-4E64-9D99-3218A21D57CF.json
-
-    private async Task<Result<Book>> SearchWikidataById(Book book)
+    private string? GetBindingValue(JsonElement binding, string key)
     {
-        string url = $"https://www.wikidata.org/w/api.php?action=wbgetentities&ids={book.WikiDataIdentifier}&format=json";
+        if (binding.TryGetProperty(key, out var prop))
+            return prop.GetProperty("value").GetString();
+        return null;
+    }
+
+    // https://www.wikidata.org/wiki/Special:EntityData/Q6142591.json
+
+    private async Task<Result<Book>> QueryWikidataById(Book book)
+    {
+        if (string.IsNullOrWhiteSpace(book.WikiDataIdentifier))
+            return Result<Book>.Failure("Wiki Id not in database", ErrorType.NotFound);
+
+        Console.WriteLine("_________________________________________________ BY ID");
+
+
+        var sparql = "SELECT ?title ?authorLabel ?publicationDate ?genreLabel ?seriesLabel ?positionInSeries ?openLibraryId " +
+                     "WHERE { " +
+                     $"BIND(wd:{book.WikiDataIdentifier} AS ?book) " +
+                     "OPTIONAL { ?book wdt:P1476 ?title. FILTER(LANG(?title) = \"en\") } " +
+                     "OPTIONAL { ?book wdt:P50 ?author } " +
+                     "OPTIONAL { ?book wdt:P577 ?publicationDate } " +
+                     "OPTIONAL { ?book wdt:P136 ?genre } " +
+                     "OPTIONAL { ?book wdt:P179 ?series } " +
+                     "OPTIONAL { ?book p:P179 ?seriesStatement. ?seriesStatement pq:P1545 ?positionInSeries } " +
+                     "OPTIONAL { ?book wdt:P648 ?openLibraryId } " +
+                     "SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\". } " +
+                     "}";
+
+        var url = $"https://query.wikidata.org/sparql?query={Uri.EscapeDataString(sparql)}&format=json";
+
+        Console.WriteLine(url);
 
         var client = await CreateClient();
+        client.DefaultRequestHeaders.Add("Accept", "application/sparql-results+json");
+
         var response = await client.GetAsync(url);
-        if (!response.IsSuccessStatusCode)
-            return Result<Book>.Failure($"Wikidata Request Failed: {response.StatusCode} - {response.ReasonPhrase}", ErrorType.BadRequest);
-
         var json = await response.Content.ReadAsStringAsync();
+        var root = JsonDocument.Parse(json);
+        var binding = root.RootElement
+            .GetProperty("results")
+            .GetProperty("bindings")[0];
 
+        var title = GetBindingValue(binding, "title");
+        var author = GetBindingValue(binding, "authorLabel");
+        var genre = GetBindingValue(binding, "genreLabel");
+        var series = GetBindingValue(binding, "seriesLabel");
+        var position = GetBindingValue(binding, "positionInSeries");
+        var openLibraryId = GetBindingValue(binding, "openLibraryId");
+        var publicationDate = GetBindingValue(binding, "publicationDate");
 
-        Console.WriteLine("By Id - - ************************************");
-        _logger.LogInformation("Wikidata Id Response: {Json}", json);
+        if (title != null) book.Title = title;
+        if (author != null) book.Author = author;
+        if (series != null) book.SeriesTitle = series;
+        if (position != null && int.TryParse(position, out int result))
+            book.SeriesOrder = result;
+        if (openLibraryId != null) book.OpenLibraryWorkId = openLibraryId;
+
+        _db.Books.Update(book);
+        await _db.SaveChangesAsync();
 
         return Result<Book>.Success(book);
+
     }
 
     public async Task<Result> QueryWikidata(string userId, int bookId)
@@ -122,7 +171,7 @@ public class WikidataService : IWikidataService
 
         if (!string.IsNullOrWhiteSpace(book.WikiDataIdentifier))
         {
-            var result = await SearchWikidataById(book);
+            var result = await QueryWikidataById(book);
             if (!result.IsSuccess)
                 return Result.Failure(result.Error ?? "Unknown error", ErrorType.Unexpected);
             book = result.Value;

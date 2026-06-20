@@ -1,0 +1,36 @@
+P50 - Author
+P136 - Genre Labels
+P243 - OCLC Number
+P577 - Publication Date
+P407 - Language of Work
+P155 - Immediate prior item
+P156 - Immediate following item
+P179 - Part of the Series 
+P179.qualifiers  - P1545 - position in series
+P179.qualifiers - P155 - immediate prior item in series
+P179.qualifiers - P165 - immediately following item in series
+P179.qualifiers.qualifiers-order
+P18 - Cover? Associated image?
+P1274 - identifier for a title in the Internet Speculative Fiction Database
+P5571 - identifier for a book in the NooSFere database
+P1476 - Title (various languages)
+P274 - Internet Archive id
+P648 - Open Library id
+P747 - item ids for editions or translations
+P674 - Characters that appear in work (ids)
+P674.qualifiers P5800 - narrative role of character
+P291 - Place of publication
+P4969 - Derivative work
+P7439 - FantLab work id
+P646 - Freebase id
+P7937 - Structure of a creative work (novel)
+P856 - Official web site
+P10386 - numeric ID of work in Databazeknih.cz database
+P8383 - Goodreads id
+P1411 - award nominations
+P6839 - Tv tropes Id
+P1085 - LibraryThing (LT) control number
+P1434 - he subject is a work describing a fictional universe, i.e. whose plot occurs in this universe
+P495 - Country of origin
+P9821 - identifier for a film, television show, or literary work in the Unconsenting Media database, which provides information about rape and sexual assault in TV, movies, and books
+P921 - primary topic of a work or act of communication
