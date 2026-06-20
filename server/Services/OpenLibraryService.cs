@@ -109,7 +109,7 @@ public class OpenLibraryService : IOpenLibraryService
         if (publishDate != null) book.PublishDate = publishDate;
         if (publisher != null) book.Publisher = publisher;
 
-        book.MetadataLastUpdated = DateTime.UtcNow;
+        book.OpenLibraryMetadataLastUpdated = DateTime.UtcNow;
 
         _db.Books.Update(book);
         await _db.SaveChangesAsync();
@@ -174,7 +174,7 @@ public class OpenLibraryService : IOpenLibraryService
         if (isbn13 != null) book.ISBN13 = isbn13;
         if (lccn != null) book.LCCN = lccn;
 
-        book.MetadataLastUpdated = DateTime.UtcNow;
+        book.OpenLibraryMetadataLastUpdated = DateTime.UtcNow;
 
         _db.Books.Update(book);
         await _db.SaveChangesAsync();
@@ -240,7 +240,7 @@ public class OpenLibraryService : IOpenLibraryService
         if (isbn13 != null) book.ISBN13 = isbn13;
         if (lccn != null) book.LCCN = lccn;
 
-        book.MetadataLastUpdated = DateTime.UtcNow;
+        book.OpenLibraryMetadataLastUpdated = DateTime.UtcNow;
 
         _db.Books.Update(book);
         await _db.SaveChangesAsync();
@@ -286,7 +286,7 @@ public class OpenLibraryService : IOpenLibraryService
         return Result.Success();
     }
 
-    public async Task<Result> RefreshLibraryMetadata(string userId, int libraryId)
+    public async Task<Result> RefreshOpenLibrarydata(string userId, int libraryId)
     {
         var library = await _db.Libraries
             .Include(b => b.Books)
@@ -297,9 +297,9 @@ public class OpenLibraryService : IOpenLibraryService
 
         var cutoff = DateTime.UtcNow.AddMonths(-1);
         var booksToUpdate = library.Books
-            .Where(b => b.MetadataLastUpdated == DateTime.MinValue ||
-                        b.MetadataLastUpdated == DateTime.MaxValue ||
-                        b.MetadataLastUpdated < cutoff)
+            .Where(b => b.OpenLibraryMetadataLastUpdated == DateTime.MinValue ||
+                        b.OpenLibraryMetadataLastUpdated == DateTime.MaxValue ||
+                        b.OpenLibraryMetadataLastUpdated < cutoff)
             .ToList();
 
         var errors = new List<string>();

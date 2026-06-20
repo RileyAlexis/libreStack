@@ -18,7 +18,7 @@ public class MetadataController : ControllerBase
         _iWikidataService = wikidataService;
     }
 
-    [HttpGet("applyOpenLibraryData")]
+    [HttpGet("queryOpenLibraryData")]
     [Authorize]
     public async Task<IActionResult> ApplyOpenLibraryData(int bookId)
     {
@@ -32,14 +32,15 @@ public class MetadataController : ControllerBase
         return Ok();
     }
 
-    [HttpGet("refreshLibraryMetaData")]
+    [HttpGet("refreshOpenLibraryData")]
     [Authorize]
-    public async Task<IActionResult> RefreshLibraryMetaData(int libraryId)
+    public async Task<IActionResult> RefreshOpenLibrarydata(int libraryId)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null) return Unauthorized();
 
-        var result = await _iOpenLibraryService.RefreshLibraryMetadata(userId, libraryId);
+        var result = await _iOpenLibraryService.RefreshOpenLibrarydata(userId, libraryId);
+
         if (!result.IsSuccess)
             return BadRequest(new { error = result.Error });
 
@@ -54,6 +55,20 @@ public class MetadataController : ControllerBase
         if (userId is null) return Unauthorized();
 
         var result = await _iWikidataService.QueryWikidata(userId, bookId);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok();
+    }
+
+    [HttpGet("refreshWikidata")]
+    [Authorize]
+    public async Task<IActionResult> RefreshWikidata(int libraryId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null) return Unauthorized();
+
+        var result = await _iWikidataService.RefreshWikidata(userId, libraryId);
         if (!result.IsSuccess)
             return BadRequest(new { error = result.Error });
 

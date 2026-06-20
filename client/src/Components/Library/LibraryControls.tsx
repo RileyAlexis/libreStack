@@ -37,7 +37,20 @@ export const LibraryControls: React.FC = () => {
   const handleMetadataRefresh = () => {
     api
       .get(
-        `metadata/refreshLibraryMetaData?libraryId=${library[selections.selectedLibrary].id}`,
+        `metadata/refreshOpenLibraryData?libraryId=${library[selections.selectedLibrary].id}`,
+      )
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const handleWikidataRefresh = () => {
+    api
+      .get(
+        `metadata/refreshWikidata?libraryId=${library[selections.selectedLibrary].id}`,
       )
       .then((response) => {
         console.log(response.data);
@@ -75,7 +88,11 @@ export const LibraryControls: React.FC = () => {
         <MenubarContent>
           <MenubarItem onClick={handleMetadataRefresh}>
             <ScanText />
-            Refresh All Metadata
+            Refresh Open Library Metadata
+          </MenubarItem>
+          <MenubarItem onClick={handleWikidataRefresh}>
+            <ScanText />
+            Refresh Wikidata Metadata
           </MenubarItem>
           <MenubarItem>
             <UploadIcon />

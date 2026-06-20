@@ -6,6 +6,7 @@ using System.Text.Json;
 using Librestack.Interfaces;
 using Microsoft.AspNetCore.Components.Endpoints;
 using System.Globalization;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Librestack.Services;
 
@@ -89,6 +90,7 @@ public class WikidataService : IWikidataService
         var wikiId = firstResult.TryGetProperty("id", out var i) ? i.GetString() : null;
 
         if (wikiId != null) book.WikiDataIdentifier = wikiId;
+        book.WikidataMetaLastUpdated = DateTime.UtcNow;
 
         _db.Books.Update(book);
         await _db.SaveChangesAsync();
@@ -114,7 +116,7 @@ public class WikidataService : IWikidataService
         Console.WriteLine("_________________________________________________ BY ID");
 
 
-        var sparql = "SELECT ?title ?authorLabel ?publicationDate ?genreLabel ?seriesLabel ?positionInSeries ?openLibraryId " +
+        var sparql = "SELECT ?title ?authorLabel ?publicationDate ?genreLabel ?seriesLabel ?positionInSeries ?openLibraryId ?oclcId ?isfd ?uncon ?website ?fantLab " +
                      "WHERE { " +
                      $"BIND(wd:{book.WikiDataIdentifier} AS ?book) " +
                      "OPTIONAL { ?book wdt:P1476 ?title. FILTER(LANG(?title) = \"en\") } " +
@@ -124,6 +126,11 @@ public class WikidataService : IWikidataService
                      "OPTIONAL { ?book wdt:P179 ?series } " +
                      "OPTIONAL { ?book p:P179 ?seriesStatement. ?seriesStatement pq:P1545 ?positionInSeries } " +
                      "OPTIONAL { ?book wdt:P648 ?openLibraryId } " +
+                     "OPTIONAL { ?book wdt:P243 ?oclcId } " +
+                     "OPTIONAL { ?book wdt:P1274 ?isfc } " +
+                     "OPTIONAL { ?book wdt:P9821 ?uncon } " +
+                     "OPTIONAL { ?book wdt:P856 ?website } " +
+                     "OPTIONAL { ?book wdt:P7439 ?fantLab } " +
                      "SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\". } " +
                      "}";
 
@@ -144,6 +151,11 @@ public class WikidataService : IWikidataService
         var title = GetBindingValue(binding, "title");
         var author = GetBindingValue(binding, "authorLabel");
         var genre = GetBindingValue(binding, "genreLabel");
+        var oclc = GetBindingValue(binding, "oclcId");
+        var isfd = GetBindingValue(binding, "isfd");
+        var unconsent = GetBindingValue(binding, "uncon");
+        var website = GetBindingValue(binding, "website");
+        var fantLab = GetBindingValue(binding, "fantLab");
         var series = GetBindingValue(binding, "seriesLabel");
         var position = GetBindingValue(binding, "positionInSeries");
         var openLibraryId = GetBindingValue(binding, "openLibraryId");
@@ -155,6 +167,11 @@ public class WikidataService : IWikidataService
         if (position != null && int.TryParse(position, out int result))
             book.SeriesOrder = result;
         if (openLibraryId != null) book.OpenLibraryWorkId = openLibraryId;
+        if (oclc != null) book.OCLCWorldCat = oclc;
+        if (publicationDate != null) book.PublishDate = publicationDate;
+
+
+        book.WikidataMetaLastUpdated = DateTime.UtcNow;
 
         _db.Books.Update(book);
         await _db.SaveChangesAsync();
@@ -187,6 +204,41 @@ public class WikidataService : IWikidataService
         if (book is null)
             return Result.Failure("Book not found after metadata fetch", ErrorType.Unexpected);
 
+        if (!string.IsNullOrWhiteSpace(book.WikiDataIdentifier))
+        {
+            var workResult = await QueryWikidataById(book);
+            if (!workResult.IsSuccess)
+                return Result.Failure(workResult.Error ?? "Unknown Error", ErrorType.Unexpected);
+        }
+
         return Result.Success();
+    }
+
+    public async Task<Result> RefreshWikidata(string userId, int libraryId)
+    {
+        var library = await _db.Libraries.Include(b => b.Books).FirstOrDefaultAsync(l => l.Id == libraryId && l.UserId == userId);
+        if (library is null)
+            return Result.Failure("Library not found", ErrorType.NotFound);
+
+        var cutoff = DateTime.UtcNow.AddMonths(-1);
+        var booksToUpdate = library.Books
+            .Where(b => b.WikidataMetaLastUpdated == DateTime.MinValue ||
+                        b.WikidataMetaLastUpdated == DateTime.MaxValue ||
+                        b.WikidataMetaLastUpdated < cutoff)
+            .ToList();
+
+        var errors = new List<string>();
+
+        foreach (var book in booksToUpdate)
+        {
+            var result = await QueryWikidata(userId, book.Id);
+            if (!result.IsSuccess)
+                errors.Add($"{book.Title}: {result.Error}");
+        }
+
+        return errors.Count == 0
+            ? Result.Success()
+            : Result.Failure($"Some books failed to update: {string.Join("; ", errors)}", ErrorType.BadRequest);
+
     }
 }
