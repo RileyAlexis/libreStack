@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace libreStack.Migrations
 {
     [DbContext(typeof(LibrestackDbContext))]
-    [Migration("20260614145844_removedProgress")]
-    partial class removedProgress
+    [Migration("20260620140339_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,6 +55,10 @@ namespace libreStack.Migrations
                         .HasColumnType("bytea")
                         .HasColumnName("cover_image");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
                     b.Property<string>("EpubPath")
                         .IsRequired()
                         .HasColumnType("text")
@@ -64,13 +68,45 @@ namespace libreStack.Migrations
                         .HasColumnType("text")
                         .HasColumnName("isbn");
 
+                    b.Property<string>("ISBN13")
+                        .HasColumnType("text")
+                        .HasColumnName("isbn13");
+
                     b.Property<string>("LCCN")
                         .HasColumnType("text")
                         .HasColumnName("lccn");
 
+                    b.Property<string>("Language")
+                        .HasColumnType("text")
+                        .HasColumnName("language");
+
+                    b.Property<DateTime>("MetadataLastUpdated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("metadata_last_updated");
+
                     b.Property<string>("OCLCWorldCat")
                         .HasColumnType("text")
                         .HasColumnName("oclc_world_cat");
+
+                    b.Property<string>("OpenLibraryAuthorId")
+                        .HasColumnType("text")
+                        .HasColumnName("open_library_author_id");
+
+                    b.Property<string>("OpenLibraryCoverId")
+                        .HasColumnType("text")
+                        .HasColumnName("open_library_cover_id");
+
+                    b.Property<string>("OpenLibraryEditionId")
+                        .HasColumnType("text")
+                        .HasColumnName("open_library_edition_id");
+
+                    b.Property<string>("OpenLibraryWorkId")
+                        .HasColumnType("text")
+                        .HasColumnName("open_library_work_id");
+
+                    b.Property<string>("PublishDate")
+                        .HasColumnType("text")
+                        .HasColumnName("publish_date");
 
                     b.Property<string>("Publisher")
                         .IsRequired()
@@ -98,6 +134,10 @@ namespace libreStack.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("user_id");
+
+                    b.Property<string>("WikiDataIdentifier")
+                        .HasColumnType("text")
+                        .HasColumnName("wiki_data_identifier");
 
                     b.Property<string>("WorkId")
                         .HasColumnType("text")
@@ -215,6 +255,14 @@ namespace libreStack.Migrations
                     b.Property<bool>("IsSetupComplete")
                         .HasColumnType("boolean")
                         .HasColumnName("is_setup_complete");
+
+                    b.Property<int>("LibraryScanInterval")
+                        .HasColumnType("integer")
+                        .HasColumnName("library_scan_interval");
+
+                    b.Property<bool>("ScanLibrariesService")
+                        .HasColumnType("boolean")
+                        .HasColumnName("scan_libraries_service");
 
                     b.HasKey("Id")
                         .HasName("pk_libre_stack_config");

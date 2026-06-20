@@ -86,7 +86,9 @@ namespace libreStack.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    is_setup_complete = table.Column<bool>(type: "boolean", nullable: false)
+                    is_setup_complete = table.Column<bool>(type: "boolean", nullable: false),
+                    scan_libraries_service = table.Column<bool>(type: "boolean", nullable: false),
+                    library_scan_interval = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -227,18 +229,28 @@ namespace libreStack.Migrations
                     title = table.Column<string>(type: "text", nullable: false),
                     author = table.Column<string>(type: "text", nullable: false),
                     publisher = table.Column<string>(type: "text", nullable: false),
+                    description = table.Column<string>(type: "text", nullable: true),
+                    publish_date = table.Column<string>(type: "text", nullable: true),
                     cover_image = table.Column<byte[]>(type: "bytea", nullable: true),
                     cover_content_type = table.Column<string>(type: "text", nullable: true),
                     series_title = table.Column<string>(type: "text", nullable: true),
                     series_order = table.Column<int>(type: "integer", nullable: true),
                     series_total = table.Column<int>(type: "integer", nullable: true),
                     isbn = table.Column<string>(type: "text", nullable: true),
+                    isbn13 = table.Column<string>(type: "text", nullable: true),
                     lccn = table.Column<string>(type: "text", nullable: true),
                     oclc_world_cat = table.Column<string>(type: "text", nullable: true),
                     amazon_id = table.Column<string>(type: "text", nullable: true),
+                    open_library_work_id = table.Column<string>(type: "text", nullable: true),
+                    open_library_edition_id = table.Column<string>(type: "text", nullable: true),
+                    open_library_author_id = table.Column<string>(type: "text", nullable: true),
+                    open_library_cover_id = table.Column<string>(type: "text", nullable: true),
+                    wiki_data_identifier = table.Column<string>(type: "text", nullable: true),
+                    language = table.Column<string>(type: "text", nullable: true),
                     work_id = table.Column<string>(type: "text", nullable: true),
                     collection_id = table.Column<int>(type: "integer", nullable: true),
-                    epub_path = table.Column<string>(type: "text", nullable: false)
+                    epub_path = table.Column<string>(type: "text", nullable: false),
+                    metadata_last_updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -330,7 +342,6 @@ namespace libreStack.Migrations
                     user_id = table.Column<string>(type: "text", nullable: false),
                     book_id = table.Column<int>(type: "integer", nullable: false),
                     cfi_location = table.Column<string>(type: "text", nullable: true),
-                    progress = table.Column<float>(type: "real", nullable: false),
                     last_read = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>

@@ -52,7 +52,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const handleGetOpenLibraryData = (bookId: number) => {
     console.log(bookId);
     api
-      .get(`metadata/applyOpenLibraryData?bookId=${bookId}`)
+      .get(`metadata/queryWikidata?bookId=${bookId}`)
       .then((response) => {
         console.log(response.data);
       })

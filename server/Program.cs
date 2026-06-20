@@ -56,6 +56,7 @@ builder.Services.AddScoped<ILibraryService, LibraryService>();
 builder.Services.AddScoped<ILibreStackConfigService, LibreStackConfigService>();
 builder.Services.AddScoped<IlibraryScanService, LibraryScanService>();
 builder.Services.AddScoped<IOpenLibraryService, OpenLibraryService>();
+builder.Services.AddScoped<IWikidataService, WikidataService>();
 
 builder.Services.AddHostedService<LibraryMonitorService>();
 

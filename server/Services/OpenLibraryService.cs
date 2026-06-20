@@ -54,7 +54,7 @@ public class OpenLibraryService : IOpenLibraryService
         return client;
     }
 
-    private async Task<Result<Book>> CallByISBN(string userId, Book book)
+    private async Task<Result<Book>> CallByISBN(Book book)
     {
         string url = $"https://openlibrary.org/api/books?bibkeys=ISBN:{book.ISBN}&format=json&jscmd=data";
         var client = await CreateClient();
@@ -116,7 +116,7 @@ public class OpenLibraryService : IOpenLibraryService
         return Result<Book>.Success(book);
     }
 
-    private async Task<Result<Book>> CallByOpenLibraryWorkId(string userId, Book book)
+    private async Task<Result<Book>> CallByOpenLibraryWorkId(Book book)
     {
         string url = $"https://openlibrary.org/books/{book.OpenLibraryWorkId}.json";
         var client = await CreateClient();
@@ -182,7 +182,7 @@ public class OpenLibraryService : IOpenLibraryService
 
     }
 
-    private async Task<Result<Book>> CallByTitleAndAuthor(string userId, Book book)
+    private async Task<Result<Book>> CallByTitleAndAuthor(Book book)
     {
         Console.WriteLine(book.Title);
         Console.WriteLine(book.Author);
@@ -259,14 +259,14 @@ public class OpenLibraryService : IOpenLibraryService
         {
             if (!string.IsNullOrWhiteSpace(book.ISBN))
             {
-                var isbnResult = await CallByISBN(userId, book);
+                var isbnResult = await CallByISBN(book);
                 if (!isbnResult.IsSuccess)
                     return Result.Failure(isbnResult.Error ?? "Unknown error", ErrorType.Unexpected);
                 book = isbnResult.Value;
             }
             else
             {
-                var searchResult = await CallByTitleAndAuthor(userId, book);
+                var searchResult = await CallByTitleAndAuthor(book);
                 if (!searchResult.IsSuccess)
                     return Result.Failure(searchResult.Error ?? "Unknown error", ErrorType.Unexpected);
                 book = searchResult.Value;
@@ -278,7 +278,7 @@ public class OpenLibraryService : IOpenLibraryService
 
         if (!string.IsNullOrWhiteSpace(book.OpenLibraryWorkId))
         {
-            var workResult = await CallByOpenLibraryWorkId(userId, book);
+            var workResult = await CallByOpenLibraryWorkId(book);
             if (!workResult.IsSuccess)
                 return Result.Failure(workResult.Error ?? "Unknown error", ErrorType.Unexpected);
         }
