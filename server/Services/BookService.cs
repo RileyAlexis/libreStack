@@ -136,27 +136,22 @@ public class BookService : IBookService
         if (existing is null)
             return Result.Failure("Book not found", ErrorType.NotFound);
 
-        // Only update properties that were provided (not null/default)
-        if (!string.IsNullOrEmpty(book.Title))
-            existing.Title = book.Title;
-        if (!string.IsNullOrEmpty(book.Author))
-            existing.Author = book.Author;
-        if (!string.IsNullOrEmpty(book.Publisher))
-            existing.Publisher = book.Publisher;
-        if (book.SeriesTitle is not null)
-            existing.SeriesTitle = book.SeriesTitle;
-        if (book.SeriesOrder.HasValue && book.SeriesOrder != 0)
-            existing.SeriesOrder = book.SeriesOrder;
-        if (book.SeriesTotal.HasValue && book.SeriesTotal != 0)
-            existing.SeriesTotal = book.SeriesTotal;
-        if (!string.IsNullOrEmpty(book.ISBN))
-            existing.ISBN = book.ISBN;
-        if (book.LCCN is not null)
-            existing.LCCN = book.LCCN;
-        if (book.OCLCWorldCat is not null)
-            existing.OCLCWorldCat = book.OCLCWorldCat;
-        if (book.CollectionId.HasValue && book.CollectionId != 0)
-            existing.CollectionId = book.CollectionId;
+
+        existing.Title = book.Title;
+        existing.Author = book.Author;
+        existing.Publisher = book.Publisher;
+        existing.SeriesTitle = book.SeriesTitle;
+        existing.SeriesOrder = book.SeriesOrder;
+        existing.SeriesTotal = book.SeriesTotal;
+        existing.ISBN = book.ISBN;
+        existing.LCCN = book.LCCN;
+        existing.OCLCWorldCat = book.OCLCWorldCat;
+        existing.CollectionId = book.CollectionId;
+        existing.OpenLibraryAuthorId = book.OpenLibraryAuthorId;
+        existing.OpenLibraryEditionId = book.OpenLibraryEditionId;
+        existing.OpenLibraryWorkId = book.OpenLibraryWorkId;
+        existing.WikidataId = book.WikidataId;
+        existing.Description = book.Description;
 
         _db.Books.Update(existing);
         await _db.SaveChangesAsync();

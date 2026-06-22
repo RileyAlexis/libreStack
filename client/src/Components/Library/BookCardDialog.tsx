@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { api } from "@/api";
 import type { BookType } from "@/types/BookType";
+import type { LibreRootState } from "@/types/LibreRootState";
+
+// UI
 import {
   DialogContent,
   DialogDescription,
@@ -15,9 +18,14 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "../ui/combobox";
+import { Alert, AlertTitle, AlertDescription } from "../ui/alert";
+import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import type { LibreRootState } from "@/types/LibreRootState";
+import { ButtonGroup, ButtonGroupSeparator } from "../ui/button-group";
+
+import "./BookCardDialog.css";
+import { Textarea } from "../ui/textarea";
 
 interface BookCardDialogProps {
   bookId: number;
@@ -27,8 +35,9 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
   const library = useSelector((state: LibreRootState) => state.library);
   const selections = useSelector((state: LibreRootState) => state.selections);
   const [series, setSeries] = useState<string[]>([]);
-  const [seriesTitle, setSeriesTitle] = useState<string>("");
+  const [_, setSeriesTitle] = useState<string>("");
   const [book, setBook] = useState<BookType>();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     api
@@ -50,12 +59,19 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
     if (book?.seriesTitle) setSeriesTitle(book.seriesTitle);
   }, [book]);
 
+  // MODIFIED: Explicitly check for empty string and convert to null before API call
   const handleBlur = (field: keyof BookType, value: string) => {
-    if (!book) return;
+    let payloadValue: any;
+    if (value === "") {
+      payloadValue = null; // Send null if the field is cleared
+    } else {
+      payloadValue = value;
+    }
+
     api
       .patch(`book/updateBookEntry`, {
         ...book,
-        [field]: value === "" ? null : value,
+        [field]: payloadValue,
       })
       .catch((err) => {
         console.error("Failed to save", field, err);
@@ -66,9 +82,47 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
     setBook((prev) => (prev ? { ...prev, [field]: value } : prev));
   };
 
+  const handleOpenLibrary = () => {
+    setError(null);
+    api
+      .get(`metadata/queryOpenLibraryData?bookId=${bookId}`)
+      .then(() => {
+        api
+          .get(`Book/getBookEntry?id=${bookId}`)
+          .then((response) => setBook(response.data.value))
+          .catch((error) => console.log(error));
+      })
+      .catch((error) => {
+        setError(
+          error.response?.data?.error || "Failed to fetch Open Library data.",
+        );
+        console.error(error);
+      });
+  };
+
+  const handleWikidata = () => {
+    setError(null);
+    api
+      .get(`metadata/queryWikidata?bookId=${bookId}`)
+      .then(() => {
+        api
+          .get(`Book/getBookEntry?id=${bookId}`)
+          .then((response) => setBook(response.data.value))
+          .catch((error) => console.log(error));
+      })
+      .catch((error) => {
+        setError(
+          error.response?.data?.error || "Failed to fetch Wikidata data.",
+        );
+        console.error(error);
+      });
+  };
+
   const fields: { id: keyof BookType; label: string }[] = [
+    { id: "title", label: "Title" },
     { id: "author", label: "Author" },
     { id: "publisher", label: "Publisher" },
+    { id: "description", label: "Description" },
     { id: "seriesTitle", label: "Series Title" },
     { id: "seriesOrder", label: "Series Order" },
     { id: "isbn", label: "ISBN" },
@@ -78,25 +132,24 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
     { id: "openLibraryEditionId", label: "Open Library Edition ID" },
     { id: "openLibraryAuthorId", label: "Open Library Author ID" },
     { id: "openLibraryCoverId", label: "Open Library Cover ID" },
-    { id: "wikiDataId", label: "Wikidata ID" },
+    { id: "wikidataId", label: "Wikidata ID" },
     { id: "oclcWorldCat", label: "OCLC WorldCat" },
   ];
 
   const renderField = (id: keyof BookType, label: string) => {
     if (id === "seriesTitle") {
       return (
-        <div className="grid gap-1.5">
+        <div className="grid gap-1.5" key={id}>
           <Label htmlFor="titleCombo">Series Title</Label>
           <Combobox
             id="titleCombo"
             items={series}
             defaultValue={book?.seriesTitle}
             onValueChange={(val) => {
-              console.log("onValueChange", val);
               const value = val ?? "";
               setSeriesTitle(value);
               handleChange("seriesTitle", value);
-              handleBlur("seriesTitle", value);
+              handleBlur("seriesTitle", value); // Trigger blur on change for immediate update
             }}
           >
             <ComboboxInput placeholder={book?.seriesTitle} showClear />
@@ -110,6 +163,20 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
               </ComboboxList>
             </ComboboxContent>
           </Combobox>
+        </div>
+      );
+    }
+
+    if (id === "description") {
+      return (
+        <div className="grid gap-1.5" key={id}>
+          <Label htmlFor="description">Description</Label>
+          <Textarea
+            id="description"
+            value={(book![id] as string) ?? ""}
+            onChange={(e) => handleChange(id, e.target.value)}
+            onBlur={() => handleBlur(id, book![id] as string)}
+          />
         </div>
       );
     }
@@ -141,6 +208,26 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
       <DialogHeader>
         <DialogTitle>{book.title}</DialogTitle>
         <DialogDescription>Edit metadata: Id {book.id}</DialogDescription>
+        <div className="metadataButtonsContainer">
+          <Label htmlFor="metadataButtons">Get Metadata</Label>
+          <ButtonGroup id="metadataButtons">
+            <Button variant="secondary" onClick={handleOpenLibrary}>
+              Open Library
+            </Button>
+            <ButtonGroupSeparator />
+            <Button variant="secondary" onClick={handleWikidata}>
+              Wikidata
+            </Button>
+          </ButtonGroup>
+          {error && (
+            <div className="mt-2">
+              <Alert>
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            </div>
+          )}
+        </div>
       </DialogHeader>
       <div className="grid gap-4 py-4">
         {fields.map(({ id, label }) => renderField(id, label))}

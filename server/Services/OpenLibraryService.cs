@@ -100,8 +100,8 @@ public class OpenLibraryService : IOpenLibraryService
         var publisher = root.TryGetProperty("publishers", out var publishersData) &&
             publishersData[0].TryGetProperty("name", out var pubArray) ? pubArray.GetString() : null;
 
-        if (title != null) book.Title = title;
-        if (author != null) book.Author = author;
+        if (title != null && string.IsNullOrWhiteSpace(book.Title)) book.Title = title;
+        if (author != null && string.IsNullOrWhiteSpace(book.Author)) book.Author = author;
         if (authorId != null) book.OpenLibraryAuthorId = authorId;
         if (workId != null) book.OpenLibraryWorkId = workId;
         if (isbn13 != null) book.ISBN = isbn13;
@@ -165,9 +165,9 @@ public class OpenLibraryService : IOpenLibraryService
 
         var publishDate = root.TryGetProperty("publish_date", out var pub) ? pub.GetString() : null;
 
-        if (title != null) book.Title = title;
+        if (title != null && string.IsNullOrWhiteSpace(book.Title)) book.Title = title;
         if (series != null) book.SeriesTitle = series;
-        if (wikiData != null) book.WikiDataIdentifier = wikiData;
+        if (wikiData != null) book.WikidataId = wikiData;
         if (description != null) book.Description = description;
         if (publishDate != null) book.PublishDate = publishDate;
         if (isbn10 != null) book.ISBN = isbn10;
@@ -186,7 +186,7 @@ public class OpenLibraryService : IOpenLibraryService
     {
         Console.WriteLine(book.Title);
         Console.WriteLine(book.Author);
-        string url = $"https://openlibrary.org/search.json?title={Uri.EscapeDataString(book.Title)}&limit=1";
+        string url = $"https://openlibrary.org/search.json?title={Uri.EscapeDataString(book.Title)}&author={Uri.EscapeDataString(book.Author)}&limit=1";
         var client = await CreateClient();
 
         Console.WriteLine($"------------------- {url}");
@@ -231,10 +231,10 @@ public class OpenLibraryService : IOpenLibraryService
         var authorKey = (root.TryGetProperty("author_key", out var ak) && ak.GetArrayLength() > 0) ? ak[0].GetString() : null;
         var workKey = root.TryGetProperty("key", out var k) ? k.GetString()?.Replace("/works/", "") : null;
 
-        if (title != null) book.Title = title;
-        if (authorKey != null) book.OpenLibraryAuthorId = authorKey;
+        if (title != null && string.IsNullOrWhiteSpace(book.Title)) book.Title = title;
+        if (authorKey != null && string.IsNullOrWhiteSpace(book.Author)) book.OpenLibraryAuthorId = authorKey;
         if (workKey != null) book.OpenLibraryWorkId = workKey;
-        if (wikiData != null) book.WikiDataIdentifier = wikiData;
+        if (wikiData != null) book.WikidataId = wikiData;
         if (description != null) book.Description = description;
         if (isbn10 != null) book.ISBN = isbn10;
         if (isbn13 != null) book.ISBN13 = isbn13;

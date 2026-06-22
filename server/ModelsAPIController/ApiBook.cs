@@ -23,7 +23,7 @@ public class ApiBook
     public string? OpenLibraryEditionId { get; set; } = null;
     public string? OpenLibraryAuthorId { get; set; } = null;
     public string? OpenLibraryCoverId { get; set; } = null;
-    public string? WikiDataIdentifier { get; set; } = null;
+    public string? WikidataId { get; set; } = null;
     public string? Language { get; set; } = null;
     public int? CollectionId { get; set; }
 

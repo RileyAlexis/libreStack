@@ -99,7 +99,7 @@ public class WikidataService : IWikidataService
         bestMatch ??= search[0];
 
         var wikiId = bestMatch.Value.TryGetProperty("id", out var i) ? i.GetString() : null;
-        if (wikiId != null) book.WikiDataIdentifier = wikiId;
+        if (wikiId != null) book.WikidataId = wikiId;
         book.WikidataMetaLastUpdated = DateTime.UtcNow;
         _db.Books.Update(book);
         await _db.SaveChangesAsync();
@@ -117,7 +117,7 @@ public class WikidataService : IWikidataService
 
     private async Task<Result<Book>> QueryWikidataById(Book book)
     {
-        if (string.IsNullOrWhiteSpace(book.WikiDataIdentifier))
+        if (string.IsNullOrWhiteSpace(book.WikidataId))
             return Result<Book>.Failure("Wiki Id not in database", ErrorType.NotFound);
 
         Console.WriteLine("_________________________________________________ BY ID");
@@ -125,7 +125,7 @@ public class WikidataService : IWikidataService
 
         var sparql = "SELECT ?title ?authorLabel ?publicationDate ?genreLabel ?seriesLabel ?positionInSeries ?openLibraryId ?oclcId ?isfd ?uncon ?website ?fantLab " +
                      "WHERE { " +
-                     $"BIND(wd:{book.WikiDataIdentifier} AS ?book) " +
+                     $"BIND(wd:{book.WikidataId} AS ?book) " +
                      "OPTIONAL { ?book wdt:P1476 ?title. FILTER(LANG(?title) = \"en\") } " +
                      "OPTIONAL { ?book wdt:P50 ?author } " +
                      "OPTIONAL { ?book wdt:P577 ?publicationDate } " +
@@ -192,7 +192,7 @@ public class WikidataService : IWikidataService
         if (book is null)
             return Result.Failure("Book not found", ErrorType.NotFound);
 
-        if (!string.IsNullOrWhiteSpace(book.WikiDataIdentifier))
+        if (!string.IsNullOrWhiteSpace(book.WikidataId))
         {
             var result = await QueryWikidataById(book);
             if (!result.IsSuccess)
@@ -210,7 +210,7 @@ public class WikidataService : IWikidataService
         if (book is null)
             return Result.Failure("Book not found after metadata fetch", ErrorType.Unexpected);
 
-        if (!string.IsNullOrWhiteSpace(book.WikiDataIdentifier))
+        if (!string.IsNullOrWhiteSpace(book.WikidataId))
         {
             var workResult = await QueryWikidataById(book);
             if (!workResult.IsSuccess)

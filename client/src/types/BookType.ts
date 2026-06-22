@@ -18,6 +18,7 @@ export interface BookType {
   title: string;
   author: string;
   publisher: string;
+  description: string;
   coverImage: string;
   seriesTitle: string;
   seriesOrder: string;
@@ -28,7 +29,7 @@ export interface BookType {
   openLibraryEditionId: string;
   openLibraryAuthorId: string;
   openLibraryCoverId: string;
-  wikiDataId: string;
+  wikidataId: string;
   oclcWorldCat: string;
   collectionId: string;
   bookTags: TagsType[];
