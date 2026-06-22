@@ -22,7 +22,7 @@ P674.qualifiers P5800 - narrative role of character
 P291 - Place of publication
 P4969 - Derivative work
 P7439 - FantLab work id
-P646 - Freebase id
+
 P7937 - Structure of a creative work (novel)
 P856 - Official web site
 P10386 - numeric ID of work in Databazeknih.cz database
@@ -30,7 +30,7 @@ P8383 - Goodreads id
 P1411 - award nominations
 P6839 - Tv tropes Id
 P1085 - LibraryThing (LT) control number
-P1434 - he subject is a work describing a fictional universe, i.e. whose plot occurs in this universe
+P1434 - the subject is a work describing a fictional universe, i.e. whose plot occurs in this universe
 P495 - Country of origin
 P9821 - identifier for a film, television show, or literary work in the Unconsenting Media database, which provides information about rape and sexual assault in TV, movies, and books
 P921 - primary topic of a work or act of communication

@@ -1,13 +1,27 @@
 import { useState, useRef, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router";
+import { api } from "@/api";
+
+// State
+import { useDispatch, useSelector } from "react-redux";
 import { selectBook, unSelectBook } from "@/redux/reducers/SelectedReducer";
 import type { BookType } from "@/types/BookType";
 import type { LibreRootState } from "@/types/LibreRootState";
-import "./BookCard.css";
+
+// UI
 import { Button } from "../ui/button";
-import { Circle, CircleCheck, ScanText } from "lucide-react";
-import { api } from "@/api";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
+import { Circle, CircleCheck, FileTextIcon, ScanText } from "lucide-react";
+
+import "./BookCard.css";
+import { BookCardDialog } from "./BookCardDialog";
 
 interface BookCardProps {
   book: BookType;
@@ -22,6 +36,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const [isHovering, setIsHovering] = useState(false);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const [coverMultiplier, setCoverMultiplier] = useState<number>(1);
+  const [isBookDialogOpen, setIsBookDialogOpen] = useState(false);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const didLongPress = useRef(false);
   const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
@@ -142,6 +157,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
             <Circle strokeWidth={2} className="bookIcon" style={iconSize} />
           </Button>
         )}
+
         {isSelected && (
           <Button
             variant="link"
@@ -159,6 +175,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
             />
           </Button>
         )}
+
         <div className="getMetaData">
           <Button
             variant="link"
@@ -172,7 +189,23 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
             <ScanText className="bookIcon" style={iconSize} />
           </Button>
         </div>
+
+        <div className="metaDataButton">
+          <Button
+            variant="link"
+            size="icon"
+            className="rounded-full"
+            onClick={() => setIsBookDialogOpen(true)}
+          >
+            <FileTextIcon
+              strokeWidth={2}
+              className="bookIcon"
+              style={iconSize}
+            />
+          </Button>
+        </div>
       </div>
+
       <div className={`bookCover ${isSelected ? "selected" : ""}`}>
         <img
           src={`data:${book.contentType};base64,${book.coverImage}`}
@@ -185,6 +218,9 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
           }}
         />
       </div>
+      <Dialog open={isBookDialogOpen} onOpenChange={setIsBookDialogOpen}>
+        <BookCardDialog book={book} />
+      </Dialog>
     </div>
   );
 };

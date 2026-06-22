@@ -63,10 +63,11 @@ public class WikidataService : IWikidataService
 
     private async Task<Result<Book>> SearchWikidata(Book book)
     {
-        // var query = string.IsNullOrEmpty(book.Author) ? book.Title : $"{book.Title} {book.Author}";
-        var query = CleanTitle(book.Title);
-        var url = $"https://www.wikidata.org/w/api.php?action=wbsearchentities&search={Uri.EscapeDataString(query)}&language=en&type=item&format=json";
+        var query = string.IsNullOrEmpty(book.Author)
+            ? CleanTitle(book.Title)
+            : $"{CleanTitle(book.Title)} {book.Author}";
 
+        var url = $"https://www.wikidata.org/w/api.php?action=wbsearchentities&search={Uri.EscapeDataString(query)}&language=en&type=item&format=json&limit=10";
         _logger.LogInformation(url);
 
         var client = await CreateClient();
@@ -76,27 +77,33 @@ public class WikidataService : IWikidataService
 
         var json = await response.Content.ReadAsStringAsync();
         var root = JsonDocument.Parse(json);
-
-        Console.WriteLine("Search - - ************************************");
-        _logger.LogInformation(json);
-
         var search = root.RootElement.GetProperty("search");
 
         if (search.GetArrayLength() == 0)
             return Result<Book>.Failure("No Wikidata results found", ErrorType.NotFound);
 
-        var firstResult = search[0];
+        string[] BookDescriptionKeywords = ["novel", "book", "short story", "novella", "anthology", "collection", "nonfiction", "non-fiction", "memoir", "biography", "essay", "hardcover", "paperback"];
 
-        var wikiId = firstResult.TryGetProperty("id", out var i) ? i.GetString() : null;
+        JsonElement? bestMatch = null;
+        foreach (var item in search.EnumerateArray())
+        {
+            var description = item.TryGetProperty("description", out var d) ? d.GetString() ?? "" : "";
+            if (BookDescriptionKeywords.Any(k => description.Contains(k, StringComparison.OrdinalIgnoreCase)))
+            {
+                bestMatch = item;
+                break;
+            }
+        }
 
+        // Fall back to first result if no book-like description matched
+        bestMatch ??= search[0];
+
+        var wikiId = bestMatch.Value.TryGetProperty("id", out var i) ? i.GetString() : null;
         if (wikiId != null) book.WikiDataIdentifier = wikiId;
         book.WikidataMetaLastUpdated = DateTime.UtcNow;
-
         _db.Books.Update(book);
         await _db.SaveChangesAsync();
-
         return Result<Book>.Success(book);
-
     }
 
     private string? GetBindingValue(JsonElement binding, string key)
