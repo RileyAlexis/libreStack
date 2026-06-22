@@ -7,6 +7,7 @@ using Librestack.Interfaces;
 using Microsoft.AspNetCore.Components.Endpoints;
 using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
 
 namespace Librestack.Services;
 
@@ -22,18 +23,21 @@ public class WikidataService : IWikidataService
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly ILogger<LibraryMonitorService> _logger;
+    private readonly IBookParsingService _bookParsing;
 
     public WikidataService(
             LibrestackDbContext db,
             IHttpClientFactory httpClientFactory,
             UserManager<IdentityUser> userManager,
-            ILogger<LibraryMonitorService> logger
+            ILogger<LibraryMonitorService> logger,
+            IBookParsingService bookParsing
             )
     {
         _db = db;
         _httpClientFactory = httpClientFactory;
         _userManager = userManager;
         _logger = logger;
+        _bookParsing = bookParsing;
     }
 
     private async Task<HttpClient> CreateClient()
@@ -46,26 +50,11 @@ public class WikidataService : IWikidataService
         return client;
     }
 
-    private string CleanTitle(string title)
-    {
-        var separators = new[] { "--", "—", ": ", " - " };
-        foreach (var sep in separators)
-        {
-            var idx = title.IndexOf(sep);
-            if (idx > 0)
-            {
-                title = title[..idx];
-                break;
-            }
-        }
-        return title.Trim();
-    }
-
     private async Task<Result<Book>> SearchWikidata(Book book)
     {
         var query = string.IsNullOrEmpty(book.Author)
-            ? CleanTitle(book.Title)
-            : $"{CleanTitle(book.Title)} {book.Author}";
+            ? _bookParsing.CleanTitle(book.Title)
+            : $"{_bookParsing.CleanTitle(book.Title)} {book.Author}";
 
         var url = $"https://www.wikidata.org/w/api.php?action=wbsearchentities&search={Uri.EscapeDataString(query)}&language=en&type=item&format=json&limit=10";
         _logger.LogInformation(url);
@@ -170,9 +159,12 @@ public class WikidataService : IWikidataService
 
         if (title != null && string.IsNullOrWhiteSpace(book.Title)) book.Title = title;
         if (author != null && string.IsNullOrWhiteSpace(book.Author)) book.Author = author;
-        if (series != null) book.SeriesTitle = series;
-        if (position != null && int.TryParse(position, out int result))
-            book.SeriesOrder = result;
+        if (series != null)
+        {
+            book.SeriesTitle = _bookParsing.NormalizeSeriesTitle(series);
+            var order = _bookParsing.ParseSeriesOrderFromLabel(position ?? "");
+            book.SeriesOrder = order;
+        }
         if (openLibraryId != null) book.OpenLibraryWorkId = openLibraryId;
         if (oclc != null) book.OCLCWorldCat = oclc;
         if (publicationDate != null) book.PublishDate = publicationDate;
@@ -247,4 +239,6 @@ public class WikidataService : IWikidataService
             : Result.Failure($"Some books failed to update: {string.Join("; ", errors)}", ErrorType.BadRequest);
 
     }
+
+
 }

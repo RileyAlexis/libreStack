@@ -14,6 +14,7 @@ public class OpenLibraryService : IOpenLibraryService
     private readonly IEpubParseService _epubParser;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly UserManager<IdentityUser> _userManager;
+    private readonly IBookParsingService _bookParsing;
     private static readonly SemaphoreSlim _rateLimiter = new(1, 1);
 
 
@@ -21,12 +22,15 @@ public class OpenLibraryService : IOpenLibraryService
         LibrestackDbContext db,
         IEpubParseService epubParser,
         IHttpClientFactory httpClientFactory,
-        UserManager<IdentityUser> userManager)
+        UserManager<IdentityUser> userManager,
+        IBookParsingService bookParsing
+        )
     {
         _db = db;
         _epubParser = epubParser;
         _httpClientFactory = httpClientFactory;
         _userManager = userManager;
+        _bookParsing = bookParsing;
     }
 
 
@@ -73,6 +77,9 @@ public class OpenLibraryService : IOpenLibraryService
 
         var title = root.TryGetProperty("title", out var t) ? t.GetString() : null;
 
+        var series = root.TryGetProperty("series", out var s)
+            && s.GetArrayLength() > 0 ? s[0].GetString() : null;
+
         var workId = root.TryGetProperty("identifiers", out var idents) &&
            idents.TryGetProperty("openlibrary", out var w) &&
            w.GetArrayLength() > 0 ? w[0].GetString() : null;
@@ -91,6 +98,12 @@ public class OpenLibraryService : IOpenLibraryService
             ? authorUrl.Split('/').FirstOrDefault(s => s.StartsWith("OL") && s.EndsWith("A"))
             : null;
 
+        var description = root.TryGetProperty("description", out var desc)
+            ? desc.ValueKind == JsonValueKind.String
+                ? desc.GetString()
+                : desc.TryGetProperty("value", out var val) ? val.GetString() : null
+            : null;
+
         var oclc = root.TryGetProperty("identifiers", out var idents3) &&
             idents3.TryGetProperty("oclc", out var idents13) &&
             idents13.GetArrayLength() > 0 ? idents13[0].GetString() : null;
@@ -103,6 +116,10 @@ public class OpenLibraryService : IOpenLibraryService
         if (title != null && string.IsNullOrWhiteSpace(book.Title)) book.Title = title;
         if (author != null && string.IsNullOrWhiteSpace(book.Author)) book.Author = author;
         if (authorId != null) book.OpenLibraryAuthorId = authorId;
+        if (description != null) book.Description = description;
+        if (series != null) book.SeriesTitle = _bookParsing.NormalizeSeriesTitle(series);
+        var order = _bookParsing.ParseSeriesOrderFromLabel(series ?? "");
+        book.SeriesOrder = order;
         if (workId != null) book.OpenLibraryWorkId = workId;
         if (isbn13 != null) book.ISBN = isbn13;
         if (oclc != null) book.OCLCWorldCat = oclc;
@@ -121,6 +138,7 @@ public class OpenLibraryService : IOpenLibraryService
         string url = $"https://openlibrary.org/books/{book.OpenLibraryWorkId}.json";
         var client = await CreateClient();
 
+
         await RateLimit();
         var response = await client.GetAsync(url);
         if (!response.IsSuccessStatusCode)
@@ -134,6 +152,8 @@ public class OpenLibraryService : IOpenLibraryService
             return Result<Book>.Failure("No Results Found", ErrorType.NotFound);
 
         Console.WriteLine("************************************");
+        Console.WriteLine($"------------------- {url}");
+        Console.WriteLine("************************************");
         Console.WriteLine(json);
 
         var title = root.TryGetProperty("title", out var t) ? t.GetString() : null;
@@ -144,9 +164,6 @@ public class OpenLibraryService : IOpenLibraryService
         var wikiData = (root.TryGetProperty("identifiers", out var ident) &&
             ident.TryGetProperty("wikidata", out var wik) &&
             wik.GetArrayLength() > 0) ? wik[0].GetString() : null;
-
-        Console.WriteLine("************************************");
-        Console.WriteLine(wikiData);
 
         var isbn10 = root.TryGetProperty("isbn_10", out var i)
             && i.GetArrayLength() > 0 ? i[0].GetString() : null;
@@ -166,7 +183,12 @@ public class OpenLibraryService : IOpenLibraryService
         var publishDate = root.TryGetProperty("publish_date", out var pub) ? pub.GetString() : null;
 
         if (title != null && string.IsNullOrWhiteSpace(book.Title)) book.Title = title;
-        if (series != null) book.SeriesTitle = series;
+        if (series != null)
+        {
+            book.SeriesTitle = _bookParsing.NormalizeSeriesTitle(series);
+            var order = _bookParsing.ParseSeriesOrderFromLabel(series ?? "");
+            book.SeriesOrder = order;
+        }
         if (wikiData != null) book.WikidataId = wikiData;
         if (description != null) book.Description = description;
         if (publishDate != null) book.PublishDate = publishDate;
@@ -208,12 +230,12 @@ public class OpenLibraryService : IOpenLibraryService
 
         var title = root.TryGetProperty("title", out var t) ? t.GetString() : null;
 
+        var series = root.TryGetProperty("series", out var s)
+            && s.GetArrayLength() > 0 ? s[0].GetString() : null;
+
         var wikiData = (root.TryGetProperty("identifiers", out var ident) &&
             ident.TryGetProperty("wikidata", out var wik) &&
             wik.GetArrayLength() > 0) ? wik[0].GetString() : null;
-
-        var description = root.TryGetProperty("description", out var desc)
-            && desc.TryGetProperty("value", out var val) ? val.GetString() : null;
 
         var isbn10 = root.TryGetProperty("isbn_10", out var i)
             && i.GetArrayLength() > 0 ? i[0].GetString() : null;
@@ -224,9 +246,13 @@ public class OpenLibraryService : IOpenLibraryService
         var lccn = root.TryGetProperty("lccn", out var ic)
             && ic.GetArrayLength() > 0 ? ic[0].GetString() : null;
 
-        var oclc = root.TryGetProperty("identifiers", out var idents3) &&
-            idents3.TryGetProperty("oclc", out var idents13) &&
-            idents13.GetArrayLength() > 0 ? idents13[0].GetString() : null;
+        var description = root.TryGetProperty("description", out var desc)
+            ? desc.ValueKind == JsonValueKind.String
+                ? desc.GetString()
+                : desc.TryGetProperty("value", out var val) ? val.GetString() : null
+            : null;
+
+        var publishDate = root.TryGetProperty("publish_date", out var pub) ? pub.GetString() : null; ;
 
         var authorKey = (root.TryGetProperty("author_key", out var ak) && ak.GetArrayLength() > 0) ? ak[0].GetString() : null;
         var workKey = root.TryGetProperty("key", out var k) ? k.GetString()?.Replace("/works/", "") : null;
@@ -235,7 +261,11 @@ public class OpenLibraryService : IOpenLibraryService
         if (authorKey != null && string.IsNullOrWhiteSpace(book.Author)) book.OpenLibraryAuthorId = authorKey;
         if (workKey != null) book.OpenLibraryWorkId = workKey;
         if (wikiData != null) book.WikidataId = wikiData;
+        if (series != null) book.SeriesTitle = _bookParsing.NormalizeSeriesTitle(series);
+        var order = _bookParsing.ParseSeriesOrderFromLabel(series ?? "");
+        book.SeriesOrder = order;
         if (description != null) book.Description = description;
+        if (publishDate != null) book.PublishDate = publishDate;
         if (isbn10 != null) book.ISBN = isbn10;
         if (isbn13 != null) book.ISBN13 = isbn13;
         if (lccn != null) book.LCCN = lccn;

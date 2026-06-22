@@ -22,6 +22,7 @@ import { Alert, AlertTitle, AlertDescription } from "../ui/alert";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
+import { Spinner } from "../ui/spinner";
 import { ButtonGroup, ButtonGroupSeparator } from "../ui/button-group";
 
 import "./BookCardDialog.css";
@@ -35,6 +36,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
   const library = useSelector((state: LibreRootState) => state.library);
   const selections = useSelector((state: LibreRootState) => state.selections);
   const [series, setSeries] = useState<string[]>([]);
+  const [isOpenLibLoading, setIsOpenLibLoading] = useState(false);
   const [_, setSeriesTitle] = useState<string>("");
   const [book, setBook] = useState<BookType>();
   const [error, setError] = useState<string | null>(null);
@@ -83,19 +85,27 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
   };
 
   const handleOpenLibrary = () => {
+    setIsOpenLibLoading(true);
     setError(null);
     api
       .get(`metadata/queryOpenLibraryData?bookId=${bookId}`)
       .then(() => {
         api
           .get(`Book/getBookEntry?id=${bookId}`)
-          .then((response) => setBook(response.data.value))
-          .catch((error) => console.log(error));
+          .then((response) => {
+            setBook(response.data.value);
+            setIsOpenLibLoading(false);
+          })
+          .catch((error) => {
+            console.log(error);
+            setIsOpenLibLoading(false);
+          });
       })
       .catch((error) => {
         setError(
           error.response?.data?.error || "Failed to fetch Open Library data.",
         );
+        setIsOpenLibLoading(false);
         console.error(error);
       });
   };
@@ -212,7 +222,13 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
           <Label htmlFor="metadataButtons">Get Metadata</Label>
           <ButtonGroup id="metadataButtons">
             <Button variant="secondary" onClick={handleOpenLibrary}>
-              Open Library
+              {isOpenLibLoading && (
+                <>
+                  <Spinner data-icon="inline-start" />
+                  Loading
+                </>
+              )}
+              {!isOpenLibLoading && <>Open Library</>}
             </Button>
             <ButtonGroupSeparator />
             <Button variant="secondary" onClick={handleWikidata}>

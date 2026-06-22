@@ -29,6 +29,7 @@ public class EpubParserService : IEpubParseService
         {
             var book = await EpubReader.ReadBookAsync(filePath, options) ?? throw new Exception("Failed to Parse Epub File");
             var cover = book.CoverImage;
+            var description = book.Description;
             var metaData = book.Schema.Package.Metadata;
             return new Book
             {
@@ -37,6 +38,8 @@ public class EpubParserService : IEpubParseService
                 Title = book.Title ?? "Unknown Title",
                 Author = book.Author ?? string.Empty,
                 CoverImage = cover,
+                Description = description,
+
                 Publisher = metaData.Publishers.FirstOrDefault()?.Publisher ?? string.Empty,
                 ISBN = metaData.Identifiers
                     .FirstOrDefault(i => i.Scheme?.ToUpper() == "ISBN")?.Identifier

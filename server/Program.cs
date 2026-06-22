@@ -14,6 +14,8 @@ Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.SetMinimumLevel(LogLevel.Critical);
+
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<LibrestackDbContext>()
     .AddDefaultTokenProviders();
@@ -57,6 +59,7 @@ builder.Services.AddScoped<ILibreStackConfigService, LibreStackConfigService>();
 builder.Services.AddScoped<IlibraryScanService, LibraryScanService>();
 builder.Services.AddScoped<IOpenLibraryService, OpenLibraryService>();
 builder.Services.AddScoped<IWikidataService, WikidataService>();
+builder.Services.AddScoped<IBookParsingService, BookParsingService>();
 
 builder.Services.AddHostedService<LibraryMonitorService>();
 
