@@ -60,6 +60,19 @@ export const LibraryControls: React.FC = () => {
       });
   };
 
+  const handleScanLibrary = () => {
+    api
+      .post(
+        `/LibraryScan/scanLibrary?libraryId=${library[selections.selectedLibrary].id}`,
+      )
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error.response.data);
+      });
+  };
+
   return (
     <Menubar>
       <MenubarMenu>
@@ -77,6 +90,10 @@ export const LibraryControls: React.FC = () => {
               {item.name}
             </MenubarItem>
           ))}
+          <MenubarItem onClick={handleScanLibrary}>
+            <ScanText />
+            Scan Library
+          </MenubarItem>
           <MenubarItem>
             <PlusIcon />
             New Library

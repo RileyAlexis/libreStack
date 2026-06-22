@@ -5,6 +5,7 @@ using Librestack.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
+using Microsoft.VisualBasic;
 
 namespace Librestack.Services;
 
@@ -60,7 +61,7 @@ public class OpenLibraryService : IOpenLibraryService
 
     private async Task<Result<Book>> CallByISBN(Book book)
     {
-        string url = $"https://openlibrary.org/api/books?bibkeys=ISBN:{book.ISBN}&format=json&jscmd=data";
+        string url = $"https://openlibrary.org/api/works?bibkeys=ISBN:{book.ISBN}&format=json&jscmd=data";
         var client = await CreateClient();
 
         await RateLimit();
@@ -135,7 +136,7 @@ public class OpenLibraryService : IOpenLibraryService
 
     private async Task<Result<Book>> CallByOpenLibraryWorkId(Book book)
     {
-        string url = $"https://openlibrary.org/books/{book.OpenLibraryWorkId}.json";
+        string url = $"https://openlibrary.org/works/{book.OpenLibraryWorkId}.json";
         var client = await CreateClient();
 
 
@@ -158,8 +159,31 @@ public class OpenLibraryService : IOpenLibraryService
 
         var title = root.TryGetProperty("title", out var t) ? t.GetString() : null;
 
-        var series = root.TryGetProperty("series", out var s)
-            && s.GetArrayLength() > 0 ? s[0].GetString() : null;
+        var series = root.TryGetProperty("series", out var s) && s.GetArrayLength() > 0
+            ? s[0].ValueKind == JsonValueKind.String
+                ? s[0].GetString()
+                : s[0].TryGetProperty("series", out var seriesObj) && seriesObj.TryGetProperty("key", out var seriesKey)
+                    ? seriesKey.GetString()?.Split('/').Last()
+                    : null
+            : null;
+
+        var seriesPosition = root.TryGetProperty("series", out var sp) && sp.GetArrayLength() > 0
+            && sp[0].TryGetProperty("position", out var pos)
+            ? pos.GetString()
+            : null;
+
+        string? seriesName = null;
+        string seriesURl = $"https://openlibrary.org/series/{series}.json";
+        await RateLimit();
+        var seriesResponse = await client.GetAsync(seriesURl);
+        if (seriesResponse.IsSuccessStatusCode)
+        {
+            var seriesJson = await seriesResponse.Content.ReadAsStringAsync();
+            var seriesDoc = JsonDocument.Parse(seriesJson);
+            var seriesRoot = seriesDoc.RootElement;
+            if (seriesRoot.ValueKind != JsonValueKind.Undefined)
+                seriesName = seriesRoot.TryGetProperty("name", out var name) ? name.GetString() : null;
+        }
 
         var wikiData = (root.TryGetProperty("identifiers", out var ident) &&
             ident.TryGetProperty("wikidata", out var wik) &&
@@ -183,12 +207,10 @@ public class OpenLibraryService : IOpenLibraryService
         var publishDate = root.TryGetProperty("publish_date", out var pub) ? pub.GetString() : null;
 
         if (title != null && string.IsNullOrWhiteSpace(book.Title)) book.Title = title;
-        if (series != null)
-        {
-            book.SeriesTitle = _bookParsing.NormalizeSeriesTitle(series);
-            var order = _bookParsing.ParseSeriesOrderFromLabel(series ?? "");
-            book.SeriesOrder = order;
-        }
+        if (seriesName != null)
+            book.SeriesTitle = _bookParsing.NormalizeSeriesTitle(seriesName);
+        if (seriesPosition != null)
+            book.SeriesOrder = int.TryParse(seriesPosition, out var order) ? order : null;
         if (wikiData != null) book.WikidataId = wikiData;
         if (description != null) book.Description = description;
         if (publishDate != null) book.PublishDate = publishDate;
@@ -252,7 +274,7 @@ public class OpenLibraryService : IOpenLibraryService
                 : desc.TryGetProperty("value", out var val) ? val.GetString() : null
             : null;
 
-        var publishDate = root.TryGetProperty("publish_date", out var pub) ? pub.GetString() : null; ;
+        var publishDate = root.TryGetProperty("publish_date", out var pub) ? pub.GetString() : null;
 
         var authorKey = (root.TryGetProperty("author_key", out var ak) && ak.GetArrayLength() > 0) ? ak[0].GetString() : null;
         var workKey = root.TryGetProperty("key", out var k) ? k.GetString()?.Replace("/works/", "") : null;

@@ -8,6 +8,10 @@ namespace Librestack.Services;
 
 public class EpubParserService : IEpubParseService
 {
+
+    private static string? StripHtml(string? input) =>
+        input == null ? null : System.Text.RegularExpressions.Regex.Replace(input, "<.*?>", string.Empty).Trim();
+
     public async Task<Book> ParseMetadata(string filePath, string UserId)
     {
         var options = new EpubReaderOptions(EpubReaderOptionsPreset.RELAXED)
@@ -38,7 +42,7 @@ public class EpubParserService : IEpubParseService
                 Title = book.Title ?? "Unknown Title",
                 Author = book.Author ?? string.Empty,
                 CoverImage = cover,
-                Description = description,
+                Description = StripHtml(description),
 
                 Publisher = metaData.Publishers.FirstOrDefault()?.Publisher ?? string.Empty,
                 ISBN = metaData.Identifiers
