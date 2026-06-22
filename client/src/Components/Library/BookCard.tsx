@@ -10,14 +10,7 @@ import type { LibreRootState } from "@/types/LibreRootState";
 
 // UI
 import { Button } from "../ui/button";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "../ui/dialog";
+import { Dialog } from "../ui/dialog";
 import { Circle, CircleCheck, FileTextIcon, ScanText } from "lucide-react";
 
 import "./BookCard.css";
@@ -195,7 +188,10 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
             variant="link"
             size="icon"
             className="rounded-full"
-            onClick={() => setIsBookDialogOpen(true)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsBookDialogOpen(true);
+            }}
           >
             <FileTextIcon
               strokeWidth={2}
@@ -218,9 +214,11 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
           }}
         />
       </div>
-      <Dialog open={isBookDialogOpen} onOpenChange={setIsBookDialogOpen}>
-        <BookCardDialog book={book} />
-      </Dialog>
+      <div onClick={(e) => e.stopPropagation()}>
+        <Dialog open={isBookDialogOpen} onOpenChange={setIsBookDialogOpen}>
+          {isBookDialogOpen && <BookCardDialog bookId={book.id} />}
+        </Dialog>
+      </div>
     </div>
   );
 };

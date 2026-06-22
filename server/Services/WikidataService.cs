@@ -168,15 +168,14 @@ public class WikidataService : IWikidataService
         var openLibraryId = GetBindingValue(binding, "openLibraryId");
         var publicationDate = GetBindingValue(binding, "publicationDate");
 
-        if (title != null) book.Title = title;
-        if (author != null) book.Author = author;
+        if (title != null && string.IsNullOrWhiteSpace(book.Title)) book.Title = title;
+        if (author != null && string.IsNullOrWhiteSpace(book.Author)) book.Author = author;
         if (series != null) book.SeriesTitle = series;
         if (position != null && int.TryParse(position, out int result))
             book.SeriesOrder = result;
         if (openLibraryId != null) book.OpenLibraryWorkId = openLibraryId;
         if (oclc != null) book.OCLCWorldCat = oclc;
         if (publicationDate != null) book.PublishDate = publicationDate;
-
 
         book.WikidataMetaLastUpdated = DateTime.UtcNow;
 

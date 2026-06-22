@@ -24,14 +24,12 @@ public class Book
     public string? ISBN13 { get; set; } = "";
     public string? LCCN { get; set; } = null;
     public string? OCLCWorldCat { get; set; } = null;
-    public string? AmazonId { get; set; } = null;
     public string? OpenLibraryWorkId { get; set; } = null;
     public string? OpenLibraryEditionId { get; set; } = null;
     public string? OpenLibraryAuthorId { get; set; } = null;
     public string? OpenLibraryCoverId { get; set; } = null;
     public string? WikiDataIdentifier { get; set; } = null;
     public string? Language { get; set; } = null;
-    public string? WorkId { get; set; } = null;
     public int? CollectionId { get; set; }
     public required string EpubPath { get; set; }
     public DateTime OpenLibraryMetadataLastUpdated { get; set; }

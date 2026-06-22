@@ -155,10 +155,6 @@ public class BookService : IBookService
             existing.LCCN = book.LCCN;
         if (book.OCLCWorldCat is not null)
             existing.OCLCWorldCat = book.OCLCWorldCat;
-        if (book.AmazonId is not null)
-            existing.AmazonId = book.AmazonId;
-        if (book.WorkId is not null)
-            existing.WorkId = book.WorkId;
         if (book.CollectionId.HasValue && book.CollectionId != 0)
             existing.CollectionId = book.CollectionId;
 

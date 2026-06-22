@@ -22,10 +22,14 @@ export interface BookType {
   seriesTitle: string;
   seriesOrder: string;
   isbn: string;
+  isbn13: string;
   lccn: string;
+  openLibraryWorkId: string;
+  openLibraryEditionId: string;
+  openLibraryAuthorId: string;
+  openLibraryCoverId: string;
+  wikiDataId: string;
   oclcWorldCat: string;
-  amazonId: string;
-  workId: string;
   collectionId: string;
   bookTags: TagsType[];
   bookmarks: BookmarkType[];
