@@ -28,15 +28,6 @@ const LibrarySlice = createSlice({
     setLibrary(_, action: PayloadAction<LibraryType[]>) {
       return action.payload;
     },
-    // setSelectedBooks(
-    //   state,
-    //   action: PayloadAction<{ libraryId: number; books: BookType[] }>,
-    // ) {
-    //   const library = state.find((l) => l.id === action.payload.libraryId);
-    //   if (library) {
-    //     library.selectedBooks = action.payload.books;
-    //   }
-    // },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchLibraryData.fulfilled, (_, action) => {

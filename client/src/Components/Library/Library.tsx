@@ -12,6 +12,8 @@ import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 import "./Library.css";
 import { BookCard } from "./BookCard";
 
+import { BottomControls } from "../BottomControls/BottomControls";
+
 export const Library: React.FC = () => {
   const location = useLocation();
   const dispatch = useDispatch<AppDispatch>();
@@ -34,6 +36,7 @@ export const Library: React.FC = () => {
             (book: BookType) => <BookCard key={book.id} book={book} />,
           )}
       </div>
+      <BottomControls />
     </div>
   );
 };

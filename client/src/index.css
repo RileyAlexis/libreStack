@@ -53,6 +53,7 @@
       5.3px 4.2px 5.4px -2.8px hsl(var(--shadow-color) / 0.08),
       11.5px 9.2px 11.8px -3.7px hsl(var(--shadow-color) / 0.06),
       21.9px 17.4px 22.4px -4.6px hsl(var(--shadow-color) / 0.03);
+    --menu-background: oklch(96.114% 0.02198 80.643 / 0.381);
     --popover: oklch(96.114% 0.02198 80.643);
     --popover-foreground: oklch(0.145 0 0);
     --primary: oklch(74.281% 0.14454 77.173);

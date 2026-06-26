@@ -121,7 +121,6 @@ function App() {
             <div className="pageContent">
               <HeaderBanner />
               <Library />
-              {isTouchDevice && <BottomControls />}
             </div>
           }
         />

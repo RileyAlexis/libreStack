@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace libreStack.Migrations
 {
     [DbContext(typeof(LibrestackDbContext))]
-    [Migration("20260620140339_initial")]
+    [Migration("20260622234507_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -33,10 +33,6 @@ namespace libreStack.Migrations
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AmazonId")
-                        .HasColumnType("text")
-                        .HasColumnName("amazon_id");
 
                     b.Property<string>("Author")
                         .IsRequired()
@@ -80,10 +76,6 @@ namespace libreStack.Migrations
                         .HasColumnType("text")
                         .HasColumnName("language");
 
-                    b.Property<DateTime>("MetadataLastUpdated")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("metadata_last_updated");
-
                     b.Property<string>("OCLCWorldCat")
                         .HasColumnType("text")
                         .HasColumnName("oclc_world_cat");
@@ -99,6 +91,10 @@ namespace libreStack.Migrations
                     b.Property<string>("OpenLibraryEditionId")
                         .HasColumnType("text")
                         .HasColumnName("open_library_edition_id");
+
+                    b.Property<DateTime>("OpenLibraryMetadataLastUpdated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("open_library_metadata_last_updated");
 
                     b.Property<string>("OpenLibraryWorkId")
                         .HasColumnType("text")
@@ -135,13 +131,13 @@ namespace libreStack.Migrations
                         .HasColumnType("text")
                         .HasColumnName("user_id");
 
-                    b.Property<string>("WikiDataIdentifier")
+                    b.Property<string>("WikidataId")
                         .HasColumnType("text")
-                        .HasColumnName("wiki_data_identifier");
+                        .HasColumnName("wikidata_id");
 
-                    b.Property<string>("WorkId")
-                        .HasColumnType("text")
-                        .HasColumnName("work_id");
+                    b.Property<DateTime>("WikidataMetaLastUpdated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("wikidata_meta_last_updated");
 
                     b.HasKey("Id")
                         .HasName("pk_books");

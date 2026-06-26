@@ -24,7 +24,7 @@ public class EpubParserService : IEpubParseService
         };
         options.BookCoverReaderOptions.Epub2MetadataIgnoreMissingContentFile = true;
         // options.ContentReaderOptions.ContentFileMissing += (sender, e) =>
-        // {
+        // { 
         //     Console.WriteLine($"Content file is missing content file name = '{e.FileName}', content file path in the EPUB archive = '{e.FilePathInEpubArchive}', content type = '{e.ContentType}, MIME type = {e.ContentMimeType}.");
         // };
 

@@ -240,17 +240,16 @@ namespace libreStack.Migrations
                     isbn13 = table.Column<string>(type: "text", nullable: true),
                     lccn = table.Column<string>(type: "text", nullable: true),
                     oclc_world_cat = table.Column<string>(type: "text", nullable: true),
-                    amazon_id = table.Column<string>(type: "text", nullable: true),
                     open_library_work_id = table.Column<string>(type: "text", nullable: true),
                     open_library_edition_id = table.Column<string>(type: "text", nullable: true),
                     open_library_author_id = table.Column<string>(type: "text", nullable: true),
                     open_library_cover_id = table.Column<string>(type: "text", nullable: true),
-                    wiki_data_identifier = table.Column<string>(type: "text", nullable: true),
+                    wikidata_id = table.Column<string>(type: "text", nullable: true),
                     language = table.Column<string>(type: "text", nullable: true),
-                    work_id = table.Column<string>(type: "text", nullable: true),
                     collection_id = table.Column<int>(type: "integer", nullable: true),
                     epub_path = table.Column<string>(type: "text", nullable: false),
-                    metadata_last_updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    open_library_metadata_last_updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    wikidata_meta_last_updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {

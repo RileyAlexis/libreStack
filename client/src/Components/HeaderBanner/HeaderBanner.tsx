@@ -44,9 +44,9 @@ export const HeaderBanner: React.FC = () => {
         <h1 onClick={handleNavigateToMain} style={{ cursor: "pointer" }}>
           LibreStack
         </h1>
-        {location.pathname === "/library" && !isTouchDevice && (
+        {/* {location.pathname === "/library" && !isTouchDevice && (
           <LibraryControls />
-        )}
+        )} */}
         <div className="menuContainer">
           <MainMenu setIsLoginOpen={setIsLoginOpen} />
         </div>
