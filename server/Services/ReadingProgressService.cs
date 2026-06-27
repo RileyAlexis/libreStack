@@ -4,9 +4,6 @@ using Librestack.Database;
 using Librestack.Models.APIModels;
 using Librestack.Interfaces;
 using Librestack.Models;
-using Microsoft.Extensions.Configuration.UserSecrets;
-
-
 
 namespace Librestack.Services;
 

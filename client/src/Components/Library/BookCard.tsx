@@ -247,31 +247,25 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
               />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              {Array.isArray(book.readingProgress) &&
-                book.readingProgress.length > 0 && (
-                  <>
-                    {book.readingProgress[0].isComplete && (
-                      <DropdownMenuItem
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleMarkComplete(book.id);
-                        }}
-                      >
-                        Mark as Unfinished
-                      </DropdownMenuItem>
-                    )}
-                    {!book.readingProgress[0].isComplete && (
-                      <DropdownMenuItem
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleMarkComplete(book.id);
-                        }}
-                      >
-                        Mark as Finished
-                      </DropdownMenuItem>
-                    )}
-                  </>
-                )}
+              {book.readingProgress?.isComplete ? (
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleMarkComplete(book.id);
+                  }}
+                >
+                  Mark as Unfinished
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleMarkComplete(book.id);
+                  }}
+                >
+                  Mark as Finished
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

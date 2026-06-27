@@ -19,6 +19,7 @@ export const Library: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const libraryData = useSelector((state: LibreRootState) => state.library);
+  const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const selections = useSelector((state: LibreRootState) => state.selections);
   const user = useSelector((state: LibreRootState) => state.user);
 
@@ -32,9 +33,13 @@ export const Library: React.FC = () => {
         {libraryData &&
           libraryData[selections.selectedLibrary] &&
           libraryData[selections.selectedLibrary].books &&
-          libraryData[selections.selectedLibrary].books.map(
-            (book: BookType) => <BookCard key={book.id} book={book} />,
-          )}
+          libraryData[selections.selectedLibrary].books
+            .filter(
+              (book: BookType) =>
+                !book.readingProgress?.isComplete ||
+                appSettings.libraryLayout.showCompleted,
+            )
+            .map((book: BookType) => <BookCard key={book.id} book={book} />)}
       </div>
       <BottomControls />
     </div>

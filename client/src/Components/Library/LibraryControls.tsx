@@ -131,8 +131,10 @@ export const LibraryControls: React.FC = () => {
                   <Slider
                     id="coverSlider"
                     className="slider-track"
-                    defaultValue={appSettings.libraryCoverSize.width}
-                    value={appSettings.libraryCoverSize.width}
+                    defaultValue={
+                      appSettings.libraryLayout.libraryCoverSize.width
+                    }
+                    value={appSettings.libraryLayout.libraryCoverSize.width}
                     onValueChange={handleChangeCoverSize}
                     step={20}
                     min={80}

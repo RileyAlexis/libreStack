@@ -38,6 +38,6 @@ public class Book
     [JsonIgnore]
     public ICollection<Library> Libraries { get; set; } = new List<Library>();
     public ICollection<BookTag> BookTags { get; set; } = new List<BookTag>();
-    public ICollection<ReadingProgress> ReadingProgress { get; set; } = new List<ReadingProgress>();
+    public ReadingProgress? ReadingProgress { get; set; }
     public ICollection<BookmarkModel> Bookmarks { get; set; } = new List<BookmarkModel>();
 }

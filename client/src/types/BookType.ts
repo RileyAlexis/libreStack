@@ -35,6 +35,6 @@ export interface BookType {
   collectionId: string;
   bookTags: TagsType[];
   bookmarks: BookmarkType[];
-  readingProgress: ReadingProgress[];
+  readingProgress: ReadingProgress;
   contentType: string;
 }

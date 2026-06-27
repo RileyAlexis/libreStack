@@ -1,5 +1,9 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { AppSettings, ReadingFontType } from "../../types/AppSettings";
+import type {
+  AppSettings,
+  LibraryLayout,
+  ReadingFontType,
+} from "../../types/AppSettings";
 
 const initialState: AppSettings = {
   showLibraryAsHome: true,
@@ -56,6 +60,9 @@ const AppSettingsSlice = createSlice({
     setSpread(state, action: PayloadAction<string>) {
       state.spread = action.payload;
     },
+    setLayout(state, action: PayloadAction<LibraryLayout>) {
+      state.libraryLayout = action.payload;
+    },
   },
 });
 
@@ -66,5 +73,6 @@ export const {
   setReadingFontSize,
   setReadingFont,
   setSpread,
+  setLayout,
 } = AppSettingsSlice.actions;
 export default AppSettingsSlice.reducer;

@@ -9,7 +9,7 @@ export interface AppSettings {
   libraryLayout: LibraryLayout;
 }
 
-interface LibraryLayout {
+export interface LibraryLayout {
   base: "Grid" | "List";
   showTitles: boolean;
   showAuthors: boolean;
