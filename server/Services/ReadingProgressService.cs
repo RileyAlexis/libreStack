@@ -28,19 +28,28 @@ public class ReadingProgressService : IReadingProgressService
     public async Task<Result> MarkComplete(int bookId, string userId)
     {
         var entry = await _db.ReadingProgress.FirstOrDefaultAsync(l => l.BookId == bookId && l.UserId == userId);
-        if (entry is null)
-            return Result.Failure("Book not found", ErrorType.NotFound);
 
-        if (entry.IsComplete == true)
+        if (entry is null)
+        {
+            entry = new ReadingProgress
+            {
+                BookId = bookId,
+                UserId = userId,
+                IsComplete = true,
+                LastRead = DateTime.UtcNow
+            };
+            _db.ReadingProgress.Add(entry);
+        }
+        else if (entry.IsComplete)
         {
             entry.IsComplete = false;
         }
         else
         {
             entry.IsComplete = true;
+            entry.LastRead = DateTime.UtcNow;
         }
 
-        _db.Update(entry);
         await _db.SaveChangesAsync();
         return Result.Success();
     }
