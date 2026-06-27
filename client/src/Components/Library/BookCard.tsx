@@ -163,7 +163,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
       onClick={handleTap}
     >
       <div
-        className="bookControls"
+        className="bookControlsTop"
         style={{
           opacity: isTouchDevice || isHovering ? 1 : 0,
           pointerEvents: isTouchDevice || isHovering ? "auto" : "none",
@@ -200,20 +200,6 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
             />
           </Button>
         )}
-
-        <div className="getMetaData">
-          <Button
-            variant="link"
-            size="icon"
-            className="rounded-full"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleGetOpenLibraryData(book.id);
-            }}
-          >
-            <ScanText className="bookIcon" style={iconSize} />
-          </Button>
-        </div>
 
         <div className="metaDataButton">
           <Button
@@ -282,6 +268,23 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
             transition: "filter 0.2s ease-in-out",
           }}
         />
+        {(appSettings.libraryLayout.showAuthors ||
+          appSettings.libraryLayout.showTitles ||
+          appSettings.libraryLayout.showSeries) && (
+          <div className="infoBox">
+            <div className="infoTextContainer">
+              {appSettings.libraryLayout.showTitles && <h5>{book.title}</h5>}
+              {appSettings.libraryLayout.showAuthors && <h6>{book.author}</h6>}
+              {appSettings.libraryLayout.showSeries &&
+                book.seriesTitle !== null &&
+                book.seriesTitle !== "" && (
+                  <p>
+                    {book.seriesTitle} - {book.seriesOrder}
+                  </p>
+                )}
+            </div>
+          </div>
+        )}
       </div>
       <div onClick={(e) => e.stopPropagation()}>
         <Dialog open={isBookDialogOpen} onOpenChange={setIsBookDialogOpen}>

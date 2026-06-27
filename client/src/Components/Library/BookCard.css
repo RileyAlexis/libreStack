@@ -17,9 +17,23 @@
   background: var(--secondary);
 }
 
-.bookControls {
+.bookControlsTop {
   position: absolute;
   top: 0;
+  left: 0;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  padding: 4%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.bookControlsBottom {
+  position: absolute;
+  bottom: 0;
   left: 0;
   z-index: 10;
   width: 100%;
@@ -55,4 +69,24 @@
 
 .bookCover.selected {
   padding: 8%;
+}
+
+.infoBox {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: var(--menu-background);
+  backdrop-filter: blur(3px);
+  padding-top: 0.5em;
+  padding-left: 0.2em;
+  padding-right: 0.1em;
+}
+
+.infoTextContainer {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
 }

@@ -4,7 +4,7 @@ import type { LibreRootState } from "@/types/LibreRootState";
 
 // Actions
 import { setSelectedLibrary } from "@/redux/reducers/SelectedReducer";
-import { setCoverSize } from "@/redux/reducers/AppSettingsReducer";
+import { setCoverSize, setLayout } from "@/redux/reducers/AppSettingsReducer";
 
 // UI
 import {
@@ -30,6 +30,8 @@ import {
 import { Slider } from "../ui/slider";
 
 import "./BottomControls.css";
+import { Switch } from "../ui/switch";
+import { Label } from "../ui/label";
 
 export const BottomControls: React.FC = () => {
   const dispatch = useDispatch();
@@ -83,6 +85,33 @@ export const BottomControls: React.FC = () => {
   const handleChangeCoverSize = (value: number | readonly number[], _: any) => {
     const num = Array.isArray(value) ? value[0] : value;
     dispatch(setCoverSize(num));
+  };
+
+  const handleShowComplete = () => {
+    dispatch(
+      setLayout({
+        ...appSettings.libraryLayout,
+        showCompleted: !appSettings.libraryLayout.showCompleted,
+      }),
+    );
+  };
+
+  const handleShowTitles = () => {
+    dispatch(
+      setLayout({
+        ...appSettings.libraryLayout,
+        showTitles: !appSettings.libraryLayout.showTitles,
+      }),
+    );
+  };
+
+  const handleShowAuthors = () => {
+    dispatch(
+      setLayout({
+        ...appSettings.libraryLayout,
+        showAuthors: !appSettings.libraryLayout.showAuthors,
+      }),
+    );
   };
 
   return (
@@ -155,6 +184,31 @@ export const BottomControls: React.FC = () => {
             </div>
           </MenubarTrigger>
           <MenubarContent>
+            <MenubarItem>
+              <Label htmlFor="showComplete">Show Read</Label>
+              <Switch
+                id="showComplete"
+                checked={appSettings.libraryLayout.showCompleted}
+                onCheckedChange={handleShowComplete}
+              />
+            </MenubarItem>
+            <MenubarItem>
+              <Label htmlFor="showComplete">Show Titles</Label>
+              <Switch
+                id="showComplete"
+                checked={appSettings.libraryLayout.showTitles}
+                onCheckedChange={handleShowTitles}
+              />
+            </MenubarItem>
+            <MenubarItem>
+              <Label htmlFor="showComplete">Show Authors</Label>
+              <Switch
+                id="showComplete"
+                checked={appSettings.libraryLayout.showAuthors}
+                onCheckedChange={handleShowAuthors}
+              />
+            </MenubarItem>
+
             <MenubarSub>
               <MenubarSubTrigger>Cover Size</MenubarSubTrigger>
               <MenubarSubContent>

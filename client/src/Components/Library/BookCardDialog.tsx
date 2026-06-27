@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { api } from "@/api";
 import type { BookType } from "@/types/BookType";
 import type { LibreRootState } from "@/types/LibreRootState";
+import type { AppDispatch } from "@/redux/store";
+
+//Actions
+import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 
 // UI
 import {
@@ -24,15 +28,16 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Spinner } from "../ui/spinner";
 import { ButtonGroup, ButtonGroupSeparator } from "../ui/button-group";
+import { Textarea } from "../ui/textarea";
 
 import "./BookCardDialog.css";
-import { Textarea } from "../ui/textarea";
 
 interface BookCardDialogProps {
   bookId: number;
 }
 
 export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
+  const dispatch = useDispatch<AppDispatch>();
   const library = useSelector((state: LibreRootState) => state.library);
   const selections = useSelector((state: LibreRootState) => state.selections);
   const [series, setSeries] = useState<string[]>([]);
@@ -78,6 +83,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
       .catch((err) => {
         console.error("Failed to save", field, err);
       });
+    dispatch(fetchLibraryData());
   };
 
   const handleChange = (field: keyof BookType, value: string) => {
