@@ -7,10 +7,6 @@
   margin-top: 0.2em;
 }
 
-.selectedMenu {
-  background-color: lightgreen;
-}
-
 .layoutMenu {
   display: flex;
   flex-direction: column;

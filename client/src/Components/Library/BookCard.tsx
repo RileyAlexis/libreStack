@@ -11,10 +11,23 @@ import type { LibreRootState } from "@/types/LibreRootState";
 // UI
 import { Button } from "../ui/button";
 import { Dialog } from "../ui/dialog";
-import { Circle, CircleCheck, FileTextIcon, ScanText } from "lucide-react";
+import {
+  Circle,
+  CircleCheck,
+  EllipsisIcon,
+  FileTextIcon,
+  ScanText,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuItem,
+} from "../ui/dropdown-menu";
 
-import "./BookCard.css";
 import { BookCardDialog } from "./BookCardDialog";
+import "./BookCard.css";
 
 interface BookCardProps {
   book: BookType;
@@ -69,11 +82,24 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
       });
   };
 
+  const handleMarkComplete = (bookId: number) => {
+    console.log("******************* marking complete");
+
+    api
+      .post(`ReadingProgress/markComplete?bookId=${bookId}`)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error.response.data);
+      });
+  };
+
   const isInSelectionZone = (e: React.MouseEvent | React.TouchEvent) => {
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
     const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
-    const zoneSize = appSettings.libraryCoverSize.width * 0.25;
+    const zoneSize = appSettings.libraryLayout.libraryCoverSize.width * 0.25;
     return clientX - rect.left < zoneSize && clientY - rect.top < zoneSize;
   };
 
@@ -104,16 +130,22 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
   };
 
   const iconSize = {
-    width: appSettings.libraryCoverSize.width * coverMultiplier * 0.14,
-    height: appSettings.libraryCoverSize.height * coverMultiplier * 0.14,
+    width:
+      appSettings.libraryLayout.libraryCoverSize.width * coverMultiplier * 0.14,
+    height:
+      appSettings.libraryLayout.libraryCoverSize.height *
+      coverMultiplier *
+      0.14,
   };
 
   return (
     <div
       className={`bookCardContainer ${isSelected ? "selected" : ""}`}
       style={{
-        width: appSettings.libraryCoverSize.width * coverMultiplier,
-        height: appSettings.libraryCoverSize.height * coverMultiplier,
+        width:
+          appSettings.libraryLayout.libraryCoverSize.width * coverMultiplier,
+        height:
+          appSettings.libraryLayout.libraryCoverSize.height * coverMultiplier,
       }}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => {
@@ -199,6 +231,49 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
               style={iconSize}
             />
           </Button>
+        </div>
+
+        <div className="contextData">
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              onClick={(e) => {
+                e.stopPropagation();
+              }}
+            >
+              <EllipsisIcon
+                strokeWidth={2}
+                className="bookIcon"
+                style={iconSize}
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {Array.isArray(book.readingProgress) &&
+                book.readingProgress.length > 0 && (
+                  <>
+                    {book.readingProgress[0].isComplete && (
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMarkComplete(book.id);
+                        }}
+                      >
+                        Mark as Unfinished
+                      </DropdownMenuItem>
+                    )}
+                    {!book.readingProgress[0].isComplete && (
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleMarkComplete(book.id);
+                        }}
+                      >
+                        Mark as Finished
+                      </DropdownMenuItem>
+                    )}
+                  </>
+                )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

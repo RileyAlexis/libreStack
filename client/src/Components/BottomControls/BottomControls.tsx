@@ -1,4 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
+import { api } from "@/api";
 import type { LibreRootState } from "@/types/LibreRootState";
 
 // Actions
@@ -7,7 +8,6 @@ import { setCoverSize } from "@/redux/reducers/AppSettingsReducer";
 
 // UI
 import {
-  DeleteIcon,
   LandmarkIcon,
   LayoutDashboard,
   LibraryBig,
@@ -27,10 +27,9 @@ import {
   MenubarSubContent,
   MenubarSubTrigger,
 } from "../ui/menubar";
+import { Slider } from "../ui/slider";
 
 import "./BottomControls.css";
-import { api } from "@/api";
-import { Slider } from "../ui/slider";
 
 export const BottomControls: React.FC = () => {
   const dispatch = useDispatch();
@@ -163,12 +162,14 @@ export const BottomControls: React.FC = () => {
                   <Slider
                     id="coverSlider"
                     className="slider-track"
-                    defaultValue={appSettings.libraryCoverSize.width}
-                    value={appSettings.libraryCoverSize.width}
+                    defaultValue={
+                      appSettings.libraryLayout.libraryCoverSize.width
+                    }
+                    value={appSettings.libraryLayout.libraryCoverSize.width}
                     onValueChange={handleChangeCoverSize}
-                    step={20}
+                    step={10}
                     min={80}
-                    max={600}
+                    max={500}
                   />
                 </div>
               </MenubarSubContent>

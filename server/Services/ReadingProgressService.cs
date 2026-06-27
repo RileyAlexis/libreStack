@@ -28,6 +28,26 @@ public class ReadingProgressService : IReadingProgressService
         return Result<ReadingProgress>.Success(progress);
     }
 
+    public async Task<Result> MarkComplete(int bookId, string userId)
+    {
+        var entry = await _db.ReadingProgress.FirstOrDefaultAsync(l => l.BookId == bookId && l.UserId == userId);
+        if (entry is null)
+            return Result.Failure("Book not found", ErrorType.NotFound);
+
+        if (entry.IsComplete == true)
+        {
+            entry.IsComplete = false;
+        }
+        else
+        {
+            entry.IsComplete = true;
+        }
+
+        _db.Update(entry);
+        await _db.SaveChangesAsync();
+        return Result.Success();
+    }
+
     public async Task<Result> ResetProgress(int bookId, string userId)
     {
         var entry = await _db.ReadingProgress.FirstOrDefaultAsync(l => l.BookId == bookId && l.UserId == userId);

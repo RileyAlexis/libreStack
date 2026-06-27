@@ -24,3 +24,7 @@
   margin-top: 1em;
   margin-bottom: 1em;
 }
+
+.selectedMenu {
+  background-color: var(--select-color);
+}

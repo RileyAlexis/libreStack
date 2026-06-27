@@ -4,7 +4,6 @@ import {
   createAsyncThunk,
 } from "@reduxjs/toolkit";
 import type { LibraryType } from "../../types/LibraryType";
-// import type { BookType } from "@/types/BookType";
 import { api } from "@/api";
 
 export const fetchLibraryData = createAsyncThunk(

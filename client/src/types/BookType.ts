@@ -11,6 +11,7 @@ export interface BookmarkType {
 export interface ReadingProgress {
   cfiLocation: string;
   lastRead: Date;
+  isComplete: boolean;
 }
 
 export interface BookType {

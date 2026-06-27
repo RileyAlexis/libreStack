@@ -1,9 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-// import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { api } from "../../api";
 import Epub, { Book, Rendition, type Location } from "@likecoin/epub-ts";
-// import type { LibreRootState } from "../../types/LibreRootState";
 
 import "./Reader.css";
 
@@ -57,6 +55,7 @@ export const Reader: React.FC = () => {
 
   useEffect(() => {
     if (!bookInstance || !renderAreaRef.current) return;
+    let destroyed = false;
 
     const rendition = bookInstance.renderTo(renderAreaRef.current, {
       width: "100%",
@@ -64,7 +63,11 @@ export const Reader: React.FC = () => {
       allowScriptedContent: true,
     });
 
-    rendition.display(progress ?? undefined);
+    rendition.display(progress ?? undefined).then(() => {
+      if (destroyed) {
+        rendition.destroy();
+      }
+    });
 
     rendition.on("relocated", (location) => {
       console.log(location);
@@ -131,8 +134,11 @@ export const Reader: React.FC = () => {
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      rendition.destroy();
+      destroyed = true;
       window.removeEventListener("keydown", handleKeyDown);
+      try {
+        rendition.destroy();
+      } catch (_) {}
     };
   }, [bookInstance]);
 

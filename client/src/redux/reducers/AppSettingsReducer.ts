@@ -16,9 +16,20 @@ const initialState: AppSettings = {
   ],
   readingFontSize: 18,
   lineHeight: 1.5,
-  libraryCoverSize: {
-    width: 200,
-    height: 300,
+  libraryLayout: {
+    base: "Grid",
+    showTitles: true,
+    showAuthors: true,
+    showSeries: true,
+    sortBy: "Title",
+    sortAscending: true,
+    showCollections: true,
+    showCompleted: false,
+    showDescriptionOnHover: true,
+    libraryCoverSize: {
+      width: 200,
+      height: 300,
+    },
   },
 };
 
@@ -30,8 +41,8 @@ const AppSettingsSlice = createSlice({
       return action.payload;
     },
     setCoverSize(state, action: PayloadAction<number>) {
-      state.libraryCoverSize.width = action.payload;
-      state.libraryCoverSize.height = (action.payload / 2) * 3;
+      state.libraryLayout.libraryCoverSize.width = action.payload;
+      state.libraryLayout.libraryCoverSize.height = (action.payload / 2) * 3;
     },
     switchLibraryAsHome(state) {
       state.showLibraryAsHome = !state.showLibraryAsHome;

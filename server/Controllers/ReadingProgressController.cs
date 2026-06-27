@@ -19,6 +19,35 @@ public class ReadingProgressController : ControllerBase
         _iReadingProgressService = readingProgressService;
     }
 
+    [HttpPost("markComplete")]
+    [Authorize]
+    public async Task<IActionResult> MarkComplete(int bookId)
+    {
+        var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (UserId is null) return Unauthorized();
+
+        var result = await _iReadingProgressService.MarkComplete(bookId, UserId);
+        if (result is null)
+            return BadRequest(new { error = result?.Error });
+
+        return Ok(result);
+    }
+
+    [HttpPost("markNotComplete")]
+    [Authorize]
+    public async Task<IActionResult> MarkNotComplete(int bookId)
+    {
+        var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (UserId is null) return Unauthorized();
+
+        var result = await _iReadingProgressService.MarkComplete(bookId, UserId);
+        if (result is null)
+            return BadRequest(new { error = result?.Error });
+
+        return Ok(result);
+
+    }
+
     [HttpGet("readingProgress")]
     [Authorize]
     public async Task<IActionResult> GetReadingProgress(int bookId)

@@ -11,4 +11,5 @@ public class ReadingProgress
     public int BookId { get; set; }
     public string? CfiLocation { get; set; }
     public DateTime LastRead { get; set; }
+    public bool IsComplete { get; set; }
 }

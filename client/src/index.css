@@ -36,7 +36,7 @@
     --foreground: oklch(0.145 0 0);
     --card: oklch(96.114% 0.02198 80.643);
     --card-foreground: oklch(0.145 0 0);
-    --select-color: rgba(83, 137, 255, 1);
+    --select-color: rgb(0, 191, 35);
 
     --shadow-color: 0deg 0% 0%;
     --shadow-elevation-low:
@@ -93,6 +93,7 @@
     --popover: oklch(49.133% 0.02929 86.876);
     --popover-foreground: oklch(0.985 0 0);
     --primary: oklch(59.226% 0.11396 77.691);
+    --select-color: rgb(0, 80, 15);
     --primary-foreground: oklch(94.611% 0.00011 271.152);
     --secondary: oklch(47.673% 0.05593 83.219);
     --secondary-foreground: oklch(0.985 0 0);
