@@ -13,6 +13,7 @@ import "./Library.css";
 import { BookCard } from "./BookCard";
 
 import { BottomControls } from "../BottomControls/BottomControls";
+import { LibraryHeaderControls } from "./LibraryHeaderControls";
 
 export const Library: React.FC = () => {
   const location = useLocation();
@@ -29,6 +30,7 @@ export const Library: React.FC = () => {
 
   return (
     <div className="libraryContainer">
+      <LibraryHeaderControls />
       <div className="booksContainer">
         {libraryData &&
           libraryData[selections.selectedLibrary] &&

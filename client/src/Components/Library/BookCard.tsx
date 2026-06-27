@@ -12,11 +12,11 @@ import type { LibreRootState } from "@/types/LibreRootState";
 import { Button } from "../ui/button";
 import { Dialog } from "../ui/dialog";
 import {
+  BookText,
   Circle,
   CircleCheck,
   EllipsisIcon,
   FileTextIcon,
-  ScanText,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -28,6 +28,7 @@ import {
 
 import { BookCardDialog } from "./BookCardDialog";
 import "./BookCard.css";
+import { DescriptionDialog } from "./DescriptionDialog";
 
 interface BookCardProps {
   book: BookType;
@@ -43,6 +44,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const [coverMultiplier, setCoverMultiplier] = useState<number>(1);
   const [isBookDialogOpen, setIsBookDialogOpen] = useState(false);
+  const [isDescDialogOpen, setIsDescDialogOpen] = useState(false);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const didLongPress = useRef(false);
   const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
@@ -68,18 +70,6 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
 
   const handleUnselectBook = (bookId: number) => {
     dispatch(unSelectBook(bookId));
-  };
-
-  const handleGetOpenLibraryData = (bookId: number) => {
-    console.log(bookId);
-    api
-      .get(`metadata/queryWikidata?bookId=${bookId}`)
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error(error.response.data);
-      });
   };
 
   const handleMarkComplete = (bookId: number) => {
@@ -233,6 +223,14 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
               />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsDescDialogOpen(true);
+                }}
+              >
+                <BookText /> View Description
+              </DropdownMenuItem>
               {book.readingProgress?.isComplete ? (
                 <DropdownMenuItem
                   onClick={(e) => {
@@ -289,6 +287,11 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
       <div onClick={(e) => e.stopPropagation()}>
         <Dialog open={isBookDialogOpen} onOpenChange={setIsBookDialogOpen}>
           {isBookDialogOpen && <BookCardDialog bookId={book.id} />}
+        </Dialog>
+      </div>
+      <div onClick={(e) => e.stopPropagation()}>
+        <Dialog open={isDescDialogOpen} onOpenChange={setIsDescDialogOpen}>
+          {isDescDialogOpen && <DescriptionDialog book={book} />}
         </Dialog>
       </div>
     </div>

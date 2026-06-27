@@ -1,27 +1,6 @@
 .libraryContainer {
   max-height: 90vh;
-}
-
-.libraryListing {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 0.2em;
-  background-color: var(--elevated-bg);
-  border: 1px solid var(--border-color);
-  height: 100%;
-  overflow: auto;
-}
-
-.libraryButton {
-  min-width: 100%;
-}
-
-.libraryButtonActive {
-  font-weight: 600;
-  color: #1677ff !important;
-  background-color: rgba(22, 119, 255, 0.08) !important;
+  overflow-y: auto;
 }
 
 .booksContainer {

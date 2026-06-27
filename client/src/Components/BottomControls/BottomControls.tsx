@@ -114,6 +114,15 @@ export const BottomControls: React.FC = () => {
     );
   };
 
+  const handleShowSeries = () => {
+    dispatch(
+      setLayout({
+        ...appSettings.libraryLayout,
+        showSeries: !appSettings.libraryLayout.showSeries,
+      }),
+    );
+  };
+
   return (
     <div className="bottomControlsContainer">
       <Menubar
@@ -206,6 +215,14 @@ export const BottomControls: React.FC = () => {
                 id="showComplete"
                 checked={appSettings.libraryLayout.showAuthors}
                 onCheckedChange={handleShowAuthors}
+              />
+            </MenubarItem>
+            <MenubarItem>
+              <Label htmlFor="showComplete">Show Series</Label>
+              <Switch
+                id="showComplete"
+                checked={appSettings.libraryLayout.showSeries}
+                onCheckedChange={handleShowSeries}
               />
             </MenubarItem>
 

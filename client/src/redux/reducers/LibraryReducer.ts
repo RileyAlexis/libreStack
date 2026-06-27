@@ -4,6 +4,7 @@ import {
   createAsyncThunk,
 } from "@reduxjs/toolkit";
 import type { LibraryType } from "../../types/LibraryType";
+import type { BookType } from "../../types/BookType";
 import { api } from "@/api";
 
 export const fetchLibraryData = createAsyncThunk(
@@ -18,14 +19,72 @@ export const fetchLibraryData = createAsyncThunk(
   },
 );
 
+const getLastName = (author: string): string => {
+  // Handle "Last, First" format
+  if (author.includes(",")) {
+    return author.split(",")[0].trim().toLowerCase();
+  }
+  // Handle "First Last" format
+  const parts = author.trim().split(/\s+/);
+  return (parts[parts.length - 1] ?? author).toLowerCase();
+};
+
+const sortByTitle = (books: BookType[], ascending: boolean) =>
+  [...books].sort((a, b) => {
+    const cmp = a.title.localeCompare(b.title);
+    return ascending ? cmp : -cmp;
+  });
+
+const sortByAuthor = (books: BookType[], ascending: boolean) =>
+  [...books].sort((a, b) => {
+    const cmp = getLastName(a.author).localeCompare(getLastName(b.author));
+    return ascending ? cmp : -cmp;
+  });
+
+const sortByLastRead = (books: BookType[]) =>
+  [...books].sort((a, b) => {
+    const aDate = a.readingProgress?.lastRead
+      ? new Date(a.readingProgress.lastRead).getTime()
+      : null;
+    const bDate = b.readingProgress?.lastRead
+      ? new Date(b.readingProgress.lastRead).getTime()
+      : null;
+
+    if (aDate === null && bDate === null) return 0;
+    if (aDate === null) return 1;
+    if (bDate === null) return -1;
+
+    return bDate - aDate;
+  });
+
 const initialState: LibraryType[] = [];
 
 const LibrarySlice = createSlice({
   name: "library",
-  initialState: initialState,
+  initialState,
   reducers: {
     setLibrary(_, action: PayloadAction<LibraryType[]>) {
       return action.payload;
+    },
+    sortLibraryByTitle(
+      state,
+      action: PayloadAction<{ libraryId: number; ascending: boolean }>,
+    ) {
+      const library = state.find((l) => l.id === action.payload.libraryId);
+      if (library)
+        library.books = sortByTitle(library.books, action.payload.ascending);
+    },
+    sortLibraryByAuthor(
+      state,
+      action: PayloadAction<{ libraryId: number; ascending: boolean }>,
+    ) {
+      const library = state.find((l) => l.id === action.payload.libraryId);
+      if (library)
+        library.books = sortByAuthor(library.books, action.payload.ascending);
+    },
+    sortLibraryByLastRead(state, action: PayloadAction<{ libraryId: number }>) {
+      const library = state.find((l) => l.id === action.payload.libraryId);
+      if (library) library.books = sortByLastRead(library.books);
     },
   },
   extraReducers: (builder) => {
@@ -35,5 +94,10 @@ const LibrarySlice = createSlice({
   },
 });
 
-export const { setLibrary } = LibrarySlice.actions;
+export const {
+  setLibrary,
+  sortLibraryByTitle,
+  sortLibraryByAuthor,
+  sortLibraryByLastRead,
+} = LibrarySlice.actions;
 export default LibrarySlice.reducer;

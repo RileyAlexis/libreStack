@@ -15,12 +15,14 @@ export interface LibraryLayout {
   showAuthors: boolean;
   libraryCoverSize: LibraryCoverSize;
   showSeries: boolean;
-  sortBy: "Title" | "Author";
+  sortBy: SortyByType;
   sortAscending: boolean;
   showCollections: boolean;
   showCompleted: boolean;
   showDescriptionOnHover: boolean;
 }
+
+export type SortyByType = "Title" | "Author" | "Last Read" | null;
 
 interface LibraryCoverSize {
   width: number;
