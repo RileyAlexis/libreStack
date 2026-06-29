@@ -4,6 +4,7 @@ using Librestack.Interfaces;
 
 using Microsoft.EntityFrameworkCore;
 using Librestack.Models.APIModels;
+using SkiaSharp;
 
 namespace Librestack.Services;
 
@@ -16,6 +17,25 @@ public class BookService : IBookService
     {
         _db = db;
         _epubParser = epubParser;
+    }
+
+    private static byte[]? ResizeBookCover(byte[]? cover)
+    {
+        if (cover is null || cover.Length == 0)
+            return cover;
+
+        using var bitmap = SKBitmap.Decode(cover);
+
+        if (bitmap.Height <= 750)
+            return cover;
+
+        var ratio = 500f / bitmap.Height;
+        var newWidth = (int)(bitmap.Width * ratio);
+
+        using var resized = bitmap.Resize(new SKImageInfo(newWidth, 500), SKSamplingOptions.Default);
+        using var image = SKImage.FromBitmap(resized);
+        using var data = image.Encode(SKEncodedImageFormat.Jpeg, 85);
+        return data.ToArray();
     }
 
     public async Task<Result> AddBookEntry(IFormFile file, string userId, int libraryId)
@@ -53,6 +73,9 @@ public class BookService : IBookService
             File.Delete(filePath);
             throw;
         }
+
+        var resizedCover = ResizeBookCover(entry.CoverImage);
+        entry.CoverImage = resizedCover;
 
         _db.Books.Add(entry);
         library.Books.Add(entry);
@@ -176,6 +199,9 @@ public class BookService : IBookService
         {
             return Result.Failure($"Failed to parse epub: {ex.Message}", ErrorType.BadRequest);
         }
+
+        var resizedCover = ResizeBookCover(entry.CoverImage);
+        entry.CoverImage = resizedCover;
 
         _db.Books.Add(entry);
         library.Books.Add(entry);
