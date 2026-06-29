@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import type { LibreRootState } from "../../types/LibreRootState";
 
@@ -10,12 +10,11 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { LoginScreen } from "../LoginScreen/LoginScreen";
 import { MainMenu } from "./MainMenu";
 import "./HeaderBanner.css";
-import { LibraryControls } from "../Library/LibraryControls";
 
 export const HeaderBanner: React.FC = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
+  // const location = useLocation();
+  // const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
   const user = useSelector((state: LibreRootState) => state.user);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
