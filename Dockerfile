@@ -13,7 +13,7 @@ copy server/ ./
 
 # CRITICAL FIX: Restore dependencies before publishing
 RUN dotnet restore libreStack.csproj && \
-    dotnet publish libreStack.csproj -c Release -o /publish --no-restore
+    dotnet publish libreStack.csproj -c Release -r linux-x64 --self-contained false -o /publish
 
 # Stage 3: Production Image (Runtime)
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
