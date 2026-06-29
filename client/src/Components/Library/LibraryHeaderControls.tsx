@@ -1,11 +1,11 @@
 import { useSelector, useDispatch } from "react-redux";
-import { useState } from "react";
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { AppDispatch } from "@/redux/store";
 import type { SortByType } from "@/types/AppSettings";
 
 // Actions
 import {
+  fetchLibraryData,
   sortLibraryByAuthor,
   sortLibraryByLastRead,
   sortLibraryByTitle,
@@ -27,6 +27,7 @@ import { CircleXIcon, ArrowDownAZ, ArrowUpAZ } from "lucide-react";
 import { Label } from "../ui/label";
 
 import "./LibraryHeaderControls.css";
+import { api } from "@/api";
 
 export const LibraryHeaderControls: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -76,19 +77,78 @@ export const LibraryHeaderControls: React.FC = () => {
     handleSortChange(appSettings.libraryLayout.sortBy, false);
   };
 
+  const handleMarkAsRead = async () => {
+    const results = await Promise.allSettled(
+      selections.selectedBooks.map((bookId) =>
+        api.post(`ReadingProgress/markComplete?bookId=${bookId}`),
+      ),
+    );
+
+    const failures = results.filter((r) => r.status === "rejected");
+    if (failures.length > 0) {
+      console.error(
+        `${failures.length} mark-as-read requests failed`,
+        failures,
+      );
+    }
+    dispatch(fetchLibraryData());
+  };
+
+  const handleMarkAsUnread = async () => {
+    const results = await Promise.allSettled(
+      selections.selectedBooks.map((bookId) =>
+        api.post(`ReadingProgress/markNotComplete?bookId=${bookId}`),
+      ),
+    );
+
+    const failures = results.filter((r) => r.status === "rejected");
+    if (failures.length > 0) {
+      console.error(
+        `${failures.length} mark-as-read requests failed`,
+        failures,
+      );
+    }
+    dispatch(fetchLibraryData());
+  };
+
   return (
     <div className="libraryHeaderControlsContainer">
       <div className="libraryHeaderControls">
         {selections.selectedBooks.length > 0 && (
           <div className="selectedContainer">
-            <CircleXIcon
-              size={28}
-              strokeWidth={2}
-              color="red"
-              onClick={handleClearSelection}
-              style={{ cursor: "pointer" }}
-            />
-            {selections.selectedBooks.length} Selected
+            <div className="selectedItems">
+              <CircleXIcon
+                size={28}
+                strokeWidth={2}
+                color="red"
+                onClick={handleClearSelection}
+                style={{ cursor: "pointer" }}
+              />
+              {selections.selectedBooks.length}
+            </div>
+            <div className="selectedMenuContainer">
+              <ButtonGroup>
+                <Button variant="outline" size="xs" onClick={handleMarkAsRead}>
+                  Mark Read
+                </Button>
+                <Button
+                  variant="outline"
+                  size="xs"
+                  onClick={handleMarkAsUnread}
+                >
+                  Mark Unread
+                </Button>
+                <Button variant="outline" size="xs">
+                  Query Open Library
+                </Button>
+                <Button variant="outline" size="xs">
+                  Query Wikidata
+                </Button>
+                <Button variant="destructive" size="xs">
+                  Delete
+                </Button>
+              </ButtonGroup>
+            </div>
           </div>
         )}
         <div className="sortingContainer">

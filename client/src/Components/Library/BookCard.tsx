@@ -75,10 +75,19 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
   };
 
   const handleMarkComplete = (bookId: number) => {
-    console.log("******************* marking complete");
-
     api
       .post(`ReadingProgress/markComplete?bookId=${bookId}`)
+      .then((_) => {
+        dispatch(fetchLibraryData());
+      })
+      .catch((error) => {
+        console.error(error.response.data);
+      });
+  };
+
+  const handleMarkIncomplete = (bookId: number) => {
+    api
+      .post(`ReadingProgress/markIncomplete?bookId=${bookId}`)
       .then((_) => {
         dispatch(fetchLibraryData());
       })
@@ -237,7 +246,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleMarkComplete(book.id);
+                    handleMarkIncomplete(book.id);
                   }}
                 >
                   Mark as Unfinished

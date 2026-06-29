@@ -36,17 +36,38 @@ public class ReadingProgressService : IReadingProgressService
                 BookId = bookId,
                 UserId = userId,
                 IsComplete = true,
-                LastRead = DateTime.UtcNow
+                // LastRead = DateTime.UtcNow
             };
             _db.ReadingProgress.Add(entry);
-        }
-        else if (entry.IsComplete)
-        {
-            entry.IsComplete = false;
         }
         else
         {
             entry.IsComplete = true;
+            entry.LastRead = DateTime.UtcNow;
+        }
+
+        await _db.SaveChangesAsync();
+        return Result.Success();
+    }
+
+    public async Task<Result> MarkInComplete(int bookId, string userId)
+    {
+        var entry = await _db.ReadingProgress.FirstOrDefaultAsync(l => l.BookId == bookId && l.UserId == userId);
+
+        if (entry is null)
+        {
+            entry = new ReadingProgress
+            {
+                BookId = bookId,
+                UserId = userId,
+                IsComplete = true,
+                // LastRead = DateTime.UtcNow
+            };
+            _db.ReadingProgress.Add(entry);
+        }
+        else
+        {
+            entry.IsComplete = false;
             entry.LastRead = DateTime.UtcNow;
         }
 

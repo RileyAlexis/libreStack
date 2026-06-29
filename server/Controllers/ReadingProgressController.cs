@@ -40,7 +40,7 @@ public class ReadingProgressController : ControllerBase
         var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (UserId is null) return Unauthorized();
 
-        var result = await _iReadingProgressService.MarkComplete(bookId, UserId);
+        var result = await _iReadingProgressService.MarkInComplete(bookId, UserId);
         if (result is null)
             return BadRequest(new { error = result?.Error });
 
