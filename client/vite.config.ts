@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import babel from "@rolldown/plugin-babel";
+import legacy from "@vitejs/plugin-legacy";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import { visualizer } from "rollup-plugin-visualizer";
@@ -13,6 +14,10 @@ export default defineConfig({
     babel({ presets: [reactCompilerPreset()] }),
     visualizer({ open: true }),
     tailwindcss(),
+    legacy({
+      targets: ["safari >= 12"],
+      additionalLegacyPolyfills: ["regenerator-runtime/runtime"],
+    }),
     VitePWA({
       includeAssets: ["favicon.ico", "apple-touch-icon.png"],
       manifest: {
