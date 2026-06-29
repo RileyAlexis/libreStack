@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { api } from "@/api";
+import type { AppDispatch } from "@/redux/store";
 
 // State
 import { useDispatch, useSelector } from "react-redux";
@@ -17,18 +18,19 @@ import {
   CircleCheck,
   EllipsisIcon,
   FileTextIcon,
+  CircleCheckBig,
 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuLabel,
   DropdownMenuItem,
 } from "../ui/dropdown-menu";
 
 import { BookCardDialog } from "./BookCardDialog";
 import "./BookCard.css";
 import { DescriptionDialog } from "./DescriptionDialog";
+import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 
 interface BookCardProps {
   book: BookType;
@@ -36,7 +38,7 @@ interface BookCardProps {
 
 export const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const selections = useSelector((state: LibreRootState) => state.selections);
   const isSelected = selections.selectedBooks.includes(book.id);
@@ -78,7 +80,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
     api
       .post(`ReadingProgress/markComplete?bookId=${bookId}`)
       .then((response) => {
-        console.log(response.data);
+        dispatch(fetchLibraryData());
       })
       .catch((error) => {
         console.error(error.response.data);
@@ -255,6 +257,10 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
         </div>
       </div>
 
+      <div className="bookControlsIsRead">
+        {book.readingProgress?.isComplete && <CircleCheckBig color="green" />}
+      </div>
+
       <div className={`bookCover ${isSelected ? "selected" : ""}`}>
         <img
           src={`data:${book.contentType};base64,${book.coverImage}`}
@@ -284,6 +290,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
           </div>
         )}
       </div>
+
       <div onClick={(e) => e.stopPropagation()}>
         <Dialog open={isBookDialogOpen} onOpenChange={setIsBookDialogOpen}>
           {isBookDialogOpen && <BookCardDialog bookId={book.id} />}
