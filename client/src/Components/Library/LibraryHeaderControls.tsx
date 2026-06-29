@@ -1,4 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
+import { useState } from "react";
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { AppDispatch } from "@/redux/store";
 import type { SortByType } from "@/types/AppSettings";
@@ -21,6 +22,15 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "../ui/combobox";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "../ui/alert-dialog";
 import { ButtonGroup, ButtonGroupSeparator } from "../ui/button-group";
 import { Button } from "../ui/button";
 import { CircleXIcon, ArrowDownAZ, ArrowUpAZ } from "lucide-react";
@@ -31,6 +41,7 @@ import { api } from "@/api";
 
 export const LibraryHeaderControls: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const library = useSelector((state: LibreRootState) => state.library);
   const selections = useSelector((state: LibreRootState) => state.selections);
@@ -142,6 +153,22 @@ export const LibraryHeaderControls: React.FC = () => {
     dispatch(fetchLibraryData());
   };
 
+  const handleDeleteSelections = async () => {
+    setIsDeleteOpen(false);
+    const results = await Promise.allSettled(
+      selections.selectedBooks.map((bookId) =>
+        api.delete(`Book/bookEntry?bookId=${bookId}`),
+      ),
+    );
+
+    const failures = results.filter((r) => r.status === "rejected");
+    if (failures.length > 0) {
+      console.error(`${failures.length} deleting requests failed`, failures);
+    }
+    dispatch(clearSelectedBooks());
+    dispatch(fetchLibraryData());
+  };
+
   return (
     <div className="libraryHeaderControlsContainer">
       <div className="libraryHeaderControls">
@@ -183,9 +210,31 @@ export const LibraryHeaderControls: React.FC = () => {
                 >
                   Query Wikidata
                 </Button>
-                <Button variant="destructive" size="xs">
-                  Delete
-                </Button>
+                <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
+                  <AlertDialogTrigger
+                    render={
+                      <Button variant="destructive" size="xs">
+                        Delete
+                      </Button>
+                    }
+                  />
+                  <AlertDialogContent>
+                    <AlertDialogHeader>Are you sure?</AlertDialogHeader>
+                    <AlertDialogDescription>
+                      This will permanently delete books from disk and they
+                      cannot be recovered.
+                    </AlertDialogDescription>
+                    <AlertDialogCancel variant="outline">
+                      Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      variant="destructive"
+                      onClick={handleDeleteSelections}
+                    >
+                      Delete!
+                    </AlertDialogAction>
+                  </AlertDialogContent>
+                </AlertDialog>
               </ButtonGroup>
             </div>
           </div>

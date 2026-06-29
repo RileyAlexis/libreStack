@@ -102,16 +102,16 @@ public class BookController : ControllerBase
 
     [HttpDelete("bookEntry")]
     [Authorize]
-    public async Task<IActionResult> DeleteBookEntry(int id)
+    public async Task<IActionResult> DeleteBookEntry(int bookId)
     {
-        if (id == 0)
+        if (bookId == 0)
             return BadRequest("id parameter cannot be 0");
 
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
             return Unauthorized();
 
-        var result = await _bookService.DeleteBookEntry(id, userId);
+        var result = await _bookService.DeleteBookEntry(bookId, userId);
 
         if (!result.IsSuccess)
             return BadRequest(new { error = result.Error });
