@@ -31,6 +31,10 @@ public class LibraryScanService : IlibraryScanService
         if (!Directory.Exists(libraryPath))
             return Result.Failure("Library Path not found on disk", ErrorType.NotFound);
 
+        var missingBooks = library.Books
+            .Where(b => !File.Exists(b.EpubPath))
+            .ToList();
+
         var epubFiles = Directory.EnumerateFiles(libraryPath, "*.epub", SearchOption.AllDirectories);
 
         var existingPaths = library.Books
@@ -47,6 +51,21 @@ public class LibraryScanService : IlibraryScanService
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         var errors = new List<string>();
+
+        if (missingBooks.Count > 0)
+        {
+            _db.Books.RemoveRange(missingBooks);
+            await _db.SaveChangesAsync();
+
+            // Keep the dedup sets in sync
+            foreach (var b in missingBooks)
+            {
+                existingPaths.Remove(b.EpubPath);
+                existingTitles.Remove(b.Title.Trim().ToLowerInvariant());
+                if (!string.IsNullOrWhiteSpace(b.ISBN))
+                    existingISBNs.Remove(b.ISBN.Trim());
+            }
+        }
 
         foreach (var filePath in epubFiles)
         {
