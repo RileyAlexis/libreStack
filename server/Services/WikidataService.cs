@@ -4,9 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
 using Librestack.Interfaces;
-using Microsoft.AspNetCore.Components.Endpoints;
-using System.Globalization;
-using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 
 namespace Librestack.Services;
@@ -50,44 +47,85 @@ public class WikidataService : IWikidataService
         return client;
     }
 
-    private async Task<Result<Book>> SearchWikidata(Book book)
+    private static string ExtractWikidataId(string url)
     {
-        var query = string.IsNullOrEmpty(book.Author)
-            ? _bookParsing.CleanTitle(book.Title)
-            : $"{_bookParsing.CleanTitle(book.Title)} {book.Author}";
-
-        var url = $"https://www.wikidata.org/w/api.php?action=wbsearchentities&search={Uri.EscapeDataString(query)}&language=en&type=item&format=json&limit=10";
-        _logger.LogInformation(url);
-
-        var client = await CreateClient();
-        var response = await client.GetAsync(url);
-        if (!response.IsSuccessStatusCode)
-            return Result<Book>.Failure($"Wikidata Request Failed: {response.StatusCode} - {response.ReasonPhrase}", ErrorType.BadRequest);
-
-        var json = await response.Content.ReadAsStringAsync();
-        var root = JsonDocument.Parse(json);
-        var search = root.RootElement.GetProperty("search");
-
-        if (search.GetArrayLength() == 0)
-            return Result<Book>.Failure("No Wikidata results found", ErrorType.NotFound);
-
-        string[] BookDescriptionKeywords = ["novel", "book", "short story", "novella", "anthology", "collection", "nonfiction", "non-fiction", "memoir", "biography", "essay", "hardcover", "paperback"];
-
-        JsonElement? bestMatch = null;
-        foreach (var item in search.EnumerateArray())
+        if (string.IsNullOrWhiteSpace(url))
         {
-            var description = item.TryGetProperty("description", out var d) ? d.GetString() ?? "" : "";
-            if (BookDescriptionKeywords.Any(k => description.Contains(k, StringComparison.OrdinalIgnoreCase)))
-            {
-                bestMatch = item;
-                break;
-            }
+            return null;
         }
 
-        // Fall back to first result if no book-like description matched
-        bestMatch ??= search[0];
+        var regex = new Regex(@"/entity/(Q\d+)");
+        var match = regex.Match(url);
 
-        var wikiId = bestMatch.Value.TryGetProperty("id", out var i) ? i.GetString() : null;
+        if (match.Success)
+        {
+
+            return match.Groups[1].Value;
+        }
+        else
+        {
+            // Fallback: If the URL structure is different, try to find any pattern starting with 'Q' followed by digits.
+            var fallbackRegex = new Regex(@"/(Q\d+)");
+            match = fallbackRegex.Match(url);
+            if (match.Success)
+            {
+                return match.Groups[1].Value;
+            }
+            return null;
+        }
+    }
+
+
+    private async Task<Result<Book>> SearchWikidata(Book book)
+    {
+
+        // var searchTitle = _bookParsing.CleanTitle(book.Title);
+        _logger.LogCritical($"Searching wikidata for id {book.Id} - {book.Title}");
+
+        var sparql = $$"""
+            SELECT ?work ?workLabel ?author ?authorLabel ?publicationDate WHERE {
+            ?author rdfs:label "{{book.Author}}"@en .
+            ?work wdt:P50 ?author .
+            ?work wdt:P1476 "{{book.Title}}"@en .
+            OPTIONAL { ?work wdt:P577 ?publicationDate . }
+            SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+            }
+        """;
+
+        //         // var isbn13 = root.TryGetProperty("identifiers", out var idents2) &&
+        //     idents2.TryGetProperty("isbn_13", out var ident13) &&
+        //     ident13.GetArrayLength() > 0 ? ident13[0].GetString() : null;
+
+        var url = $"https://query.wikidata.org/sparql?query={Uri.EscapeDataString(sparql)}&format=json";
+
+        _logger.LogInformation($"Wikidata sparql query {sparql}");
+        _logger.LogInformation($"Wikidata Sparql URL -------- {url}");
+
+        var client = await CreateClient();
+        client.DefaultRequestHeaders.Add("Accept", "application/sparql-results+json");
+
+        var response = await client.GetAsync(url);
+        var json = await response.Content.ReadAsStringAsync();
+        var root = JsonDocument.Parse(json);
+        var bindings = root.RootElement
+            .GetProperty("results")
+            .GetProperty("bindings");
+
+        if (bindings.GetArrayLength() == 0)
+            return Result<Book>.Failure("No Wikidata results found", ErrorType.NotFound);
+
+        var binding = bindings[0];
+
+        var wikiEntityUrl = GetBindingValue(binding, "work");
+        string? wikiId = null;
+
+        if (wikiEntityUrl is not null)
+        {
+            wikiId = ExtractWikidataId(wikiEntityUrl);
+            _logger.LogInformation($"Wikidata Id {wikiId}");
+        }
+
+
         if (wikiId != null) book.WikidataId = wikiId;
         book.WikidataMetaLastUpdated = DateTime.UtcNow;
         _db.Books.Update(book);
@@ -109,8 +147,7 @@ public class WikidataService : IWikidataService
         if (string.IsNullOrWhiteSpace(book.WikidataId))
             return Result<Book>.Failure("Wiki Id not in database", ErrorType.NotFound);
 
-        Console.WriteLine("_________________________________________________ BY ID");
-
+        _logger.LogInformation($"Searching wikidata by Wikidata Id for id {book.WikidataId} - {book.Title}");
 
         var sparql = "SELECT ?title ?authorLabel ?publicationDate ?genreLabel ?seriesLabel ?positionInSeries ?openLibraryId ?oclcId ?isfd ?uncon ?website ?fantLab " +
                      "WHERE { " +
@@ -132,7 +169,7 @@ public class WikidataService : IWikidataService
 
         var url = $"https://query.wikidata.org/sparql?query={Uri.EscapeDataString(sparql)}&format=json";
 
-        Console.WriteLine(url);
+        _logger.LogInformation($"Wikidata sparql query {sparql}");
 
         var client = await CreateClient();
         client.DefaultRequestHeaders.Add("Accept", "application/sparql-results+json");

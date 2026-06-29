@@ -104,9 +104,40 @@ export const LibraryHeaderControls: React.FC = () => {
     const failures = results.filter((r) => r.status === "rejected");
     if (failures.length > 0) {
       console.error(
-        `${failures.length} mark-as-read requests failed`,
+        `${failures.length} mark-as-unread requests failed`,
         failures,
       );
+    }
+    dispatch(fetchLibraryData());
+  };
+
+  const handleQueryOpenLibrary = async () => {
+    const results = await Promise.allSettled(
+      selections.selectedBooks.map((bookId) =>
+        api.get(`metadata/queryOpenLibraryData?bookId=${bookId}`),
+      ),
+    );
+
+    const failures = results.filter((r) => r.status === "rejected");
+    if (failures.length > 0) {
+      console.error(
+        `${failures.length} open library requests failed`,
+        failures,
+      );
+    }
+    dispatch(fetchLibraryData());
+  };
+
+  const handleQueryWikidata = async () => {
+    const results = await Promise.allSettled(
+      selections.selectedBooks.map((bookId) =>
+        api.get(`metadata/queryWikidata?bookId=${bookId}`),
+      ),
+    );
+
+    const failures = results.filter((r) => r.status === "rejected");
+    if (failures.length > 0) {
+      console.error(`${failures.length} wikidata requests failed`, failures);
     }
     dispatch(fetchLibraryData());
   };
@@ -138,10 +169,18 @@ export const LibraryHeaderControls: React.FC = () => {
                 >
                   Mark Unread
                 </Button>
-                <Button variant="outline" size="xs">
+                <Button
+                  variant="outline"
+                  size="xs"
+                  onClick={handleQueryOpenLibrary}
+                >
                   Query Open Library
                 </Button>
-                <Button variant="outline" size="xs">
+                <Button
+                  variant="outline"
+                  size="xs"
+                  onClick={handleQueryWikidata}
+                >
                   Query Wikidata
                 </Button>
                 <Button variant="destructive" size="xs">
