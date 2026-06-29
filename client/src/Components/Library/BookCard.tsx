@@ -79,7 +79,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
 
     api
       .post(`ReadingProgress/markComplete?bookId=${bookId}`)
-      .then((response) => {
+      .then((_) => {
         dispatch(fetchLibraryData());
       })
       .catch((error) => {

@@ -3,16 +3,33 @@ import {
   type PayloadAction,
   createAsyncThunk,
 } from "@reduxjs/toolkit";
+import type { LibreRootState } from "@/types/LibreRootState";
 import type { LibraryType } from "../../types/LibraryType";
 import type { BookType } from "../../types/BookType";
 import { api } from "@/api";
 
 export const fetchLibraryData = createAsyncThunk(
   "library/fetchLibraryData",
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState }) => {
     try {
       const response = await api.get("/Library/getAllLibraries");
-      return response.data;
+      const state = getState() as LibreRootState;
+      const { sortBy, sortAscending } = state.appSettings.libraryLayout;
+      const libraries: LibraryType[] = response.data;
+
+      if (!sortBy) return libraries;
+
+      return libraries.map((lib) => ({
+        ...lib,
+        books:
+          sortBy === "Title"
+            ? sortByTitle(lib.books, sortAscending)
+            : sortBy === "Author"
+              ? sortByAuthor(lib.books, sortAscending)
+              : sortBy === "Last Read"
+                ? sortByLastRead(lib.books)
+                : lib.books,
+      }));
     } catch (error) {
       return rejectWithValue((error as Error).message);
     }
