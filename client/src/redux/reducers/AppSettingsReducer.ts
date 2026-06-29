@@ -3,7 +3,7 @@ import type {
   AppSettings,
   LibraryLayout,
   ReadingFontType,
-  SortyByType,
+  SortByType,
 } from "../../types/AppSettings";
 
 const initialState: AppSettings = {
@@ -64,7 +64,7 @@ const AppSettingsSlice = createSlice({
     setLayout(state, action: PayloadAction<LibraryLayout>) {
       state.libraryLayout = action.payload;
     },
-    setSortBy(state, action: PayloadAction<SortyByType>) {
+    setSortBy(state, action: PayloadAction<SortByType>) {
       state.libraryLayout.sortBy = action.payload;
     },
     setAscending(State, action: PayloadAction<boolean>) {

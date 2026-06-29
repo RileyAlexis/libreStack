@@ -1,6 +1,8 @@
 import { useSelector, useDispatch } from "react-redux";
+import { useState } from "react";
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { AppDispatch } from "@/redux/store";
+import type { SortByType } from "@/types/AppSettings";
 
 // Actions
 import {
@@ -8,6 +10,7 @@ import {
   sortLibraryByLastRead,
   sortLibraryByTitle,
 } from "@/redux/reducers/LibraryReducer";
+import { clearSelectedBooks } from "@/redux/reducers/SelectedReducer";
 import { setSortBy, setAscending } from "@/redux/reducers/AppSettingsReducer";
 
 // UI
@@ -18,10 +21,12 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "../ui/combobox";
+import { ButtonGroup, ButtonGroupSeparator } from "../ui/button-group";
+import { Button } from "../ui/button";
+import { CircleXIcon, ArrowDownAZ, ArrowUpAZ } from "lucide-react";
+import { Label } from "../ui/label";
 
 import "./LibraryHeaderControls.css";
-import { Label } from "../ui/label";
-import type { SortyByType } from "@/types/AppSettings";
 
 export const LibraryHeaderControls: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -31,20 +36,21 @@ export const LibraryHeaderControls: React.FC = () => {
 
   const sortingOptions = ["Author", "Title", "Last Read"];
 
-  const handleSortChange = (value: SortyByType) => {
+  const handleSortChange = (value: SortByType, ascending?: boolean) => {
     dispatch(setSortBy(value));
+    const asc = ascending ?? appSettings.libraryLayout.sortAscending;
     if (value === "Author") {
       dispatch(
         sortLibraryByAuthor({
           libraryId: library[selections.selectedLibrary].id,
-          ascending: appSettings.libraryLayout.sortAscending,
+          ascending: asc,
         }),
       );
     } else if (value === "Title") {
       dispatch(
         sortLibraryByTitle({
           libraryId: library[selections.selectedLibrary].id,
-          ascending: appSettings.libraryLayout.sortAscending,
+          ascending: asc,
         }),
       );
     } else if (value === "Last Read") {
@@ -56,10 +62,45 @@ export const LibraryHeaderControls: React.FC = () => {
     }
   };
 
+  const handleClearSelection = () => {
+    dispatch(clearSelectedBooks());
+  };
+
+  const handleAscending = () => {
+    dispatch(setAscending(true));
+    handleSortChange(appSettings.libraryLayout.sortBy, true);
+  };
+
+  const handleDescending = () => {
+    dispatch(setAscending(false));
+    handleSortChange(appSettings.libraryLayout.sortBy, false);
+  };
+
   return (
     <div className="libraryHeaderControlsContainer">
       <div className="libraryHeaderControls">
+        {selections.selectedBooks.length > 0 && (
+          <div className="selectedContainer">
+            <CircleXIcon
+              size={28}
+              strokeWidth={2}
+              color="red"
+              onClick={handleClearSelection}
+              style={{ cursor: "pointer" }}
+            />
+            {selections.selectedBooks.length} Selected
+          </div>
+        )}
         <div className="sortingContainer">
+          <ButtonGroup>
+            <Button variant="outline" size="icon" onClick={handleAscending}>
+              <ArrowDownAZ />
+            </Button>
+            <ButtonGroupSeparator />
+            <Button variant="outline" size="icon" onClick={handleDescending}>
+              <ArrowUpAZ />
+            </Button>
+          </ButtonGroup>
           <Label id="sortingLabel" htmlFor="sortingCombo">
             Sort By:{" "}
           </Label>

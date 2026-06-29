@@ -14,8 +14,25 @@
   box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.15);
 }
 
-.sortingContainer {
+.libraryHeaderControls {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  width: 100%;
+}
+
+.selectedContainer {
+  grid-column: 1;
   display: flex;
   flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.sortingContainer {
+  grid-column: 3 / span 2;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
   gap: 0.25em;
 }
