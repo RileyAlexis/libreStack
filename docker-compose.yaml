@@ -17,6 +17,8 @@ services:
   app:
     build: .
     user: "<UID>:<GID>"
+    volumes:
+      - /mnt:/mnt
     restart: unless-stopped
     ports:
       - "8080:8080"
