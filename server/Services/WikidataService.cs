@@ -92,10 +92,6 @@ public class WikidataService : IWikidataService
             }
         """;
 
-        //         // var isbn13 = root.TryGetProperty("identifiers", out var idents2) &&
-        //     idents2.TryGetProperty("isbn_13", out var ident13) &&
-        //     ident13.GetArrayLength() > 0 ? ident13[0].GetString() : null;
-
         var url = $"https://query.wikidata.org/sparql?query={Uri.EscapeDataString(sparql)}&format=json";
 
         _logger.LogInformation($"Wikidata sparql query {sparql}");

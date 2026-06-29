@@ -1,5 +1,6 @@
 
 using System.Globalization;
+using System.Text.RegularExpressions;
 using Librestack.Interfaces;
 
 namespace Librestack.Services;
@@ -21,35 +22,23 @@ public class BookParsingService : IBookParsingService
         return title.Trim();
     }
 
-    public string NormalizeSeriesTitle(string seriesLabel)
+    public string? NormalizeSeriesTitle(string seriesLabel)
     {
         Console.WriteLine("=================================================");
         Console.WriteLine(seriesLabel);
 
         if (string.IsNullOrWhiteSpace(seriesLabel)) return null;
 
-        // 1. Initial Cleanup: Remove common punctuation and non-word characters that aren't part of a word structure.
-        // This handles commas, colons, etc., globally before regex stripping.
-        string cleaned = System.Text.RegularExpressions.Regex.Replace(seriesLabel, @"[^\w\s]", "");
+        // Strip trailing: " - Book 3", ", Volume 3", " #3", " 3", etc.
+        string result = Regex.Replace(seriesLabel,
+            @"[\s,\-\—:]+(?:book|volume|vol|bk|part|#|num)?\.?\s*\d+\s*$",
+            "", RegexOptions.IgnoreCase).Trim();
 
-        // 2. Regex pattern to match common trailing volume/part indicators (using the already cleaned string).
-        var pattern = @"[\s\-\—:]+\s*(?:(book|volume|bk|#|num|)\.?\s*[:\-]?\s*)?(\d+|[a-zA-Z]+)$";
-
-        // Attempt to strip the trailing part that matches common volume/part patterns.
-        string normalizedTitle = System.Text.RegularExpressions.Regex.Replace(cleaned, pattern, "").Trim();
-
-
-        normalizedTitle = System.Text.RegularExpressions.Regex.Replace(normalizedTitle, @"\s{2,}", " ").Trim();
-        // 3. Final Capitalization and Comma Removal (though commas should be gone by step 1)
-        string result = string.Join(" ", normalizedTitle.Split(' ')
-                      .Select(word => word.Length > 0
-                          ? char.ToUpper(word[0]) + word.Substring(1).ToLower()
-                          : word));
 
         Console.WriteLine(result);
         Console.WriteLine("=================================================");
 
-        return result;
+        return string.IsNullOrWhiteSpace(result) ? null : result;
     }
 
     public int ParseSeriesOrderFromLabel(string label)
