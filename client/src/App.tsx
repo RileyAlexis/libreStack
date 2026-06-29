@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 
 import { api } from "./api";
@@ -6,6 +6,11 @@ import { Route, Routes, useLocation } from "react-router";
 
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "./redux/reducers/userReducer";
+import {
+  saveUserSettings,
+  fetchUserSettings,
+} from "./redux/reducers/AppSettingsReducer";
+import type { AppDispatch } from "./redux/store";
 
 import "./App.css";
 import { Setup } from "./components/Setup/ Setup";
@@ -20,11 +25,12 @@ import type { LibreRootState } from "./types/LibreRootState";
 
 function App() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const location = useLocation();
   const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const user = useSelector((state: LibreRootState) => state.user);
+  const isFetching = useRef(false);
 
   useEffect(() => {
     api
@@ -44,6 +50,8 @@ function App() {
             dispatch(
               setUser({ userName: response.data.userName, isLoggedIn: true }),
             );
+            isFetching.current = true;
+            dispatch(fetchUserSettings());
           }
         })
         .catch((error) => {
@@ -66,12 +74,15 @@ function App() {
                       isLoggedIn: true,
                     }),
                   );
+                  isFetching.current = true;
+                  dispatch(fetchUserSettings());
                 })
                 .catch((_) => {
                   navigate("/login");
                 });
             });
         });
+      isFetching.current = false;
     };
 
     if (!user.isLoggedIn) runLogin();
@@ -82,6 +93,20 @@ function App() {
       navigate("/serverStats");
     }
   }, [location.pathname, user.isLoggedIn]);
+
+  useEffect(() => {
+    if (!user.isLoggedIn) return;
+    if (isFetching.current) {
+      isFetching.current = false;
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      dispatch(saveUserSettings(appSettings));
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [appSettings]);
 
   return (
     <div className="primaryContainer">

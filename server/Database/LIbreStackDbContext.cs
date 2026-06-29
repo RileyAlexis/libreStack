@@ -16,6 +16,7 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
     public DbSet<BookmarkModel> Bookmarks { get; set; }
     public DbSet<LibreStackConfig> LibreStackConfig { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<UserSettings> UserSettings { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -64,6 +65,15 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
                     joinTable.HasKey("book_id", "library_id");
                 }
             );
+
+        modelBuilder.Entity<UserSettings>()
+            .HasIndex(s => s.UserId)
+            .IsUnique();
+
+        modelBuilder.Entity<UserSettings>()
+            .HasOne(s => s.User)
+            .WithOne()
+            .HasForeignKey<UserSettings>(s => s.UserId);
 
     }
 }

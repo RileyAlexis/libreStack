@@ -344,6 +344,107 @@ namespace libreStack.Migrations
                     b.ToTable("refresh_tokens", (string)null);
                 });
 
+            modelBuilder.Entity("Librestack.Models.UserSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CoverHeight")
+                        .HasColumnType("integer")
+                        .HasColumnName("cover_height");
+
+                    b.Property<int>("CoverWidth")
+                        .HasColumnType("integer")
+                        .HasColumnName("cover_width");
+
+                    b.Property<string>("LibraryBase")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("library_base");
+
+                    b.Property<double>("LineHeight")
+                        .HasColumnType("double precision")
+                        .HasColumnName("line_height");
+
+                    b.Property<string>("ReadingFontLabel")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("reading_font_label");
+
+                    b.Property<int>("ReadingFontSize")
+                        .HasColumnType("integer")
+                        .HasColumnName("reading_font_size");
+
+                    b.Property<string>("ReadingFontValue")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("reading_font_value");
+
+                    b.Property<string>("ReadingTheme")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("reading_theme");
+
+                    b.Property<bool>("ShowAuthors")
+                        .HasColumnType("boolean")
+                        .HasColumnName("show_authors");
+
+                    b.Property<bool>("ShowCollections")
+                        .HasColumnType("boolean")
+                        .HasColumnName("show_collections");
+
+                    b.Property<bool>("ShowCompleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("show_completed");
+
+                    b.Property<bool>("ShowDescriptionOnHover")
+                        .HasColumnType("boolean")
+                        .HasColumnName("show_description_on_hover");
+
+                    b.Property<bool>("ShowLibraryAsHome")
+                        .HasColumnType("boolean")
+                        .HasColumnName("show_library_as_home");
+
+                    b.Property<bool>("ShowSeries")
+                        .HasColumnType("boolean")
+                        .HasColumnName("show_series");
+
+                    b.Property<bool>("ShowTitles")
+                        .HasColumnType("boolean")
+                        .HasColumnName("show_titles");
+
+                    b.Property<bool>("SortAscending")
+                        .HasColumnType("boolean")
+                        .HasColumnName("sort_ascending");
+
+                    b.Property<string>("SortBy")
+                        .HasColumnType("text")
+                        .HasColumnName("sort_by");
+
+                    b.Property<string>("Spread")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("spread");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_user_settings");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_user_settings_user_id");
+
+                    b.ToTable("user_settings", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -656,6 +757,18 @@ namespace libreStack.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_reading_progress_books_book_id");
+                });
+
+            modelBuilder.Entity("Librestack.Models.UserSettings", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithOne()
+                        .HasForeignKey("Librestack.Models.UserSettings", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_user_settings_users_user_id");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

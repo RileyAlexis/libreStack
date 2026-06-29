@@ -36,6 +36,9 @@ public class AuthService : IAuthService
     public async Task<IdentityResult> RegisterAsync(RegisterRequest request)
     {
         var user = new IdentityUser { UserName = request.Username, Email = request.Email };
+        var userSettings = new UserSettings { UserId = user.Id };
+        _dbContext.UserSettings.Add(userSettings);
+        await _dbContext.SaveChangesAsync();
         return await _userManager.CreateAsync(user, request.Password);
     }
 
@@ -77,6 +80,9 @@ public class AuthService : IAuthService
             return result;
 
         var roleResult = await _userManager.AddToRoleAsync(user, "Admin");
+        var userSettings = new UserSettings { UserId = user.Id };
+        _dbContext.UserSettings.Add(userSettings);
+        await _dbContext.SaveChangesAsync();
         return roleResult;
     }
 

@@ -1,10 +1,15 @@
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 import type {
   AppSettings,
   LibraryLayout,
   ReadingFontType,
   SortByType,
 } from "../../types/AppSettings";
+import { api } from "@/api";
 
 const initialState: AppSettings = {
   showLibraryAsHome: true,
@@ -38,6 +43,33 @@ const initialState: AppSettings = {
   },
 };
 
+export const fetchUserSettings = createAsyncThunk(
+  "userSettings/fetchUserSettings",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await api.get("userSettings");
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue((error as Error).message);
+    }
+  },
+);
+
+export const saveUserSettings = createAsyncThunk(
+  "userSettings/saveUserSettings",
+  async (settings: AppSettings, { rejectWithValue }) => {
+    try {
+      const { availableReadingFonts, ...payload } = settings;
+      const result = await api.post("userSettings", payload);
+      console.log(result);
+      console.log(settings);
+    } catch (error) {
+      return rejectWithValue((error as Error).message);
+    }
+  },
+);
+
 const AppSettingsSlice = createSlice({
   name: "appSettings",
   initialState: initialState,
@@ -70,6 +102,11 @@ const AppSettingsSlice = createSlice({
     setAscending(State, action: PayloadAction<boolean>) {
       State.libraryLayout.sortAscending = action.payload;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(fetchUserSettings.fulfilled, (_, action) => {
+      return action.payload;
+    });
   },
 });
 

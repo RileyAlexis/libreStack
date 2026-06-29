@@ -263,6 +263,43 @@ namespace libreStack.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "user_settings",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    user_id = table.Column<string>(type: "text", nullable: false),
+                    show_library_as_home = table.Column<bool>(type: "boolean", nullable: false),
+                    reading_theme = table.Column<string>(type: "text", nullable: false),
+                    spread = table.Column<string>(type: "text", nullable: false),
+                    reading_font_label = table.Column<string>(type: "text", nullable: false),
+                    reading_font_value = table.Column<string>(type: "text", nullable: false),
+                    reading_font_size = table.Column<int>(type: "integer", nullable: false),
+                    line_height = table.Column<double>(type: "double precision", nullable: false),
+                    library_base = table.Column<string>(type: "text", nullable: false),
+                    show_titles = table.Column<bool>(type: "boolean", nullable: false),
+                    show_authors = table.Column<bool>(type: "boolean", nullable: false),
+                    show_series = table.Column<bool>(type: "boolean", nullable: false),
+                    show_collections = table.Column<bool>(type: "boolean", nullable: false),
+                    show_completed = table.Column<bool>(type: "boolean", nullable: false),
+                    show_description_on_hover = table.Column<bool>(type: "boolean", nullable: false),
+                    cover_width = table.Column<int>(type: "integer", nullable: false),
+                    cover_height = table.Column<int>(type: "integer", nullable: false),
+                    sort_by = table.Column<string>(type: "text", nullable: true),
+                    sort_ascending = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_user_settings", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_user_settings_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "applied_book_tags",
                 columns: table => new
                 {
@@ -341,7 +378,8 @@ namespace libreStack.Migrations
                     user_id = table.Column<string>(type: "text", nullable: false),
                     book_id = table.Column<int>(type: "integer", nullable: false),
                     cfi_location = table.Column<string>(type: "text", nullable: true),
-                    last_read = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    last_read = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    is_complete = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -414,7 +452,14 @@ namespace libreStack.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_reading_progress_book_id",
                 table: "reading_progress",
-                column: "book_id");
+                column: "book_id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_user_settings_user_id",
+                table: "user_settings",
+                column: "user_id",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -452,6 +497,9 @@ namespace libreStack.Migrations
 
             migrationBuilder.DropTable(
                 name: "refresh_tokens");
+
+            migrationBuilder.DropTable(
+                name: "user_settings");
 
             migrationBuilder.DropTable(
                 name: "book_tags");
