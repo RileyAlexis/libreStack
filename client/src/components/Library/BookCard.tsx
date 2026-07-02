@@ -130,6 +130,11 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
     }
   };
 
+  const handleDialogClosing = () => {
+    setIsBookDialogOpen(false);
+    dispatch(fetchLibraryData());
+  };
+
   const iconSize = {
     width:
       appSettings.libraryLayout.libraryCoverSize.width * coverMultiplier * 0.14,
@@ -301,7 +306,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
       </div>
 
       <div onClick={(e) => e.stopPropagation()}>
-        <Dialog open={isBookDialogOpen} onOpenChange={setIsBookDialogOpen}>
+        <Dialog open={isBookDialogOpen} onOpenChange={handleDialogClosing}>
           {isBookDialogOpen && <BookCardDialog bookId={book.id} />}
         </Dialog>
       </div>

@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { api } from "@/api";
 import type { BookType, SeriesType } from "@/types/BookType";
-import type { LibreRootState } from "@/types/LibreRootState";
 import type { AppDispatch } from "@/redux/store";
 
 //Actions
@@ -38,10 +37,10 @@ interface BookCardDialogProps {
 
 export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const library = useSelector((state: LibreRootState) => state.library);
-  const selections = useSelector((state: LibreRootState) => state.selections);
   const [seriesList, setSeriesList] = useState<SeriesType[]>([]);
+  const [seriesInput, setSeriesInput] = useState("");
   const [isOpenLibLoading, setIsOpenLibLoading] = useState(false);
+  const [isSeriesSaving, setIsSeriesSaving] = useState(false);
   const [book, setBook] = useState<BookType>();
   const [error, setError] = useState<string | null>(null);
 
@@ -50,13 +49,19 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
       .get(`Book/getBookEntry?id=${bookId}`)
       .then((response) => setBook(response.data.value))
       .catch((error) => console.log(error));
+  }, []);
 
-    const uniqueSeries = new Map<number, SeriesType>();
-    library[selections.selectedLibrary].books
-      .filter((item) => item.series)
-      .forEach((item) => uniqueSeries.set(item.series!.id, item.series!));
-    setSeriesList([...uniqueSeries.values()]);
-  }, [bookId]);
+  useEffect(() => {
+    api
+      .get("series")
+      .then((response) => setSeriesList(response.data))
+      .catch((error) => console.error(error));
+  }, []);
+
+  // keep the free-text input in sync once the book actually loads
+  useEffect(() => {
+    setSeriesInput(book?.series?.seriesTitle ?? "");
+  }, [book?.id]);
 
   const handleBlur = (field: keyof BookType, value: string) => {
     const payloadValue = value === "" ? null : value;
@@ -66,44 +71,61 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
         ...book,
         [field]: payloadValue,
       })
+      .then((response) => {
+        setBook(response.data);
+      })
       .catch((err) => {
         console.error("Failed to save", field, err);
       });
-    dispatch(fetchLibraryData());
   };
 
   const handleChange = (field: keyof BookType, value: string) => {
     setBook((prev) => (prev ? { ...prev, [field]: value } : prev));
   };
+  const commitSeries = (rawValue: string) => {
+    const trimmed = rawValue.trim();
 
-  // Series is FK-based now: resolve by title against known series to get an
-  // id; if it doesn't match anything, pass the raw title and let the backend
-  // resolve-or-create the Series row.
-  const handleSeriesChange = (value: string) => {
-    const trimmed = value.trim();
-    const match = seriesList.find((s) => s.seriesTitle === trimmed);
+    if (trimmed === (book?.series?.seriesTitle ?? "")) return; // no change
 
-    setBook((prev) =>
-      prev
-        ? {
-            ...prev,
-            seriesId: match?.id ?? null,
-            series: trimmed
-              ? (match ?? { id: 0, seriesTitle: trimmed, seriesTotal: 0 })
-              : null,
-          }
-        : prev,
-    );
+    setIsSeriesSaving(true);
 
     api
       .patch(`book/updateBookEntry`, {
         ...book,
-        seriesId: match?.id ?? null,
-        seriesTitle: trimmed || null,
+        series: trimmed ? { seriesTitle: trimmed } : null,
+      })
+      .then((response) => {
+        const returnedSeries: SeriesType | null =
+          response.data?.value?.series ?? response.data?.series ?? null;
+        console.log("***************************************************");
+        console.log(response.data);
+        setBook((prev) =>
+          prev
+            ? {
+                ...prev,
+                series: returnedSeries,
+                seriesId: returnedSeries?.id ?? null,
+              }
+            : prev,
+        );
+
+        if (returnedSeries) {
+          setSeriesList((prev) =>
+            prev.some((s) => s.id === returnedSeries.id)
+              ? prev
+              : [...prev, returnedSeries],
+          );
+          setSeriesInput(returnedSeries.seriesTitle);
+        } else {
+          setSeriesInput("");
+        }
       })
       .catch((err) => {
         console.error("Failed to save series", err);
-      });
+        setError("Failed to save series.");
+      })
+      .finally(() => setIsSeriesSaving(false));
+
     dispatch(fetchLibraryData());
   };
 
@@ -202,23 +224,31 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
       <Combobox
         id="titleCombo"
         items={seriesList.map((s) => s.seriesTitle)}
-        defaultValue={book?.series?.seriesTitle}
-        onValueChange={(val) => handleSeriesChange(val ?? "")}
+        value={seriesInput}
+        onValueChange={(val) => setSeriesInput(val ?? "")}
       >
         <ComboboxInput
-          placeholder={book?.series?.seriesTitle ?? "No series"}
+          placeholder="No series"
           showClear
+          onBlur={() => commitSeries(seriesInput)}
         />
         <ComboboxContent>
           <ComboboxList>
             {(item) => (
-              <ComboboxItem key={item} value={item}>
+              <ComboboxItem
+                key={item}
+                value={item}
+                onClick={() => commitSeries(item)}
+              >
                 {item}
               </ComboboxItem>
             )}
           </ComboboxList>
         </ComboboxContent>
       </Combobox>
+      {isSeriesSaving && (
+        <span className="text-xs text-muted-foreground">Saving series…</span>
+      )}
     </div>
   );
 

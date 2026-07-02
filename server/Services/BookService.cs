@@ -12,11 +12,13 @@ public class BookService : IBookService
 {
     private readonly LibrestackDbContext _db;
     private readonly IEpubParseService _epubParser;
+    private readonly ISeriesService _iSeriesService;
 
-    public BookService(LibrestackDbContext db, IEpubParseService epubParser)
+    public BookService(LibrestackDbContext db, IEpubParseService epubParser, ISeriesService seriesService)
     {
         _db = db;
         _epubParser = epubParser;
+        _iSeriesService = seriesService;
     }
 
     private static byte[]? ResizeBookCover(byte[]? cover)
@@ -131,6 +133,7 @@ public class BookService : IBookService
             .Include(l => l.BookTags)
             .Include(l => l.ReadingProgress)
             .Include(l => l.Bookmarks)
+            .Include(l => l.Series)
             .ToListAsync();
 
         if (result is null)
@@ -145,6 +148,7 @@ public class BookService : IBookService
             .Include(l => l.BookTags)
             .Include(l => l.Bookmarks)
             .Include(l => l.ReadingProgress)
+            .Include(l => l.Series)
             .FirstOrDefaultAsync();
 
         if (result is null)
@@ -153,19 +157,19 @@ public class BookService : IBookService
         return Result<Book>.Success(result);
     }
 
-    public async Task<Result> UpdateBookMetaData(ApiBook book, string userId)
+    public async Task<Result<ApiBook>> UpdateBookMetaData(ApiBook book, string userId)
     {
-        var existing = await _db.Books.Include(l => l.Series).FirstOrDefaultAsync(l => l.Id == book.Id && l.UserId == userId);
-        if (existing is null)
-            return Result.Failure("Book not found", ErrorType.NotFound);
+        var existing = await _db.Books
+            .Include(l => l.Series)
+            .FirstOrDefaultAsync(l => l.Id == book.Id && l.UserId == userId);
 
+        if (existing is null)
+            return Result<ApiBook>.Failure("Book not found", ErrorType.NotFound);
 
         existing.Title = book.Title;
         existing.Author = book.Author;
         existing.Publisher = book.Publisher;
-        existing.Series.SeriesTitle = book.Series.SeriesTitle;
         existing.SeriesOrder = book.SeriesOrder;
-        // existing.Series.SeriesTotal = book.Series.SeriesTotal;
         existing.ISBN = book.ISBN;
         existing.LCCN = book.LCCN;
         existing.OCLCWorldCat = book.OCLCWorldCat;
@@ -176,9 +180,51 @@ public class BookService : IBookService
         existing.WikidataId = book.WikidataId;
         existing.Description = book.Description;
 
-        _db.Books.Update(existing);
+        if (book.Series is not null && !string.IsNullOrWhiteSpace(book.Series.SeriesTitle))
+        {
+            var resolvedSeries = await _iSeriesService.ResolveOrCreateSeriesAsync(
+                book.Series.SeriesTitle.Trim(), userId);
+            existing.SeriesId = resolvedSeries.Id;
+            existing.Series = resolvedSeries;
+        }
+        else
+        {
+            existing.SeriesId = null;
+            existing.Series = null;
+        }
+
         await _db.SaveChangesAsync();
-        return Result.Success();
+
+        var updated = new ApiBook
+        {
+            Id = existing.Id,
+            Title = existing.Title,
+            Author = existing.Author,
+            Publisher = existing.Publisher,
+            Description = existing.Description,
+            SeriesOrder = existing.SeriesOrder,
+            ISBN = existing.ISBN,
+            ISBN13 = existing.ISBN13,
+            LCCN = existing.LCCN,
+            OCLCWorldCat = existing.OCLCWorldCat,
+            OpenLibraryWorkId = existing.OpenLibraryWorkId,
+            OpenLibraryEditionId = existing.OpenLibraryEditionId,
+            OpenLibraryAuthorId = existing.OpenLibraryAuthorId,
+            OpenLibraryCoverId = existing.OpenLibraryCoverId,
+            WikidataId = existing.WikidataId,
+            Language = existing.Language,
+            CollectionId = existing.CollectionId,
+            Series = existing.Series is null
+                ? null
+                : new ApiSeries
+                {
+                    Id = existing.Series.Id,
+                    SeriesTitle = existing.Series.SeriesTitle!,
+                    SeriesTotal = existing.Series.SeriesTotal
+                }
+        };
+
+        return Result<ApiBook>.Success(updated);
     }
 
     public async Task<Result> AddBookEntryFromPath(string filePath, string userId, int libraryId)

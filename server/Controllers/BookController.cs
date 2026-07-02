@@ -55,7 +55,7 @@ public class BookController : ControllerBase
 
     [HttpPatch("updateBookEntry")]
     [Authorize]
-    public async Task<IActionResult> UpdateBookEntry(ApiBook book)
+    public async Task<ActionResult<ApiBook>> UpdateBookEntry(ApiBook book)
     {
         if (book.Id == 0)
             return BadRequest("id parameter cannot be 0");
