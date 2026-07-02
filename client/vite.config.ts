@@ -20,6 +20,10 @@ export default defineConfig({
     }),
     VitePWA({
       includeAssets: ["favicon.ico", "apple-touch-icon.png"],
+      workbox: {
+        navigateFallback: "index.html",
+        navigateFallbackDenylist: [/^\/swagger/, /^\/api/],
+      },
       manifest: {
         name: "Librestack",
         short_name: "Librestack",

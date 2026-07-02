@@ -3,6 +3,7 @@ using Librestack.Database;
 using Librestack.Interfaces;
 
 using Microsoft.EntityFrameworkCore;
+using Librestack.Models.APIModels;
 
 namespace Librestack.Services;
 
@@ -20,8 +21,6 @@ public class SeriesService : ISeriesService
         if (string.IsNullOrWhiteSpace(userId))
             throw new ArgumentException("userId is required", nameof(userId));
 
-        // Check entities already tracked in this context first — covers the
-        // case where an earlier book in the same batch/save already added it
         var tracked = _db.ChangeTracker.Entries<Series>()
             .Select(e => e.Entity)
             .FirstOrDefault(s => s.SeriesTitle == normalizedTitle && s.UserId == userId);
@@ -40,7 +39,6 @@ public class SeriesService : ISeriesService
         }
         catch (DbUpdateException ex) when (IsUniqueViolation(ex))
         {
-            // Lost the race to another request/thread — detach our copy and use theirs
             _db.Entry(series).State = EntityState.Detached;
             series = await _db.Series.FirstAsync(s => s.SeriesTitle == normalizedTitle && s.UserId == userId);
         }
@@ -51,18 +49,102 @@ public class SeriesService : ISeriesService
     private static bool IsUniqueViolation(DbUpdateException ex) =>
         ex.InnerException is Npgsql.PostgresException pg && pg.SqlState == "23505";
 
-    public Task<Result> UpdateSeries(Series series)
+    public async Task<Result<ApiSeries>> UpdateSeries(ApiSeries apiSeries, string userId)
     {
-        throw new NotImplementedException();
+        var existing = await _db.Series
+            .FirstOrDefaultAsync(s => s.Id == apiSeries.Id && s.UserId == userId);
+
+        if (existing is null)
+            return Result<ApiSeries>.Failure("Series not found", ErrorType.NotFound);
+
+        existing.SeriesTitle = apiSeries.SeriesTitle;
+        existing.SeriesTotal = apiSeries.SeriesTotal;
+
+        await _db.SaveChangesAsync();
+
+        return Result<ApiSeries>.Success(new ApiSeries
+        {
+            Id = existing.Id,
+            SeriesTitle = existing.SeriesTitle,
+            SeriesTotal = existing.SeriesTotal
+        });
     }
 
-    public Task<Result> CreateNewSeries(Series series)
+    public async Task<Result<ApiSeries>> CreateNewSeries(ApiSeries apiSeries, string userId)
     {
-        throw new NotImplementedException();
+        if (string.IsNullOrWhiteSpace(userId))
+            return Result<ApiSeries>.Failure("User Id is required", ErrorType.BadRequest);
+
+        if (string.IsNullOrWhiteSpace(apiSeries.SeriesTitle))
+            return Result<ApiSeries>.Failure("Series title is required", ErrorType.BadRequest);
+
+        var normalizedTitle = apiSeries.SeriesTitle.Trim();
+
+        var existing = await _db.Series
+            .FirstOrDefaultAsync(s => s.SeriesTitle == normalizedTitle && s.UserId == userId);
+
+        if (existing != null)
+            return Result<ApiSeries>.Failure("A series with this title already exists", ErrorType.Conflict);
+
+        var newSeries = new Series
+        {
+            SeriesTitle = normalizedTitle,
+            SeriesTotal = apiSeries.SeriesTotal,
+            UserId = userId
+        };
+
+        _db.Series.Add(newSeries);
+
+        try
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch (DbUpdateException ex) when (IsUniqueViolation(ex))
+        {
+            return Result<ApiSeries>.Failure("A series with this title already exists", ErrorType.Conflict);
+        }
+
+        return Result<ApiSeries>.Success(new ApiSeries
+        {
+            Id = newSeries.Id,
+            SeriesTitle = newSeries.SeriesTitle,
+            SeriesTotal = newSeries.SeriesTotal
+        });
     }
 
-    public Task<Result> DeleteSeries(Series series)
+    public async Task<Result> DeleteSeries(int seriesId, string userId)
     {
-        throw new NotImplementedException();
+        var existing = await _db.Series
+            .FirstOrDefaultAsync(s => s.Id == seriesId && s.UserId == userId);
+
+        if (existing is null)
+            return Result.Failure("Series not found", ErrorType.NotFound);
+
+        var hasBooks = await _db.Books.AnyAsync(b => b.SeriesId == existing.Id);
+        if (hasBooks)
+            return Result.Failure("Cannot delete a series that has books associated with it", ErrorType.Conflict);
+
+        _db.Series.Remove(existing);
+        await _db.SaveChangesAsync();
+
+        return Result.Success();
+    }
+
+    public async Task<Result<List<ApiSeries>>> GetUserSeries(string userId)
+    {
+        var series = await _db.Series
+            .Where(s => s.UserId == userId)
+            .Select(s => new ApiSeries
+            {
+                Id = s.Id,
+                SeriesTitle = s.SeriesTitle!,
+                SeriesTotal = s.SeriesTotal
+            })
+            .ToListAsync();
+
+        if (series.Count == 0)
+            return Result<List<ApiSeries>>.Failure("No series found for user", ErrorType.NotFound);
+
+        return Result<List<ApiSeries>>.Success(series);
     }
 }

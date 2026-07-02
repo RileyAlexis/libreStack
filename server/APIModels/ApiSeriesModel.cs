@@ -4,5 +4,5 @@ public class ApiSeries
 {
     public int Id { get; set; }
     public string SeriesTitle { get; set; } = "";
-    public int? SeriesTotal { get; set; }
+    public int SeriesTotal { get; set; }
 }
