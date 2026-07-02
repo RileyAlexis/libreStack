@@ -54,7 +54,7 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
             .IsRequired(false);
 
         modelBuilder.Entity<Series>()
-            .HasIndex(s => s.SeriesTitle)
+            .HasIndex(s => new { s.UserId, s.SeriesTitle })
             .IsUnique();
 
         modelBuilder.Entity<Library>()

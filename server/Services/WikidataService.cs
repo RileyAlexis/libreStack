@@ -198,10 +198,11 @@ public class WikidataService : IWikidataService
         if (series != null)
         {
             var apiSeries = _bookParsing.NormalizeSeriesTitle(series);
-            var seriesObject = await _seriesService.ResolveOrCreateSeriesAsync(apiSeries!);
+            var seriesObject = await _seriesService.ResolveOrCreateSeriesAsync(apiSeries!, book.UserId);
             var order = _bookParsing.ParseSeriesOrderFromLabel(position ?? "");
             book.Series = seriesObject;
             book.SeriesOrder = order;
+            book.Series.UserId = book.UserId;
         }
         if (openLibraryId != null) book.OpenLibraryWorkId = openLibraryId;
         if (oclc != null) book.OCLCWorldCat = oclc;

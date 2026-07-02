@@ -3,6 +3,7 @@ using System;
 using Librestack.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace libreStack.Migrations
 {
     [DbContext(typeof(LibrestackDbContext))]
-    partial class LibrestackDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260702192829_seriesUser")]
+    partial class seriesUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -368,9 +371,9 @@ namespace libreStack.Migrations
                     b.HasKey("Id")
                         .HasName("pk_series");
 
-                    b.HasIndex("UserId", "SeriesTitle")
+                    b.HasIndex("SeriesTitle")
                         .IsUnique()
-                        .HasDatabaseName("ix_series_user_id_series_title");
+                        .HasDatabaseName("ix_series_series_title");
 
                     b.ToTable("series", (string)null);
                 });

@@ -25,7 +25,7 @@ public class OpenLibraryService : IOpenLibraryService
         IEpubParseService epubParser,
         IHttpClientFactory httpClientFactory,
         UserManager<IdentityUser> userManager,
-        IBookParsingService bookParsing
+        IBookParsingService bookParsing,
         ISeriesService seriesService
         )
     {
@@ -124,10 +124,11 @@ public class OpenLibraryService : IOpenLibraryService
         if (series != null)
         {
             var apiSeries = _bookParsing.NormalizeSeriesTitle(series);
-            var seriesObject = await _seriesService.ResolveOrCreateSeriesAsync(apiSeries!);
+            var seriesObject = await _seriesService.ResolveOrCreateSeriesAsync(apiSeries!, book.UserId);
             var order = _bookParsing.ParseSeriesOrderFromLabel(series ?? "");
             book.Series = seriesObject;
             book.SeriesOrder = order;
+            book.Series.UserId = book.UserId;
         }
         if (workId != null) book.OpenLibraryWorkId = workId;
         if (isbn13 != null) book.ISBN = isbn13;
@@ -218,10 +219,11 @@ public class OpenLibraryService : IOpenLibraryService
         if (seriesName != null)
         {
             var apiSeries = _bookParsing.NormalizeSeriesTitle(seriesName);
-            var seriesObject = await _seriesService.ResolveOrCreateSeriesAsync(apiSeries!);
+            var seriesObject = await _seriesService.ResolveOrCreateSeriesAsync(apiSeries!, book.UserId);
             var order = _bookParsing.ParseSeriesOrderFromLabel(seriesPosition ?? "");
             book.Series = seriesObject;
             book.SeriesOrder = order;
+            book.Series.UserId = book.UserId;
         }
         if (seriesPosition != null)
             book.SeriesOrder = int.TryParse(seriesPosition, out var order) ? order : null;
@@ -300,10 +302,11 @@ public class OpenLibraryService : IOpenLibraryService
         if (series != null)
         {
             var apiSeries = _bookParsing.NormalizeSeriesTitle(series);
-            var seriesObject = await _seriesService.ResolveOrCreateSeriesAsync(apiSeries!);
+            var seriesObject = await _seriesService.ResolveOrCreateSeriesAsync(apiSeries!, book.UserId);
             var order = _bookParsing.ParseSeriesOrderFromLabel(series ?? "");
             book.Series = seriesObject;
             book.SeriesOrder = order;
+            book.Series.UserId = book.UserId;
         }
         if (description != null) book.Description = description;
         if (publishDate != null) book.PublishDate = publishDate;
