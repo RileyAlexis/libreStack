@@ -21,13 +21,15 @@ public class WikidataService : IWikidataService
     private readonly UserManager<IdentityUser> _userManager;
     private readonly ILogger<LibraryMonitorService> _logger;
     private readonly IBookParsingService _bookParsing;
+    private readonly ISeriesService _seriesService;
 
     public WikidataService(
             LibrestackDbContext db,
             IHttpClientFactory httpClientFactory,
             UserManager<IdentityUser> userManager,
             ILogger<LibraryMonitorService> logger,
-            IBookParsingService bookParsing
+            IBookParsingService bookParsing,
+            ISeriesService seriesService
             )
     {
         _db = db;
@@ -35,6 +37,7 @@ public class WikidataService : IWikidataService
         _userManager = userManager;
         _logger = logger;
         _bookParsing = bookParsing;
+        _seriesService = seriesService;
     }
 
     private async Task<HttpClient> CreateClient()
@@ -194,8 +197,10 @@ public class WikidataService : IWikidataService
         if (author != null && string.IsNullOrWhiteSpace(book.Author)) book.Author = author;
         if (series != null)
         {
-            book.SeriesTitle = _bookParsing.NormalizeSeriesTitle(series);
+            var apiSeries = _bookParsing.NormalizeSeriesTitle(series);
+            var seriesObject = await _seriesService.ResolveOrCreateSeriesAsync(apiSeries!);
             var order = _bookParsing.ParseSeriesOrderFromLabel(position ?? "");
+            book.Series = seriesObject;
             book.SeriesOrder = order;
         }
         if (openLibraryId != null) book.OpenLibraryWorkId = openLibraryId;

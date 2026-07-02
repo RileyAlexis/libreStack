@@ -106,17 +106,13 @@ namespace libreStack.Migrations
                         .HasColumnType("text")
                         .HasColumnName("publisher");
 
+                    b.Property<int?>("SeriesId")
+                        .HasColumnType("integer")
+                        .HasColumnName("series_id");
+
                     b.Property<int?>("SeriesOrder")
                         .HasColumnType("integer")
                         .HasColumnName("series_order");
-
-                    b.Property<string>("SeriesTitle")
-                        .HasColumnType("text")
-                        .HasColumnName("series_title");
-
-                    b.Property<int?>("SeriesTotal")
-                        .HasColumnType("integer")
-                        .HasColumnName("series_total");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -138,6 +134,9 @@ namespace libreStack.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_books");
+
+                    b.HasIndex("SeriesId")
+                        .HasDatabaseName("ix_books_series_id");
 
                     b.HasIndex("UserId")
                         .HasDatabaseName("ix_books_user_id");
@@ -342,6 +341,33 @@ namespace libreStack.Migrations
                         .HasName("pk_refresh_tokens");
 
                     b.ToTable("refresh_tokens", (string)null);
+                });
+
+            modelBuilder.Entity("Librestack.Models.Series", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("SeriesTitle")
+                        .HasColumnType("text")
+                        .HasColumnName("series_title");
+
+                    b.Property<int>("SeriesTotal")
+                        .HasColumnType("integer")
+                        .HasColumnName("series_total");
+
+                    b.HasKey("Id")
+                        .HasName("pk_series");
+
+                    b.HasIndex("SeriesTitle")
+                        .IsUnique()
+                        .HasDatabaseName("ix_series_series_title");
+
+                    b.ToTable("series", (string)null);
                 });
 
             modelBuilder.Entity("Librestack.Models.UserSettings", b =>
@@ -729,12 +755,19 @@ namespace libreStack.Migrations
 
             modelBuilder.Entity("Librestack.Models.Book", b =>
                 {
+                    b.HasOne("Librestack.Models.Series", "Series")
+                        .WithMany("Books")
+                        .HasForeignKey("SeriesId")
+                        .HasConstraintName("fk_books_series_series_id");
+
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_books_users_user_id");
+
+                    b.Navigation("Series");
 
                     b.Navigation("User");
                 });
@@ -867,6 +900,11 @@ namespace libreStack.Migrations
                     b.Navigation("Bookmarks");
 
                     b.Navigation("ReadingProgress");
+                });
+
+            modelBuilder.Entity("Librestack.Models.Series", b =>
+                {
+                    b.Navigation("Books");
                 });
 #pragma warning restore 612, 618
         }

@@ -61,6 +61,7 @@ builder.Services.AddScoped<IOpenLibraryService, OpenLibraryService>();
 builder.Services.AddScoped<IWikidataService, WikidataService>();
 builder.Services.AddScoped<IBookParsingService, BookParsingService>();
 builder.Services.AddScoped<IUserSettingsService, UserSettingsService>();
+builder.Services.AddScoped<ISeriesService, SeriesService>();
 
 builder.Services.AddHostedService<LibraryMonitorService>();
 

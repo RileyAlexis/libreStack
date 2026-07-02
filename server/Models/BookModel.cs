@@ -17,9 +17,7 @@ public class Book
     public string? PublishDate { get; set; }
     public byte[]? CoverImage { get; set; } = null;
     public string? CoverContentType { get; set; } = null;
-    public string? SeriesTitle { get; set; } = null;
     public int? SeriesOrder { get; set; }
-    public int? SeriesTotal { get; set; }
     public string? ISBN { get; set; } = "";
     public string? ISBN13 { get; set; } = "";
     public string? LCCN { get; set; } = null;
@@ -40,4 +38,7 @@ public class Book
     public ICollection<BookTag> BookTags { get; set; } = new List<BookTag>();
     public ReadingProgress? ReadingProgress { get; set; }
     public ICollection<BookmarkModel> Bookmarks { get; set; } = new List<BookmarkModel>();
+
+    public int? SeriesId { get; set; }
+    public Series? Series { get; set; }
 }

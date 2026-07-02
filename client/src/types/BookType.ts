@@ -14,6 +14,12 @@ export interface ReadingProgress {
   isComplete: boolean;
 }
 
+export interface SeriesType {
+  id: number;
+  seriesTitle: string;
+  seriesTotal: number;
+}
+
 export interface BookType {
   id: number;
   title: string;
@@ -21,7 +27,8 @@ export interface BookType {
   publisher: string;
   description: string;
   coverImage: string;
-  seriesTitle: string;
+  seriesId: number | null;
+  series: SeriesType | null;
   seriesOrder: string;
   isbn: string;
   isbn13: string;

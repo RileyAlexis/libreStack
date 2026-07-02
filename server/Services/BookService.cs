@@ -155,7 +155,7 @@ public class BookService : IBookService
 
     public async Task<Result> UpdateBookMetaData(ApiBook book, string userId)
     {
-        var existing = await _db.Books.FirstOrDefaultAsync(l => l.Id == book.Id && l.UserId == userId);
+        var existing = await _db.Books.Include(l => l.Series).FirstOrDefaultAsync(l => l.Id == book.Id && l.UserId == userId);
         if (existing is null)
             return Result.Failure("Book not found", ErrorType.NotFound);
 
@@ -163,9 +163,9 @@ public class BookService : IBookService
         existing.Title = book.Title;
         existing.Author = book.Author;
         existing.Publisher = book.Publisher;
-        existing.SeriesTitle = book.SeriesTitle;
+        existing.Series.SeriesTitle = book.Series.SeriesTitle;
         existing.SeriesOrder = book.SeriesOrder;
-        existing.SeriesTotal = book.SeriesTotal;
+        // existing.Series.SeriesTotal = book.Series.SeriesTotal;
         existing.ISBN = book.ISBN;
         existing.LCCN = book.LCCN;
         existing.OCLCWorldCat = book.OCLCWorldCat;

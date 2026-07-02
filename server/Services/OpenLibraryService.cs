@@ -118,7 +118,7 @@ public class OpenLibraryService : IOpenLibraryService
         if (author != null && string.IsNullOrWhiteSpace(book.Author)) book.Author = author;
         if (authorId != null) book.OpenLibraryAuthorId = authorId;
         if (description != null) book.Description = description;
-        if (series != null) book.SeriesTitle = _bookParsing.NormalizeSeriesTitle(series);
+        if (series != null) book.Series.SeriesTitle = _bookParsing.NormalizeSeriesTitle(series);
         var order = _bookParsing.ParseSeriesOrderFromLabel(series ?? "");
         book.SeriesOrder = order;
         if (workId != null) book.OpenLibraryWorkId = workId;
@@ -208,7 +208,7 @@ public class OpenLibraryService : IOpenLibraryService
 
         if (title != null && string.IsNullOrWhiteSpace(book.Title)) book.Title = title;
         if (seriesName != null)
-            book.SeriesTitle = _bookParsing.NormalizeSeriesTitle(seriesName);
+            book.Series.SeriesTitle = _bookParsing.NormalizeSeriesTitle(seriesName);
         if (seriesPosition != null)
             book.SeriesOrder = int.TryParse(seriesPosition, out var order) ? order : null;
         if (wikiData != null) book.WikidataId = wikiData;
@@ -283,7 +283,7 @@ public class OpenLibraryService : IOpenLibraryService
         if (authorKey != null && string.IsNullOrWhiteSpace(book.Author)) book.OpenLibraryAuthorId = authorKey;
         if (workKey != null) book.OpenLibraryWorkId = workKey;
         if (wikiData != null) book.WikidataId = wikiData;
-        if (series != null) book.SeriesTitle = _bookParsing.NormalizeSeriesTitle(series);
+        if (series != null) book.Series.SeriesTitle = _bookParsing.NormalizeSeriesTitle(series);
         var order = _bookParsing.ParseSeriesOrderFromLabel(series ?? "");
         book.SeriesOrder = order;
         if (description != null) book.Description = description;

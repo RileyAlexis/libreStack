@@ -57,7 +57,7 @@ public class BookParsingService : IBookParsingService
             processedLabel = processedLabel.Replace(pair.Key, pair.Value.ToString());
         }
 
-        var match = System.Text.RegularExpressions.Regex.Match(processedLabel, @"\b(\d+)\b");
+        var match = Regex.Match(processedLabel, @"\b(\d+)\b");
         if (match.Success && int.TryParse(match.Groups[1].Value, out int order))
         {
             return order;

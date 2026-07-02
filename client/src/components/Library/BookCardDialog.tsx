@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { api } from "@/api";
-import type { BookType } from "@/types/BookType";
+import type { BookType, SeriesType } from "@/types/BookType";
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { AppDispatch } from "@/redux/store";
 
@@ -40,9 +40,8 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
   const dispatch = useDispatch<AppDispatch>();
   const library = useSelector((state: LibreRootState) => state.library);
   const selections = useSelector((state: LibreRootState) => state.selections);
-  const [series, setSeries] = useState<string[]>([]);
+  const [seriesList, setSeriesList] = useState<SeriesType[]>([]);
   const [isOpenLibLoading, setIsOpenLibLoading] = useState(false);
-  const [_, setSeriesTitle] = useState<string>("");
   const [book, setBook] = useState<BookType>();
   const [error, setError] = useState<string | null>(null);
 
@@ -52,28 +51,15 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
       .then((response) => setBook(response.data.value))
       .catch((error) => console.log(error));
 
-    const uniqueSeries = [
-      ...new Set(
-        library[selections.selectedLibrary].books
-          .filter((item) => item.seriesTitle)
-          .map((item) => item.seriesTitle),
-      ),
-    ];
-    setSeries(uniqueSeries);
+    const uniqueSeries = new Map<number, SeriesType>();
+    library[selections.selectedLibrary].books
+      .filter((item) => item.series)
+      .forEach((item) => uniqueSeries.set(item.series!.id, item.series!));
+    setSeriesList([...uniqueSeries.values()]);
   }, [bookId]);
 
-  useEffect(() => {
-    if (book?.seriesTitle) setSeriesTitle(book.seriesTitle);
-  }, [book]);
-
-  // MODIFIED: Explicitly check for empty string and convert to null before API call
   const handleBlur = (field: keyof BookType, value: string) => {
-    let payloadValue: any;
-    if (value === "") {
-      payloadValue = null; // Send null if the field is cleared
-    } else {
-      payloadValue = value;
-    }
+    const payloadValue = value === "" ? null : value;
 
     api
       .patch(`book/updateBookEntry`, {
@@ -88,6 +74,37 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
 
   const handleChange = (field: keyof BookType, value: string) => {
     setBook((prev) => (prev ? { ...prev, [field]: value } : prev));
+  };
+
+  // Series is FK-based now: resolve by title against known series to get an
+  // id; if it doesn't match anything, pass the raw title and let the backend
+  // resolve-or-create the Series row.
+  const handleSeriesChange = (value: string) => {
+    const trimmed = value.trim();
+    const match = seriesList.find((s) => s.seriesTitle === trimmed);
+
+    setBook((prev) =>
+      prev
+        ? {
+            ...prev,
+            seriesId: match?.id ?? null,
+            series: trimmed
+              ? (match ?? { id: 0, seriesTitle: trimmed, seriesTotal: 0 })
+              : null,
+          }
+        : prev,
+    );
+
+    api
+      .patch(`book/updateBookEntry`, {
+        ...book,
+        seriesId: match?.id ?? null,
+        seriesTitle: trimmed || null,
+      })
+      .catch((err) => {
+        console.error("Failed to save series", err);
+      });
+    dispatch(fetchLibraryData());
   };
 
   const handleOpenLibrary = () => {
@@ -139,7 +156,6 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
     { id: "author", label: "Author" },
     { id: "publisher", label: "Publisher" },
     { id: "description", label: "Description" },
-    { id: "seriesTitle", label: "Series Title" },
     { id: "seriesOrder", label: "Series Order" },
     { id: "isbn", label: "ISBN" },
     { id: "isbn13", label: "ISBN-13" },
@@ -153,36 +169,6 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
   ];
 
   const renderField = (id: keyof BookType, label: string) => {
-    if (id === "seriesTitle") {
-      return (
-        <div className="grid gap-1.5" key={id}>
-          <Label htmlFor="titleCombo">Series Title</Label>
-          <Combobox
-            id="titleCombo"
-            items={series}
-            defaultValue={book?.seriesTitle}
-            onValueChange={(val) => {
-              const value = val ?? "";
-              setSeriesTitle(value);
-              handleChange("seriesTitle", value);
-              handleBlur("seriesTitle", value); // Trigger blur on change for immediate update
-            }}
-          >
-            <ComboboxInput placeholder={book?.seriesTitle} showClear />
-            <ComboboxContent>
-              <ComboboxList>
-                {(item) => (
-                  <ComboboxItem key={item} value={item}>
-                    {item}
-                  </ComboboxItem>
-                )}
-              </ComboboxList>
-            </ComboboxContent>
-          </Combobox>
-        </div>
-      );
-    }
-
     if (id === "description") {
       return (
         <div className="grid gap-1.5" key={id}>
@@ -209,6 +195,32 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
       </div>
     );
   };
+
+  const renderSeriesField = () => (
+    <div className="grid gap-1.5">
+      <Label htmlFor="titleCombo">Series Title</Label>
+      <Combobox
+        id="titleCombo"
+        items={seriesList.map((s) => s.seriesTitle)}
+        defaultValue={book?.series?.seriesTitle}
+        onValueChange={(val) => handleSeriesChange(val ?? "")}
+      >
+        <ComboboxInput
+          placeholder={book?.series?.seriesTitle ?? "No series"}
+          showClear
+        />
+        <ComboboxContent>
+          <ComboboxList>
+            {(item) => (
+              <ComboboxItem key={item} value={item}>
+                {item}
+              </ComboboxItem>
+            )}
+          </ComboboxList>
+        </ComboboxContent>
+      </Combobox>
+    </div>
+  );
 
   if (!book)
     return (
@@ -252,6 +264,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
         </div>
       </DialogHeader>
       <div className="grid gap-4 py-4">
+        {renderSeriesField()}
         {fields.map(({ id, label }) => renderField(id, label))}
       </div>
     </DialogContent>

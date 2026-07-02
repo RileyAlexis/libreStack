@@ -114,6 +114,20 @@ namespace libreStack.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "series",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    series_title = table.Column<string>(type: "text", nullable: true),
+                    series_total = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_series", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -220,49 +234,6 @@ namespace libreStack.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "books",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    user_id = table.Column<string>(type: "text", nullable: false),
-                    title = table.Column<string>(type: "text", nullable: false),
-                    author = table.Column<string>(type: "text", nullable: false),
-                    publisher = table.Column<string>(type: "text", nullable: false),
-                    description = table.Column<string>(type: "text", nullable: true),
-                    publish_date = table.Column<string>(type: "text", nullable: true),
-                    cover_image = table.Column<byte[]>(type: "bytea", nullable: true),
-                    cover_content_type = table.Column<string>(type: "text", nullable: true),
-                    series_title = table.Column<string>(type: "text", nullable: true),
-                    series_order = table.Column<int>(type: "integer", nullable: true),
-                    series_total = table.Column<int>(type: "integer", nullable: true),
-                    isbn = table.Column<string>(type: "text", nullable: true),
-                    isbn13 = table.Column<string>(type: "text", nullable: true),
-                    lccn = table.Column<string>(type: "text", nullable: true),
-                    oclc_world_cat = table.Column<string>(type: "text", nullable: true),
-                    open_library_work_id = table.Column<string>(type: "text", nullable: true),
-                    open_library_edition_id = table.Column<string>(type: "text", nullable: true),
-                    open_library_author_id = table.Column<string>(type: "text", nullable: true),
-                    open_library_cover_id = table.Column<string>(type: "text", nullable: true),
-                    wikidata_id = table.Column<string>(type: "text", nullable: true),
-                    language = table.Column<string>(type: "text", nullable: true),
-                    collection_id = table.Column<int>(type: "integer", nullable: true),
-                    epub_path = table.Column<string>(type: "text", nullable: false),
-                    open_library_metadata_last_updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    wikidata_meta_last_updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_books", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_books_users_user_id",
-                        column: x => x.user_id,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "user_settings",
                 columns: table => new
                 {
@@ -293,6 +264,53 @@ namespace libreStack.Migrations
                     table.PrimaryKey("pk_user_settings", x => x.id);
                     table.ForeignKey(
                         name: "fk_user_settings_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "books",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    user_id = table.Column<string>(type: "text", nullable: false),
+                    title = table.Column<string>(type: "text", nullable: false),
+                    author = table.Column<string>(type: "text", nullable: false),
+                    publisher = table.Column<string>(type: "text", nullable: false),
+                    description = table.Column<string>(type: "text", nullable: true),
+                    publish_date = table.Column<string>(type: "text", nullable: true),
+                    cover_image = table.Column<byte[]>(type: "bytea", nullable: true),
+                    cover_content_type = table.Column<string>(type: "text", nullable: true),
+                    series_order = table.Column<int>(type: "integer", nullable: true),
+                    isbn = table.Column<string>(type: "text", nullable: true),
+                    isbn13 = table.Column<string>(type: "text", nullable: true),
+                    lccn = table.Column<string>(type: "text", nullable: true),
+                    oclc_world_cat = table.Column<string>(type: "text", nullable: true),
+                    open_library_work_id = table.Column<string>(type: "text", nullable: true),
+                    open_library_edition_id = table.Column<string>(type: "text", nullable: true),
+                    open_library_author_id = table.Column<string>(type: "text", nullable: true),
+                    open_library_cover_id = table.Column<string>(type: "text", nullable: true),
+                    wikidata_id = table.Column<string>(type: "text", nullable: true),
+                    language = table.Column<string>(type: "text", nullable: true),
+                    collection_id = table.Column<int>(type: "integer", nullable: true),
+                    epub_path = table.Column<string>(type: "text", nullable: false),
+                    open_library_metadata_last_updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    wikidata_meta_last_updated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    series_id = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_books", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_books_series_series_id",
+                        column: x => x.series_id,
+                        principalTable: "series",
+                        principalColumn: "id");
+                    table.ForeignKey(
+                        name: "fk_books_users_user_id",
                         column: x => x.user_id,
                         principalTable: "AspNetUsers",
                         principalColumn: "id",
@@ -440,6 +458,11 @@ namespace libreStack.Migrations
                 column: "book_id");
 
             migrationBuilder.CreateIndex(
+                name: "ix_books_series_id",
+                table: "books",
+                column: "series_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_books_user_id",
                 table: "books",
                 column: "user_id");
@@ -453,6 +476,12 @@ namespace libreStack.Migrations
                 name: "ix_reading_progress_book_id",
                 table: "reading_progress",
                 column: "book_id",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_series_series_title",
+                table: "series",
+                column: "series_title",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -512,6 +541,9 @@ namespace libreStack.Migrations
 
             migrationBuilder.DropTable(
                 name: "books");
+
+            migrationBuilder.DropTable(
+                name: "series");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

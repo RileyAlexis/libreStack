@@ -17,6 +17,7 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
     public DbSet<LibreStackConfig> LibreStackConfig { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<UserSettings> UserSettings { get; set; }
+    public DbSet<Series> Series { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,6 +47,16 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
             .WithMany()
             .HasForeignKey(l => l.UserId);
 
+        modelBuilder.Entity<Book>()
+            .HasOne(l => l.Series)
+            .WithMany(b => b.Books)
+            .HasForeignKey(f => f.SeriesId)
+            .IsRequired(false);
+
+        modelBuilder.Entity<Series>()
+            .HasIndex(s => s.SeriesTitle)
+            .IsUnique();
+
         modelBuilder.Entity<Library>()
             .HasMany(lib => lib.Books)
             .WithMany(book => book.Libraries)
@@ -55,7 +66,7 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
                     .HasOne<Book>()
                     .WithMany()
                     .HasForeignKey("book_id"),
-                jointTable => jointTable
+                joinTable => joinTable
                     .HasOne<Library>()
                     .WithMany()
                     .HasForeignKey("library_id"),
