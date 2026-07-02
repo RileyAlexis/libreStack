@@ -16,6 +16,7 @@ public class OpenLibraryService : IOpenLibraryService
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IBookParsingService _bookParsing;
+    private readonly ISeriesService _seriesService;
     private static readonly SemaphoreSlim _rateLimiter = new(1, 1);
 
 
@@ -25,6 +26,7 @@ public class OpenLibraryService : IOpenLibraryService
         IHttpClientFactory httpClientFactory,
         UserManager<IdentityUser> userManager,
         IBookParsingService bookParsing
+        ISeriesService seriesService
         )
     {
         _db = db;
@@ -32,6 +34,7 @@ public class OpenLibraryService : IOpenLibraryService
         _httpClientFactory = httpClientFactory;
         _userManager = userManager;
         _bookParsing = bookParsing;
+        _seriesService = seriesService;
     }
 
 
@@ -118,9 +121,14 @@ public class OpenLibraryService : IOpenLibraryService
         if (author != null && string.IsNullOrWhiteSpace(book.Author)) book.Author = author;
         if (authorId != null) book.OpenLibraryAuthorId = authorId;
         if (description != null) book.Description = description;
-        if (series != null) book.Series.SeriesTitle = _bookParsing.NormalizeSeriesTitle(series);
-        var order = _bookParsing.ParseSeriesOrderFromLabel(series ?? "");
-        book.SeriesOrder = order;
+        if (series != null)
+        {
+            var apiSeries = _bookParsing.NormalizeSeriesTitle(series);
+            var seriesObject = await _seriesService.ResolveOrCreateSeriesAsync(apiSeries!);
+            var order = _bookParsing.ParseSeriesOrderFromLabel(series ?? "");
+            book.Series = seriesObject;
+            book.SeriesOrder = order;
+        }
         if (workId != null) book.OpenLibraryWorkId = workId;
         if (isbn13 != null) book.ISBN = isbn13;
         if (oclc != null) book.OCLCWorldCat = oclc;
@@ -208,7 +216,13 @@ public class OpenLibraryService : IOpenLibraryService
 
         if (title != null && string.IsNullOrWhiteSpace(book.Title)) book.Title = title;
         if (seriesName != null)
-            book.Series.SeriesTitle = _bookParsing.NormalizeSeriesTitle(seriesName);
+        {
+            var apiSeries = _bookParsing.NormalizeSeriesTitle(seriesName);
+            var seriesObject = await _seriesService.ResolveOrCreateSeriesAsync(apiSeries!);
+            var order = _bookParsing.ParseSeriesOrderFromLabel(seriesPosition ?? "");
+            book.Series = seriesObject;
+            book.SeriesOrder = order;
+        }
         if (seriesPosition != null)
             book.SeriesOrder = int.TryParse(seriesPosition, out var order) ? order : null;
         if (wikiData != null) book.WikidataId = wikiData;
@@ -283,9 +297,14 @@ public class OpenLibraryService : IOpenLibraryService
         if (authorKey != null && string.IsNullOrWhiteSpace(book.Author)) book.OpenLibraryAuthorId = authorKey;
         if (workKey != null) book.OpenLibraryWorkId = workKey;
         if (wikiData != null) book.WikidataId = wikiData;
-        if (series != null) book.Series.SeriesTitle = _bookParsing.NormalizeSeriesTitle(series);
-        var order = _bookParsing.ParseSeriesOrderFromLabel(series ?? "");
-        book.SeriesOrder = order;
+        if (series != null)
+        {
+            var apiSeries = _bookParsing.NormalizeSeriesTitle(series);
+            var seriesObject = await _seriesService.ResolveOrCreateSeriesAsync(apiSeries!);
+            var order = _bookParsing.ParseSeriesOrderFromLabel(series ?? "");
+            book.Series = seriesObject;
+            book.SeriesOrder = order;
+        }
         if (description != null) book.Description = description;
         if (publishDate != null) book.PublishDate = publishDate;
         if (isbn10 != null) book.ISBN = isbn10;
