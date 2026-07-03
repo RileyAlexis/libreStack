@@ -1,27 +1,30 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
+import axios from "axios";
 
 import { api } from "./api";
 import { Route, Routes, useLocation } from "react-router";
 
 import { useDispatch, useSelector } from "react-redux";
-import { setUser } from "./redux/reducers/userReducer";
+import type { AppDispatch } from "./redux/store";
+
+// Redux Actions
 import {
   saveUserSettings,
   fetchUserSettings,
 } from "./redux/reducers/AppSettingsReducer";
-import type { AppDispatch } from "./redux/store";
+import { setUser } from "./redux/reducers/userReducer";
 
-import "./App.css";
+// Components
 import { Setup } from "./components/Setup/ Setup";
 import { Tester } from "./components/Testers/Tester";
 import { HeaderBanner } from "./components/HeaderBanner/HeaderBanner";
-import axios from "axios";
 import { Reader } from "./components/Reader/Reader";
 import { Library } from "./components/Library/Library";
 import { BottomControls } from "./components/BottomControls/BottomControls";
 import type { LibreRootState } from "./types/LibreRootState";
-// import type { LibreRootState } from "./types/LibreRootState";
+
+import "./App.css";
 
 function App() {
   const navigate = useNavigate();

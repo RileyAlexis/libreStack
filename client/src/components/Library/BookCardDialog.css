@@ -5,3 +5,16 @@
   justify-content: center;
   align-items: center;
 }
+
+.seriesSelectorContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5em;
+  /* border: 1px solid orange; */
+}
+
+.seriesSelectorBox {
+  width: 100%;
+}

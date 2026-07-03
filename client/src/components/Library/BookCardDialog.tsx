@@ -15,12 +15,13 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import {
-  Combobox,
-  ComboboxContent,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from "../ui/combobox";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  SelectGroup,
+} from "../ui/select";
 import { Alert, AlertTitle, AlertDescription } from "../ui/alert";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -30,6 +31,7 @@ import { ButtonGroup, ButtonGroupSeparator } from "../ui/button-group";
 import { Textarea } from "../ui/textarea";
 
 import "./BookCardDialog.css";
+import { Plus } from "lucide-react";
 
 interface BookCardDialogProps {
   bookId: number;
@@ -40,9 +42,9 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
   const [seriesList, setSeriesList] = useState<SeriesType[]>([]);
   const [seriesInput, setSeriesInput] = useState("");
   const [isOpenLibLoading, setIsOpenLibLoading] = useState(false);
-  const [isSeriesSaving, setIsSeriesSaving] = useState(false);
   const [book, setBook] = useState<BookType>();
   const [error, setError] = useState<string | null>(null);
+  const [isAddingSeries, setIsAddingSeries] = useState(false);
 
   useEffect(() => {
     api
@@ -58,7 +60,6 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
       .catch((error) => console.error(error));
   }, []);
 
-  // keep the free-text input in sync once the book actually loads
   useEffect(() => {
     setSeriesInput(book?.series?.seriesTitle ?? "");
   }, [book?.id]);
@@ -72,7 +73,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
         [field]: payloadValue,
       })
       .then((response) => {
-        setBook(response.data);
+        setBook(response.data?.value ?? response.data);
       })
       .catch((err) => {
         console.error("Failed to save", field, err);
@@ -82,12 +83,11 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
   const handleChange = (field: keyof BookType, value: string) => {
     setBook((prev) => (prev ? { ...prev, [field]: value } : prev));
   };
+
   const commitSeries = (rawValue: string) => {
     const trimmed = rawValue.trim();
 
-    if (trimmed === (book?.series?.seriesTitle ?? "")) return; // no change
-
-    setIsSeriesSaving(true);
+    if (trimmed === (book?.series?.seriesTitle ?? "")) return;
 
     api
       .patch(`book/updateBookEntry`, {
@@ -97,8 +97,6 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
       .then((response) => {
         const returnedSeries: SeriesType | null =
           response.data?.value?.series ?? response.data?.series ?? null;
-        console.log("***************************************************");
-        console.log(response.data);
         setBook((prev) =>
           prev
             ? {
@@ -123,8 +121,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
       .catch((err) => {
         console.error("Failed to save series", err);
         setError("Failed to save series.");
-      })
-      .finally(() => setIsSeriesSaving(false));
+      });
 
     dispatch(fetchLibraryData());
   };
@@ -218,39 +215,80 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
     );
   };
 
-  const renderSeriesField = () => (
-    <div className="grid gap-1.5">
-      <Label htmlFor="titleCombo">Series Title</Label>
-      <Combobox
-        id="titleCombo"
-        items={seriesList.map((s) => s.seriesTitle)}
-        value={seriesInput}
-        onValueChange={(val) => setSeriesInput(val ?? "")}
-      >
-        <ComboboxInput
-          placeholder="No series"
-          showClear
-          onBlur={() => commitSeries(seriesInput)}
-        />
-        <ComboboxContent>
-          <ComboboxList>
-            {(item) => (
-              <ComboboxItem
-                key={item}
-                value={item}
-                onClick={() => commitSeries(item)}
-              >
-                {item}
-              </ComboboxItem>
-            )}
-          </ComboboxList>
-        </ComboboxContent>
-      </Combobox>
-      {isSeriesSaving && (
-        <span className="text-xs text-muted-foreground">Saving series…</span>
-      )}
-    </div>
-  );
+  const renderSeriesField = () => {
+    if (isAddingSeries) {
+      return (
+        <div className="seriesSelectorContainer">
+          <div className="seriesSelectorBox">
+            <Input
+              autoFocus
+              placeholder="New series name"
+              value={seriesInput}
+              onChange={(e) => setSeriesInput(e.target.value)}
+              onBlur={() => {
+                commitSeries(seriesInput);
+                setIsAddingSeries(false);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  commitSeries(seriesInput);
+                  setIsAddingSeries(false);
+                }
+                if (e.key === "Escape") {
+                  setSeriesInput(book?.series?.seriesTitle ?? "");
+                  setIsAddingSeries(false);
+                }
+              }}
+            />
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => {
+              setSeriesInput(book?.series?.seriesTitle ?? "");
+              setIsAddingSeries(false);
+            }}
+          >
+            <Plus className="rotate-45" />
+          </Button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="seriesSelectorContainer">
+        <div className="seriesSelectorBox">
+          <Select
+            value={book?.series?.seriesTitle ?? ""}
+            onValueChange={(value) => commitSeries(value!)}
+          >
+            <SelectTrigger style={{ width: "100%" }}>
+              <SelectValue placeholder="Series">
+                {book?.series?.seriesTitle}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent alignItemWithTrigger={false}>
+              <SelectGroup>
+                {seriesList.map((item) => (
+                  <SelectItem key={item.id} value={item.seriesTitle}>
+                    {item.seriesTitle}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setIsAddingSeries(true)}
+        >
+          <Plus />
+        </Button>
+      </div>
+    );
+  };
 
   if (!book)
     return (
