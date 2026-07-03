@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import type { AppDispatch } from "@/redux/store";
+// import { useSelector, useDispatch } from "react-redux";
+// import type { AppDispatch } from "@/redux/store";
 import type { SeriesType } from "@/types/BookType";
-import type { LibreRootState } from "@/types/LibreRootState";
+// import type { LibreRootState } from "@/types/LibreRootState";
 import { api } from "@/api";
 
 // UI
@@ -36,13 +36,13 @@ import {
 } from "../ui/alert-dialog";
 
 export const SeriesManager: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  // const dispatch = useDispatch<AppDispatch>();
   const [series, setSeries] = useState<SeriesType[] | null>(null);
   const [selectedSeries, setSelectedSeries] = useState<SeriesType | null>(null);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState<boolean>(false);
   const [isAddingSeries, setIsAddingSeries] = useState<boolean>(false);
   const [newSeries, setNewSeries] = useState<string>("");
-  const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  // const appSettings = useSelector((state: LibreRootState) => state.appSettings);
 
   useEffect(() => {
     api

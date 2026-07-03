@@ -41,7 +41,6 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
   const dispatch = useDispatch<AppDispatch>();
   const [seriesList, setSeriesList] = useState<SeriesType[]>([]);
   const [seriesInput, setSeriesInput] = useState("");
-  const [isOpenLibLoading, setIsOpenLibLoading] = useState(false);
   const [book, setBook] = useState<BookType>();
   const [error, setError] = useState<string | null>(null);
   const [isAddingSeries, setIsAddingSeries] = useState(false);
@@ -129,7 +128,6 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
   };
 
   const handleOpenLibrary = () => {
-    setIsOpenLibLoading(true);
     setIsSyncing(true);
     setError(null);
     api
@@ -139,12 +137,10 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
           .get(`Book/getBookEntry?id=${bookId}`)
           .then((response) => {
             setBook(response.data.value);
-            setIsOpenLibLoading(false);
             setIsSyncing(false);
           })
           .catch((error) => {
             console.log(error);
-            setIsOpenLibLoading(false);
             setIsSyncing(false);
           });
       })
@@ -152,7 +148,6 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
         setError(
           error.response?.data?.error || "Failed to fetch Open Library data.",
         );
-        setIsOpenLibLoading(false);
         setIsSyncing(false);
         console.error(error);
       });
