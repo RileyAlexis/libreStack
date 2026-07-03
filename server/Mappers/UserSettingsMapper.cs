@@ -24,6 +24,7 @@ public static class UserSettingsMapper
         CoverHeight = dto.LibraryLayout.LibraryCoverSize.Height,
         SortBy = dto.LibraryLayout.SortBy,
         SortAscending = dto.LibraryLayout.SortAscending,
+        LastSelectedLibrary = dto.LastSelectedLibrary,
     };
 
     public static ApiUserSettings ToDto(UserSettings s) => new()
@@ -34,6 +35,7 @@ public static class UserSettingsMapper
         ReadingFont = new ReadingFontDto { Label = s.ReadingFontLabel, Value = s.ReadingFontValue },
         ReadingFontSize = s.ReadingFontSize,
         LineHeight = s.LineHeight,
+        LastSelectedLibrary = s.LastSelectedLibrary,
         LibraryLayout = new LibraryLayoutDto
         {
             Base = s.LibraryBase,

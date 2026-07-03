@@ -9,6 +9,7 @@ public class ApiUserSettings
     public int ReadingFontSize { get; set; }
     public double LineHeight { get; set; }
     public LibraryLayoutDto LibraryLayout { get; set; } = null!;
+    public int LastSelectedLibrary { get; set; }
 }
 
 public class LibraryLayoutDto

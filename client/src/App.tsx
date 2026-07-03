@@ -25,6 +25,7 @@ import { BottomControls } from "./components/BottomControls/BottomControls";
 import type { LibreRootState } from "./types/LibreRootState";
 
 import "./App.css";
+import { setSelectedLibrary } from "./redux/reducers/SelectedReducer";
 
 function App() {
   const navigate = useNavigate();
@@ -55,6 +56,7 @@ function App() {
             );
             isFetching.current = true;
             dispatch(fetchUserSettings());
+            // dispatch(setSelectedLibrary(appSettings.lastSelectedLibrary));
           }
         })
         .catch((error) => {
@@ -79,6 +81,7 @@ function App() {
                   );
                   isFetching.current = true;
                   dispatch(fetchUserSettings());
+                  // dispatch(setSelectedLibrary(appSettings.lastSelectedLibrary));
                 })
                 .catch((_) => {
                   navigate("/login");

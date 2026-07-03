@@ -21,7 +21,6 @@ export const Library: React.FC = () => {
 
   const libraryData = useSelector((state: LibreRootState) => state.library);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
-  const selections = useSelector((state: LibreRootState) => state.selections);
   const user = useSelector((state: LibreRootState) => state.user);
 
   useEffect(() => {
@@ -33,9 +32,9 @@ export const Library: React.FC = () => {
       <LibraryHeaderControls />
       <div className="booksContainer">
         {libraryData &&
-          libraryData[selections.selectedLibrary] &&
-          libraryData[selections.selectedLibrary].books &&
-          libraryData[selections.selectedLibrary].books
+          libraryData[appSettings.lastSelectedLibrary] &&
+          libraryData[appSettings.lastSelectedLibrary].books &&
+          libraryData[appSettings.lastSelectedLibrary].books
             .filter(
               (book: BookType) =>
                 !book.readingProgress?.isComplete ||

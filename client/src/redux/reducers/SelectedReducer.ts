@@ -3,16 +3,12 @@ import type { SelectType } from "@/types/SelectType";
 
 const initialState: SelectType = {
   selectedBooks: [],
-  selectedLibrary: 0,
 };
 
 const SelectSlice = createSlice({
   name: "selection",
   initialState: initialState,
   reducers: {
-    setSelectedLibrary(state, action: PayloadAction<number>) {
-      state.selectedLibrary = action.payload;
-    },
     selectBook(state, action: PayloadAction<number>) {
       state.selectedBooks.push(action.payload);
     },
@@ -27,10 +23,6 @@ const SelectSlice = createSlice({
   },
 });
 
-export const {
-  setSelectedLibrary,
-  selectBook,
-  unSelectBook,
-  clearSelectedBooks,
-} = SelectSlice.actions;
+export const { selectBook, unSelectBook, clearSelectedBooks } =
+  SelectSlice.actions;
 export default SelectSlice.reducer;

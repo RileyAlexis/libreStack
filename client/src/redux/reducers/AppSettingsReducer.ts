@@ -19,6 +19,7 @@ const initialState: AppSettings = {
     label: "Georgia",
     value: "Georgia, serif",
   },
+  lastSelectedLibrary: 0,
   availableReadingFonts: [
     { label: "Georgia", value: "Georgia, serif" },
     { label: "Arial", value: "Arial, sans-serif" },
@@ -99,8 +100,11 @@ const AppSettingsSlice = createSlice({
     setSortBy(state, action: PayloadAction<SortByType>) {
       state.libraryLayout.sortBy = action.payload;
     },
-    setAscending(State, action: PayloadAction<boolean>) {
-      State.libraryLayout.sortAscending = action.payload;
+    setAscending(state, action: PayloadAction<boolean>) {
+      state.libraryLayout.sortAscending = action.payload;
+    },
+    setLastSelectedLibrary(state, action: PayloadAction<number>) {
+      state.lastSelectedLibrary = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -120,5 +124,6 @@ export const {
   setLayout,
   setSortBy,
   setAscending,
+  setLastSelectedLibrary,
 } = AppSettingsSlice.actions;
 export default AppSettingsSlice.reducer;

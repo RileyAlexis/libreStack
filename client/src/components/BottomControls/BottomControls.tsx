@@ -1,10 +1,17 @@
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { api } from "@/api";
 import type { LibreRootState } from "@/types/LibreRootState";
+import type { AppDispatch } from "@/redux/store";
 
 // Actions
 import { setSelectedLibrary } from "@/redux/reducers/SelectedReducer";
-import { setCoverSize, setLayout } from "@/redux/reducers/AppSettingsReducer";
+import {
+  saveUserSettings,
+  setCoverSize,
+  setLastSelectedLibrary,
+  setLayout,
+} from "@/redux/reducers/AppSettingsReducer";
 
 // UI
 import {
@@ -27,20 +34,26 @@ import {
   MenubarSubContent,
   MenubarSubTrigger,
 } from "../ui/menubar";
+import { Dialog } from "../ui/dialog";
 import { Slider } from "../ui/slider";
 
 import "./BottomControls.css";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
+import { NewLibraryDialog } from "../Library/NewLibraryDialog";
 
 export const BottomControls: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
+  const [isCreateLibraryOpen, setIsCreateLibraryOpen] =
+    useState<boolean>(false);
   const library = useSelector((state: LibreRootState) => state.library);
   const selections = useSelector((state: LibreRootState) => state.selections);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
 
   const handleSelectLibrary = (index: number) => {
     dispatch(setSelectedLibrary(index));
+    dispatch(setLastSelectedLibrary(index));
+    dispatch(saveUserSettings(appSettings));
   };
 
   const handleScanLibrary = () => {
@@ -137,7 +150,9 @@ export const BottomControls: React.FC = () => {
             {library.map((item, index) => (
               <MenubarItem
                 className={
-                  index === selections.selectedLibrary ? "selectedMenu" : ""
+                  index === appSettings.lastSelectedLibrary
+                    ? "selectedMenu"
+                    : ""
                 }
                 variant="default"
                 key={index}
@@ -147,7 +162,7 @@ export const BottomControls: React.FC = () => {
               </MenubarItem>
             ))}
             <MenubarSeparator />
-            <MenubarItem>
+            <MenubarItem onClick={() => setIsCreateLibraryOpen(true)}>
               <PlusIcon />
               Create New Library
             </MenubarItem>
@@ -240,6 +255,9 @@ export const BottomControls: React.FC = () => {
           </MenubarContent>
         </MenubarMenu>
       </Menubar>
+      <Dialog open={isCreateLibraryOpen} onOpenChange={setIsCreateLibraryOpen}>
+        <NewLibraryDialog setIsCreateLibraryOpen={setIsCreateLibraryOpen} />
+      </Dialog>
     </div>
   );
 };

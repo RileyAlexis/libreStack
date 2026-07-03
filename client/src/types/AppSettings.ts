@@ -7,6 +7,7 @@ export interface AppSettings {
   readingFontSize: number;
   lineHeight: number;
   libraryLayout: LibraryLayout;
+  lastSelectedLibrary: number;
 }
 
 export interface LibraryLayout {

@@ -3,7 +3,6 @@ using Librestack.Database;
 using Librestack.Interfaces;
 
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace Librestack.Services;
 
@@ -54,6 +53,7 @@ public class UserSettingsService : IUserSettingsService
             existing.CoverHeight = settings.CoverHeight;
             existing.SortBy = settings.SortBy;
             existing.SortAscending = settings.SortAscending;
+            existing.LastSelectedLibrary = settings.LastSelectedLibrary;
         }
 
         await _db.SaveChangesAsync();

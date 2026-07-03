@@ -16,6 +16,7 @@ public class UserSettings
     public string ReadingFontValue { get; set; } = "inherit";
     public int ReadingFontSize { get; set; } = 16;
     public double LineHeight { get; set; } = 1.5;
+    public int LastSelectedLibrary { get; set; }
 
     // LibraryLayout
     public string LibraryBase { get; set; } = "Grid";
