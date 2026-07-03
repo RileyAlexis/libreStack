@@ -122,8 +122,15 @@ public class SeriesService : ISeriesService
 
         var hasBooks = await _db.Books.AnyAsync(b => b.SeriesId == existing.Id);
         if (hasBooks)
-            return Result.Failure("Cannot delete a series that has books associated with it", ErrorType.Conflict);
+        {
 
+            var seriesBooks = await _db.Books.Where(b => b.SeriesId == existing.Id).ToListAsync();
+            foreach (var book in seriesBooks)
+            {
+                book.SeriesId = null;
+                book.SeriesOrder = null;
+            }
+        }
         _db.Series.Remove(existing);
         await _db.SaveChangesAsync();
 
