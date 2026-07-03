@@ -25,6 +25,7 @@ import { BottomControls } from "./components/BottomControls/BottomControls";
 import type { LibreRootState } from "./types/LibreRootState";
 
 import "./App.css";
+import { SeriesManager } from "./components/SeriesManager/SeriesManager";
 
 function App() {
   const navigate = useNavigate();
@@ -151,6 +152,15 @@ function App() {
             <div className="pageContent">
               <HeaderBanner />
               <Library />
+            </div>
+          }
+        />
+        <Route
+          path="/series"
+          element={
+            <div className="pageContent">
+              <HeaderBanner />
+              <SeriesManager />
             </div>
           }
         />

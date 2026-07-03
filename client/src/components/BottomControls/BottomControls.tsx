@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
 import { api } from "@/api";
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { AppDispatch } from "@/redux/store";
@@ -20,6 +21,7 @@ import {
   PlusIcon,
   ScanSearch,
   ScanText,
+  SquareLibrary,
   UploadIcon,
 } from "lucide-react";
 import {
@@ -35,22 +37,21 @@ import {
 } from "../ui/menubar";
 import { Dialog } from "../ui/dialog";
 import { Slider } from "../ui/slider";
-
-import "./BottomControls.css";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
 import { NewLibraryDialog } from "../Library/NewLibraryDialog";
 
+import "./BottomControls.css";
+
 export const BottomControls: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const [isCreateLibraryOpen, setIsCreateLibraryOpen] =
     useState<boolean>(false);
   const library = useSelector((state: LibreRootState) => state.library);
-  const selections = useSelector((state: LibreRootState) => state.selections);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
 
   const handleSelectLibrary = (index: number) => {
-    dispatch(setSelectedLibrary(index));
     dispatch(setLastSelectedLibrary(index));
     dispatch(saveUserSettings(appSettings));
   };
@@ -58,7 +59,7 @@ export const BottomControls: React.FC = () => {
   const handleScanLibrary = () => {
     api
       .post(
-        `/LibraryScan/scanLibrary?libraryId=${library[selections.selectedLibrary].id}`,
+        `/LibraryScan/scanLibrary?libraryId=${library[appSettings.lastSelectedLibrary].id}`,
       )
       .then((response) => {
         console.log(response.data);
@@ -71,7 +72,7 @@ export const BottomControls: React.FC = () => {
   const handleMetadataRefresh = () => {
     api
       .get(
-        `metadata/refreshOpenLibraryData?libraryId=${library[selections.selectedLibrary].id}`,
+        `metadata/refreshOpenLibraryData?libraryId=${library[appSettings.lastSelectedLibrary].id}`,
       )
       .then((response) => {
         console.log(response.data);
@@ -84,7 +85,7 @@ export const BottomControls: React.FC = () => {
   const handleWikidataRefresh = () => {
     api
       .get(
-        `metadata/refreshWikidata?libraryId=${library[selections.selectedLibrary].id}`,
+        `metadata/refreshWikidata?libraryId=${library[appSettings.lastSelectedLibrary].id}`,
       )
       .then((response) => {
         console.log(response.data);
@@ -135,11 +136,21 @@ export const BottomControls: React.FC = () => {
     );
   };
 
+  const handleGoToSeries = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    navigate("/series");
+  };
+
+  const handleGoToLibrary = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    navigate("/library");
+  };
+
   return (
     <div className="bottomControlsContainer">
       <Menubar className="bottomMenuBar">
         <MenubarMenu>
-          <MenubarTrigger>
+          <MenubarTrigger onClick={(e) => handleGoToLibrary(e)}>
             <div className="bottomControlOption">
               <LandmarkIcon />
               <p>Library</p>
@@ -172,7 +183,7 @@ export const BottomControls: React.FC = () => {
           </MenubarContent>
         </MenubarMenu>
         <MenubarMenu>
-          <MenubarTrigger>
+          <MenubarTrigger onClick={(e) => handleGoToLibrary(e)}>
             <div className="bottomControlOption">
               <LibraryBig />
               <p>Manage</p>
@@ -252,6 +263,14 @@ export const BottomControls: React.FC = () => {
               </MenubarSubContent>
             </MenubarSub>
           </MenubarContent>
+        </MenubarMenu>
+        <MenubarMenu>
+          <MenubarTrigger onClick={(e) => handleGoToSeries(e)}>
+            <div className="bottomControlOption">
+              <SquareLibrary />
+              <p>Series</p>
+            </div>
+          </MenubarTrigger>
         </MenubarMenu>
       </Menubar>
       <Dialog open={isCreateLibraryOpen} onOpenChange={setIsCreateLibraryOpen}>

@@ -1,7 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
 import type { LibreRootState } from "@/types/LibreRootState";
-import { setCoverSize } from "@/redux/reducers/AppSettingsReducer";
-import { setSelectedLibrary } from "@/redux/reducers/SelectedReducer";
+import {
+  setCoverSize,
+  setLastSelectedLibrary,
+} from "@/redux/reducers/AppSettingsReducer";
 import "./LibraryControls.css";
 
 //UI
@@ -23,7 +25,6 @@ export const LibraryControls: React.FC = () => {
   const dispatch = useDispatch();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const library = useSelector((state: LibreRootState) => state.library);
-  const selections = useSelector((state: LibreRootState) => state.selections);
 
   const handleChangeCoverSize = (value: number | readonly number[], _: any) => {
     const num = Array.isArray(value) ? value[0] : value;
@@ -31,13 +32,13 @@ export const LibraryControls: React.FC = () => {
   };
 
   const handleSelectLibrary = (index: number) => {
-    dispatch(setSelectedLibrary(index));
+    dispatch(setLastSelectedLibrary(index));
   };
 
   const handleMetadataRefresh = () => {
     api
       .get(
-        `metadata/refreshOpenLibraryData?libraryId=${library[selections.selectedLibrary].id}`,
+        `metadata/refreshOpenLibraryData?libraryId=${library[appSettings.lastSelectedLibrary].id}`,
       )
       .then((response) => {
         console.log(response.data);
@@ -50,7 +51,7 @@ export const LibraryControls: React.FC = () => {
   const handleWikidataRefresh = () => {
     api
       .get(
-        `metadata/refreshWikidata?libraryId=${library[selections.selectedLibrary].id}`,
+        `metadata/refreshWikidata?libraryId=${library[appSettings.lastSelectedLibrary].id}`,
       )
       .then((response) => {
         console.log(response.data);
@@ -63,7 +64,7 @@ export const LibraryControls: React.FC = () => {
   const handleScanLibrary = () => {
     api
       .post(
-        `/LibraryScan/scanLibrary?libraryId=${library[selections.selectedLibrary].id}`,
+        `/LibraryScan/scanLibrary?libraryId=${library[appSettings.lastSelectedLibrary].id}`,
       )
       .then((response) => {
         console.log(response.data);
@@ -81,7 +82,7 @@ export const LibraryControls: React.FC = () => {
           {library.map((item, index) => (
             <MenubarItem
               className={
-                index === selections.selectedLibrary ? "selectedMenu" : ""
+                index === appSettings.lastSelectedLibrary ? "selectedMenu" : ""
               }
               variant="default"
               key={index}

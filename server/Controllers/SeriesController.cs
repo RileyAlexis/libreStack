@@ -32,12 +32,21 @@ public class SeriesController : ControllerBase
         return Ok(result.Value);
     }
 
+    public record UpdateSeriesRequest(int SeriesId, string SeriesTitle, int SeriesTotal);
+
     [HttpPatch]
     [Authorize]
-    public async Task<IActionResult> UpdateUserSeries(ApiSeries apiSeries)
+    public async Task<IActionResult> UpdateUserSeries([FromBody] UpdateSeriesRequest seriesRequest)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null) return Unauthorized();
+
+        var apiSeries = new ApiSeries
+        {
+            SeriesTitle = seriesRequest.SeriesTitle,
+            SeriesTotal = seriesRequest.SeriesTotal,
+            Id = seriesRequest.SeriesId
+        };
 
         var result = await _iSeriesService.UpdateSeries(apiSeries, userId);
         if (!result.IsSuccess)
@@ -46,17 +55,19 @@ public class SeriesController : ControllerBase
         return Ok(result.Value);
     }
 
+    public record CreateNewSeriesRequest(string seriesTitle, int seriesTotal);
+
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> CreateNewSeries(string seriesTitle, int seriesTotal)
+    public async Task<IActionResult> CreateNewSeries([FromBody] CreateNewSeriesRequest newSeries)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null) return Unauthorized();
 
         var apiSeries = new ApiSeries
         {
-            SeriesTitle = seriesTitle,
-            SeriesTotal = seriesTotal
+            SeriesTitle = newSeries.seriesTitle,
+            SeriesTotal = newSeries.seriesTotal
         };
 
         var result = await _iSeriesService.CreateNewSeries(apiSeries, userId);
