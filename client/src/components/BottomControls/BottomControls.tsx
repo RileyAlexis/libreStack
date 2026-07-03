@@ -5,7 +5,6 @@ import type { LibreRootState } from "@/types/LibreRootState";
 import type { AppDispatch } from "@/redux/store";
 
 // Actions
-import { setSelectedLibrary } from "@/redux/reducers/SelectedReducer";
 import {
   saveUserSettings,
   setCoverSize,

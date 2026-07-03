@@ -271,7 +271,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
               <SelectGroup>
                 {seriesList.map((item) => (
                   <SelectItem key={item.id} value={item.seriesTitle}>
-                    {item.seriesTitle}
+                    {item.seriesTitle} - {item.bookCount}
                   </SelectItem>
                 ))}
               </SelectGroup>

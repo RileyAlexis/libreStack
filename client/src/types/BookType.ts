@@ -18,6 +18,7 @@ export interface SeriesType {
   id: number;
   seriesTitle: string;
   seriesTotal: number;
+  bookCount: number;
 }
 
 export interface BookType {

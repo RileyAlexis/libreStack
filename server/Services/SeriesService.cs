@@ -145,7 +145,8 @@ public class SeriesService : ISeriesService
             {
                 Id = s.Id,
                 SeriesTitle = s.SeriesTitle!,
-                SeriesTotal = s.SeriesTotal
+                SeriesTotal = s.SeriesTotal,
+                BookCount = s.Books.Count
             })
             .ToListAsync();
 

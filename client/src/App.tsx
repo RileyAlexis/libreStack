@@ -25,7 +25,6 @@ import { BottomControls } from "./components/BottomControls/BottomControls";
 import type { LibreRootState } from "./types/LibreRootState";
 
 import "./App.css";
-import { setSelectedLibrary } from "./redux/reducers/SelectedReducer";
 
 function App() {
   const navigate = useNavigate();
