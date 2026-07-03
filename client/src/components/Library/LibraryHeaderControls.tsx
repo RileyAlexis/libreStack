@@ -12,7 +12,11 @@ import {
   sortLibraryByTitle,
 } from "@/redux/reducers/LibraryReducer";
 import { clearSelectedBooks } from "@/redux/reducers/SelectedReducer";
-import { setSortBy, setAscending } from "@/redux/reducers/AppSettingsReducer";
+import {
+  setSortBy,
+  setAscending,
+  setIsSyncing,
+} from "@/redux/reducers/AppSettingsReducer";
 
 // UI
 import {
@@ -54,21 +58,21 @@ export const LibraryHeaderControls: React.FC = () => {
     if (value === "Author") {
       dispatch(
         sortLibraryByAuthor({
-          libraryId: library[selections.selectedLibrary].id,
+          libraryId: library[appSettings.lastSelectedLibrary].id,
           ascending: asc,
         }),
       );
     } else if (value === "Title") {
       dispatch(
         sortLibraryByTitle({
-          libraryId: library[selections.selectedLibrary].id,
+          libraryId: library[appSettings.lastSelectedLibrary].id,
           ascending: asc,
         }),
       );
     } else if (value === "Last Read") {
       dispatch(
         sortLibraryByLastRead({
-          libraryId: library[selections.selectedLibrary].id,
+          libraryId: library[appSettings.lastSelectedLibrary].id,
         }),
       );
     }
@@ -123,6 +127,7 @@ export const LibraryHeaderControls: React.FC = () => {
   };
 
   const handleQueryOpenLibrary = async () => {
+    dispatch(setIsSyncing(true));
     const results = await Promise.allSettled(
       selections.selectedBooks.map((bookId) =>
         api.get(`metadata/queryOpenLibraryData?bookId=${bookId}`),
@@ -136,10 +141,12 @@ export const LibraryHeaderControls: React.FC = () => {
         failures,
       );
     }
+    dispatch(setIsSyncing(false));
     dispatch(fetchLibraryData());
   };
 
   const handleQueryWikidata = async () => {
+    dispatch(setIsSyncing(true));
     const results = await Promise.allSettled(
       selections.selectedBooks.map((bookId) =>
         api.get(`metadata/queryWikidata?bookId=${bookId}`),
@@ -151,6 +158,7 @@ export const LibraryHeaderControls: React.FC = () => {
       console.error(`${failures.length} wikidata requests failed`, failures);
     }
     dispatch(fetchLibraryData());
+    dispatch(setIsSyncing(false));
   };
 
   const handleDeleteSelections = async () => {
@@ -199,6 +207,7 @@ export const LibraryHeaderControls: React.FC = () => {
                 <Button
                   variant="outline"
                   size="xs"
+                  disabled={appSettings.isSyncing}
                   onClick={handleQueryOpenLibrary}
                 >
                   Query Open Library
@@ -206,6 +215,7 @@ export const LibraryHeaderControls: React.FC = () => {
                 <Button
                   variant="outline"
                   size="xs"
+                  disabled={appSettings.isSyncing}
                   onClick={handleQueryWikidata}
                 >
                   Query Wikidata

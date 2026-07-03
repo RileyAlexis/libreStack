@@ -8,6 +8,7 @@ export interface AppSettings {
   lineHeight: number;
   libraryLayout: LibraryLayout;
   lastSelectedLibrary: number;
+  isSyncing: boolean;
 }
 
 export interface LibraryLayout {

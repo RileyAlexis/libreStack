@@ -294,10 +294,10 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
               {appSettings.libraryLayout.showTitles && <h5>{book.title}</h5>}
               {appSettings.libraryLayout.showAuthors && <h6>{book.author}</h6>}
               {appSettings.libraryLayout.showSeries &&
-                book.series?.seriesTitle !== null &&
-                book.series?.seriesTitle !== "" && (
+                book.seriesId !== null && (
                   <p>
-                    {book.series?.seriesTitle} - {book.seriesOrder}
+                    {book.series?.seriesTitle}
+                    {!book.seriesOrder ? "" : ` - ${book.seriesOrder}`}
                   </p>
                 )}
             </div>

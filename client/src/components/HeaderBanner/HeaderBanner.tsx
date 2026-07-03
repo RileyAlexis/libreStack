@@ -10,6 +10,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { LoginScreen } from "../LoginScreen/LoginScreen";
 import { MainMenu } from "./MainMenu";
 import "./HeaderBanner.css";
+import { BookSpinner } from "../BookSpinner/BookSpinner";
 
 export const HeaderBanner: React.FC = () => {
   const navigate = useNavigate();
@@ -43,10 +44,9 @@ export const HeaderBanner: React.FC = () => {
         <h1 onClick={handleNavigateToMain} style={{ cursor: "pointer" }}>
           LibreStack
         </h1>
-        {/* {location.pathname === "/library" && !isTouchDevice && (
-          <LibraryControls />
-        )} */}
+
         <div className="menuContainer">
+          {appSettings.isSyncing && <BookSpinner />}
           <MainMenu setIsLoginOpen={setIsLoginOpen} />
         </div>
       </div>

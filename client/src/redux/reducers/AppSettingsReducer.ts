@@ -19,6 +19,7 @@ const initialState: AppSettings = {
     label: "Georgia",
     value: "Georgia, serif",
   },
+  isSyncing: false,
   lastSelectedLibrary: 0,
   availableReadingFonts: [
     { label: "Georgia", value: "Georgia, serif" },
@@ -106,6 +107,9 @@ const AppSettingsSlice = createSlice({
     setLastSelectedLibrary(state, action: PayloadAction<number>) {
       state.lastSelectedLibrary = action.payload;
     },
+    setIsSyncing(state, action: PayloadAction<boolean>) {
+      state.isSyncing = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchUserSettings.fulfilled, (_, action) => {
@@ -125,5 +129,6 @@ export const {
   setSortBy,
   setAscending,
   setLastSelectedLibrary,
+  setIsSyncing,
 } = AppSettingsSlice.actions;
 export default AppSettingsSlice.reducer;

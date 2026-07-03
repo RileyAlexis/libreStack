@@ -45,6 +45,8 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
   const [book, setBook] = useState<BookType>();
   const [error, setError] = useState<string | null>(null);
   const [isAddingSeries, setIsAddingSeries] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [isWikiSyncing, setIsWikiSyncing] = useState(false);
 
   useEffect(() => {
     api
@@ -128,6 +130,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
 
   const handleOpenLibrary = () => {
     setIsOpenLibLoading(true);
+    setIsSyncing(true);
     setError(null);
     api
       .get(`metadata/queryOpenLibraryData?bookId=${bookId}`)
@@ -137,10 +140,12 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
           .then((response) => {
             setBook(response.data.value);
             setIsOpenLibLoading(false);
+            setIsSyncing(false);
           })
           .catch((error) => {
             console.log(error);
             setIsOpenLibLoading(false);
+            setIsSyncing(false);
           });
       })
       .catch((error) => {
@@ -148,15 +153,18 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
           error.response?.data?.error || "Failed to fetch Open Library data.",
         );
         setIsOpenLibLoading(false);
+        setIsSyncing(false);
         console.error(error);
       });
   };
 
   const handleWikidata = () => {
+    setIsWikiSyncing(true);
     setError(null);
     api
       .get(`metadata/queryWikidata?bookId=${bookId}`)
       .then(() => {
+        setIsWikiSyncing(false);
         api
           .get(`Book/getBookEntry?id=${bookId}`)
           .then((response) => setBook(response.data.value))
@@ -167,6 +175,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
           error.response?.data?.error || "Failed to fetch Wikidata data.",
         );
         console.error(error);
+        setIsWikiSyncing(false);
       });
   };
 
@@ -307,18 +316,32 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
         <div className="metadataButtonsContainer">
           <Label htmlFor="metadataButtons">Get Metadata</Label>
           <ButtonGroup id="metadataButtons">
-            <Button variant="secondary" onClick={handleOpenLibrary}>
-              {isOpenLibLoading && (
+            <Button
+              variant="secondary"
+              onClick={handleOpenLibrary}
+              disabled={isSyncing}
+            >
+              {isSyncing && (
                 <>
                   <Spinner data-icon="inline-start" />
                   Loading
                 </>
               )}
-              {!isOpenLibLoading && <>Open Library</>}
+              {!isSyncing && <>Open Library</>}
             </Button>
             <ButtonGroupSeparator />
-            <Button variant="secondary" onClick={handleWikidata}>
-              Wikidata
+            <Button
+              variant="secondary"
+              onClick={handleWikidata}
+              disabled={isWikiSyncing}
+            >
+              {isWikiSyncing && (
+                <>
+                  <Spinner data-icon="inline-start" />
+                  Loading
+                </>
+              )}
+              {!isWikiSyncing && <>Wikidata</>}
             </Button>
           </ButtonGroup>
           {error && (

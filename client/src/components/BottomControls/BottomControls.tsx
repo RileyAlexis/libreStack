@@ -9,6 +9,7 @@ import type { AppDispatch } from "@/redux/store";
 import {
   saveUserSettings,
   setCoverSize,
+  setIsSyncing,
   setLastSelectedLibrary,
   setLayout,
 } from "@/redux/reducers/AppSettingsReducer";
@@ -70,28 +71,34 @@ export const BottomControls: React.FC = () => {
   };
 
   const handleMetadataRefresh = () => {
+    dispatch(setIsSyncing(true));
     api
       .get(
         `metadata/refreshOpenLibraryData?libraryId=${library[appSettings.lastSelectedLibrary].id}`,
       )
       .then((response) => {
         console.log(response.data);
+        dispatch(setIsSyncing(false));
       })
       .catch((error) => {
         console.error(error);
+        dispatch(setIsSyncing(false));
       });
   };
 
   const handleWikidataRefresh = () => {
+    dispatch(setIsSyncing(true));
     api
       .get(
         `metadata/refreshWikidata?libraryId=${library[appSettings.lastSelectedLibrary].id}`,
       )
       .then((response) => {
         console.log(response.data);
+        dispatch(setIsSyncing(false));
       })
       .catch((error) => {
         console.error(error);
+        dispatch(setIsSyncing(false));
       });
   };
 
@@ -190,11 +197,17 @@ export const BottomControls: React.FC = () => {
             </div>
           </MenubarTrigger>
           <MenubarContent className="menubarContent">
-            <MenubarItem onClick={handleMetadataRefresh}>
+            <MenubarItem
+              onClick={handleMetadataRefresh}
+              disabled={appSettings.isSyncing}
+            >
               <ScanText />
               Refresh Open Library Metadata
             </MenubarItem>
-            <MenubarItem onClick={handleWikidataRefresh}>
+            <MenubarItem
+              onClick={handleWikidataRefresh}
+              disabled={appSettings.isSyncing}
+            >
               <ScanText />
               Refresh Wikidata Metadata
             </MenubarItem>
