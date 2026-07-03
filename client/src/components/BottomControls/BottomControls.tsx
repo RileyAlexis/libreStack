@@ -125,13 +125,7 @@ export const BottomControls: React.FC = () => {
 
   return (
     <div className="bottomControlsContainer">
-      <Menubar
-        style={{
-          paddingTop: "2.0em",
-          paddingBottom: "2.0em",
-          border: "none",
-        }}
-      >
+      <Menubar className="bottomMenuBar">
         <MenubarMenu>
           <MenubarTrigger>
             <div className="bottomControlOption">
@@ -139,7 +133,7 @@ export const BottomControls: React.FC = () => {
               <p>Library</p>
             </div>
           </MenubarTrigger>
-          <MenubarContent>
+          <MenubarContent className="menubarContent">
             {library.map((item, index) => (
               <MenubarItem
                 className={
@@ -170,7 +164,7 @@ export const BottomControls: React.FC = () => {
               <p>Manage</p>
             </div>
           </MenubarTrigger>
-          <MenubarContent>
+          <MenubarContent className="menubarContent">
             <MenubarItem onClick={handleMetadataRefresh}>
               <ScanText />
               Refresh Open Library Metadata
@@ -192,8 +186,8 @@ export const BottomControls: React.FC = () => {
               <p>Layout</p>
             </div>
           </MenubarTrigger>
-          <MenubarContent>
-            <MenubarItem>
+          <MenubarContent className="menubarContent">
+            <MenubarItem className="menubarSwitch">
               <Label htmlFor="showComplete">Show Read</Label>
               <Switch
                 id="showComplete"
@@ -201,7 +195,7 @@ export const BottomControls: React.FC = () => {
                 onCheckedChange={handleShowComplete}
               />
             </MenubarItem>
-            <MenubarItem>
+            <MenubarItem className="menubarSwitch">
               <Label htmlFor="showComplete">Show Titles</Label>
               <Switch
                 id="showComplete"
@@ -209,7 +203,7 @@ export const BottomControls: React.FC = () => {
                 onCheckedChange={handleShowTitles}
               />
             </MenubarItem>
-            <MenubarItem>
+            <MenubarItem className="menubarSwitch">
               <Label htmlFor="showComplete">Show Authors</Label>
               <Switch
                 id="showComplete"
@@ -217,7 +211,7 @@ export const BottomControls: React.FC = () => {
                 onCheckedChange={handleShowAuthors}
               />
             </MenubarItem>
-            <MenubarItem>
+            <MenubarItem className="menubarSwitch">
               <Label htmlFor="showComplete">Show Series</Label>
               <Switch
                 id="showComplete"
@@ -228,21 +222,19 @@ export const BottomControls: React.FC = () => {
 
             <MenubarSub>
               <MenubarSubTrigger>Cover Size</MenubarSubTrigger>
-              <MenubarSubContent>
-                <div className="libraryControlSlider">
-                  <Slider
-                    id="coverSlider"
-                    className="slider-track"
-                    defaultValue={
-                      appSettings.libraryLayout.libraryCoverSize.width
-                    }
-                    value={appSettings.libraryLayout.libraryCoverSize.width}
-                    onValueChange={handleChangeCoverSize}
-                    step={10}
-                    min={80}
-                    max={500}
-                  />
-                </div>
+              <MenubarSubContent className="menubarSubContent">
+                <Slider
+                  id="coverSlider"
+                  className="mx-auto w-full max-w-xs"
+                  defaultValue={[
+                    appSettings.libraryLayout.libraryCoverSize.width,
+                  ]}
+                  value={[appSettings.libraryLayout.libraryCoverSize.width]}
+                  onValueChange={handleChangeCoverSize}
+                  step={10}
+                  min={80}
+                  max={500}
+                />
               </MenubarSubContent>
             </MenubarSub>
           </MenubarContent>
