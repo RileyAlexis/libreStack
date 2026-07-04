@@ -111,6 +111,14 @@ public class OpenLibraryService : IOpenLibraryService
                 : desc.TryGetProperty("value", out var val) ? val.GetString() : null
             : null;
 
+        var coverId = root.TryGetProperty("covers", out var cv)
+            && cv.ValueKind == JsonValueKind.Array
+            && cv.GetArrayLength() > 0
+            && cv[0].ValueKind == JsonValueKind.Number
+            && cv[0].GetInt32() > 0
+                ? cv[0].GetInt32().ToString()
+                : null;
+
         var oclc = root.TryGetProperty("identifiers", out var idents3) &&
             idents3.TryGetProperty("oclc", out var idents13) &&
             idents13.GetArrayLength() > 0 ? idents13[0].GetString() : null;
@@ -124,6 +132,7 @@ public class OpenLibraryService : IOpenLibraryService
         if (author != null && string.IsNullOrWhiteSpace(book.Author)) book.Author = author;
         if (authorId != null) book.OpenLibraryAuthorId = authorId;
         if (description != null) book.Description = description;
+        if (coverId != null) book.OpenLibraryCoverId = coverId;
         if (series != null)
         {
             var apiSeries = _bookParsing.NormalizeSeriesTitle(series);
@@ -216,6 +225,14 @@ public class OpenLibraryService : IOpenLibraryService
                 : desc.TryGetProperty("value", out var val) ? val.GetString() : null
             : null;
 
+        var coverId = root.TryGetProperty("covers", out var cv)
+            && cv.ValueKind == JsonValueKind.Array
+            && cv.GetArrayLength() > 0
+            && cv[0].ValueKind == JsonValueKind.Number
+            && cv[0].GetInt32() > 0
+                ? cv[0].GetInt32().ToString()
+                : null;
+
         var publishDate = root.TryGetProperty("publish_date", out var pub) ? pub.GetString() : null;
 
         if (title != null && string.IsNullOrWhiteSpace(book.Title)) book.Title = title;
@@ -232,6 +249,7 @@ public class OpenLibraryService : IOpenLibraryService
             book.SeriesOrder = int.TryParse(seriesPosition, out var order) ? order : null;
         if (wikiData != null) book.WikidataId = wikiData;
         if (description != null) book.Description = description;
+        if (coverId != null) book.OpenLibraryCoverId = coverId;
         if (publishDate != null) book.PublishDate = publishDate;
         if (isbn10 != null) book.ISBN = isbn10;
         if (isbn13 != null) book.ISBN13 = isbn13;
@@ -291,6 +309,14 @@ public class OpenLibraryService : IOpenLibraryService
                 : desc.TryGetProperty("value", out var val) ? val.GetString() : null
             : null;
 
+        var coverId = root.TryGetProperty("covers", out var cv)
+            && cv.ValueKind == JsonValueKind.Array
+            && cv.GetArrayLength() > 0
+            && cv[0].ValueKind == JsonValueKind.Number
+            && cv[0].GetInt32() > 0
+                ? cv[0].GetInt32().ToString()
+                : null;
+
         var publishDate = root.TryGetProperty("publish_date", out var pub) ? pub.GetString() : null;
 
         var authorKey = (root.TryGetProperty("author_key", out var ak) && ak.GetArrayLength() > 0) ? ak[0].GetString() : null;
@@ -310,6 +336,7 @@ public class OpenLibraryService : IOpenLibraryService
             book.Series.UserId = book.UserId;
         }
         if (description != null) book.Description = description;
+        if (coverId != null) book.OpenLibraryCoverId = coverId;
         if (publishDate != null) book.PublishDate = publishDate;
         if (isbn10 != null) book.ISBN = isbn10;
         if (isbn13 != null) book.ISBN13 = isbn13;
@@ -390,5 +417,45 @@ public class OpenLibraryService : IOpenLibraryService
             ? Result.Success()
             : Result.Failure($"Some books failed to update: {string.Join("; ", errors)}", ErrorType.BadRequest);
 
+    }
+
+    public async Task<Result> FetchBookCover(string userId, int bookId)
+    {
+        var book = await _db.Books.FirstOrDefaultAsync(b => b.Id == bookId && b.UserId == userId);
+        if (book is null)
+            return Result.Failure("Book Not Found", ErrorType.NotFound);
+
+        string searchBy;
+        string dataPoint = book.OpenLibraryCoverId ?? book.OpenLibraryWorkId ?? string.Empty;
+
+        if (string.IsNullOrEmpty(dataPoint))
+            return Result.Failure("Open Library Ids not found", ErrorType.NotFound);
+
+        if (book.OpenLibraryCoverId is null)
+            searchBy = "olid";
+        else
+            searchBy = "id";
+
+        var url = $"https://covers.openlibrary.org/b/{searchBy}/{book.OpenLibraryCoverId}-L.jpg?default=false";
+
+        _logger.LogInformation($"Fetching Open Library Cover at {url}");
+
+        var client = await CreateClient();
+        await RateLimit();
+
+        var response = await client.GetAsync(url);
+        if (!response.IsSuccessStatusCode)
+            return Result.Failure(
+                $"Open Library Request Failed: {response.StatusCode} - {response.ReasonPhrase}",
+                ErrorType.Unexpected);
+
+        var imageBytes = await response.Content.ReadAsByteArrayAsync();
+        if (imageBytes.Length == 0)
+            return Result.Failure("Open Library returned an empty image.", ErrorType.Unexpected);
+
+        book.CoverImage = imageBytes;
+        await _db.SaveChangesAsync();
+
+        return Result.Success();
     }
 }

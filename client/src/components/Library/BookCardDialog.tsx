@@ -196,9 +196,24 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
       .finally(() => setIsWikiSyncing(false));
   };
 
+  const handleFetchCover = () => {
+    setIsSyncing(true);
+    setError(null);
+    api
+      .get(`metadata/fetchOpenLibraryCover?bookId=${bookId}`)
+      .then((_) => {
+        dispatch(fetchLibraryData());
+      })
+      .catch((error) => {
+        setError(
+          error.response?.data?.error || "Failed to fetch Wikidata data.",
+        );
+        console.error(error);
+      })
+      .finally(() => setIsSyncing(false));
+  };
+
   // -- Field renderers -----------------------------------------------------------
-  // Each renderer only knows how to draw ONE kind of field. FIELD_ORDER decides
-  // which ones appear and in what order — see render loop at the bottom.
 
   const renderTextField = (id: EditableField, label: string) => (
     <div key={id} className="grid gap-1.5">
@@ -356,6 +371,19 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
                 </>
               ) : (
                 "Wikidata"
+              )}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleFetchCover}
+              disabled={isSyncing}
+            >
+              {isSyncing ? (
+                <>
+                  <Spinner data-icon="inline-start" />
+                </>
+              ) : (
+                "Fetch Cover"
               )}
             </Button>
           </ButtonGroup>

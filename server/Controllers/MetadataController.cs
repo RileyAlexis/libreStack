@@ -32,6 +32,20 @@ public class MetadataController : ControllerBase
         return Ok();
     }
 
+    [HttpGet("fetchOpenLibraryCover")]
+    [Authorize]
+    public async Task<IActionResult> FetchOpenLibraryCover(int bookId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null) return Unauthorized();
+
+        var result = await _iOpenLibraryService.FetchBookCover(userId, bookId);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok();
+    }
+
     [HttpGet("refreshOpenLibraryData")]
     [Authorize]
     public async Task<IActionResult> RefreshOpenLibrarydata(int libraryId)

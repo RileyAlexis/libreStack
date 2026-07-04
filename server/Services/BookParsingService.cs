@@ -20,7 +20,6 @@ public class BookParsingService : IBookParsingService
         cleaned = Regex.Replace(cleaned, @"\s+", " ").Trim();
 
         // 2. Cut at the first "edition/format" noise phrase.
-        //    "Shift Omnibus Edition" -> "Shift"
         var noisePhrases = new[]
         {
         "omnibus edition", "omnibus",
@@ -34,12 +33,11 @@ public class BookParsingService : IBookParsingService
         cleaned = CutAtFirstMatch(cleaned, noisePhrases);
 
         // 3. Hard title/series separator: "--" or em dash.
-        //    "A Prayer for the Crown-Shy--A Monk and Robot Book" -> "A Prayer for the Crown-Shy"
+
         cleaned = CutAtFirstOccurrence(cleaned, new[] { "--", "—" });
 
         // 4. "Series - Number - Title" pattern: 2+ " - " separators means
         //    the real title is the LAST segment.
-        //    "Star Trek: Section 31 - 2 - Rogue" -> "Rogue"
         var dashSegments = cleaned.Split(" - ");
         if (dashSegments.Length >= 3)
         {
@@ -51,8 +49,7 @@ public class BookParsingService : IBookParsingService
             cleaned = dashSegments[0].Trim();
         }
 
-        // 5. "Title: Subtitle" pattern (only reached if step 4 didn't already resolve it).
-        //    "Clown Girl: A Novel" -> "Clown Girl"
+        // 5. "Title: Subtitle" pattern
         var colonIdx = cleaned.IndexOf(": ", StringComparison.Ordinal);
         if (colonIdx > 0)
             cleaned = cleaned[..colonIdx];
