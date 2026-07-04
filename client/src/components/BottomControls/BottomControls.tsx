@@ -60,6 +60,7 @@ export const BottomControls: React.FC = () => {
   };
 
   const handleScanLibrary = () => {
+    dispatch(setIsSyncing(true));
     api
       .post(
         `/LibraryScan/scanLibrary?libraryId=${library[appSettings.lastSelectedLibrary].id}`,
@@ -69,6 +70,9 @@ export const BottomControls: React.FC = () => {
       })
       .catch((error) => {
         console.error(error.response.data);
+      })
+      .finally(() => {
+        dispatch(setIsSyncing(false));
       });
   };
 

@@ -177,6 +177,7 @@ public class BookService : IBookService
         existing.OpenLibraryAuthorId = book.OpenLibraryAuthorId;
         existing.OpenLibraryEditionId = book.OpenLibraryEditionId;
         existing.OpenLibraryWorkId = book.OpenLibraryWorkId;
+        existing.OpenLibraryCoverId = book.OpenLibraryCoverId;
         existing.WikidataId = book.WikidataId;
         existing.Description = book.Description;
 

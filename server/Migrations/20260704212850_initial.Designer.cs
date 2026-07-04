@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace libreStack.Migrations
 {
     [DbContext(typeof(LibrestackDbContext))]
-    [Migration("20260702192829_seriesUser")]
-    partial class seriesUser
+    [Migration("20260704212850_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -371,9 +371,9 @@ namespace libreStack.Migrations
                     b.HasKey("Id")
                         .HasName("pk_series");
 
-                    b.HasIndex("SeriesTitle")
+                    b.HasIndex("UserId", "SeriesTitle")
                         .IsUnique()
-                        .HasDatabaseName("ix_series_series_title");
+                        .HasDatabaseName("ix_series_user_id_series_title");
 
                     b.ToTable("series", (string)null);
                 });
@@ -394,6 +394,10 @@ namespace libreStack.Migrations
                     b.Property<int>("CoverWidth")
                         .HasColumnType("integer")
                         .HasColumnName("cover_width");
+
+                    b.Property<int>("LastSelectedLibrary")
+                        .HasColumnType("integer")
+                        .HasColumnName("last_selected_library");
 
                     b.Property<string>("LibraryBase")
                         .IsRequired()

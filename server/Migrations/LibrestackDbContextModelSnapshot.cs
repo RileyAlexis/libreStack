@@ -244,6 +244,10 @@ namespace libreStack.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("AttemptSeriesParsing")
+                        .HasColumnType("boolean")
+                        .HasColumnName("attempt_series_parsing");
+
                     b.Property<bool>("IsSetupComplete")
                         .HasColumnType("boolean")
                         .HasColumnName("is_setup_complete");

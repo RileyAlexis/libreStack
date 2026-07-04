@@ -5,25 +5,25 @@
 namespace libreStack.Migrations
 {
     /// <inheritdoc />
-    public partial class selectedLibrary : Migration
+    public partial class parsing : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "last_selected_library",
-                table: "user_settings",
-                type: "integer",
+            migrationBuilder.AddColumn<bool>(
+                name: "attempt_series_parsing",
+                table: "libre_stack_config",
+                type: "boolean",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: false);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "last_selected_library",
-                table: "user_settings");
+                name: "attempt_series_parsing",
+                table: "libre_stack_config");
         }
     }
 }

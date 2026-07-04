@@ -119,6 +119,7 @@ namespace libreStack.Migrations
                 {
                     id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    user_id = table.Column<string>(type: "text", nullable: false),
                     series_title = table.Column<string>(type: "text", nullable: true),
                     series_total = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -247,6 +248,7 @@ namespace libreStack.Migrations
                     reading_font_value = table.Column<string>(type: "text", nullable: false),
                     reading_font_size = table.Column<int>(type: "integer", nullable: false),
                     line_height = table.Column<double>(type: "double precision", nullable: false),
+                    last_selected_library = table.Column<int>(type: "integer", nullable: false),
                     library_base = table.Column<string>(type: "text", nullable: false),
                     show_titles = table.Column<bool>(type: "boolean", nullable: false),
                     show_authors = table.Column<bool>(type: "boolean", nullable: false),
@@ -479,9 +481,9 @@ namespace libreStack.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "ix_series_series_title",
+                name: "ix_series_user_id_series_title",
                 table: "series",
-                column: "series_title",
+                columns: new[] { "user_id", "series_title" },
                 unique: true);
 
             migrationBuilder.CreateIndex(

@@ -10,4 +10,5 @@ public class LibreStackConfig
     public required bool IsSetupComplete { get; set; } = false;
     public bool ScanLibrariesService { get; set; } = true;
     public int LibraryScanInterval { get; set; } = 15;
+    public bool AttemptSeriesParsing { get; set; } = false;
 }

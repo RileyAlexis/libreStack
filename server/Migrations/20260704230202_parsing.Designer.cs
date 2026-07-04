@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace libreStack.Migrations
 {
     [DbContext(typeof(LibrestackDbContext))]
-    [Migration("20260702193239_userseries")]
-    partial class userseries
+    [Migration("20260704230202_parsing")]
+    partial class parsing
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -247,6 +247,10 @@ namespace libreStack.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("AttemptSeriesParsing")
+                        .HasColumnType("boolean")
+                        .HasColumnName("attempt_series_parsing");
+
                     b.Property<bool>("IsSetupComplete")
                         .HasColumnType("boolean")
                         .HasColumnName("is_setup_complete");
@@ -394,6 +398,10 @@ namespace libreStack.Migrations
                     b.Property<int>("CoverWidth")
                         .HasColumnType("integer")
                         .HasColumnName("cover_width");
+
+                    b.Property<int>("LastSelectedLibrary")
+                        .HasColumnType("integer")
+                        .HasColumnName("last_selected_library");
 
                     b.Property<string>("LibraryBase")
                         .IsRequired()
