@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using Librestack.Interfaces;
-using Librestack.Models;
 using Librestack.Models.APIModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

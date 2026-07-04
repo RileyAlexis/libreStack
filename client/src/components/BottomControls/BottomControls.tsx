@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { api } from "@/api";
@@ -43,12 +43,14 @@ import { Label } from "../ui/label";
 import { NewLibraryDialog } from "../Library/NewLibraryDialog";
 
 import "./BottomControls.css";
+import { Input } from "../ui/input";
 
 export const BottomControls: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const [isCreateLibraryOpen, setIsCreateLibraryOpen] =
     useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const library = useSelector((state: LibreRootState) => state.library);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
 
@@ -99,6 +101,27 @@ export const BottomControls: React.FC = () => {
       .catch((error) => {
         console.error(error);
         dispatch(setIsSyncing(false));
+      });
+  };
+
+  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("Handle upload called");
+
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    api
+      .post("/Book/addBookEntry", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        params: { libraryId: library[appSettings.lastSelectedLibrary].id },
+      })
+      .then((response) => console.log(response.data))
+      .catch((error) => console.error(error.response.data))
+      .finally(() => {
+        if (fileInputRef.current) fileInputRef.current.value = "";
       });
   };
 
@@ -155,6 +178,12 @@ export const BottomControls: React.FC = () => {
 
   return (
     <div className="bottomControlsContainer">
+      <Input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleUpload}
+        style={{ display: "none" }}
+      />
       <Menubar className="bottomMenuBar">
         <MenubarMenu>
           <MenubarTrigger onClick={(e) => handleGoToLibrary(e)}>
@@ -211,7 +240,7 @@ export const BottomControls: React.FC = () => {
               <ScanText />
               Refresh Wikidata Metadata
             </MenubarItem>
-            <MenubarItem>
+            <MenubarItem onClick={() => fileInputRef.current?.click()}>
               <UploadIcon />
               Upload Book
             </MenubarItem>

@@ -56,7 +56,6 @@ function App() {
             );
             isFetching.current = true;
             dispatch(fetchUserSettings());
-            // dispatch(setSelectedLibrary(appSettings.lastSelectedLibrary));
           }
         })
         .catch((error) => {
@@ -81,7 +80,6 @@ function App() {
                   );
                   isFetching.current = true;
                   dispatch(fetchUserSettings());
-                  // dispatch(setSelectedLibrary(appSettings.lastSelectedLibrary));
                 })
                 .catch((_) => {
                   navigate("/login");
