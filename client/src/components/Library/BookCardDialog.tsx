@@ -4,10 +4,8 @@ import { api } from "@/api";
 import type { BookType, SeriesType } from "@/types/BookType";
 import type { AppDispatch } from "@/redux/store";
 
-//Actions
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 
-// UI
 import {
   DialogContent,
   DialogDescription,
@@ -29,9 +27,41 @@ import { Label } from "../ui/label";
 import { Spinner } from "../ui/spinner";
 import { ButtonGroup, ButtonGroupSeparator } from "../ui/button-group";
 import { Textarea } from "../ui/textarea";
+import { Plus } from "lucide-react";
 
 import "./BookCardDialog.css";
-import { Plus } from "lucide-react";
+
+// ---------------------------------------------------------------------------
+// FIELD ORDER
+// ---------------------------------------------------------------------------
+type EditableField = Exclude<keyof BookType, "series" | "seriesId">;
+
+type FieldConfig =
+  | { kind: "series" }
+  | { kind: "text"; id: EditableField; label: string }
+  | { kind: "textarea"; id: EditableField; label: string };
+
+const FIELD_ORDER: FieldConfig[] = [
+  { kind: "text", id: "title", label: "Title" },
+  { kind: "text", id: "author", label: "Author" },
+  { kind: "series" },
+  { kind: "text", id: "seriesOrder", label: "Series Order" },
+  { kind: "text", id: "publisher", label: "Publisher" },
+  { kind: "textarea", id: "description", label: "Description" },
+  { kind: "text", id: "isbn", label: "ISBN" },
+  { kind: "text", id: "isbn13", label: "ISBN-13" },
+  { kind: "text", id: "lccn", label: "LCCN" },
+  { kind: "text", id: "openLibraryWorkId", label: "Open Library Work ID" },
+  {
+    kind: "text",
+    id: "openLibraryEditionId",
+    label: "Open Library Edition ID",
+  },
+  { kind: "text", id: "openLibraryAuthorId", label: "Open Library Author ID" },
+  { kind: "text", id: "openLibraryCoverId", label: "Open Library Cover ID" },
+  { kind: "text", id: "wikidataId", label: "Wikidata ID" },
+  { kind: "text", id: "oclcWorldCat", label: "OCLC WorldCat" },
+];
 
 interface BookCardDialogProps {
   bookId: number;
@@ -39,20 +69,23 @@ interface BookCardDialogProps {
 
 export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
   const dispatch = useDispatch<AppDispatch>();
+
+  const [book, setBook] = useState<BookType>();
   const [seriesList, setSeriesList] = useState<SeriesType[]>([]);
   const [seriesInput, setSeriesInput] = useState("");
-  const [book, setBook] = useState<BookType>();
-  const [error, setError] = useState<string | null>(null);
   const [isAddingSeries, setIsAddingSeries] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isWikiSyncing, setIsWikiSyncing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // -- Data loading ----------------------------------------------------------
 
   useEffect(() => {
     api
       .get(`Book/getBookEntry?id=${bookId}`)
       .then((response) => setBook(response.data.value))
       .catch((error) => console.log(error));
-  }, []);
+  }, [bookId]);
 
   useEffect(() => {
     api
@@ -65,13 +98,17 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
     setSeriesInput(book?.series?.seriesTitle ?? "");
   }, [book?.id]);
 
-  const handleBlur = (field: keyof BookType, value: string) => {
-    const payloadValue = value === "" ? null : value;
+  // -- Field editing -----------------------------------------------------------
 
+  const handleChange = (field: EditableField, value: string) => {
+    setBook((prev) => (prev ? { ...prev, [field]: value } : prev));
+  };
+
+  const handleBlur = (field: EditableField, value: string) => {
     api
       .patch(`book/updateBookEntry`, {
         ...book,
-        [field]: payloadValue,
+        [field]: value === "" ? null : value,
       })
       .then((response) => {
         setBook(response.data?.value ?? response.data);
@@ -81,13 +118,10 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
       });
   };
 
-  const handleChange = (field: keyof BookType, value: string) => {
-    setBook((prev) => (prev ? { ...prev, [field]: value } : prev));
-  };
+  // -- Series editing ----------------------------------------------------------
 
   const commitSeries = (rawValue: string) => {
     const trimmed = rawValue.trim();
-
     if (trimmed === (book?.series?.seriesTitle ?? "")) return;
 
     api
@@ -98,6 +132,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
       .then((response) => {
         const returnedSeries: SeriesType | null =
           response.data?.value?.series ?? response.data?.series ?? null;
+
         setBook((prev) =>
           prev
             ? {
@@ -118,39 +153,31 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
         } else {
           setSeriesInput("");
         }
+
+        dispatch(fetchLibraryData());
       })
       .catch((err) => {
         console.error("Failed to save series", err);
         setError("Failed to save series.");
       });
-
-    dispatch(fetchLibraryData());
   };
+
+  // -- Metadata sync buttons -----------------------------------------------------
 
   const handleOpenLibrary = () => {
     setIsSyncing(true);
     setError(null);
     api
       .get(`metadata/queryOpenLibraryData?bookId=${bookId}`)
-      .then(() => {
-        api
-          .get(`Book/getBookEntry?id=${bookId}`)
-          .then((response) => {
-            setBook(response.data.value);
-            setIsSyncing(false);
-          })
-          .catch((error) => {
-            console.log(error);
-            setIsSyncing(false);
-          });
-      })
+      .then(() => api.get(`Book/getBookEntry?id=${bookId}`))
+      .then((response) => setBook(response.data.value))
       .catch((error) => {
         setError(
           error.response?.data?.error || "Failed to fetch Open Library data.",
         );
-        setIsSyncing(false);
         console.error(error);
-      });
+      })
+      .finally(() => setIsSyncing(false));
   };
 
   const handleWikidata = () => {
@@ -158,71 +185,49 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
     setError(null);
     api
       .get(`metadata/queryWikidata?bookId=${bookId}`)
-      .then(() => {
-        setIsWikiSyncing(false);
-        api
-          .get(`Book/getBookEntry?id=${bookId}`)
-          .then((response) => setBook(response.data.value))
-          .catch((error) => console.log(error));
-      })
+      .then(() => api.get(`Book/getBookEntry?id=${bookId}`))
+      .then((response) => setBook(response.data.value))
       .catch((error) => {
         setError(
           error.response?.data?.error || "Failed to fetch Wikidata data.",
         );
         console.error(error);
-        setIsWikiSyncing(false);
-      });
+      })
+      .finally(() => setIsWikiSyncing(false));
   };
 
-  const fields: { id: keyof BookType; label: string }[] = [
-    { id: "title", label: "Title" },
-    { id: "author", label: "Author" },
-    { id: "publisher", label: "Publisher" },
-    { id: "description", label: "Description" },
-    { id: "seriesOrder", label: "Series Order" },
-    { id: "isbn", label: "ISBN" },
-    { id: "isbn13", label: "ISBN-13" },
-    { id: "lccn", label: "LCCN" },
-    { id: "openLibraryWorkId", label: "Open Library Work ID" },
-    { id: "openLibraryEditionId", label: "Open Library Edition ID" },
-    { id: "openLibraryAuthorId", label: "Open Library Author ID" },
-    { id: "openLibraryCoverId", label: "Open Library Cover ID" },
-    { id: "wikidataId", label: "Wikidata ID" },
-    { id: "oclcWorldCat", label: "OCLC WorldCat" },
-  ];
+  // -- Field renderers -----------------------------------------------------------
+  // Each renderer only knows how to draw ONE kind of field. FIELD_ORDER decides
+  // which ones appear and in what order — see render loop at the bottom.
 
-  const renderField = (id: keyof BookType, label: string) => {
-    if (id === "description") {
-      return (
-        <div className="grid gap-1.5" key={id}>
-          <Label htmlFor="description">Description</Label>
-          <Textarea
-            id="description"
-            value={(book![id] as string) ?? ""}
-            onChange={(e) => handleChange(id, e.target.value)}
-            onBlur={() => handleBlur(id, book![id] as string)}
-          />
-        </div>
-      );
-    }
+  const renderTextField = (id: EditableField, label: string) => (
+    <div key={id} className="grid gap-1.5">
+      <Label htmlFor={id}>{label}</Label>
+      <Input
+        id={id}
+        value={(book![id] as string) ?? ""}
+        onChange={(e) => handleChange(id, e.target.value)}
+        onBlur={() => handleBlur(id, book![id] as string)}
+      />
+    </div>
+  );
 
-    return (
-      <div key={id} className="grid gap-1.5">
-        <Label htmlFor={id}>{label}</Label>
-        <Input
-          id={id}
-          value={(book![id] as string) ?? ""}
-          onChange={(e) => handleChange(id, e.target.value)}
-          onBlur={() => handleBlur(id, book![id] as string)}
-        />
-      </div>
-    );
-  };
+  const renderTextareaField = (id: EditableField, label: string) => (
+    <div key={id} className="grid gap-1.5">
+      <Label htmlFor={id}>{label}</Label>
+      <Textarea
+        id={id}
+        value={(book![id] as string) ?? ""}
+        onChange={(e) => handleChange(id, e.target.value)}
+        onBlur={() => handleBlur(id, book![id] as string)}
+      />
+    </div>
+  );
 
   const renderSeriesField = () => {
     if (isAddingSeries) {
       return (
-        <div className="seriesSelectorContainer">
+        <div key="series" className="seriesSelectorContainer">
           <div className="seriesSelectorBox">
             <Input
               autoFocus
@@ -260,7 +265,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
     }
 
     return (
-      <div className="seriesSelectorContainer">
+      <div key="series" className="seriesSelectorContainer">
         <div className="seriesSelectorBox">
           <Select
             value={book?.series?.seriesTitle ?? ""}
@@ -275,14 +280,13 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
               <SelectGroup>
                 {seriesList.map((item) => (
                   <SelectItem key={item.id} value={item.seriesTitle}>
-                    {item.seriesTitle} - {item.bookCount}
+                    {item.seriesTitle}
                   </SelectItem>
                 ))}
               </SelectGroup>
             </SelectContent>
           </Select>
         </div>
-
         <Button
           variant="outline"
           size="icon"
@@ -294,7 +298,20 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
     );
   };
 
-  if (!book)
+  const renderField = (field: FieldConfig) => {
+    switch (field.kind) {
+      case "series":
+        return renderSeriesField();
+      case "textarea":
+        return renderTextareaField(field.id, field.label);
+      case "text":
+        return renderTextField(field.id, field.label);
+    }
+  };
+
+  // -- Render ------------------------------------------------------------------
+
+  if (!book) {
     return (
       <DialogContent>
         <DialogHeader>
@@ -302,6 +319,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
         </DialogHeader>
       </DialogContent>
     );
+  }
 
   return (
     <DialogContent className="max-h-[80vh] overflow-y-auto">
@@ -316,13 +334,14 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
               onClick={handleOpenLibrary}
               disabled={isSyncing}
             >
-              {isSyncing && (
+              {isSyncing ? (
                 <>
                   <Spinner data-icon="inline-start" />
                   Loading
                 </>
+              ) : (
+                "Open Library"
               )}
-              {!isSyncing && <>Open Library</>}
             </Button>
             <ButtonGroupSeparator />
             <Button
@@ -330,13 +349,14 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
               onClick={handleWikidata}
               disabled={isWikiSyncing}
             >
-              {isWikiSyncing && (
+              {isWikiSyncing ? (
                 <>
                   <Spinner data-icon="inline-start" />
                   Loading
                 </>
+              ) : (
+                "Wikidata"
               )}
-              {!isWikiSyncing && <>Wikidata</>}
             </Button>
           </ButtonGroup>
           {error && (
@@ -349,10 +369,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
           )}
         </div>
       </DialogHeader>
-      <div className="grid gap-4 py-4">
-        {renderSeriesField()}
-        {fields.map(({ id, label }) => renderField(id, label))}
-      </div>
+      <div className="grid gap-4 py-4">{FIELD_ORDER.map(renderField)}</div>
     </DialogContent>
   );
 };
