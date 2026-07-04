@@ -33,7 +33,6 @@ public class BookParsingService : IBookParsingService
         cleaned = CutAtFirstMatch(cleaned, noisePhrases);
 
         // 3. Hard title/series separator: "--" or em dash.
-
         cleaned = CutAtFirstOccurrence(cleaned, new[] { "--", "—" });
 
         // 4. "Series - Number - Title" pattern: 2+ " - " separators means
@@ -45,14 +44,20 @@ public class BookParsingService : IBookParsingService
         }
         else if (dashSegments.Length == 2)
         {
-            // Single " - ": "Title - Subtitle" shape, keep the title.
             cleaned = dashSegments[0].Trim();
         }
 
-        // 5. "Title: Subtitle" pattern
-        var colonIdx = cleaned.IndexOf(": ", StringComparison.Ordinal);
-        if (colonIdx > 0)
-            cleaned = cleaned[..colonIdx];
+        // 5. "Title: Subtitle" vs "Series: Subseries: Title" pattern.
+        //    1 colon  -> keep first segment. 2+ colons -> keep last segment.
+        var colonSegments = cleaned.Split(": ");
+        if (colonSegments.Length >= 3)
+        {
+            cleaned = colonSegments[^1].Trim();
+        }
+        else if (colonSegments.Length == 2)
+        {
+            cleaned = colonSegments[0].Trim();
+        }
 
         // 6. Trailing numbering artifacts: "#2", ", #2", "Book 2", "Vol. 2".
         cleaned = Regex.Replace(
