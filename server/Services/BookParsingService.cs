@@ -7,19 +7,87 @@ namespace Librestack.Services;
 
 public class BookParsingService : IBookParsingService
 {
+
     public string CleanTitle(string title)
     {
-        var separators = new[] { "--", "—", ": ", " - ", "[]", "_", "__", "#", "()", "number", ", #", ",#" };
+        if (string.IsNullOrWhiteSpace(title))
+            return title ?? string.Empty;
+
+        var cleaned = title;
+
+        // 1. Strip bracketed/parenthetical content entirely: (...), [...], {...}
+        cleaned = Regex.Replace(cleaned, @"[\(\[\{][^\)\]\}]*[\)\]\}]", " ");
+        cleaned = Regex.Replace(cleaned, @"\s+", " ").Trim();
+
+        // 2. Cut at the first "edition/format" noise phrase.
+        //    "Shift Omnibus Edition" -> "Shift"
+        var noisePhrases = new[]
+        {
+        "omnibus edition", "omnibus",
+        "boxed set", "box set",
+        "complete collection", "collection",
+        "complete series", "anthology",
+        "trilogy", "duology",
+        "unabridged", "abridged",
+        "special edition", "annotated edition",
+    };
+        cleaned = CutAtFirstMatch(cleaned, noisePhrases);
+
+        // 3. Hard title/series separator: "--" or em dash.
+        //    "A Prayer for the Crown-Shy--A Monk and Robot Book" -> "A Prayer for the Crown-Shy"
+        cleaned = CutAtFirstOccurrence(cleaned, new[] { "--", "—" });
+
+        // 4. "Series - Number - Title" pattern: 2+ " - " separators means
+        //    the real title is the LAST segment.
+        //    "Star Trek: Section 31 - 2 - Rogue" -> "Rogue"
+        var dashSegments = cleaned.Split(" - ");
+        if (dashSegments.Length >= 3)
+        {
+            cleaned = dashSegments[^1].Trim();
+        }
+        else if (dashSegments.Length == 2)
+        {
+            // Single " - ": "Title - Subtitle" shape, keep the title.
+            cleaned = dashSegments[0].Trim();
+        }
+
+        // 5. "Title: Subtitle" pattern (only reached if step 4 didn't already resolve it).
+        //    "Clown Girl: A Novel" -> "Clown Girl"
+        var colonIdx = cleaned.IndexOf(": ", StringComparison.Ordinal);
+        if (colonIdx > 0)
+            cleaned = cleaned[..colonIdx];
+
+        // 6. Trailing numbering artifacts: "#2", ", #2", "Book 2", "Vol. 2".
+        cleaned = Regex.Replace(
+            cleaned,
+            @"\s*,?\s*#\s*\d+\s*$|\s*\b(book|vol\.?|volume|part)\s+\d+\s*$",
+            string.Empty,
+            RegexOptions.IgnoreCase);
+
+        return cleaned.Trim(' ', '-', ':', ',');
+    }
+
+    private static string CutAtFirstOccurrence(string input, string[] separators)
+    {
+        var firstIdx = int.MaxValue;
         foreach (var sep in separators)
         {
-            var idx = title.IndexOf(sep);
-            if (idx > 0)
-            {
-                title = title[..idx];
-                break;
-            }
+            var idx = input.IndexOf(sep, StringComparison.Ordinal);
+            if (idx > 0 && idx < firstIdx) firstIdx = idx;
         }
-        return title.Trim();
+        return firstIdx == int.MaxValue ? input : input[..firstIdx].Trim();
+    }
+
+    private static string CutAtFirstMatch(string input, string[] phrases)
+    {
+        var lower = input.ToLowerInvariant();
+        var firstIdx = int.MaxValue;
+        foreach (var phrase in phrases)
+        {
+            var idx = lower.IndexOf(phrase, StringComparison.Ordinal);
+            if (idx > 0 && idx < firstIdx) firstIdx = idx;
+        }
+        return firstIdx == int.MaxValue ? input : input[..firstIdx].Trim();
     }
 
     public string? NormalizeSeriesTitle(string seriesLabel)

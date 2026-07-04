@@ -82,14 +82,14 @@ public class WikidataService : IWikidataService
     private async Task<Result<Book>> SearchWikidata(Book book)
     {
 
-        // var searchTitle = _bookParsing.CleanTitle(book.Title);
-        _logger.LogCritical($"Searching wikidata for id {book.Id} - {book.Title}");
+        var searchTitle = _bookParsing.CleanTitle(book.Title);
+        _logger.LogInformation($"Searching wikidata for id {book.Id} - {book.Title} - Cleaned Title {searchTitle}");
 
         var sparql = $$"""
             SELECT ?work ?workLabel ?author ?authorLabel ?publicationDate WHERE {
             ?author rdfs:label "{{book.Author}}"@en .
             ?work wdt:P50 ?author .
-            ?work wdt:P1476 "{{book.Title}}"@en .
+            ?work wdt:P1476 "{{searchTitle}}"@en .
             OPTIONAL { ?work wdt:P577 ?publicationDate . }
             SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
             }

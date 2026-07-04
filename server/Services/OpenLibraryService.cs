@@ -17,6 +17,7 @@ public class OpenLibraryService : IOpenLibraryService
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IBookParsingService _bookParsing;
     private readonly ISeriesService _seriesService;
+    private readonly ILogger<LibraryMonitorService> _logger;
     private static readonly SemaphoreSlim _rateLimiter = new(1, 1);
 
 
@@ -26,7 +27,8 @@ public class OpenLibraryService : IOpenLibraryService
         IHttpClientFactory httpClientFactory,
         UserManager<IdentityUser> userManager,
         IBookParsingService bookParsing,
-        ISeriesService seriesService
+        ISeriesService seriesService,
+        ILogger<LibraryMonitorService> logger
         )
     {
         _db = db;
@@ -35,6 +37,7 @@ public class OpenLibraryService : IOpenLibraryService
         _userManager = userManager;
         _bookParsing = bookParsing;
         _seriesService = seriesService;
+        _logger = logger;
     }
 
 
@@ -244,12 +247,10 @@ public class OpenLibraryService : IOpenLibraryService
 
     private async Task<Result<Book>> CallByTitleAndAuthor(Book book)
     {
-        Console.WriteLine(book.Title);
-        Console.WriteLine(book.Author);
-        string url = $"https://openlibrary.org/search.json?title={Uri.EscapeDataString(book.Title)}&author={Uri.EscapeDataString(book.Author)}&limit=1";
+        var searchTitle = _bookParsing.CleanTitle(book.Title);
+        _logger.LogInformation($"Searching Open Library for id {book.Id} - {book.Title} - Cleaned Title {searchTitle}");
+        string url = $"https://openlibrary.org/search.json?title={Uri.EscapeDataString(searchTitle)}&author={Uri.EscapeDataString(book.Author)}&limit=1";
         var client = await CreateClient();
-
-        Console.WriteLine($"------------------- {url}");
 
         await RateLimit();
         var response = await client.GetAsync(url);
