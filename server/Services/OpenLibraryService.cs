@@ -483,6 +483,10 @@ public class OpenLibraryService : IOpenLibraryService
         await RateLimit();
 
         var response = await client.GetAsync(url);
+        if (!response.IsSuccessStatusCode)
+            return Result<List<BookSearchModel>>.Failure(
+                $"Open Library Request Failed: {response.StatusCode} - {response.ReasonPhrase}",
+                ErrorType.Unexpected);
 
         _logger.LogInformation("Open Library Search Results {response}", response.Content);
 
@@ -504,8 +508,9 @@ public class OpenLibraryService : IOpenLibraryService
 
             var publishDate = item.TryGetProperty("first_publish_year", out var p) ? p.GetInt32().ToString() : null;
 
-            var languageArray = item.TryGetProperty("language", out var l);
-            var language = JsonSerializer.Serialize(languageArray);
+            var language = item.TryGetProperty("language", out var languageArray)
+                ? JsonSerializer.Serialize(languageArray)
+                : null;
 
             var seriesName = item.TryGetProperty("series_name", out var sname)
                 && sname.GetArrayLength() > 0 ? sname[0].GetString() : null;
@@ -534,7 +539,6 @@ public class OpenLibraryService : IOpenLibraryService
 
             var coverId = item.TryGetProperty("cover_i", out var coverid) ? coverid.GetInt32().ToString() : null;
 
-
             var workKey = item.TryGetProperty("key", out var k) ? k.GetString()?.Replace("/works/", "") : null;
 
             results.Add(new BookSearchModel
@@ -547,7 +551,8 @@ public class OpenLibraryService : IOpenLibraryService
                 SeriesName = seriesName,
                 SeriesOrder = int.TryParse(seriesOrder, out var so) ? so : 0,
                 Language = language,
-                CoverId = coverId
+                CoverId = coverId,
+                OpenLibraryWorkId = workKey
             });
 
         }

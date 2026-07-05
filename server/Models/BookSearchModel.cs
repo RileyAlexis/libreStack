@@ -15,4 +15,5 @@ public class BookSearchModel
     public string? CoverId { get; set; }
     public byte[]? CoverImage { get; set; } = null;
     public string? ISBN { get; set; }
+    public string? OpenLibraryWorkId { get; set; }
 }

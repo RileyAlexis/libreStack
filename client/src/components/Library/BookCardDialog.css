@@ -12,9 +12,10 @@
   justify-content: flex-start;
   align-items: center;
   gap: 0.5em;
-  /* border: 1px solid orange; */
+  min-width: 0;
 }
 
 .seriesSelectorBox {
-  width: 100%;
+  flex: 1 1 0;
+  min-width: 0;
 }

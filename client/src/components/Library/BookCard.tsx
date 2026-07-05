@@ -32,6 +32,7 @@ import { BookCardDialog } from "./BookCardDialog";
 import "./BookCard.css";
 import { DescriptionDialog } from "./DescriptionDialog";
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
+import { FixMismatchDialog } from "./FixMismatchDialog";
 
 interface BookCardProps {
   book: BookType;
@@ -48,6 +49,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const [coverMultiplier, setCoverMultiplier] = useState<number>(1);
   const [isBookDialogOpen, setIsBookDialogOpen] = useState(false);
   const [isDescDialogOpen, setIsDescDialogOpen] = useState(false);
+  const [isFixMismatchDialogOpen, setIsFixMismatchDialogOpen] = useState(false);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const didLongPress = useRef(false);
   const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
@@ -246,7 +248,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
                   setIsDescDialogOpen(true);
                 }}
               >
-                <BookText /> View Description
+                View Description
               </DropdownMenuItem>
               {book.readingProgress?.isComplete ? (
                 <DropdownMenuItem
@@ -267,6 +269,14 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
                   Mark as Finished
                 </DropdownMenuItem>
               )}
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsFixMismatchDialogOpen(true);
+                }}
+              >
+                Fix Mismatch
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -319,6 +329,19 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
       <div onClick={(e) => e.stopPropagation()}>
         <Dialog open={isDescDialogOpen} onOpenChange={setIsDescDialogOpen}>
           {isDescDialogOpen && <DescriptionDialog book={book} />}
+        </Dialog>
+      </div>
+      <div onClick={(e) => e.stopPropagation()}>
+        <Dialog
+          open={isFixMismatchDialogOpen}
+          onOpenChange={setIsFixMismatchDialogOpen}
+        >
+          {isFixMismatchDialogOpen && (
+            <FixMismatchDialog
+              book={book}
+              setIsSelectOpen={setIsFixMismatchDialogOpen}
+            />
+          )}
         </Dialog>
       </div>
     </div>
