@@ -1,23 +1,23 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import type { Middleware, UnknownAction } from "@reduxjs/toolkit";
+// import type { Middleware, UnknownAction } from "@reduxjs/toolkit";
 
 import userSlice from "./reducers/userReducer";
 import libraryReducer from "./reducers/LibraryReducer";
 import appSettingsSlice from "./reducers/AppSettingsReducer";
 import selectionSlice from "./reducers/SelectedReducer";
 
-const logger: Middleware = (store) => (next) => (action) => {
-  if (import.meta.env.DEV) {
-    const typedAction = action as UnknownAction;
-    console.group(typedAction.type);
-    console.info("dispatching", typedAction);
-    const result = next(action);
-    console.log("next state", store.getState());
-    console.groupEnd();
-    return result;
-  }
-  return next(action);
-};
+// const logger: Middleware = (store) => (next) => (action) => {
+//   if (import.meta.env.DEV) {
+//     const typedAction = action as UnknownAction;
+//     console.group(typedAction.type);
+//     console.info("dispatching", typedAction);
+//     const result = next(action);
+//     console.log("next state", store.getState());
+//     console.groupEnd();
+//     return result;
+//   }
+//   return next(action);
+// };
 
 const allReducers = combineReducers({
   user: userSlice,

@@ -13,7 +13,6 @@ import type { LibreRootState } from "@/types/LibreRootState";
 import { Button } from "../ui/button";
 import { Dialog } from "../ui/dialog";
 import {
-  BookText,
   Circle,
   CircleCheck,
   EllipsisIcon,
