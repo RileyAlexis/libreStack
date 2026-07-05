@@ -26,6 +26,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "../ui/dropdown-menu";
+import { Tooltip, TooltipTrigger, TooltipContent } from "../ui/tooltip";
 
 import { BookCardDialog } from "./BookCardDialog";
 import "./BookCard.css";
@@ -272,7 +273,12 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
       </div>
 
       <div className="bookControlsIsRead">
-        {book.readingProgress?.isComplete && <CircleCheckBig color="green" />}
+        {book.readingProgress?.isComplete && (
+          <Tooltip>
+            <TooltipTrigger render={<CircleCheckBig color="green" />} />
+            <TooltipContent>Read</TooltipContent>
+          </Tooltip>
+        )}
       </div>
 
       <div className={`bookCover ${isSelected ? "selected" : ""}`}>

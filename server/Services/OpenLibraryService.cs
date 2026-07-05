@@ -5,7 +5,7 @@ using Librestack.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
-using Microsoft.VisualBasic;
+using System.Text.Json.Serialization;
 
 namespace Librestack.Services;
 
@@ -457,5 +457,101 @@ public class OpenLibraryService : IOpenLibraryService
         await _db.SaveChangesAsync();
 
         return Result.Success();
+    }
+
+    public async Task<Result<List<BookSearchModel>>> SearchOpenLibrary(string userId, int bookId, string? searchTerm)
+    {
+        var book = await _db.Books.FirstOrDefaultAsync(b => b.Id == bookId && b.UserId == userId);
+        if (book is null)
+            return Result<List<BookSearchModel>>.Failure("Book not found", ErrorType.NotFound);
+
+        string searchTitle;
+        string url;
+
+        if (string.IsNullOrEmpty(searchTerm))
+        {
+            searchTitle = _bookParsing.CleanTitle(book.Title);
+            url = $"https://openlibrary.org/search.json?title={Uri.EscapeDataString(searchTitle)}&author={Uri.EscapeDataString(book.Author)}";
+        }
+        else
+        {
+            url = $"https://openlibrary.org/search.json?q={Uri.EscapeDataString(searchTerm)}";
+        }
+        _logger.LogInformation("Searching Open Library at {url}", url);
+
+        var client = await CreateClient();
+        await RateLimit();
+
+        var response = await client.GetAsync(url);
+
+        _logger.LogInformation("Open Library Search Results {response}", response.Content);
+
+        var json = await response.Content.ReadAsStringAsync();
+        var doc = JsonDocument.Parse(json);
+        var basic = doc.RootElement;
+        var docs = basic.GetProperty("docs");
+        if (docs.GetArrayLength() == 0)
+            return Result<List<BookSearchModel>>.Failure("No Results Found", ErrorType.NotFound);
+        var numFound = basic.TryGetProperty("numFound", out var num) ? num.GetInt32() : 0;
+        var results = new List<BookSearchModel>();
+
+        foreach (var item in docs.EnumerateArray())
+        {
+            var title = item.TryGetProperty("title", out var t) ? t.GetString() : null;
+
+            var authorName = item.TryGetProperty("author_name", out var aname) &&
+                aname.GetArrayLength() > 0 ? aname[0].GetString() : null;
+
+            var publishDate = item.TryGetProperty("first_publish_year", out var p) ? p.GetInt32().ToString() : null;
+
+            var languageArray = item.TryGetProperty("language", out var l);
+            var language = JsonSerializer.Serialize(languageArray);
+
+            var seriesName = item.TryGetProperty("series_name", out var sname)
+                && sname.GetArrayLength() > 0 ? sname[0].GetString() : null;
+
+            var seriesOrder = item.TryGetProperty("series_position", out var sorder)
+                && sorder.GetArrayLength() > 0 ? sorder[0].GetString() : null;
+
+            var wikiData = (item.TryGetProperty("identifiers", out var ident) &&
+                ident.TryGetProperty("wikidata", out var wik) &&
+                wik.GetArrayLength() > 0) ? wik[0].GetString() : null;
+
+            var isbn10 = item.TryGetProperty("isbn_10", out var i)
+                && i.GetArrayLength() > 0 ? i[0].GetString() : null;
+
+            var isbn13 = item.TryGetProperty("isbn_13", out var i13)
+                && i13.GetArrayLength() > 0 ? i13[0].GetString() : null;
+
+            var lccn = item.TryGetProperty("lccn", out var ic)
+                && ic.GetArrayLength() > 0 ? ic[0].GetString() : null;
+
+            var description = item.TryGetProperty("description", out var desc)
+                ? desc.ValueKind == JsonValueKind.String
+                    ? desc.GetString()
+                    : desc.TryGetProperty("value", out var val) ? val.GetString() : null
+                : null;
+
+            var coverId = item.TryGetProperty("cover_i", out var coverid) ? coverid.GetInt32().ToString() : null;
+
+
+            var workKey = item.TryGetProperty("key", out var k) ? k.GetString()?.Replace("/works/", "") : null;
+
+            results.Add(new BookSearchModel
+            {
+                BookId = book.Id,
+                NumResults = numFound,
+                Title = title,
+                Author = authorName,
+                PublishDate = publishDate,
+                SeriesName = seriesName,
+                SeriesOrder = int.TryParse(seriesOrder, out var so) ? so : 0,
+                Language = language,
+                CoverId = coverId
+            });
+
+        }
+
+        return Result<List<BookSearchModel>>.Success(results);
     }
 }

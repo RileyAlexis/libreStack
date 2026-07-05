@@ -213,6 +213,22 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
       .finally(() => setIsSyncing(false));
   };
 
+  const handleSearch = () => {
+    setIsSyncing(true);
+    setError(null);
+    api
+      .get(`metadata/searchOpenLibrary?bookId=${bookId}`)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => {
+        setIsSyncing(false);
+      });
+  };
+
   // -- Field renderers -----------------------------------------------------------
 
   const renderTextField = (id: EditableField, label: string) => (
@@ -384,6 +400,19 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
                 </>
               ) : (
                 "Fetch Cover"
+              )}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleSearch}
+              disabled={isSyncing}
+            >
+              {isSyncing ? (
+                <>
+                  <Spinner data-icon="inline-start" />
+                </>
+              ) : (
+                "Fix Mismatch"
               )}
             </Button>
           </ButtonGroup>

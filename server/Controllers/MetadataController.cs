@@ -88,5 +88,19 @@ public class MetadataController : ControllerBase
 
         return Ok();
     }
+
+    [HttpGet("searchOpenLibrary")]
+    [Authorize]
+    public async Task<IActionResult> SearchOpenLibrary(int bookId, string? searchTerm = "")
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null) return Unauthorized();
+
+        var result = await _iOpenLibraryService.SearchOpenLibrary(userId, bookId, searchTerm);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok(result);
+    }
 }
 
