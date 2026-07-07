@@ -2,6 +2,8 @@ using Librestack.Database;
 using Librestack.Interfaces;
 using Librestack.Models;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
+using System.Linq;
 
 namespace Librestack.Services;
 
@@ -39,6 +41,32 @@ public class ServerStatsService : IServerStatsService
         return totalSize;
     }
 
+    private long CalculateDiskFreeSpace(string path)
+    {
+        try
+        {
+            string fullPath = Path.GetFullPath(path);
+
+            DriveInfo? drive = DriveInfo.GetDrives()
+                .Where(d => d.IsReady && fullPath.StartsWith(d.RootDirectory.FullName, StringComparison.Ordinal))
+                .OrderByDescending(d => d.RootDirectory.FullName.Length)
+                .FirstOrDefault();
+
+            if (drive == null)
+            {
+                _logger.LogError($"Could not find mount point for {path}");
+                return 0;
+            }
+
+            return drive.AvailableFreeSpace;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Could not determine disk free space for {path}: {ex.Message}");
+            return 0;
+        }
+    }
+
     public async Task<Result<ServerStats>> GetServerStats()
     {
         var libraries = await _db.Libraries
@@ -54,7 +82,9 @@ public class ServerStatsService : IServerStatsService
             SeriesCount = l.Books.Where(b => b.SeriesId != null).Select(b => b.SeriesId).Distinct().Count(),
             CollectionCount = l.Books.Where(b => b.CollectionId != null).Select(b => b.CollectionId).Distinct().Count(),
             CompletedBookCount = l.Books.Count(b => b.ReadingProgress != null && b.ReadingProgress.IsComplete),
-            StorageSizeKb = CalculateDirectorySize(l.LibraryPath) / 1024
+            StorageSizeKb = CalculateDirectorySize(l.LibraryPath) / 1024,
+            LibraryPath = l.LibraryPath,
+            DriveFreeSpace = CalculateDiskFreeSpace(l.LibraryPath) / 1024
         }).ToList();
 
         var totalBooks = libraryStatsList.Sum(ls => ls.BookCount);
@@ -66,6 +96,7 @@ public class ServerStatsService : IServerStatsService
 
 
         var usersCount = await _db.Users.CountAsync();
+
 
         var serverStats = new ServerStats
         {

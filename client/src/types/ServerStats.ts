@@ -6,6 +6,8 @@ export interface LibraryStats {
   seriesCount: number;
   collectionCount: number;
   completedBookCount: number;
+  libraryPath: string;
+  driveFreeSpace: number;
 }
 
 export interface ServerStats {

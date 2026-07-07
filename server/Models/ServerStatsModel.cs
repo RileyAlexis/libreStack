@@ -9,6 +9,8 @@ public class LibraryStats
     public int SeriesCount { get; set; }
     public int CollectionCount { get; set; }
     public int CompletedBookCount { get; set; }
+    public string? LibraryPath { get; set; }
+    public double DriveFreeSpace { get; set; }
 }
 
 public class ServerStats

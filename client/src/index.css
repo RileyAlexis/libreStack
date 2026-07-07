@@ -35,6 +35,7 @@
     --background: oklch(93.132% 0.0412 80.3);
     --foreground: oklch(0.145 0 0);
     --card: oklch(96.114% 0.02198 80.643);
+    --card-elevated: oklch(87.529% 0.05183 80.476);
     --card-foreground: oklch(0.145 0 0);
     --select-color: rgb(0, 191, 35);
 
@@ -87,7 +88,9 @@
   .dark {
     --background: oklch(20.664% 0.00904 75.082);
     --foreground: oklch(0.985 0 0);
+    --shadow-color: 0deg 100% 100%;
     --card: oklch(49.133% 0.02929 86.876);
+    --card-elevated: oklch(46.23% 0.05066 86.811);
     --card-foreground: oklch(0.985 0 0);
     --shadow-color: 0deg 100% 100%;
     --popover: oklch(49.133% 0.02929 86.876);
