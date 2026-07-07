@@ -10,11 +10,16 @@ namespace Librestack.Controllers;
 public class ConfigController : ControllerBase
 {
     private readonly ILibreStackConfigService _iLibreStackConfigService;
+    private readonly IServerStatsService _iServerStatsService;
     private readonly IAuthService _iAuthService;
 
-    public ConfigController(ILibreStackConfigService libreStackConfigService, IAuthService authService)
+    public ConfigController(
+        ILibreStackConfigService libreStackConfigService,
+        IServerStatsService serverStatsService,
+        IAuthService authService)
     {
         _iLibreStackConfigService = libreStackConfigService;
+        _iServerStatsService = serverStatsService;
         _iAuthService = authService;
     }
 
@@ -50,6 +55,17 @@ public class ConfigController : ControllerBase
     {
         var result = await _iLibreStackConfigService.SaveConfig(config);
         return result ? Ok("Config Saved") : BadRequest("Error saving config");
+    }
+
+    [HttpGet("serverStats")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetServerStats()
+    {
+        var result = await _iServerStatsService.GetServerStats();
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok(result);
     }
 
 }

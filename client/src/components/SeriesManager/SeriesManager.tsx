@@ -48,6 +48,7 @@ export const SeriesManager: React.FC = () => {
     api
       .get("series")
       .then((response) => {
+        console.log(response.data);
         setSeries(response.data);
       })
       .catch((error) => {

@@ -29,6 +29,7 @@ import { LoginScreen } from "./components/LoginScreen/LoginScreen";
 
 import "./App.css";
 import { SeriesManager } from "./components/SeriesManager/SeriesManager";
+import { ServerManager } from "./components/ServerManager/ServerManager";
 
 function App() {
   const navigate = useNavigate();
@@ -86,7 +87,7 @@ function App() {
     if (appSettings.showLibraryAsHome) {
       navigate("/library");
     } else {
-      navigate("/serverStats");
+      navigate("/serverManager");
     }
   }, [location.pathname, appSettings.showLibraryAsHome, navigate]);
 
@@ -138,6 +139,15 @@ function App() {
             <div className="pageContent">
               <HeaderBanner />
               <Library />
+            </div>
+          }
+        />
+        <Route
+          path="/serverManager"
+          element={
+            <div className="pageContent">
+              <HeaderBanner />
+              <ServerManager />
             </div>
           }
         />

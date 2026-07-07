@@ -17,7 +17,7 @@ public class OpenLibraryService : IOpenLibraryService
     private readonly UserManager<IdentityUser> _userManager;
     private readonly IBookParsingService _bookParsing;
     private readonly ISeriesService _seriesService;
-    private readonly ILogger<LibraryMonitorService> _logger;
+    private readonly ILogger<OpenLibraryService> _logger;
     private static readonly SemaphoreSlim _rateLimiter = new(1, 1);
 
 
@@ -28,7 +28,7 @@ public class OpenLibraryService : IOpenLibraryService
         UserManager<IdentityUser> userManager,
         IBookParsingService bookParsing,
         ISeriesService seriesService,
-        ILogger<LibraryMonitorService> logger
+        ILogger<OpenLibraryService> logger
         )
     {
         _db = db;
