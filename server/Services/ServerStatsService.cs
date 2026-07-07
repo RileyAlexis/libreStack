@@ -45,6 +45,7 @@ public class ServerStatsService : IServerStatsService
             .Include(l => l.Books)
                 .ThenInclude(b => b.ReadingProgress).ToListAsync();
 
+
         var libraryStatsList = libraries.Select(l => new LibraryStats
         {
             LibraryName = l.Name,
@@ -57,7 +58,7 @@ public class ServerStatsService : IServerStatsService
         }).ToList();
 
         var totalBooks = libraryStatsList.Sum(ls => ls.BookCount);
-        var totalStorageSizeKB = libraryStatsList.Sum(ls => (int)ls.StorageSizeKb); // Cast to int if ServerStats uses int for KB
+        var totalStorageSizeKB = libraryStatsList.Sum(ls => (int)ls.StorageSizeKb);
         var totalAuthorCount = libraryStatsList.Sum(ls => ls.AuthorCount);
         var totalSeriesCount = libraryStatsList.Sum(ls => ls.SeriesCount);
         var totalCollectionCount = libraryStatsList.Sum(ls => ls.CollectionCount);

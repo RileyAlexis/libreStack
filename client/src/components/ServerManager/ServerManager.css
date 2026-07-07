@@ -1,0 +1,21 @@
+.sererManagerContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 50%;
+  margin-left: 2em;
+  margin-top: 1em;
+  gap: 1em;
+}
+
+.serverStatsCard {
+  border: 2px solid var(--primary);
+  border-radius: 20px;
+  padding-left: 1em;
+  padding-top: 0.5em;
+  padding-bottom: 1em;
+  padding-right: 1.5em;
+  background-color: var(--menu-background);
+  box-shadow: var(--shadow-elevation-low);
+}
