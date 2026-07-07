@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { api } from "@/utils/api";
-import { useSelector, useDispatch } from "react-redux";
-import type { AppDispatch } from "@/redux/store";
+// import { useSelector, useDispatch } from "react-redux";
+// import type { AppDispatch } from "@/redux/store";
 import type { ServerStats } from "@/types/ServerStats";
-import type { LibreRootState } from "@/types/LibreRootState";
-import { formatNumber, formatStorageSize } from "@/utils/formatter";
+// import type { LibreRootState } from "@/types/LibreRootState";
+import { formatStorageSize } from "@/utils/formatter";
 
 // UI
 import { Skeleton } from "../ui/skeleton";
@@ -12,11 +12,11 @@ import { Skeleton } from "../ui/skeleton";
 import "./ServerManager.css";
 
 export const ServerManager: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  //   const dispatch = useDispatch<AppDispatch>();
   const [serverStats, setServerStats] = useState<ServerStats>();
   const [serverHealth, setServerHealth] = useState<any>();
   const [isServerLoading, setIsServerLoading] = useState(false);
-  const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  //   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
 
   useEffect(() => {
     setIsServerLoading(true);
