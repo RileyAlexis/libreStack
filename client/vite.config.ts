@@ -19,10 +19,14 @@ export default defineConfig({
       additionalLegacyPolyfills: ["regenerator-runtime/runtime"],
     }),
     VitePWA({
+      registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "apple-touch-icon.png"],
       workbox: {
         navigateFallback: "index.html",
         navigateFallbackDenylist: [/^\/swagger/, /^\/api/],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
       },
       manifest: {
         name: "Librestack",
