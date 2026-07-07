@@ -8,6 +8,7 @@ import type { SortByType } from "@/types/AppSettings";
 import {
   fetchLibraryData,
   sortLibraryByAuthor,
+  sortLibraryByDateAdded,
   sortLibraryByLastRead,
   sortLibraryByTitle,
 } from "@/redux/reducers/LibraryReducer";
@@ -50,7 +51,7 @@ export const LibraryHeaderControls: React.FC = () => {
   const library = useSelector((state: LibreRootState) => state.library);
   const selections = useSelector((state: LibreRootState) => state.selections);
 
-  const sortingOptions = ["Author", "Title", "Last Read"];
+  const sortingOptions = ["Author", "Title", "Last Read", "Recently Added"];
 
   const handleSortChange = (value: SortByType, ascending?: boolean) => {
     dispatch(setSortBy(value));
@@ -72,6 +73,12 @@ export const LibraryHeaderControls: React.FC = () => {
     } else if (value === "Last Read") {
       dispatch(
         sortLibraryByLastRead({
+          libraryId: library[appSettings.lastSelectedLibrary].id,
+        }),
+      );
+    } else if (value === "Recently Added") {
+      dispatch(
+        sortLibraryByDateAdded({
           libraryId: library[appSettings.lastSelectedLibrary].id,
         }),
       );

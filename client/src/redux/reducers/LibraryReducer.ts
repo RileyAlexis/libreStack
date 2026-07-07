@@ -74,6 +74,17 @@ const sortByLastRead = (books: BookType[]) =>
     return bDate - aDate;
   });
 
+const sortyByRecentlyAdded = (books: BookType[]) =>
+  [...books].sort((a, b) => {
+    const aDate = a.addedDate ? new Date(a.addedDate).getTime() : null;
+    const bDate = b.addedDate ? new Date(b.addedDate).getTime() : null;
+    if (aDate === null && bDate === null) return 0;
+    if (aDate === null) return 1;
+    if (bDate === null) return -1;
+
+    return bDate - aDate;
+  });
+
 const initialState: LibraryType[] = [];
 
 const LibrarySlice = createSlice({
@@ -103,6 +114,13 @@ const LibrarySlice = createSlice({
       const library = state.find((l) => l.id === action.payload.libraryId);
       if (library) library.books = sortByLastRead(library.books);
     },
+    sortLibraryByDateAdded(
+      state,
+      action: PayloadAction<{ libraryId: number }>,
+    ) {
+      const library = state.find((l) => l.id === action.payload.libraryId);
+      if (library) library.books = sortyByRecentlyAdded(library.books);
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchLibraryData.fulfilled, (_, action) => {
@@ -116,5 +134,6 @@ export const {
   sortLibraryByTitle,
   sortLibraryByAuthor,
   sortLibraryByLastRead,
+  sortLibraryByDateAdded,
 } = LibrarySlice.actions;
 export default LibrarySlice.reducer;
