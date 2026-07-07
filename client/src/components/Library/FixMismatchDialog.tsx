@@ -2,7 +2,7 @@ import { useState, useEffect, type SetStateAction } from "react";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "@/redux/store";
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
-import { api } from "@/api";
+import { api } from "@/utils/api";
 import type { BookType } from "@/types/BookType";
 import type { BookSearchType } from "@/types/BookSearchType";
 

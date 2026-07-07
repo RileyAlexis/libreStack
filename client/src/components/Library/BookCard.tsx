@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { api } from "@/api";
+import { api } from "@/utils/api";
 import type { AppDispatch } from "@/redux/store";
 
 // State

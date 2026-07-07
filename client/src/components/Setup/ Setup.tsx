@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { setUser } from "../../redux/reducers/userReducer";
-import axios from "axios";
+import { setTokens, setUser } from "@/redux/reducers/AuthReducer";
 import { Info } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,7 @@ import {
 } from "@/components/ui/popover";
 
 import "./ Setup.css";
-import { api } from "../../api";
+import { api } from "../../utils/api";
 
 export const Setup: React.FC = () => {
   const dispatch = useDispatch();
@@ -32,14 +31,14 @@ export const Setup: React.FC = () => {
   const [libError, setLibError] = useState("");
 
   useEffect(() => {
-    axios
-      .post("/api/auth/admin/register", {
+    api
+      .post("/Auth/admin/register", {
         username: "",
         email: "",
         password: "",
       })
       .catch((error) => {
-        const code = error.response.data[0].code;
+        const code = error.response?.data?.[0]?.code;
         if (code === "AdminAlreadyExists") setIsAdminRegistered(true);
       });
   }, [isAdminRegistered]);
@@ -50,16 +49,23 @@ export const Setup: React.FC = () => {
       return;
     }
     setAdminError("");
-    axios
-      .post("/api/auth/admin/register", { username, email, password })
+    api
+      .post("/Auth/admin/register", { username, email, password })
       .then(() => {
         setIsAdminRegistered(true);
-        axios
-          .post("/api/auth/login", { username, password })
+        api
+          .post("/Auth/login", { username, password })
           .then((response) => {
-            localStorage.setItem("accessToken", response.data.accessToken);
-            localStorage.setItem("refreshToken", response.data.refreshToken);
-            dispatch(setUser({ userName: username, isLoggedIn: true }));
+            dispatch(
+              setTokens({
+                accessToken: response.data.accessToken,
+                refreshToken: response.data.refreshToken,
+              }),
+            );
+            return api.get("/Auth/user");
+          })
+          .then((response) => {
+            dispatch(setUser(response.data));
           })
           .catch((error) => console.error(error));
       })

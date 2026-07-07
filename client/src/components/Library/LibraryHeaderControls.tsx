@@ -41,7 +41,7 @@ import { CircleXIcon, ArrowDownAZ, ArrowUpAZ } from "lucide-react";
 import { Label } from "../ui/label";
 
 import "./LibraryHeaderControls.css";
-import { api } from "@/api";
+import { api } from "@/utils/api";
 
 export const LibraryHeaderControls: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();

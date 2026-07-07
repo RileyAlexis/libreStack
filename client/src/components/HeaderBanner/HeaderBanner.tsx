@@ -1,25 +1,21 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import type { LibreRootState } from "../../types/LibreRootState";
-
-// UI
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-
+import type { Dispatch, SetStateAction } from "react";
 // Components
-import { LoginScreen } from "../LoginScreen/LoginScreen";
 import { MainMenu } from "./MainMenu";
 import "./HeaderBanner.css";
 import { BookSpinner } from "../BookSpinner/BookSpinner";
 
-export const HeaderBanner: React.FC = () => {
+interface HeaderBannerProps {
+  setIsLoginOpen: Dispatch<SetStateAction<boolean>>;
+}
+
+export const HeaderBanner: React.FC<HeaderBannerProps> = ({
+  setIsLoginOpen,
+}) => {
   const navigate = useNavigate();
-  // const location = useLocation();
-  // const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
-  const user = useSelector((state: LibreRootState) => state.user);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [showClose, setShowClose] = useState<boolean>(true);
 
   const handleNavigateToMain = () => {
     if (appSettings.showLibraryAsHome) {
@@ -28,15 +24,6 @@ export const HeaderBanner: React.FC = () => {
       navigate("/");
     }
   };
-
-  useEffect(() => {
-    if (user.isLoggedIn === false) {
-      setIsLoginOpen(true);
-      setShowClose(false);
-    } else {
-      setIsLoginOpen(false);
-    }
-  }, [user]);
 
   return (
     <>
@@ -50,12 +37,6 @@ export const HeaderBanner: React.FC = () => {
           <MainMenu setIsLoginOpen={setIsLoginOpen} />
         </div>
       </div>
-
-      <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-        <DialogContent showCloseButton={showClose}>
-          <LoginScreen setIsLoginOpen={setIsLoginOpen} />
-        </DialogContent>
-      </Dialog>
     </>
   );
 };

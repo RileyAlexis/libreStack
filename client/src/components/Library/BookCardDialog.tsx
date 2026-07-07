@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { api } from "@/api";
+import { api } from "@/utils/api";
 import type { BookType, SeriesType } from "@/types/BookType";
 import type { AppDispatch } from "@/redux/store";
 

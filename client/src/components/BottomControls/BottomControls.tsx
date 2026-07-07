@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
-import { api } from "@/api";
+import { api } from "@/utils/api";
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { AppDispatch } from "@/redux/store";
 

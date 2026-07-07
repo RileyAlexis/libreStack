@@ -1,10 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { Dispatch, SetStateAction } from "react";
+import type { AppDispatch } from "@/redux/store";
 
 // Actions
 import { switchLibraryAsHome } from "@/redux/reducers/AppSettingsReducer";
-import { logoutUser } from "@/redux/reducers/userReducer";
+import { logout } from "@/utils/api";
 
 // UI
 import { useTheme } from "../themeProvider";
@@ -32,21 +33,27 @@ interface MainMenuProps {
 }
 
 export const MainMenu: React.FC<MainMenuProps> = ({ setIsLoginOpen }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
-  const user = useSelector((state: LibreRootState) => state.user);
+  const auth = useSelector((state: LibreRootState) => state.auth);
+  const isLoggedIn = Boolean(auth.accessToken);
   const { setTheme } = useTheme();
   const { theme } = useTheme();
 
+  const handleLogout = async () => {
+    await logout();
+    window.location.href = "/";
+  };
+
   return (
     <>
-      {user.isLoggedIn && (
+      {isLoggedIn && (
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Avatar>
               <AvatarFallback>
-                {user.userName && user.userName.length > 0 ? (
-                  user.userName.charAt(0).toUpperCase()
+                {auth.user?.userName && auth.user.userName.length > 0 ? (
+                  auth.user.userName.charAt(0).toUpperCase()
                 ) : (
                   <LogIn size={16} />
                 )}
@@ -126,7 +133,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({ setIsLoginOpen }) => {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Button variant="ghost" onClick={() => dispatch(logoutUser())}>
+              <Button variant="ghost" onClick={handleLogout}>
                 <LogOut />
                 Log Out
               </Button>
@@ -134,7 +141,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({ setIsLoginOpen }) => {
           </DropdownMenuContent>
         </DropdownMenu>
       )}
-      {!user.isLoggedIn && (
+      {!isLoggedIn && (
         <Button
           variant="ghost"
           size="icon"

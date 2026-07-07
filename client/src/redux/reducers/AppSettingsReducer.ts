@@ -9,7 +9,7 @@ import type {
   ReadingFontType,
   SortByType,
 } from "../../types/AppSettings";
-import { api } from "@/api";
+import { api } from "@/utils/api";
 
 const initialState: AppSettings = {
   showLibraryAsHome: true,

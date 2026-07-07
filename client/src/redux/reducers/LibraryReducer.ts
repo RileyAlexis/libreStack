@@ -6,7 +6,7 @@ import {
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { LibraryType } from "../../types/LibraryType";
 import type { BookType } from "../../types/BookType";
-import { api } from "@/api";
+import { api } from "@/utils/api";
 
 export const fetchLibraryData = createAsyncThunk(
   "library/fetchLibraryData",

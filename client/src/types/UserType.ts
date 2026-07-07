@@ -1,4 +1,5 @@
 export interface UserType {
+  id: string;
   userName: string;
-  isLoggedIn: boolean;
+  email: string;
 }

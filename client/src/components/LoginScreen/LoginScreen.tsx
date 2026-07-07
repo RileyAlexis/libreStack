@@ -1,8 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
-import { setUser } from "../../redux/reducers/userReducer";
+import { setTokens, setUser } from "@/redux/reducers/AuthReducer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -11,6 +10,7 @@ import { AlertCircle } from "lucide-react";
 import "./LoginScreen.css";
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 import type { AppDispatch } from "@/redux/store";
+import { api } from "@/utils/api";
 
 interface LoginScreenProps {
   setIsLoginOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -18,7 +18,7 @@ interface LoginScreenProps {
 
 export const LoginScreen: React.FC<LoginScreenProps> = ({ setIsLoginOpen }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const naviagate = useNavigate();
+  const navigate = useNavigate();
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -26,21 +26,39 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ setIsLoginOpen }) => {
   const [errMessage, setErrMessage] = useState("");
   const [registerNew, setRegisterNew] = useState(false);
 
+  const completeLogin = () => {
+    return api
+      .post("/Auth/login", { username, password })
+      .then((response) => {
+        dispatch(
+          setTokens({
+            accessToken: response.data.accessToken,
+            refreshToken: response.data.refreshToken,
+          }),
+        );
+        return api.get("/Auth/user");
+      })
+      .then((response) => {
+        dispatch(setUser(response.data));
+        dispatch(fetchLibraryData());
+        setIsLoginOpen(false);
+        navigate("/");
+      });
+  };
+
   const submitLogin = () => {
     setErrMessage("");
     if (username !== "" && password !== "") {
       if (registerNew) {
         if (password === confirmPassword) {
-          axios
-            .post("/api/auth/register", { username, email, password })
+          api
+            .post("/Auth/register", { username, email, password })
             .then(() => {
               setErrMessage("");
               setPassword("");
               setConfirmPassword("");
               setRegisterNew(false);
-              dispatch(setUser({ userName: username, isLoggedIn: true }));
-              setIsLoginOpen(false);
-              naviagate("/");
+              return completeLogin();
             })
             .catch((error) => {
               setErrMessage(error.response.data.message);
@@ -50,25 +68,13 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ setIsLoginOpen }) => {
           return;
         }
       } else {
-        axios
-          .post("/api/auth/login", { username, password })
-          .then((response) => {
-            const token = response.data.accessToken;
-            const refreshToken = response.data.refreshToken;
-            localStorage.setItem("accessToken", token);
-            localStorage.setItem("refreshToken", refreshToken);
-            dispatch(setUser({ userName: username, isLoggedIn: true }));
-            dispatch(fetchLibraryData());
-            setIsLoginOpen(false);
-            naviagate("/");
-          })
-          .catch((error) => {
-            if (error.response.message === "User not Found") {
-              setErrMessage("User not Found");
-            } else {
-              setErrMessage(error.response.data.message);
-            }
-          });
+        completeLogin().catch((error) => {
+          if (error.response?.data?.message === "User not Found") {
+            setErrMessage("User not Found");
+          } else {
+            setErrMessage(error.response?.data?.message ?? "Login failed");
+          }
+        });
       }
     }
   };

@@ -21,11 +21,10 @@ export const Library: React.FC = () => {
 
   const libraryData = useSelector((state: LibreRootState) => state.library);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
-  const user = useSelector((state: LibreRootState) => state.user);
 
   useEffect(() => {
     dispatch(fetchLibraryData());
-  }, [location.pathname, user.isLoggedIn, user.userName]);
+  }, [location.pathname]);
 
   return (
     <div className="libraryContainer">

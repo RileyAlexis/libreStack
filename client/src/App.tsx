@@ -1,8 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router";
-import axios from "axios";
 
-import { api } from "./api";
+import { api } from "./utils/api";
 import { Route, Routes, useLocation } from "react-router";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -13,7 +12,10 @@ import {
   saveUserSettings,
   fetchUserSettings,
 } from "./redux/reducers/AppSettingsReducer";
-import { setUser } from "./redux/reducers/userReducer";
+import { setUser } from "./redux/reducers/AuthReducer";
+
+// UI
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 // Components
 import { Setup } from "./components/Setup/ Setup";
@@ -23,6 +25,7 @@ import { Reader } from "./components/Reader/Reader";
 import { Library } from "./components/Library/Library";
 import { BottomControls } from "./components/BottomControls/BottomControls";
 import type { LibreRootState } from "./types/LibreRootState";
+import { LoginScreen } from "./components/LoginScreen/LoginScreen";
 
 import "./App.css";
 import { SeriesManager } from "./components/SeriesManager/SeriesManager";
@@ -31,11 +34,15 @@ function App() {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const location = useLocation();
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [showClose, _] = useState<boolean>(true);
   const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
-  const user = useSelector((state: LibreRootState) => state.user);
+  const accessToken = useSelector(
+    (state: LibreRootState) => state.auth.accessToken,
+  );
+
   const hasInitialized = useRef(false);
-  const isFetching = useRef(false);
 
   useEffect(() => {
     api
@@ -47,63 +54,41 @@ function App() {
       })
       .catch((error) => console.error(error));
 
-    const runLogin = () => {
-      api
-        .get("/Auth/user")
-        .then((response) => {
-          if (response.status === 200) {
-            dispatch(
-              setUser({ userName: response.data.userName, isLoggedIn: true }),
-            );
-            isFetching.current = true;
-            dispatch(fetchUserSettings());
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          const refreshToken = localStorage.getItem("refreshToken");
-          if (!refreshToken) navigate("/login");
-          axios
-            .post("/api/auth/refresh", { refreshToken: refreshToken })
-            .then((response) => {
-              const token = response.data.token;
-              const refreshToken = response.data.refreshToken;
-              localStorage.setItem("authToken", token);
-              localStorage.setItem("refreshToken", refreshToken);
-              api
-                .get("/auth/user")
-                .then((response) => {
-                  dispatch(
-                    setUser({
-                      userName: response.data.userName,
-                      isLoggedIn: true,
-                    }),
-                  );
-                  isFetching.current = true;
-                  dispatch(fetchUserSettings());
-                })
-                .catch((_) => {
-                  navigate("/login");
-                });
-            });
-        });
-      isFetching.current = false;
-    };
-
-    if (!user.isLoggedIn) runLogin();
-
-    if (appSettings.showLibraryAsHome && location.pathname === "/") {
-      navigate("/library");
-    } else if (location.pathname === "/") {
-      navigate("/serverStats");
+    if (!accessToken) {
+      setIsLoginOpen(true);
+      return;
     }
-  }, [location.pathname, user.isLoggedIn]);
 
+    api
+      .get("/Auth/user")
+      .then((response) => {
+        dispatch(setUser(response.data));
+      })
+      .catch(() => {
+        // apiClient's 401 interceptor already tried refreshing and failed
+        setIsLoginOpen(true);
+      });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Fetch settings once authenticated
   useEffect(() => {
+    if (!accessToken) return;
+
     dispatch(fetchUserSettings()).finally(() => {
       hasInitialized.current = true;
     });
-  }, [dispatch]);
+  }, [accessToken, dispatch]);
+
+  // Routing based on home preference
+  useEffect(() => {
+    if (location.pathname !== "/") return;
+
+    if (appSettings.showLibraryAsHome) {
+      navigate("/library");
+    } else {
+      navigate("/serverStats");
+    }
+  }, [location.pathname, appSettings.showLibraryAsHome, navigate]);
 
   useEffect(() => {
     if (!hasInitialized.current) return;
@@ -175,6 +160,11 @@ function App() {
           }
         />
       </Routes>
+      <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
+        <DialogContent showCloseButton={showClose}>
+          <LoginScreen setIsLoginOpen={setIsLoginOpen} />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { api } from "../../api";
+import { api } from "../../utils/api";
 
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";

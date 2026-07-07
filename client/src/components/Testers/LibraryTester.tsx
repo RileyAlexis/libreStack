@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { api } from "../../api";
+import { api } from "../../utils/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel, FieldDescription } from "../ui/field";

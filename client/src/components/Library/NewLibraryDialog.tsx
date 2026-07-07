@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "@/redux/store";
-import { api } from "@/api";
+import { api } from "@/utils/api";
 
 // Actions
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router";
-import { api } from "../../api";
+import { api } from "../../utils/api";
 import Epub, { Book, Rendition, type Location } from "@likecoin/epub-ts";
 
 import "./Reader.css";

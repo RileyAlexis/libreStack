@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 // import type { AppDispatch } from "@/redux/store";
 import type { SeriesType } from "@/types/BookType";
 // import type { LibreRootState } from "@/types/LibreRootState";
-import { api } from "@/api";
+import { api } from "@/utils/api";
 
 // UI
 import {

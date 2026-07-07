@@ -1,10 +1,11 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
+
 // import type { Middleware, UnknownAction } from "@reduxjs/toolkit";
 
-import userSlice from "./reducers/userReducer";
 import libraryReducer from "./reducers/LibraryReducer";
 import appSettingsSlice from "./reducers/AppSettingsReducer";
 import selectionSlice from "./reducers/SelectedReducer";
+import authSlice from "./reducers/AuthReducer";
 
 // const logger: Middleware = (store) => (next) => (action) => {
 //   if (import.meta.env.DEV) {
@@ -20,10 +21,10 @@ import selectionSlice from "./reducers/SelectedReducer";
 // };
 
 const allReducers = combineReducers({
-  user: userSlice,
   library: libraryReducer,
   appSettings: appSettingsSlice,
   selections: selectionSlice,
+  auth: authSlice,
 });
 
 const storeInstance = configureStore({
