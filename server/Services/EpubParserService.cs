@@ -87,6 +87,7 @@ public class EpubParserService : IEpubParseService
                     ?? string.Empty,
                 LCCN = metaData.Identifiers
                     .FirstOrDefault(i => i.Scheme?.ToUpper() == "LCCN")?.Identifier,
+                AddedDate = DateTime.UtcNow
             };
         }
         catch (Exception ex)

@@ -27,6 +27,7 @@ public class ApiBook
     public string? Language { get; set; } = null;
     public int? CollectionId { get; set; }
     public ApiSeries? Series { get; set; }
+    public DateTime AddedDate { get; set; }
 
     [JsonIgnore]
     public ICollection<BookTag> BookTags { get; set; } = new List<BookTag>();

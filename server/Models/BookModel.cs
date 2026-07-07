@@ -32,6 +32,7 @@ public class Book
     public required string EpubPath { get; set; }
     public DateTime OpenLibraryMetadataLastUpdated { get; set; }
     public DateTime WikidataMetaLastUpdated { get; set; }
+    public DateTime AddedDate { get; set; }
 
     [JsonIgnore]
     public ICollection<Library> Libraries { get; set; } = new List<Library>();

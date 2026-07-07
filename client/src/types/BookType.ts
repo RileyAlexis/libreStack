@@ -45,4 +45,5 @@ export interface BookType {
   bookmarks: BookmarkType[];
   readingProgress: ReadingProgress;
   contentType: string;
+  addedDate: Date;
 }
