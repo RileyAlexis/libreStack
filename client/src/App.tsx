@@ -34,6 +34,7 @@ function App() {
   const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const user = useSelector((state: LibreRootState) => state.user);
+  const hasInitialized = useRef(false);
   const isFetching = useRef(false);
 
   useEffect(() => {
@@ -99,18 +100,20 @@ function App() {
   }, [location.pathname, user.isLoggedIn]);
 
   useEffect(() => {
-    if (!user.isLoggedIn) return;
-    if (isFetching.current) {
-      isFetching.current = false;
-      return;
-    }
+    dispatch(fetchUserSettings()).finally(() => {
+      hasInitialized.current = true;
+    });
+  }, [dispatch]);
 
-    const timer = setTimeout(() => {
+  useEffect(() => {
+    if (!hasInitialized.current) return;
+
+    const timeoutId = setTimeout(() => {
       dispatch(saveUserSettings(appSettings));
-    }, 1000);
+    }, 500);
 
-    return () => clearTimeout(timer);
-  }, [appSettings]);
+    return () => clearTimeout(timeoutId);
+  }, [appSettings, dispatch]);
 
   return (
     <div className="primaryContainer">
