@@ -1,6 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
 import type { LibreRootState } from "@/types/LibreRootState";
-import type { Dispatch, SetStateAction } from "react";
 import type { AppDispatch } from "@/redux/store";
 
 // Actions
@@ -28,11 +27,7 @@ import {
 } from "@/components/ui/tooltip";
 import { Label } from "../ui/label";
 
-interface MainMenuProps {
-  setIsLoginOpen: Dispatch<SetStateAction<boolean>>;
-}
-
-export const MainMenu: React.FC<MainMenuProps> = ({ setIsLoginOpen }) => {
+export const MainMenu: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const auth = useSelector((state: LibreRootState) => state.auth);
@@ -142,11 +137,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({ setIsLoginOpen }) => {
         </DropdownMenu>
       )}
       {!isLoggedIn && (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsLoginOpen(true)}
-        >
+        <Button variant="ghost" size="icon" onClick={handleLogout}>
           <Avatar>
             <AvatarFallback>
               <LogIn size={16} />
