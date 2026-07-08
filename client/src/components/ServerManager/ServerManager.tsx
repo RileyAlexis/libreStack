@@ -18,6 +18,7 @@ import {
   FieldDescription,
 } from "../ui/field";
 import { Input } from "../ui/input";
+import { toast } from "sonner";
 
 // Components
 import { ServerSwitchBox } from "./ServerSwitchBox";
@@ -32,6 +33,12 @@ export const ServerManager: React.FC = () => {
   const [isServerLoading, setIsServerLoading] = useState(false);
   //   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
 
+  function ErrorSonner() {
+    toast("Error: ", {
+      description: "User not authorized",
+    });
+  }
+
   useEffect(() => {
     setIsServerLoading(true);
     api
@@ -42,6 +49,7 @@ export const ServerManager: React.FC = () => {
       })
       .catch((error) => {
         console.error(error);
+        ErrorSonner();
       })
       .finally(() => setIsServerLoading(false));
   }, []);
@@ -60,6 +68,7 @@ export const ServerManager: React.FC = () => {
       })
       .catch((error) => {
         console.error(error);
+        ErrorSonner();
       });
   }, []);
 
@@ -76,6 +85,7 @@ export const ServerManager: React.FC = () => {
       api.post("config/saveConfig", updated).catch((error) => {
         console.error(error);
         setServerSettings(previous);
+        ErrorSonner();
       });
 
       return updated;

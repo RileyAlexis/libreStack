@@ -43,6 +43,9 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ setIsLoginOpen }) => {
         dispatch(fetchLibraryData());
         setIsLoginOpen(false);
         navigate("/");
+      })
+      .catch((error) => {
+        setErrMessage(error.response.data[0].description);
       });
   };
 
@@ -61,7 +64,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ setIsLoginOpen }) => {
               return completeLogin();
             })
             .catch((error) => {
-              setErrMessage(error.response.data.message);
+              setErrMessage(error.response.data[0].description);
             });
         } else {
           setErrMessage("Passwords do not Match");
