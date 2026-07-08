@@ -37,7 +37,6 @@ public class AuthService : IAuthService
     public async Task<IdentityResult> RegisterAsync(RegisterRequest request)
     {
         var config = await _dbContext.LibreStackConfig.FirstOrDefaultAsync();
-
         if (!config!.AllowNewUsers)
         {
             return IdentityResult.Failed(new IdentityError
@@ -48,10 +47,18 @@ public class AuthService : IAuthService
         }
 
         var user = new IdentityUser { UserName = request.Username, Email = request.Email };
+        var createResult = await _userManager.CreateAsync(user, request.Password);
+
+        if (!createResult.Succeeded)
+        {
+            return createResult;
+        }
+
         var userSettings = new UserSettings { UserId = user.Id };
         _dbContext.UserSettings.Add(userSettings);
         await _dbContext.SaveChangesAsync();
-        return await _userManager.CreateAsync(user, request.Password);
+
+        return createResult;
     }
 
     public Task LogoutAsync()

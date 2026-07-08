@@ -115,3 +115,19 @@ h5 {
 .scanIntervalField .field-content {
   flex: 1;
 }
+
+.pathBox {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.25em;
+}
+
+.pathEditContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.25em;
+}

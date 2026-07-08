@@ -2,6 +2,7 @@ namespace Librestack.Models;
 
 public class LibraryStats
 {
+    public int LibraryId { get; set; }
     public string? LibraryName { get; set; }
     public int BookCount { get; set; }
     public double StorageSizeKb { get; set; }

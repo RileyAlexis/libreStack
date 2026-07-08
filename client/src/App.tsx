@@ -30,6 +30,7 @@ import { LoginScreen } from "./components/LoginScreen/LoginScreen";
 import "./App.css";
 import { SeriesManager } from "./components/SeriesManager/SeriesManager";
 import { ServerManager } from "./components/ServerManager/ServerManager";
+import { Toaster } from "./components/ui/sonner";
 
 function App() {
   const navigate = useNavigate();
@@ -175,6 +176,7 @@ function App() {
           <LoginScreen setIsLoginOpen={setIsLoginOpen} />
         </DialogContent>
       </Dialog>
+      <Toaster />
     </div>
   );
 }

@@ -22,6 +22,7 @@ import { toast } from "sonner";
 
 // Components
 import { ServerSwitchBox } from "./ServerSwitchBox";
+import { ServerLibraryStats } from "./ServerLibraryStats";
 
 import "./ServerManager.css";
 
@@ -140,26 +141,11 @@ export const ServerManager: React.FC = () => {
           {serverStats?.libraryStats &&
             !isServerLoading &&
             serverStats.libraryStats.map((item) => (
-              <div className="libraryStatsBox" key={item.libraryName}>
-                <div>
-                  <h4>{item.libraryName}</h4>
-                  <ul>
-                    <li>Books: {item.bookCount}</li>
-                    <li>Authors: {item.authorCount}</li>
-                    <li>Series: {item.seriesCount}</li>
-                    <li>Read: {item.completedBookCount}</li>
-                    <li>Path : {item.libraryPath}</li>
-                    <li>
-                      Storage Size :{" "}
-                      {formatStorageSize(item?.storageSizeKb ?? 0)}
-                    </li>
-                    <li>
-                      Free Disk Space :{" "}
-                      {formatStorageSize(item?.driveFreeSpace ?? 0)}
-                    </li>
-                  </ul>
-                </div>
-              </div>
+              <ServerLibraryStats
+                item={item}
+                setServerStats={setServerStats}
+                key={item.libraryName}
+              />
             ))}
         </div>
       </div>

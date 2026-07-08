@@ -156,10 +156,10 @@ public class LibraryService : ILibraryService
         return Result.Success();
     }
 
-    public async Task<Result> UpdateLibrary(string userId, int libraryId, Library library)
+    public async Task<Result> UpdateLibrary(string userId, int libraryId, string libraryName, string libraryPath)
     {
         var existing = await _db.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId && l.UserId == userId);
-        if (library is null)
+        if (existing is null)
             return Result.Failure("Library not found", ErrorType.NotFound);
 
         var config = await _db.LibreStackConfig.FirstOrDefaultAsync();
@@ -167,7 +167,9 @@ public class LibraryService : ILibraryService
         if (!config!.AllowLibraryUpdates)
             return Result.Failure("Server settings do not allow updating library information", ErrorType.Forbidden);
 
-        existing = library;
+        existing.LibraryPath = libraryPath;
+        existing.Name = libraryName;
+
         _db.Libraries.Update(existing);
         await _db.SaveChangesAsync();
         return Result.Success();

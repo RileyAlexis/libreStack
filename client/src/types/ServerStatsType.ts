@@ -1,4 +1,5 @@
 export interface LibraryStatsType {
+  libraryId: number | null;
   libraryName: string | null;
   bookCount: number;
   storageSizeKb: number;

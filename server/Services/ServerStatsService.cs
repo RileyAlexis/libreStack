@@ -98,6 +98,7 @@ public class ServerStatsService : IServerStatsService
 
         var libraryStatsList = libraries.Select(l => new LibraryStats
         {
+            LibraryId = l.Id,
             LibraryName = l.Name,
             BookCount = l.Books.Count(),
             AuthorCount = l.Books.Where(b => b.Author != null).Select(b => b.Author).Distinct().Count(),
