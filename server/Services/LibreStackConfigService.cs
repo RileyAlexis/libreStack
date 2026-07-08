@@ -26,30 +26,32 @@ public class LibreStackConfigService : ILibreStackConfigService
 
     }
 
-    public async Task<List<LibreStackConfig>> GetConfigData()
+    public async Task<Result<LibreStackConfig>> GetConfigData()
     {
-        var configData = await _db.LibreStackConfig.ToListAsync();
-        if (configData is null)
-            return null;
+        var configData = await _db.LibreStackConfig.FirstOrDefaultAsync();
 
-        return configData;
+        if (configData is null)
+            return Result<LibreStackConfig>.Failure("No config data found - complete setup", ErrorType.NotFound);
+
+        return Result<LibreStackConfig>.Success(configData);
     }
 
-    public async Task<bool> SaveConfig(LibreStackConfig config)
+    public async Task<Result> SaveConfig(LibreStackConfig config)
     {
-        if (config.Id == 0)
+        var existingConfig = await _db.LibreStackConfig.FirstOrDefaultAsync();
+
+        if (existingConfig is null)
         {
             _db.LibreStackConfig.Add(config);
-            await _db.SaveChangesAsync();
         }
         else
         {
-            _db.LibreStackConfig.Update(config);
-            await _db.SaveChangesAsync();
+            config.Id = existingConfig.Id;
+            _db.Entry(existingConfig).CurrentValues.SetValues(config);
         }
-        _db.SaveChanges();
-        return true;
 
+        await _db.SaveChangesAsync();
+        return Result.Success();
     }
 
     public async Task<Result> MarkSetupAsComplete(bool isComplete)

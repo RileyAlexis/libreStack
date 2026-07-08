@@ -1,4 +1,4 @@
-export interface LibraryStats {
+export interface LibraryStatsType {
   libraryName: string | null;
   bookCount: number;
   storageSizeKb: number;
@@ -10,8 +10,8 @@ export interface LibraryStats {
   driveFreeSpace: number;
 }
 
-export interface ServerStats {
-  libraryStats: LibraryStats[] | null;
+export interface ServerStatsType {
+  libraryStats: LibraryStatsType[] | null;
   totalBooks: number;
   totalStorageSizeKB: number;
   totalAuthorCount: number;

@@ -8,6 +8,7 @@ using Librestack.Database;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Librestack.Services;
 
@@ -35,6 +36,17 @@ public class AuthService : IAuthService
 
     public async Task<IdentityResult> RegisterAsync(RegisterRequest request)
     {
+        var config = await _dbContext.LibreStackConfig.FirstOrDefaultAsync();
+
+        if (!config!.AllowNewUsers)
+        {
+            return IdentityResult.Failed(new IdentityError
+            {
+                Code = "Forbidden",
+                Description = "Server settings do not allow registering of new users"
+            });
+        }
+
         var user = new IdentityUser { UserName = request.Username, Email = request.Email };
         var userSettings = new UserSettings { UserId = user.Id };
         _dbContext.UserSettings.Add(userSettings);

@@ -3,6 +3,7 @@ using System;
 using Librestack.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace libreStack.Migrations
 {
     [DbContext(typeof(LibrestackDbContext))]
-    partial class LibrestackDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260708131857_configSettings")]
+    partial class configSettings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -229,6 +232,7 @@ namespace libreStack.Migrations
                         .HasColumnName("name");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("user_id");
 
@@ -251,10 +255,6 @@ namespace libreStack.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("allow_delete_from_disk");
 
-                    b.Property<bool>("AllowLibraryUpdates")
-                        .HasColumnType("boolean")
-                        .HasColumnName("allow_library_updates");
-
                     b.Property<bool>("AllowNewLibraries")
                         .HasColumnType("boolean")
                         .HasColumnName("allow_new_libraries");
@@ -262,10 +262,6 @@ namespace libreStack.Migrations
                     b.Property<bool>("AllowNewUsers")
                         .HasColumnType("boolean")
                         .HasColumnName("allow_new_users");
-
-                    b.Property<bool>("AllowRemoveBooksFromLibrary")
-                        .HasColumnType("boolean")
-                        .HasColumnName("allow_remove_books_from_library");
 
                     b.Property<bool>("AllowUploadToLibrary")
                         .HasColumnType("boolean")

@@ -2,6 +2,7 @@ using Librestack.Database;
 using Librestack.Interfaces;
 using Librestack.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -45,20 +46,41 @@ public class ServerStatsService : IServerStatsService
     {
         try
         {
-            string fullPath = Path.GetFullPath(path);
-
-            DriveInfo? drive = DriveInfo.GetDrives()
-                .Where(d => d.IsReady && fullPath.StartsWith(d.RootDirectory.FullName, StringComparison.Ordinal))
-                .OrderByDescending(d => d.RootDirectory.FullName.Length)
-                .FirstOrDefault();
-
-            if (drive == null)
+            var psi = new ProcessStartInfo
             {
-                _logger.LogError($"Could not find mount point for {path}");
+                FileName = "df",
+                ArgumentList = { "-Pk", path },
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            };
+
+            using var process = Process.Start(psi);
+            if (process == null)
+            {
+                _logger.LogError($"Could not start df process for {path}");
                 return 0;
             }
 
-            return drive.AvailableFreeSpace;
+            string output = process.StandardOutput.ReadToEnd();
+            process.WaitForExit();
+
+            var lines = output.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+            if (lines.Length < 2)
+            {
+                _logger.LogError($"Unexpected df output for {path}: {output}");
+                return 0;
+            }
+
+            // Line format: Filesystem  1024-blocks  Used  Available  Capacity  Mounted-on
+            var fields = lines[1].Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (fields.Length < 4 || !long.TryParse(fields[3], out long availableKb))
+            {
+                _logger.LogError($"Could not parse df output for {path}: {lines[1]}");
+                return 0;
+            }
+
+            return availableKb * 1024; // bytes, matching DriveInfo.AvailableFreeSpace's unit
         }
         catch (Exception ex)
         {

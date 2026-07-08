@@ -1,5 +1,12 @@
 .serverManagerContainer {
   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.serverStatsContainer {
+  display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
@@ -7,7 +14,8 @@
   margin-left: 2em;
   margin-top: 1em;
   gap: 1em;
-  max-height: 90vh;
+  max-height: 88vh;
+  overflow-y: auto;
 }
 
 .serverStatsCard {
@@ -80,4 +88,30 @@ h5 {
   font-size: 0.95em;
   font-weight: 400;
   color: var(--card-foreground);
+}
+
+.serverConfigContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 55%;
+  margin-right: 2em;
+  margin-top: 1em;
+  gap: 1em;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+
+.serverSwitchesContainer > h4 {
+  margin-bottom: 0.5em;
+}
+
+.scanIntervalField input {
+  width: 5rem;
+  flex-shrink: 0;
+}
+
+.scanIntervalField .field-content {
+  flex: 1;
 }

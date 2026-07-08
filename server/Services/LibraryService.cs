@@ -42,6 +42,13 @@ public class LibraryService : ILibraryService
         if (string.IsNullOrWhiteSpace(userId) || library is null)
             return Result<Library>.Failure("User Id and library are required", ErrorType.BadRequest);
 
+        var config = await _db.LibreStackConfig.FirstOrDefaultAsync();
+
+        if (!config!.AllowNewLibraries)
+        {
+            return Result<Library>.Failure("Server settings does not allow new libraries", ErrorType.Forbidden);
+        }
+
         library.UserId = userId;
         await _db.Libraries.AddAsync(library);
         await _db.SaveChangesAsync();
@@ -154,6 +161,11 @@ public class LibraryService : ILibraryService
         var existing = await _db.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId && l.UserId == userId);
         if (library is null)
             return Result.Failure("Library not found", ErrorType.NotFound);
+
+        var config = await _db.LibreStackConfig.FirstOrDefaultAsync();
+
+        if (!config!.AllowLibraryUpdates)
+            return Result.Failure("Server settings do not allow updating library information", ErrorType.Forbidden);
 
         existing = library;
         _db.Libraries.Update(existing);

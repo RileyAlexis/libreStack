@@ -45,6 +45,13 @@ public class BookService : IBookService
         if (file is null || file.Length == 0)
             return Result.Failure("File not found", ErrorType.NotFound);
 
+        var config = await _db.LibreStackConfig.FirstOrDefaultAsync();
+
+        if (!config!.AllowUploadToLibrary)
+        {
+            return Result.Failure("Server does not allow uploading of new books", ErrorType.Forbidden);
+        }
+
         var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
         if (ext != ".epub")
             return Result.Failure("LibreStack currently only supports epub files", ErrorType.BadRequest);
@@ -94,8 +101,13 @@ public class BookService : IBookService
         if (bookEntry is null)
             return Result.Failure("Book id not found", ErrorType.NotFound);
 
+        var config = await _db.LibreStackConfig.FirstOrDefaultAsync();
+
+        if (!config!.AllowRemoveBooksFromLibrary)
+            return Result.Failure("Server settings do not allow removing books from library", ErrorType.Forbidden);
+
         var filePath = bookEntry.EpubPath;
-        if (filePath is not null && File.Exists(filePath))
+        if (filePath is not null && File.Exists(filePath) && config!.AllowDeleteFromDisk)
             File.Delete(filePath);
 
         if (bookEntry.Libraries is not null)

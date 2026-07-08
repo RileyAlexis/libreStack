@@ -32,10 +32,10 @@ public class ConfigController : ControllerBase
 
     [HttpGet("getConfig")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<List<LibreStackConfig>>> GetConfig()
+    public async Task<ActionResult<LibreStackConfig>> GetConfig()
     {
         var result = await _iLibreStackConfigService.GetConfigData();
-        return result;
+        return Ok(result);
     }
 
     [HttpPost("markSetupAsComplete")]
@@ -54,7 +54,10 @@ public class ConfigController : ControllerBase
     public async Task<IActionResult> SaveConfig(LibreStackConfig config)
     {
         var result = await _iLibreStackConfigService.SaveConfig(config);
-        return result ? Ok("Config Saved") : BadRequest("Error saving config");
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok(result);
     }
 
     [HttpGet("serverStats")]

@@ -5,7 +5,7 @@ namespace Librestack.Interfaces;
 public interface ILibreStackConfigService
 {
     Task<Result> MarkSetupAsComplete(bool isComplete);
-    Task<List<LibreStackConfig>> GetConfigData();
-    Task<bool> SaveConfig(LibreStackConfig config);
+    Task<Result<LibreStackConfig>> GetConfigData();
+    Task<Result> SaveConfig(LibreStackConfig config);
     Task<bool> CheckIfSetupComplete();
 }
