@@ -237,7 +237,7 @@ export const ServerManager: React.FC = () => {
                 id="switch-attemptSeriesParsing"
                 fieldKey="attemptSeriesParsing"
                 title="Enable Attempted Series Parsing"
-                description="Experimental: If enabled LibreStack will attempt to get a series name and order from the epub title and the file name."
+                description="Experimental: If enabled LibreStack will attempt to get a series name and order from the epub title and the file name when a book is added."
                 checked={serverSettings?.attemptSeriesParsing ?? false}
                 onCheckedChange={handleServerSettingChange}
               />
