@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { AppDispatch } from "@/redux/store";
+import { useNavigate } from "react-router";
 
 // Actions
 import { switchLibraryAsHome } from "@/redux/reducers/AppSettingsReducer";
@@ -18,7 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ButtonGroup, ButtonGroupText } from "../ui/button-group";
-import { Sun, Moon, Rainbow, LogIn, LogOut } from "lucide-react";
+import { Sun, Moon, Rainbow, LogIn, LogOut, Landmark, Cog } from "lucide-react";
 import { Switch } from "../ui/switch";
 import {
   Tooltip,
@@ -29,6 +30,7 @@ import { Label } from "../ui/label";
 
 export const MainMenu: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const auth = useSelector((state: LibreRootState) => state.auth);
   const isLoggedIn = Boolean(auth.accessToken);
@@ -56,15 +58,13 @@ export const MainMenu: React.FC = () => {
             </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="mainDropDownMenu">
-            <DropdownMenuItem>
-              <Switch
-                id="librarySwitch"
-                size="default"
-                checked={appSettings.showLibraryAsHome ? true : false}
-                onCheckedChange={() => dispatch(switchLibraryAsHome())}
-              />
-              <Label htmlFor="librarySwitch">Library as Home Page</Label>
+            <DropdownMenuItem onClick={() => navigate("/library")}>
+              <Landmark /> Library
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => navigate("/serverManager")}>
+              <Cog /> Settings
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
               <ButtonGroup>
                 <ButtonGroupText>
@@ -127,6 +127,15 @@ export const MainMenu: React.FC = () => {
               </ButtonGroup>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
+            <DropdownMenuItem>
+              <Switch
+                id="librarySwitch"
+                size="default"
+                checked={appSettings.showLibraryAsHome ? true : false}
+                onCheckedChange={() => dispatch(switchLibraryAsHome())}
+              />
+              <Label htmlFor="librarySwitch">Library as Home Page</Label>
+            </DropdownMenuItem>
             <DropdownMenuItem>
               <Button variant="ghost" onClick={handleLogout}>
                 <LogOut />
