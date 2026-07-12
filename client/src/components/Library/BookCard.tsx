@@ -10,8 +10,7 @@ import type { BookType } from "@/types/BookType";
 import type { LibreRootState } from "@/types/LibreRootState";
 
 // UI
-import { Button } from "../ui/button";
-import { Dialog } from "../ui/dialog";
+import { IconButton, Dialog, Menu, MenuItem, Tooltip } from "@mui/material";
 import {
   Circle,
   CircleCheck,
@@ -19,13 +18,6 @@ import {
   FileTextIcon,
   CircleCheckBig,
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "../ui/dropdown-menu";
-import { Tooltip, TooltipTrigger, TooltipContent } from "../ui/tooltip";
 
 import { BookCardDialog } from "./BookCardDialog";
 import "./BookCard.css";
@@ -49,6 +41,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const [isBookDialogOpen, setIsBookDialogOpen] = useState(false);
   const [isDescDialogOpen, setIsDescDialogOpen] = useState(false);
   const [isFixMismatchDialogOpen, setIsFixMismatchDialogOpen] = useState(false);
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const didLongPress = useRef(false);
   const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
@@ -137,6 +130,10 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
     dispatch(fetchLibraryData());
   };
 
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+  };
+
   const iconSize = {
     width:
       appSettings.libraryLayout.libraryCoverSize.width * coverMultiplier * 0.14,
@@ -178,9 +175,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
         }}
       >
         {!isSelected && (
-          <Button
-            variant="link"
-            size="icon"
+          <IconButton
             className="rounded-full"
             onClick={(e) => {
               e.stopPropagation();
@@ -188,13 +183,11 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
             }}
           >
             <Circle strokeWidth={2} className="bookIcon" style={iconSize} />
-          </Button>
+          </IconButton>
         )}
 
         {isSelected && (
-          <Button
-            variant="link"
-            size="icon"
+          <IconButton
             className="rounded-full"
             onClick={(e) => {
               e.stopPropagation();
@@ -206,13 +199,11 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
               className="bookIcon"
               style={iconSize}
             />
-          </Button>
+          </IconButton>
         )}
 
         <div className="metaDataButton">
-          <Button
-            variant="link"
-            size="icon"
+          <IconButton
             className="rounded-full"
             onClick={(e) => {
               e.stopPropagation();
@@ -224,68 +215,71 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
               className="bookIcon"
               style={iconSize}
             />
-          </Button>
+          </IconButton>
         </div>
 
         <div className="contextData">
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              onClick={(e) => {
-                e.stopPropagation();
+          <IconButton
+            onClick={(e) => {
+              e.stopPropagation();
+              setMenuAnchorEl(e.currentTarget);
+            }}
+          >
+            <EllipsisIcon
+              strokeWidth={2}
+              className="bookIcon"
+              style={iconSize}
+            />
+          </IconButton>
+          <Menu
+            anchorEl={menuAnchorEl}
+            open={Boolean(menuAnchorEl)}
+            onClose={handleMenuClose}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <MenuItem
+              onClick={() => {
+                setIsDescDialogOpen(true);
+                handleMenuClose();
               }}
             >
-              <EllipsisIcon
-                strokeWidth={2}
-                className="bookIcon"
-                style={iconSize}
-              />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsDescDialogOpen(true);
+              View Description
+            </MenuItem>
+            {book.readingProgress?.isComplete ? (
+              <MenuItem
+                onClick={() => {
+                  handleMarkIncomplete(book.id);
+                  handleMenuClose();
                 }}
               >
-                View Description
-              </DropdownMenuItem>
-              {book.readingProgress?.isComplete ? (
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleMarkIncomplete(book.id);
-                  }}
-                >
-                  Mark as Unfinished
-                </DropdownMenuItem>
-              ) : (
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleMarkComplete(book.id);
-                  }}
-                >
-                  Mark as Finished
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setIsFixMismatchDialogOpen(true);
+                Mark as Unfinished
+              </MenuItem>
+            ) : (
+              <MenuItem
+                onClick={() => {
+                  handleMarkComplete(book.id);
+                  handleMenuClose();
                 }}
               >
-                Fix Mismatch
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                Mark as Finished
+              </MenuItem>
+            )}
+            <MenuItem
+              onClick={() => {
+                setIsFixMismatchDialogOpen(true);
+                handleMenuClose();
+              }}
+            >
+              Fix Mismatch
+            </MenuItem>
+          </Menu>
         </div>
       </div>
 
       <div className="bookControlsIsRead">
         {book.readingProgress?.isComplete && (
-          <Tooltip>
-            <TooltipTrigger render={<CircleCheckBig color="green" />} />
-            <TooltipContent>Read</TooltipContent>
+          <Tooltip title="Read">
+            <CircleCheckBig color="green" />
           </Tooltip>
         )}
       </div>
@@ -321,19 +315,22 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
       </div>
 
       <div onClick={(e) => e.stopPropagation()}>
-        <Dialog open={isBookDialogOpen} onOpenChange={handleDialogClosing}>
+        <Dialog open={isBookDialogOpen} onClose={handleDialogClosing}>
           {isBookDialogOpen && <BookCardDialog bookId={book.id} />}
         </Dialog>
       </div>
       <div onClick={(e) => e.stopPropagation()}>
-        <Dialog open={isDescDialogOpen} onOpenChange={setIsDescDialogOpen}>
+        <Dialog
+          open={isDescDialogOpen}
+          onClose={() => setIsDescDialogOpen(false)}
+        >
           {isDescDialogOpen && <DescriptionDialog book={book} />}
         </Dialog>
       </div>
       <div onClick={(e) => e.stopPropagation()}>
         <Dialog
           open={isFixMismatchDialogOpen}
-          onOpenChange={setIsFixMismatchDialogOpen}
+          onClose={() => setIsFixMismatchDialogOpen(false)}
         >
           {isFixMismatchDialogOpen && (
             <FixMismatchDialog

@@ -21,25 +21,17 @@ import {
 
 // UI
 import {
-  Combobox,
-  ComboboxContent,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from "../ui/combobox";
-import {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "../ui/alert-dialog";
-import { ButtonGroup, ButtonGroupSeparator } from "../ui/button-group";
-import { Button } from "../ui/button";
+  Autocomplete,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  ButtonGroup,
+  Button,
+  Typography,
+} from "@mui/material";
 import { CircleXIcon, ArrowDownAZ, ArrowUpAZ } from "lucide-react";
-import { Label } from "../ui/label";
 
 import "./LibraryHeaderControls.css";
 import { api } from "@/utils/api";
@@ -51,7 +43,12 @@ export const LibraryHeaderControls: React.FC = () => {
   const library = useSelector((state: LibreRootState) => state.library);
   const selections = useSelector((state: LibreRootState) => state.selections);
 
-  const sortingOptions = ["Author", "Title", "Last Read", "Recently Added"];
+  const sortingOptions: SortByType[] = [
+    "Author",
+    "Title",
+    "Last Read",
+    "Recently Added",
+  ];
 
   const handleSortChange = (value: SortByType, ascending?: boolean) => {
     dispatch(setSortBy(value));
@@ -201,91 +198,104 @@ export const LibraryHeaderControls: React.FC = () => {
             </div>
             <div className="selectedMenuContainer">
               <ButtonGroup>
-                <Button variant="outline" size="xs" onClick={handleMarkAsRead}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={handleMarkAsRead}
+                >
                   Mark Read
                 </Button>
                 <Button
-                  variant="outline"
-                  size="xs"
+                  variant="outlined"
+                  size="small"
                   onClick={handleMarkAsUnread}
                 >
                   Mark Unread
                 </Button>
                 <Button
-                  variant="outline"
-                  size="xs"
+                  variant="outlined"
+                  size="small"
                   disabled={appSettings.isSyncing}
                   onClick={handleQueryOpenLibrary}
                 >
                   Query Open Library
                 </Button>
                 <Button
-                  variant="outline"
-                  size="xs"
+                  variant="outlined"
+                  size="small"
                   disabled={appSettings.isSyncing}
                   onClick={handleQueryWikidata}
                 >
                   Query Wikidata
                 </Button>
-                <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-                  <AlertDialogTrigger
-                    render={
-                      <Button variant="destructive" size="xs">
-                        Delete
-                      </Button>
-                    }
-                  />
-                  <AlertDialogContent>
-                    <AlertDialogHeader>Are you sure?</AlertDialogHeader>
-                    <AlertDialogDescription>
-                      This will permanently delete books from disk and they
-                      cannot be recovered.
-                    </AlertDialogDescription>
-                    <AlertDialogCancel variant="outline">
-                      Cancel
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      variant="destructive"
-                      onClick={handleDeleteSelections}
-                    >
-                      Delete!
-                    </AlertDialogAction>
-                  </AlertDialogContent>
-                </AlertDialog>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  color="error"
+                  onClick={() => setIsDeleteOpen(true)}
+                >
+                  Delete
+                </Button>
               </ButtonGroup>
+
+              <Dialog
+                open={isDeleteOpen}
+                onClose={() => setIsDeleteOpen(false)}
+              >
+                <DialogTitle>Are you sure?</DialogTitle>
+                <DialogContent>
+                  This will permanently delete books from disk and they cannot
+                  be recovered.
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                    variant="outlined"
+                    onClick={() => setIsDeleteOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={handleDeleteSelections}
+                  >
+                    Delete!
+                  </Button>
+                </DialogActions>
+              </Dialog>
             </div>
           </div>
         )}
         <div className="sortingContainer">
           <ButtonGroup>
-            <Button variant="outline" size="icon" onClick={handleAscending}>
-              <ArrowDownAZ />
+            <Button variant="outlined" onClick={handleAscending}>
+              <ArrowDownAZ size={18} />
             </Button>
-            <ButtonGroupSeparator />
-            <Button variant="outline" size="icon" onClick={handleDescending}>
-              <ArrowUpAZ />
+            <Button variant="outlined" onClick={handleDescending}>
+              <ArrowUpAZ size={18} />
             </Button>
           </ButtonGroup>
-          <Label id="sortingLabel" htmlFor="sortingCombo">
-            Sort By:{" "}
-          </Label>
-          <Combobox
-            id="sortingCombo"
-            items={sortingOptions}
-            value={appSettings.libraryLayout.sortBy}
-            onValueChange={(value) => handleSortChange(value)}
+          <Typography
+            id="sortingLabel"
+            component="label"
+            htmlFor="sortingCombo"
           >
-            <ComboboxInput placeholder="Sort by" />
-            <ComboboxContent>
-              <ComboboxList>
-                {(item) => (
-                  <ComboboxItem key={item} value={item}>
-                    {item}
-                  </ComboboxItem>
-                )}
-              </ComboboxList>
-            </ComboboxContent>
-          </Combobox>
+            Sort By:{" "}
+          </Typography>
+          <Autocomplete<SortByType, false, true>
+            id="sortingCombo"
+            size="small"
+            disableClearable
+            options={sortingOptions}
+            value={appSettings.libraryLayout.sortBy ?? "Recently Added"}
+            onChange={(_, value) => {
+              if (value) handleSortChange(value);
+            }}
+            sx={{ minWidth: 180 }}
+            renderInput={(params) => (
+              <TextField {...params} placeholder="Sort by" />
+            )}
+          />
         </div>
       </div>
     </div>

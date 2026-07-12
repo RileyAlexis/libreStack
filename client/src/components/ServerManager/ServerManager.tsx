@@ -8,17 +8,15 @@ import type { ServerConfigType } from "@/types/ServerConfigType";
 import { formatStorageSize } from "@/utils/formatter";
 
 // UI
-import { Skeleton } from "../ui/skeleton";
-import { FieldGroup } from "../ui/field";
 import {
-  FieldLabel,
-  Field,
-  FieldContent,
-  FieldTitle,
-  FieldDescription,
-} from "../ui/field";
-import { Input } from "../ui/input";
-import { toast } from "sonner";
+  Skeleton,
+  Stack,
+  Box,
+  TextField,
+  Typography,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 
 // Components
 import { ServerSwitchBox } from "./ServerSwitchBox";
@@ -32,13 +30,28 @@ export const ServerManager: React.FC = () => {
   const [serverSettings, setServerSettings] = useState<ServerConfigType>();
   const [serverHealth, setServerHealth] = useState<any>();
   const [isServerLoading, setIsServerLoading] = useState(false);
+  const [toast, setToast] = useState<{
+    open: boolean;
+    message: string;
+    description?: string;
+  }>({ open: false, message: "" });
   //   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
 
-  function ErrorSonner() {
-    toast("Error: ", {
+  const showErrorToast = () => {
+    setToast({
+      open: true,
+      message: "Error",
       description: "User not authorized",
     });
-  }
+  };
+
+  const handleToastClose = (
+    _?: React.SyntheticEvent | Event,
+    reason?: string,
+  ) => {
+    if (reason === "clickaway") return;
+    setToast((prev) => ({ ...prev, open: false }));
+  };
 
   useEffect(() => {
     setIsServerLoading(true);
@@ -50,7 +63,7 @@ export const ServerManager: React.FC = () => {
       })
       .catch((error) => {
         console.error(error);
-        ErrorSonner();
+        showErrorToast();
       })
       .finally(() => setIsServerLoading(false));
   }, []);
@@ -69,7 +82,7 @@ export const ServerManager: React.FC = () => {
       })
       .catch((error) => {
         console.error(error);
-        ErrorSonner();
+        showErrorToast();
       });
   }, []);
 
@@ -86,7 +99,7 @@ export const ServerManager: React.FC = () => {
       api.post("config/saveConfig", updated).catch((error) => {
         console.error(error);
         setServerSettings(previous);
-        ErrorSonner();
+        showErrorToast();
       });
 
       return updated;
@@ -95,12 +108,12 @@ export const ServerManager: React.FC = () => {
 
   function SkeletonText() {
     return (
-      <div className="flex w-full max-w-xs flex-col gap-2">
-        <Skeleton className="h-8 w-full" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-3/4" />
-      </div>
+      <Stack spacing={1} sx={{ width: "100%", maxWidth: 320 }}>
+        <Skeleton variant="text" height={32} width="100%" />
+        <Skeleton variant="text" height={16} width="100%" />
+        <Skeleton variant="text" height={16} width="100%" />
+        <Skeleton variant="text" height={16} width="75%" />
+      </Stack>
     );
   }
 
@@ -153,7 +166,7 @@ export const ServerManager: React.FC = () => {
         <div className="serverStatsCard">
           <div className="serverSwitchesContainer">
             <h4>Server Settings</h4>
-            <FieldGroup>
+            <Stack spacing={2}>
               <ServerSwitchBox
                 id="switch-allowNewUsers"
                 fieldKey="allowNewUsers"
@@ -211,18 +224,26 @@ export const ServerManager: React.FC = () => {
                 checked={serverSettings?.scanLibrariesService ?? false}
                 onCheckedChange={handleServerSettingChange}
               />
-              <FieldLabel htmlFor="scanInterval" className="scanIntervalField">
-                <Field orientation="horizontal">
-                  <FieldContent className="field-content">
-                    <FieldTitle>Library Scan Interval</FieldTitle>
-                    <FieldDescription>
+              <Box className="scanIntervalField">
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <Box>
+                    <Typography component="label" htmlFor="scanInterval">
+                      Library Scan Interval
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
                       Interval in minutes in which LibreStack checks for added
                       or removed files in a library. Default 15 minutes.
-                    </FieldDescription>
-                  </FieldContent>
-                  <Input
+                    </Typography>
+                  </Box>
+                  <TextField
                     id="scanInterval"
                     type="number"
+                    size="small"
                     value={serverSettings?.libraryScanInterval ?? 15}
                     onChange={(e) =>
                       handleServerSettingChange(
@@ -231,8 +252,8 @@ export const ServerManager: React.FC = () => {
                       )
                     }
                   />
-                </Field>
-              </FieldLabel>
+                </Stack>
+              </Box>
               <ServerSwitchBox
                 id="switch-attemptSeriesParsing"
                 fieldKey="attemptSeriesParsing"
@@ -241,10 +262,27 @@ export const ServerManager: React.FC = () => {
                 checked={serverSettings?.attemptSeriesParsing ?? false}
                 onCheckedChange={handleServerSettingChange}
               />
-            </FieldGroup>
+            </Stack>
           </div>
         </div>
       </div>
+
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={5000}
+        onClose={handleToastClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleToastClose}
+          severity="error"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          <strong>{toast.message}</strong>
+          {toast.description ? `: ${toast.description}` : null}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

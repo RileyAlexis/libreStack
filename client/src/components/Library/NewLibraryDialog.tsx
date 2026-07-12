@@ -8,13 +8,13 @@ import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 
 import {
   DialogContent,
-  DialogDescription,
-  DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
-import { Field, FieldLabel, FieldGroup } from "../ui/field";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Stack,
+} from "@mui/material";
 
 interface NewLibraryDialogProps {
   setIsCreateLibraryOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -50,44 +50,42 @@ export const NewLibraryDialog: React.FC<NewLibraryDialogProps> = ({
   };
 
   return (
-    <DialogContent>
-      <DialogHeader>
-        <DialogTitle>Create New Library</DialogTitle>
-        <DialogDescription>
+    <>
+      <DialogTitle>
+        Create New Library
+        <Typography variant="body2" color="text.secondary">
           Each library requires a folder where it will store the epub files on
           disk
-        </DialogDescription>
-      </DialogHeader>
-      <div className="createLibraryDialogContainer">
-        <FieldGroup>
-          <Field>
-            <FieldLabel htmlFor="libraryName">Library Name:</FieldLabel>
-            <Input
+        </Typography>
+      </DialogTitle>
+      <DialogContent>
+        <Box className="createLibraryDialogContainer">
+          <Stack spacing={2}>
+            <TextField
               id="libraryName"
+              label="Library Name"
+              fullWidth
               onChange={(e) => setLibraryName(e.target.value)}
               value={libraryName}
             />
-          </Field>
-          <Field>
-            <FieldLabel htmlFor="libraryFolder">
-              Full Path to Folder:
-            </FieldLabel>
-            <Input
+            <TextField
               id="libraryFolder"
+              label="Full Path to Folder"
+              fullWidth
               onChange={(e) => setLibraryPath(e.target.value)}
               value={libraryPath}
             />
-          </Field>
-          <Field orientation="horizontal">
-            <Button type="reset" variant="outline" onClick={handleReset}>
-              Reset
-            </Button>
-            <Button type="submit" onClick={handleSubmit}>
-              Submit
-            </Button>
-          </Field>
-        </FieldGroup>
-      </div>
-    </DialogContent>
+            <Stack direction="row" spacing={1}>
+              <Button type="reset" variant="outlined" onClick={handleReset}>
+                Reset
+              </Button>
+              <Button type="submit" variant="contained" onClick={handleSubmit}>
+                Submit
+              </Button>
+            </Stack>
+          </Stack>
+        </Box>
+      </DialogContent>
+    </>
   );
 };

@@ -15,11 +15,11 @@ import {
 import { setUser } from "./redux/reducers/AuthReducer";
 
 // UI
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, IconButton } from "@mui/material";
+import { X } from "lucide-react";
 
 // Components
 import { Setup } from "./components/Setup/ Setup";
-import { Tester } from "./components/Testers/Tester";
 import { HeaderBanner } from "./components/HeaderBanner/HeaderBanner";
 import { Reader } from "./components/Reader/Reader";
 import { Library } from "./components/Library/Library";
@@ -30,7 +30,6 @@ import { LoginScreen } from "./components/LoginScreen/LoginScreen";
 import "./App.css";
 import { SeriesManager } from "./components/SeriesManager/SeriesManager";
 import { ServerManager } from "./components/ServerManager/ServerManager";
-import { Toaster } from "./components/ui/sonner";
 
 function App() {
   const navigate = useNavigate();
@@ -107,16 +106,6 @@ function App() {
       <Routes>
         <Route path="/" element={<HeaderBanner />} />
         <Route
-          path="/tester"
-          element={
-            <div className="pageContent">
-              <HeaderBanner />
-              <Tester />
-              {isTouchDevice && <BottomControls />}
-            </div>
-          }
-        />
-        <Route
           path="/setup"
           element={
             <div className="pageContent">
@@ -171,12 +160,19 @@ function App() {
           }
         />
       </Routes>
-      <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-        <DialogContent showCloseButton={showClose}>
+      <Dialog open={isLoginOpen} onClose={() => setIsLoginOpen(false)}>
+        <DialogContent sx={{ position: "relative" }}>
+          {showClose && (
+            <IconButton
+              onClick={() => setIsLoginOpen(false)}
+              sx={{ position: "absolute", top: 8, right: 8 }}
+            >
+              <X size={18} />
+            </IconButton>
+          )}
           <LoginScreen setIsLoginOpen={setIsLoginOpen} />
         </DialogContent>
       </Dialog>
-      <Toaster />
     </div>
   );
 }

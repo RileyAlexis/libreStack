@@ -1,11 +1,4 @@
-import {
-  FieldLabel,
-  Field,
-  FieldContent,
-  FieldTitle,
-  FieldDescription,
-} from "../ui/field";
-import { Switch } from "../ui/switch";
+import { Box, Stack, Switch, Typography } from "@mui/material";
 import type { ServerConfigType } from "@/types/ServerConfigType";
 
 interface ServerSwitchBoxProps {
@@ -26,18 +19,26 @@ export const ServerSwitchBox: React.FC<ServerSwitchBoxProps> = ({
   onCheckedChange,
 }) => {
   return (
-    <FieldLabel htmlFor={id}>
-      <Field orientation="horizontal">
-        <FieldContent>
-          <FieldTitle>{title}</FieldTitle>
-          <FieldDescription>{description}</FieldDescription>
-        </FieldContent>
+    <Box>
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{ alignItems: "center", justifyContent: "space-between" }}
+      >
+        <Box>
+          <Typography component="label" htmlFor={id}>
+            {title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {description}
+          </Typography>
+        </Box>
         <Switch
           id={id}
           checked={checked}
-          onCheckedChange={(value) => onCheckedChange(fieldKey, value)}
+          onChange={(e) => onCheckedChange(fieldKey, e.target.checked)}
         />
-      </Field>
-    </FieldLabel>
+      </Stack>
+    </Box>
   );
 };

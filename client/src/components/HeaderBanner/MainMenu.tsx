@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { AppDispatch } from "@/redux/store";
@@ -9,24 +10,20 @@ import { logout } from "@/utils/api";
 
 // UI
 import { useTheme } from "../themeProvider";
-import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ButtonGroup, ButtonGroupText } from "../ui/button-group";
-import { Sun, Moon, Rainbow, LogIn, LogOut, Landmark, Cog } from "lucide-react";
-import { Switch } from "../ui/switch";
-import {
+  IconButton,
+  Avatar,
+  Menu,
+  MenuItem,
+  Divider,
+  ButtonGroup,
   Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Label } from "../ui/label";
+  Switch,
+  FormControlLabel,
+  Typography,
+  Box,
+} from "@mui/material";
+import { Sun, Moon, Rainbow, LogIn, LogOut, Landmark, Cog } from "lucide-react";
 
 export const MainMenu: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -34,8 +31,18 @@ export const MainMenu: React.FC = () => {
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const auth = useSelector((state: LibreRootState) => state.auth);
   const isLoggedIn = Boolean(auth.accessToken);
-  const { setTheme } = useTheme();
-  const { theme } = useTheme();
+  const { setTheme, theme } = useTheme();
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(e.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -45,114 +52,109 @@ export const MainMenu: React.FC = () => {
   return (
     <>
       {isLoggedIn && (
-        <DropdownMenu>
-          <DropdownMenuTrigger>
+        <>
+          <IconButton onClick={handleOpen}>
             <Avatar>
-              <AvatarFallback>
-                {auth.user?.userName && auth.user.userName.length > 0 ? (
-                  auth.user.userName.charAt(0).toUpperCase()
-                ) : (
-                  <LogIn size={16} />
-                )}
-              </AvatarFallback>
+              {auth.user?.userName && auth.user.userName.length > 0 ? (
+                auth.user.userName.charAt(0).toUpperCase()
+              ) : (
+                <LogIn size={16} />
+              )}
             </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className="mainDropDownMenu">
-            <DropdownMenuItem onClick={() => navigate("/library")}>
-              <Landmark /> Library
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate("/serverManager")}>
-              <Cog /> Settings
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-              <ButtonGroup>
-                <ButtonGroupText>
-                  <Label htmlFor="name">Theme</Label>
-                </ButtonGroupText>
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <Button
-                        disabled={theme === "light"}
-                        variant="outline"
-                        size="icon"
-                        aria-label="light mode"
-                        onClick={() => setTheme("light")}
-                      >
-                        <Sun />
-                      </Button>
-                    }
-                  />
-                  <TooltipContent>
-                    <p>Light Mode</p>
-                  </TooltipContent>
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            className="mainDropDownMenu"
+            anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          >
+            <MenuItem
+              onClick={() => {
+                navigate("/library");
+                handleClose();
+              }}
+            >
+              <Landmark size={18} style={{ marginRight: 8 }} />
+              Library
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                navigate("/serverManager");
+                handleClose();
+              }}
+            >
+              <Cog size={18} style={{ marginRight: 8 }} />
+              Settings
+            </MenuItem>
+            <Divider />
+            <Box sx={{ px: 2, py: 1 }}>
+              <Typography variant="caption" color="text.secondary">
+                Theme
+              </Typography>
+              <ButtonGroup size="small" sx={{ mt: 0.5, display: "flex" }}>
+                <Tooltip title="Light Mode">
+                  <span>
+                    <IconButton
+                      disabled={theme === "light"}
+                      aria-label="light mode"
+                      onClick={() => setTheme("light")}
+                    >
+                      <Sun size={18} />
+                    </IconButton>
+                  </span>
                 </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <Button
-                        disabled={theme === "system"}
-                        variant="outline"
-                        size="icon"
-                        aria-label="system mode"
-                        onClick={() => setTheme("system")}
-                      >
-                        <Rainbow />
-                      </Button>
-                    }
-                  />
-                  <TooltipContent>
-                    <p>System Preference</p>
-                  </TooltipContent>
+                <Tooltip title="System Preference">
+                  <span>
+                    <IconButton
+                      disabled={theme === "system"}
+                      aria-label="system mode"
+                      onClick={() => setTheme("system")}
+                    >
+                      <Rainbow size={18} />
+                    </IconButton>
+                  </span>
                 </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <Button
-                        disabled={theme === "dark"}
-                        variant="outline"
-                        size="icon"
-                        aria-label="dark mode"
-                        onClick={() => setTheme("dark")}
-                      >
-                        <Moon />
-                      </Button>
-                    }
-                  />
-                  <TooltipContent>
-                    <p>Dark Mode</p>
-                  </TooltipContent>
+                <Tooltip title="Dark Mode">
+                  <span>
+                    <IconButton
+                      disabled={theme === "dark"}
+                      aria-label="dark mode"
+                      onClick={() => setTheme("dark")}
+                    >
+                      <Moon size={18} />
+                    </IconButton>
+                  </span>
                 </Tooltip>
               </ButtonGroup>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Switch
-                id="librarySwitch"
-                size="default"
-                checked={appSettings.showLibraryAsHome ? true : false}
-                onCheckedChange={() => dispatch(switchLibraryAsHome())}
+            </Box>
+            <Divider />
+            <MenuItem onClick={() => dispatch(switchLibraryAsHome())}>
+              <FormControlLabel
+                onClick={(e) => e.stopPropagation()}
+                control={
+                  <Switch
+                    id="librarySwitch"
+                    checked={Boolean(appSettings.showLibraryAsHome)}
+                    onChange={() => dispatch(switchLibraryAsHome())}
+                  />
+                }
+                label="Library as Home Page"
               />
-              <Label htmlFor="librarySwitch">Library as Home Page</Label>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Button variant="ghost" onClick={handleLogout}>
-                <LogOut />
-                Log Out
-              </Button>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+            </MenuItem>
+            <MenuItem onClick={handleLogout}>
+              <LogOut size={18} style={{ marginRight: 8 }} />
+              Log Out
+            </MenuItem>
+          </Menu>
+        </>
       )}
       {!isLoggedIn && (
-        <Button variant="ghost" size="icon" onClick={handleLogout}>
+        <IconButton onClick={handleLogout}>
           <Avatar>
-            <AvatarFallback>
-              <LogIn size={16} />
-            </AvatarFallback>
+            <LogIn size={16} />
           </Avatar>
-        </Button>
+        </IconButton>
       )}
     </>
   );

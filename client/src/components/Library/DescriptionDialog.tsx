@@ -1,6 +1,6 @@
 import type { BookType } from "@/types/BookType";
 
-import { DialogContent, DialogHeader, DialogTitle } from "../ui/dialog";
+import { DialogContent, DialogTitle, Typography, Box } from "@mui/material";
 
 interface DescriptionProps {
   book: BookType;
@@ -8,15 +8,11 @@ interface DescriptionProps {
 
 export const DescriptionDialog: React.FC<DescriptionProps> = ({ book }) => {
   return (
-    <div className="grid gap-1.5">
-      <DialogContent className="max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>{book.title}</DialogTitle>
-        </DialogHeader>
-        {book.description}
+    <Box className="grid gap-1.5">
+      <DialogTitle>{book.title}</DialogTitle>
+      <DialogContent className="bookCardDialogContent">
+        <Typography variant="body2">{book.description}</Typography>
       </DialogContent>
-
-      {book.description}
-    </div>
+    </Box>
   );
 };

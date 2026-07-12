@@ -4,14 +4,17 @@ import { useNavigate } from "react-router";
 import { setTokens, setUser } from "@/redux/reducers/AuthReducer";
 import { Info } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  Button,
+  TextField,
+  Card,
+  CardHeader,
+  CardContent,
+  IconButton,
   Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+  Typography,
+  Box,
+} from "@mui/material";
 
 import "./ Setup.css";
 import { api } from "../../utils/api";
@@ -29,6 +32,12 @@ export const Setup: React.FC = () => {
   const [libName, setLibName] = useState("");
   const [libPath, setLibPath] = useState("");
   const [libError, setLibError] = useState("");
+
+  const [adminPopoverAnchor, setAdminPopoverAnchor] =
+    useState<null | HTMLElement>(null);
+  const [libPopoverAnchor, setLibPopoverAnchor] = useState<null | HTMLElement>(
+    null,
+  );
 
   useEffect(() => {
     api
@@ -99,25 +108,38 @@ export const Setup: React.FC = () => {
       <div className="setupArea">
         <div className="setupEntry">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                Create Admin User
-                <Popover>
-                  <PopoverTrigger>
-                    <Button variant="ghost" size="icon">
-                      <Info />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <p>
-                      Admin User account can only be created once on
-                      initialization of LibreStack. Other user accounts can be
-                      assigned admin access later.
-                    </p>
-                  </PopoverContent>
-                </Popover>
-              </CardTitle>
-            </CardHeader>
+            <CardHeader
+              title={
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  Create Admin User
+                  <IconButton
+                    onClick={(e) => setAdminPopoverAnchor(e.currentTarget)}
+                  >
+                    <Info size={18} />
+                  </IconButton>
+                </Box>
+              }
+            />
+            <Popover
+              open={Boolean(adminPopoverAnchor)}
+              anchorEl={adminPopoverAnchor}
+              onClose={() => setAdminPopoverAnchor(null)}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            >
+              <Box sx={{ p: 2, maxWidth: 300 }}>
+                <Typography variant="body2">
+                  Admin User account can only be created once on initialization
+                  of LibreStack. Other user accounts can be assigned admin
+                  access later.
+                </Typography>
+              </Box>
+            </Popover>
             <CardContent>
               {isAdminRegistered ? (
                 <p>Admin Account Registered</p>
@@ -127,30 +149,35 @@ export const Setup: React.FC = () => {
                     <span className="setupError">{adminError}</span>
                   )}
                   <div className="setupField">
-                    <label>Admin Username</label>
-                    <Input
+                    <TextField
+                      label="Admin Username"
                       placeholder="admin"
+                      fullWidth
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                     />
                   </div>
                   <div className="setupField">
-                    <label>Admin Email</label>
-                    <Input
+                    <TextField
+                      label="Admin Email"
                       type="email"
+                      fullWidth
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
                   <div className="setupField">
-                    <label>Admin Password</label>
-                    <Input
+                    <TextField
+                      label="Admin Password"
                       type="password"
+                      fullWidth
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
                   </div>
-                  <Button onClick={onFinish}>Submit</Button>
+                  <Button variant="contained" onClick={onFinish}>
+                    Submit
+                  </Button>
                 </div>
               )}
             </CardContent>
@@ -158,39 +185,58 @@ export const Setup: React.FC = () => {
         </div>
         <div className="setupEntry">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                Create Initial Library
-                <Popover>
-                  <PopoverTrigger>
-                    <Button variant="ghost" size="icon">
-                      <Info />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent>
-                    <p>LibreStack requires at least one library.</p>
-                  </PopoverContent>
-                </Popover>
-              </CardTitle>
-            </CardHeader>
+            <CardHeader
+              title={
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  Create Initial Library
+                  <IconButton
+                    onClick={(e) => setLibPopoverAnchor(e.currentTarget)}
+                  >
+                    <Info size={18} />
+                  </IconButton>
+                </Box>
+              }
+            />
+            <Popover
+              open={Boolean(libPopoverAnchor)}
+              anchorEl={libPopoverAnchor}
+              onClose={() => setLibPopoverAnchor(null)}
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+            >
+              <Box sx={{ p: 2, maxWidth: 300 }}>
+                <Typography variant="body2">
+                  LibreStack requires at least one library.
+                </Typography>
+              </Box>
+            </Popover>
             <CardContent>
               <div className="setupForm">
                 {libError && <span className="setupError">{libError}</span>}
                 <div className="setupField">
-                  <label>Library Name</label>
-                  <Input
+                  <TextField
+                    label="Library Name"
+                    fullWidth
                     value={libName}
                     onChange={(e) => setLibName(e.target.value)}
                   />
                 </div>
                 <div className="setupField">
-                  <label>Library Path</label>
-                  <Input
+                  <TextField
+                    label="Library Path"
+                    fullWidth
                     value={libPath}
                     onChange={(e) => setLibPath(e.target.value)}
                   />
                 </div>
-                <Button onClick={setPath}>Submit</Button>
+                <Button variant="contained" onClick={setPath}>
+                  Submit
+                </Button>
               </div>
             </CardContent>
           </Card>

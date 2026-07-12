@@ -10,30 +10,25 @@ import {
   Table,
   TableBody,
   TableHead,
-  TableHeader,
-  TableCaption,
   TableRow,
   TableCell,
-} from "../ui/table";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
+  Button,
+  TextField,
+  ButtonGroup,
+  Tooltip,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+} from "@mui/material";
 
 // Components
 import { BottomControls } from "../BottomControls/BottomControls";
 
 import "./SeriesManager.css";
-import { ButtonGroup, ButtonGroupSeparator } from "../ui/button-group";
 import { Delete, TextCursor } from "lucide-react";
-import { Tooltip, TooltipTrigger, TooltipContent } from "../ui/tooltip";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogTrigger,
-} from "../ui/alert-dialog";
 
 export const SeriesManager: React.FC = () => {
   // const dispatch = useDispatch<AppDispatch>();
@@ -125,21 +120,22 @@ export const SeriesManager: React.FC = () => {
     <div className="seriesManagerContainer">
       <div className="seriesListContainer">
         <Table>
-          <TableCaption>List of All Series</TableCaption>
-          <TableHeader className="seriesHeader">
+          <caption>List of All Series</caption>
+          <TableHead className="seriesHeader">
             <TableRow>
-              <TableHead>Series Title</TableHead>
-              <TableHead>Count of Books</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableCell>Series Title</TableCell>
+              <TableCell>Count of Books</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
-          </TableHeader>
+          </TableHead>
           <TableBody>
             {series &&
               series.map((item) => (
                 <TableRow key={item.id} style={{ cursor: "pointer" }}>
                   {selectedSeries?.id === item.id ? (
                     <TableCell>
-                      <Input
+                      <TextField
+                        size="small"
                         onBlur={handleRenameTitle}
                         value={selectedSeries.seriesTitle}
                         onChange={(e) =>
@@ -159,80 +155,64 @@ export const SeriesManager: React.FC = () => {
                   <TableCell>
                     <div className="seriesActionsContainer">
                       <ButtonGroup>
-                        <Tooltip>
-                          <TooltipTrigger
-                            render={
-                              <Button
-                                variant="outline"
-                                size="xs"
-                                aria-description="Edit"
-                                onClick={() => setSelectedSeries(item)}
-                              >
-                                <TextCursor />
-                              </Button>
-                            }
-                          />
-                          <TooltipContent>
-                            <p>Edit</p>
-                          </TooltipContent>
+                        <Tooltip title="Edit">
+                          <IconButton
+                            aria-label="Edit"
+                            onClick={() => setSelectedSeries(item)}
+                          >
+                            <TextCursor size={18} />
+                          </IconButton>
                         </Tooltip>
 
-                        <ButtonGroupSeparator>
-                          <AlertDialog
-                            open={
-                              isDeleteAlertOpen &&
-                              selectedSeries?.id === item.id
-                            }
-                            onOpenChange={(open) => {
-                              setIsDeleteAlertOpen(open);
-                              if (!open) setSelectedSeries(null);
+                        <Tooltip title="Delete">
+                          <IconButton
+                            aria-label="Delete"
+                            color="error"
+                            onClick={() => {
+                              setIsDeleteAlertOpen(true);
+                              setSelectedSeries(item);
                             }}
                           >
-                            <AlertDialogTrigger
-                              render={
-                                <Tooltip>
-                                  <TooltipTrigger
-                                    render={
-                                      <Button
-                                        variant="destructive"
-                                        size="xs"
-                                        aria-description="Delete"
-                                        onClick={() => {
-                                          setIsDeleteAlertOpen(true);
-                                          setSelectedSeries(item);
-                                        }}
-                                      >
-                                        <Delete />
-                                      </Button>
-                                    }
-                                  />
-                                  <TooltipContent>
-                                    <p>Delete</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              }
-                            />
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                Are you sure?
-                              </AlertDialogHeader>
-                              <AlertDialogDescription>
-                                This will delete the series {item.seriesTitle}{" "}
-                                and remove the assocication from{" "}
-                                {item.bookCount} books.
-                              </AlertDialogDescription>
-                              <AlertDialogCancel variant="outline">
-                                Cancel
-                              </AlertDialogCancel>
-                              <AlertDialogAction
-                                variant="destructive"
-                                onClick={() => handleDeleteSeries(item)}
-                              >
-                                Delete!
-                              </AlertDialogAction>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </ButtonGroupSeparator>
+                            <Delete size={18} />
+                          </IconButton>
+                        </Tooltip>
+
+                        <Dialog
+                          open={
+                            isDeleteAlertOpen && selectedSeries?.id === item.id
+                          }
+                          onClose={() => {
+                            setIsDeleteAlertOpen(false);
+                            setSelectedSeries(null);
+                          }}
+                        >
+                          <DialogTitle>Are you sure?</DialogTitle>
+                          <DialogContent>
+                            <Typography>
+                              This will delete the series {item.seriesTitle} and
+                              remove the association from {item.bookCount}{" "}
+                              books.
+                            </Typography>
+                          </DialogContent>
+                          <DialogActions>
+                            <Button
+                              variant="outlined"
+                              onClick={() => {
+                                setIsDeleteAlertOpen(false);
+                                setSelectedSeries(null);
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              variant="contained"
+                              color="error"
+                              onClick={() => handleDeleteSeries(item)}
+                            >
+                              Delete!
+                            </Button>
+                          </DialogActions>
+                        </Dialog>
                       </ButtonGroup>
                     </div>
                   </TableCell>
@@ -242,19 +222,20 @@ export const SeriesManager: React.FC = () => {
               <TableRow style={{ border: "none" }}>
                 <TableCell colSpan={3}>
                   <div className="addSeriesRow">
-                    <Input
+                    <TextField
+                      size="small"
                       placeholder="New Series Title"
                       value={newSeries}
                       onChange={(e) => setNewSeries(e.target.value)}
                     />
                     <Button
-                      variant="outline"
+                      variant="outlined"
                       onClick={() => handleAddSeries(newSeries)}
                     >
                       Save
                     </Button>
                     <Button
-                      variant="outline"
+                      variant="outlined"
                       onClick={() => setIsAddingSeries(false)}
                     >
                       Cancel
@@ -267,7 +248,7 @@ export const SeriesManager: React.FC = () => {
               <TableCell colSpan={3}>
                 <div className="addSeriesRow">
                   <Button
-                    variant="default"
+                    variant="contained"
                     onClick={() => setIsAddingSeries(true)}
                   >
                     Add Series
@@ -278,7 +259,6 @@ export const SeriesManager: React.FC = () => {
           </TableBody>
         </Table>
       </div>
-      <AlertDialog></AlertDialog>
       <BottomControls />
     </div>
   );

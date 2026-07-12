@@ -8,25 +8,18 @@ import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 
 import {
   DialogContent,
-  DialogDescription,
-  DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
-import {
   Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-} from "../ui/select";
-import { Alert, AlertTitle, AlertDescription } from "../ui/alert";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Spinner } from "../ui/spinner";
-import { ButtonGroup, ButtonGroupSeparator } from "../ui/button-group";
-import { Textarea } from "../ui/textarea";
+  MenuItem,
+  Alert,
+  AlertTitle,
+  Button,
+  ButtonGroup,
+  TextField,
+  CircularProgress,
+  Typography,
+  Box,
+} from "@mui/material";
 import { Plus } from "lucide-react";
 
 import "./BookCardDialog.css";
@@ -216,36 +209,41 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
   // -- Field renderers -----------------------------------------------------------
 
   const renderTextField = (id: EditableField, label: string) => (
-    <div key={id} className="grid gap-1.5">
-      <Label htmlFor={id}>{label}</Label>
-      <Input
-        id={id}
-        value={(book![id] as string) ?? ""}
-        onChange={(e) => handleChange(id, e.target.value)}
-        onBlur={() => handleBlur(id, book![id] as string)}
-      />
-    </div>
+    <TextField
+      key={id}
+      id={id}
+      label={label}
+      fullWidth
+      size="small"
+      value={(book![id] as string) ?? ""}
+      onChange={(e) => handleChange(id, e.target.value)}
+      onBlur={() => handleBlur(id, book![id] as string)}
+    />
   );
 
   const renderTextareaField = (id: EditableField, label: string) => (
-    <div key={id} className="grid gap-1.5">
-      <Label htmlFor={id}>{label}</Label>
-      <Textarea
-        id={id}
-        value={(book![id] as string) ?? ""}
-        onChange={(e) => handleChange(id, e.target.value)}
-        onBlur={() => handleBlur(id, book![id] as string)}
-      />
-    </div>
+    <TextField
+      key={id}
+      id={id}
+      label={label}
+      fullWidth
+      multiline
+      minRows={3}
+      value={(book![id] as string) ?? ""}
+      onChange={(e) => handleChange(id, e.target.value)}
+      onBlur={() => handleBlur(id, book![id] as string)}
+    />
   );
 
   const renderSeriesField = () => {
     if (isAddingSeries) {
       return (
-        <div key="series" className="seriesSelectorContainer">
+        <Box key="series" className="seriesSelectorContainer">
           <div className="seriesSelectorBox">
-            <Input
+            <TextField
               autoFocus
+              fullWidth
+              size="small"
               placeholder="New series name"
               value={seriesInput}
               onChange={(e) => setSeriesInput(e.target.value)}
@@ -266,50 +264,45 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
             />
           </div>
           <Button
-            variant="outline"
-            size="icon"
+            variant="outlined"
+            size="small"
             onClick={() => {
               setSeriesInput(book?.series?.seriesTitle ?? "");
               setIsAddingSeries(false);
             }}
           >
-            <Plus className="rotate-45" />
+            <Plus className="rotate-45" size={18} />
           </Button>
-        </div>
+        </Box>
       );
     }
 
     return (
-      <div key="series" className="seriesSelectorContainer">
+      <Box key="series" className="seriesSelectorContainer">
         <div className="seriesSelectorBox">
           <Select
+            fullWidth
+            size="small"
+            displayEmpty
             value={book?.series?.seriesTitle ?? ""}
-            onValueChange={(value) => commitSeries(value!)}
+            onChange={(e) => commitSeries(e.target.value as string)}
+            renderValue={(value) => (value ? (value as string) : "Series")}
           >
-            <SelectTrigger style={{ width: "100%" }}>
-              <SelectValue placeholder="Series">
-                {book?.series?.seriesTitle}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent alignItemWithTrigger={false}>
-              <SelectGroup>
-                {seriesList.map((item) => (
-                  <SelectItem key={item.id} value={item.seriesTitle}>
-                    {item.seriesTitle}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
+            {seriesList.map((item) => (
+              <MenuItem key={item.id} value={item.seriesTitle}>
+                {item.seriesTitle}
+              </MenuItem>
+            ))}
           </Select>
         </div>
         <Button
-          variant="outline"
-          size="icon"
+          variant="outlined"
+          size="small"
           onClick={() => setIsAddingSeries(true)}
         >
-          <Plus />
+          <Plus size={18} />
         </Button>
-      </div>
+      </Box>
     );
   };
 
@@ -329,47 +322,51 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
   if (!book) {
     return (
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Loading...</DialogTitle>
-        </DialogHeader>
+        <DialogTitle>Loading...</DialogTitle>
       </DialogContent>
     );
   }
 
   return (
-    <DialogContent
-      style={{ maxWidth: "31rem" }}
-      className="max-h-[80vh] overflow-y-auto"
-    >
-      <DialogHeader>
-        <DialogTitle>{book.title}</DialogTitle>
-        <DialogDescription>Edit metadata: Id {book.id}</DialogDescription>
-        <div className="metadataButtonsContainer">
-          <Label htmlFor="metadataButtons">Get Metadata</Label>
-          <ButtonGroup id="metadataButtons">
+    <>
+      <DialogTitle style={{ maxWidth: "31rem" }}>
+        {book.title}
+        <Typography variant="body2" color="text.secondary">
+          Edit metadata: Id {book.id}
+        </Typography>
+        <Box className="metadataButtonsContainer" sx={{ mt: 1.5 }}>
+          <Typography
+            variant="caption"
+            component="label"
+            htmlFor="metadataButtons"
+          >
+            Get Metadata
+          </Typography>
+          <ButtonGroup id="metadataButtons" fullWidth>
             <Button
-              variant="secondary"
+              variant="contained"
+              color="inherit"
               onClick={handleOpenLibrary}
               disabled={isSyncing}
             >
               {isSyncing ? (
                 <>
-                  <Spinner data-icon="inline-start" />
+                  <CircularProgress size={14} sx={{ mr: 1 }} />
                   Loading
                 </>
               ) : (
                 "Open Library"
               )}
             </Button>
-            <ButtonGroupSeparator />
             <Button
-              variant="secondary"
+              variant="contained"
+              color="inherit"
               onClick={handleWikidata}
               disabled={isWikiSyncing}
             >
               {isWikiSyncing ? (
                 <>
-                  <Spinner data-icon="inline-start" />
+                  <CircularProgress size={14} sx={{ mr: 1 }} />
                   Loading
                 </>
               ) : (
@@ -377,30 +374,32 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
               )}
             </Button>
             <Button
-              variant="secondary"
+              variant="contained"
+              color="inherit"
               onClick={handleFetchCover}
               disabled={isSyncing}
             >
-              {isSyncing ? (
-                <>
-                  <Spinner data-icon="inline-start" />
-                </>
-              ) : (
-                "Fetch Cover"
-              )}
+              {isSyncing ? <CircularProgress size={14} /> : "Fetch Cover"}
             </Button>
           </ButtonGroup>
           {error && (
-            <div className="mt-2">
-              <Alert>
+            <Box sx={{ mt: 2 }}>
+              <Alert severity="error">
                 <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
+                {error}
               </Alert>
-            </div>
+            </Box>
           )}
-        </div>
-      </DialogHeader>
-      <div className="grid gap-4 py-4">{FIELD_ORDER.map(renderField)}</div>
-    </DialogContent>
+        </Box>
+      </DialogTitle>
+      <DialogContent
+        style={{ maxWidth: "31rem" }}
+        className="bookCardDialogContent"
+      >
+        <Box sx={{ display: "grid", gap: 2, py: 2 }}>
+          {FIELD_ORDER.map(renderField)}
+        </Box>
+      </DialogContent>
+    </>
   );
 };

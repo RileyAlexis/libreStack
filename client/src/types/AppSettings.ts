@@ -24,7 +24,12 @@ export interface LibraryLayout {
   showDescriptionOnHover: boolean;
 }
 
-export type SortByType = "Title" | "Author" | "Last Read" | null;
+export type SortByType =
+  | "Title"
+  | "Author"
+  | "Last Read"
+  | "Recently Added"
+  | null;
 
 interface LibraryCoverSize {
   width: number;

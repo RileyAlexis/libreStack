@@ -16,6 +16,20 @@ import {
 
 // UI
 import {
+  BottomNavigation,
+  BottomNavigationAction,
+  Menu,
+  MenuItem,
+  Divider,
+  Switch,
+  FormControlLabel,
+  Slider,
+  Dialog,
+  Typography,
+  Box,
+} from "@mui/material";
+
+import {
   LandmarkIcon,
   LayoutDashboard,
   LibraryBig,
@@ -25,25 +39,11 @@ import {
   SquareLibrary,
   UploadIcon,
 } from "lucide-react";
-import {
-  Menubar,
-  MenubarContent,
-  MenubarMenu,
-  MenubarTrigger,
-  MenubarItem,
-  MenubarSeparator,
-  MenubarSub,
-  MenubarSubContent,
-  MenubarSubTrigger,
-} from "../ui/menubar";
-import { Dialog } from "../ui/dialog";
-import { Slider } from "../ui/slider";
-import { Switch } from "../ui/switch";
-import { Label } from "../ui/label";
 import { NewLibraryDialog } from "../Library/NewLibraryDialog";
 
 import "./BottomControls.css";
-import { Input } from "../ui/input";
+
+type ActiveMenu = "library" | "manage" | "layout" | null;
 
 export const BottomControls: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -54,9 +54,23 @@ export const BottomControls: React.FC = () => {
   const library = useSelector((state: LibreRootState) => state.library);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
 
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [activeMenu, setActiveMenu] = useState<ActiveMenu>(null);
+
+  const openMenu = (menu: ActiveMenu, e: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(e.currentTarget);
+    setActiveMenu(menu);
+  };
+
+  const closeMenu = () => {
+    setAnchorEl(null);
+    setActiveMenu(null);
+  };
+
   const handleSelectLibrary = (index: number) => {
     dispatch(setLastSelectedLibrary(index));
     dispatch(saveUserSettings(appSettings));
+    closeMenu();
   };
 
   const handleScanLibrary = () => {
@@ -74,6 +88,7 @@ export const BottomControls: React.FC = () => {
       .finally(() => {
         dispatch(setIsSyncing(false));
       });
+    closeMenu();
   };
 
   const handleMetadataRefresh = () => {
@@ -90,6 +105,7 @@ export const BottomControls: React.FC = () => {
         console.error(error);
         dispatch(setIsSyncing(false));
       });
+    closeMenu();
   };
 
   const handleWikidataRefresh = () => {
@@ -106,11 +122,10 @@ export const BottomControls: React.FC = () => {
         console.error(error);
         dispatch(setIsSyncing(false));
       });
+    closeMenu();
   };
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("Handle upload called");
-
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -129,7 +144,7 @@ export const BottomControls: React.FC = () => {
       });
   };
 
-  const handleChangeCoverSize = (value: number | readonly number[], _: any) => {
+  const handleChangeCoverSize = (_: Event, value: number | number[]) => {
     const num = Array.isArray(value) ? value[0] : value;
     dispatch(setCoverSize(num));
   };
@@ -170,156 +185,184 @@ export const BottomControls: React.FC = () => {
     );
   };
 
-  const handleGoToSeries = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    navigate("/series");
-  };
-
-  const handleGoToLibrary = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    navigate("/library");
-  };
-
   return (
     <div className="bottomControlsContainer">
-      <Input
+      <input
         type="file"
         ref={fileInputRef}
         onChange={handleUpload}
         style={{ display: "none" }}
       />
-      <Menubar className="bottomMenuBar">
-        <MenubarMenu>
-          <MenubarTrigger onClick={(e) => handleGoToLibrary(e)}>
-            <div className="bottomControlOption">
-              <LandmarkIcon />
-              <p>Library</p>
-            </div>
-          </MenubarTrigger>
-          <MenubarContent className="menubarContent">
-            {library.map((item, index) => (
-              <MenubarItem
-                className={
-                  index === appSettings.lastSelectedLibrary
-                    ? "selectedMenu"
-                    : ""
-                }
-                variant="default"
-                key={index}
-                onClick={() => handleSelectLibrary(index)}
-              >
-                {item.name}
-              </MenubarItem>
-            ))}
-            <MenubarSeparator />
-            <MenubarItem onClick={() => setIsCreateLibraryOpen(true)}>
-              <PlusIcon />
-              Create New Library
-            </MenubarItem>
-            <MenubarItem onClick={handleScanLibrary}>
-              <ScanSearch />
-              Scan Library
-            </MenubarItem>
-          </MenubarContent>
-        </MenubarMenu>
-        <MenubarMenu>
-          <MenubarTrigger onClick={(e) => handleGoToLibrary(e)}>
-            <div className="bottomControlOption">
-              <LibraryBig />
-              <p>Manage</p>
-            </div>
-          </MenubarTrigger>
-          <MenubarContent className="menubarContent">
-            <MenubarItem
-              onClick={handleMetadataRefresh}
-              disabled={appSettings.isSyncing}
-            >
-              <ScanText />
-              Refresh Open Library Metadata
-            </MenubarItem>
-            <MenubarItem
-              onClick={handleWikidataRefresh}
-              disabled={appSettings.isSyncing}
-            >
-              <ScanText />
-              Refresh Wikidata Metadata
-            </MenubarItem>
-            <MenubarItem onClick={() => fileInputRef.current?.click()}>
-              <UploadIcon />
-              Upload Book
-            </MenubarItem>
-          </MenubarContent>
-        </MenubarMenu>
-        <MenubarMenu>
-          <MenubarTrigger>
-            <div className="bottomControlOption">
-              <LayoutDashboard />
-              <p>Layout</p>
-            </div>
-          </MenubarTrigger>
-          <MenubarContent className="menubarContent">
-            <MenubarItem className="menubarSwitch">
-              <Label htmlFor="showComplete">Show Read</Label>
-              <Switch
-                id="showComplete"
-                checked={appSettings.libraryLayout.showCompleted}
-                onCheckedChange={handleShowComplete}
-              />
-            </MenubarItem>
-            <MenubarItem className="menubarSwitch">
-              <Label htmlFor="showComplete">Show Titles</Label>
-              <Switch
-                id="showComplete"
-                checked={appSettings.libraryLayout.showTitles}
-                onCheckedChange={handleShowTitles}
-              />
-            </MenubarItem>
-            <MenubarItem className="menubarSwitch">
-              <Label htmlFor="showComplete">Show Authors</Label>
-              <Switch
-                id="showComplete"
-                checked={appSettings.libraryLayout.showAuthors}
-                onCheckedChange={handleShowAuthors}
-              />
-            </MenubarItem>
-            <MenubarItem className="menubarSwitch">
-              <Label htmlFor="showComplete">Show Series</Label>
-              <Switch
-                id="showComplete"
-                checked={appSettings.libraryLayout.showSeries}
-                onCheckedChange={handleShowSeries}
-              />
-            </MenubarItem>
 
-            <MenubarSub>
-              <MenubarSubTrigger>Cover Size</MenubarSubTrigger>
-              <MenubarSubContent className="menubarSubContent">
-                <Slider
-                  id="coverSlider"
-                  className="mx-auto w-full max-w-xs"
-                  defaultValue={[
-                    appSettings.libraryLayout.libraryCoverSize.width,
-                  ]}
-                  value={[appSettings.libraryLayout.libraryCoverSize.width]}
-                  onValueChange={handleChangeCoverSize}
-                  step={10}
-                  min={80}
-                  max={500}
-                />
-              </MenubarSubContent>
-            </MenubarSub>
-          </MenubarContent>
-        </MenubarMenu>
-        <MenubarMenu>
-          <MenubarTrigger onClick={(e) => handleGoToSeries(e)}>
-            <div className="bottomControlOption">
-              <SquareLibrary />
-              <p>Series</p>
-            </div>
-          </MenubarTrigger>
-        </MenubarMenu>
-      </Menubar>
-      <Dialog open={isCreateLibraryOpen} onOpenChange={setIsCreateLibraryOpen}>
+      <BottomNavigation showLabels className="bottomMenuBar">
+        <BottomNavigationAction
+          label="Library"
+          icon={<LandmarkIcon />}
+          onClick={(e) => {
+            navigate("/library");
+            openMenu("library", e);
+          }}
+        />
+        <BottomNavigationAction
+          label="Manage"
+          icon={<LibraryBig />}
+          onClick={(e) => {
+            navigate("/library");
+            openMenu("manage", e);
+          }}
+        />
+        <BottomNavigationAction
+          label="Layout"
+          icon={<LayoutDashboard />}
+          onClick={(e) => openMenu("layout", e)}
+        />
+        <BottomNavigationAction
+          label="Series"
+          icon={<SquareLibrary />}
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate("/series");
+          }}
+        />
+      </BottomNavigation>
+
+      {/* Library menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={activeMenu === "library"}
+        onClose={closeMenu}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        transformOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        {library.map((item, index) => (
+          <MenuItem
+            key={index}
+            selected={index === appSettings.lastSelectedLibrary}
+            onClick={() => handleSelectLibrary(index)}
+          >
+            {item.name}
+          </MenuItem>
+        ))}
+        <Divider />
+        <MenuItem
+          onClick={() => {
+            setIsCreateLibraryOpen(true);
+            closeMenu();
+          }}
+        >
+          <PlusIcon size={18} style={{ marginRight: 8 }} />
+          Create New Library
+        </MenuItem>
+        <MenuItem onClick={handleScanLibrary}>
+          <ScanSearch size={18} style={{ marginRight: 8 }} />
+          Scan Library
+        </MenuItem>
+      </Menu>
+
+      {/* Manage menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={activeMenu === "manage"}
+        onClose={closeMenu}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        transformOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <MenuItem
+          onClick={handleMetadataRefresh}
+          disabled={appSettings.isSyncing}
+        >
+          <ScanText size={18} style={{ marginRight: 8 }} />
+          Refresh Open Library Metadata
+        </MenuItem>
+        <MenuItem
+          onClick={handleWikidataRefresh}
+          disabled={appSettings.isSyncing}
+        >
+          <ScanText size={18} style={{ marginRight: 8 }} />
+          Refresh Wikidata Metadata
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            fileInputRef.current?.click();
+            closeMenu();
+          }}
+        >
+          <UploadIcon size={18} style={{ marginRight: 8 }} />
+          Upload Book
+        </MenuItem>
+      </Menu>
+
+      {/* Layout menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={activeMenu === "layout"}
+        onClose={closeMenu}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        transformOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <MenuItem className="menubarSwitch" disableRipple>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={appSettings.libraryLayout.showCompleted}
+                onChange={handleShowComplete}
+              />
+            }
+            label="Show Read"
+          />
+        </MenuItem>
+        <MenuItem className="menubarSwitch" disableRipple>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={appSettings.libraryLayout.showTitles}
+                onChange={handleShowTitles}
+              />
+            }
+            label="Show Titles"
+          />
+        </MenuItem>
+        <MenuItem className="menubarSwitch" disableRipple>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={appSettings.libraryLayout.showAuthors}
+                onChange={handleShowAuthors}
+              />
+            }
+            label="Show Authors"
+          />
+        </MenuItem>
+        <MenuItem className="menubarSwitch" disableRipple>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={appSettings.libraryLayout.showSeries}
+                onChange={handleShowSeries}
+              />
+            }
+            label="Show Series"
+          />
+        </MenuItem>
+        <Divider />
+        <Box className="menubarSubContent" sx={{ px: 2, py: 1 }}>
+          <Typography variant="caption" color="text.secondary">
+            Cover Size
+          </Typography>
+          <Slider
+            value={appSettings.libraryLayout.libraryCoverSize.width}
+            onChange={handleChangeCoverSize}
+            step={10}
+            min={80}
+            max={500}
+          />
+        </Box>
+      </Menu>
+
+      <Dialog
+        open={isCreateLibraryOpen}
+        onClose={() => setIsCreateLibraryOpen(false)}
+      >
         <NewLibraryDialog setIsCreateLibraryOpen={setIsCreateLibraryOpen} />
       </Dialog>
     </div>
