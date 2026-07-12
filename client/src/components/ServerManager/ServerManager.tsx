@@ -228,8 +228,7 @@ export const ServerManager: React.FC = () => {
                 <Stack
                   direction="row"
                   spacing={2}
-                  alignItems="center"
-                  justifyContent="space-between"
+                  sx={{ alignItems: "center", justifyContent: "space-between" }}
                 >
                   <Box>
                     <Typography component="label" htmlFor="scanInterval">
