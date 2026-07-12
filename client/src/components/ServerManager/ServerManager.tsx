@@ -16,6 +16,9 @@ import {
   Typography,
   Snackbar,
   Alert,
+  List,
+  ListItem,
+  ListItemIcon,
 } from "@mui/material";
 
 // Components
@@ -23,6 +26,7 @@ import { ServerSwitchBox } from "./ServerSwitchBox";
 import { ServerLibraryStats } from "./ServerLibraryStats";
 
 import "./ServerManager.css";
+import { Dot, DotIcon } from "lucide-react";
 
 export const ServerManager: React.FC = () => {
   //   const dispatch = useDispatch<AppDispatch>();
@@ -126,20 +130,49 @@ export const ServerManager: React.FC = () => {
             {!isServerLoading && serverStats && serverHealth && (
               <div>
                 <div className="serverTitleBar">
-                  <h4>Server Stats</h4>
-                  <h5>Status : {serverHealth.status}</h5>
+                  <Typography variant="h5">Server Stats</Typography>
+                  <Typography variant="h5">
+                    Status : {serverHealth.status}
+                  </Typography>
                 </div>
 
-                <ul>
-                  <li>Books : {serverStats?.totalBooks}</li>
-                  <li>Authors : {serverStats?.totalAuthorCount}</li>
-                  <li>Series : {serverStats?.totalSeriesCount}</li>
-                  <li>Read : {serverStats?.totalCompletedCount}</li>
-                  <li>
+                <List dense disablePadding>
+                  <ListItem>
+                    <ListItemIcon>
+                      <DotIcon />
+                    </ListItemIcon>
+                    Books : {serverStats?.totalBooks}
+                  </ListItem>
+                  <ListItem>
+                    {" "}
+                    <ListItemIcon>
+                      <DotIcon />
+                    </ListItemIcon>
+                    Authors : {serverStats?.totalAuthorCount}
+                  </ListItem>
+                  <ListItem>
+                    {" "}
+                    <ListItemIcon>
+                      <DotIcon />
+                    </ListItemIcon>
+                    Series : {serverStats?.totalSeriesCount}
+                  </ListItem>
+                  <ListItem>
+                    {" "}
+                    <ListItemIcon>
+                      <DotIcon />
+                    </ListItemIcon>
+                    Read : {serverStats?.totalCompletedCount}
+                  </ListItem>
+                  <ListItem>
+                    {" "}
+                    <ListItemIcon>
+                      <DotIcon />
+                    </ListItemIcon>
                     Storage Used :{" "}
                     {formatStorageSize(serverStats?.totalStorageSizeKB ?? 0)}
-                  </li>
-                </ul>
+                  </ListItem>
+                </List>
               </div>
             )}
           </div>
@@ -228,7 +261,13 @@ export const ServerManager: React.FC = () => {
                 <Stack
                   direction="row"
                   spacing={2}
-                  sx={{ alignItems: "center", justifyContent: "space-between" }}
+                  sx={{
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    border: "1px solid var(--border)",
+                    borderRadius: "15px",
+                    padding: "0.5em",
+                  }}
                 >
                   <Box>
                     <Typography component="label" htmlFor="scanInterval">
@@ -243,6 +282,7 @@ export const ServerManager: React.FC = () => {
                     id="scanInterval"
                     type="number"
                     size="small"
+                    sx={{ marginRight: "0.25em" }}
                     value={serverSettings?.libraryScanInterval ?? 15}
                     onChange={(e) =>
                       handleServerSettingChange(

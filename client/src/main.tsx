@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { Provider } from "react-redux";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
+import { ThemeProvider } from "./components/themeProvider";
 import App from "./App";
 import "./index.css";
 import { storeInstance } from "./redux/store";
@@ -9,7 +10,9 @@ import { storeInstance } from "./redux/store";
 function Root() {
   return (
     <BrowserRouter>
-      <App />
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

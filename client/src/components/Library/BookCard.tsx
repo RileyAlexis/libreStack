@@ -315,7 +315,12 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
       </div>
 
       <div onClick={(e) => e.stopPropagation()}>
-        <Dialog open={isBookDialogOpen} onClose={handleDialogClosing}>
+        <Dialog
+          open={isBookDialogOpen}
+          onClose={handleDialogClosing}
+          maxWidth="md"
+          fullWidth={true}
+        >
           {isBookDialogOpen && <BookCardDialog bookId={book.id} />}
         </Dialog>
       </div>
@@ -323,6 +328,8 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
         <Dialog
           open={isDescDialogOpen}
           onClose={() => setIsDescDialogOpen(false)}
+          maxWidth="lg"
+          fullWidth={true}
         >
           {isDescDialogOpen && <DescriptionDialog book={book} />}
         </Dialog>
@@ -331,6 +338,8 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
         <Dialog
           open={isFixMismatchDialogOpen}
           onClose={() => setIsFixMismatchDialogOpen(false)}
+          maxWidth="lg"
+          fullWidth={true}
         >
           {isFixMismatchDialogOpen && (
             <FixMismatchDialog

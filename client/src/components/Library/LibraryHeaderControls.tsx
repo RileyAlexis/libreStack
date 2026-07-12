@@ -197,43 +197,22 @@ export const LibraryHeaderControls: React.FC = () => {
               {selections.selectedBooks.length}
             </div>
             <div className="selectedMenuContainer">
-              <ButtonGroup>
+              <ButtonGroup variant="contained" size="small">
+                <Button onClick={handleMarkAsRead}>Mark Read</Button>
+                <Button onClick={handleMarkAsUnread}>Mark Unread</Button>
                 <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={handleMarkAsRead}
-                >
-                  Mark Read
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={handleMarkAsUnread}
-                >
-                  Mark Unread
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
                   disabled={appSettings.isSyncing}
                   onClick={handleQueryOpenLibrary}
                 >
                   Query Open Library
                 </Button>
                 <Button
-                  variant="outlined"
-                  size="small"
                   disabled={appSettings.isSyncing}
                   onClick={handleQueryWikidata}
                 >
                   Query Wikidata
                 </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  color="error"
-                  onClick={() => setIsDeleteOpen(true)}
-                >
+                <Button color="error" onClick={() => setIsDeleteOpen(true)}>
                   Delete
                 </Button>
               </ButtonGroup>

@@ -19,6 +19,7 @@ import {
   CircularProgress,
   Typography,
   Box,
+  Tooltip,
 } from "@mui/material";
 import { Plus } from "lucide-react";
 
@@ -263,16 +264,19 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
               }}
             />
           </div>
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={() => {
-              setSeriesInput(book?.series?.seriesTitle ?? "");
-              setIsAddingSeries(false);
-            }}
-          >
-            <Plus className="rotate-45" size={18} />
-          </Button>
+          <Tooltip title="Clear">
+            <Button
+              disabled={!isAddingSeries}
+              variant="contained"
+              size="medium"
+              onClick={() => {
+                setSeriesInput(book?.series?.seriesTitle ?? "");
+                setIsAddingSeries(false);
+              }}
+            >
+              <Plus style={{ transform: "rotate(45deg)" }} />
+            </Button>
+          </Tooltip>
         </Box>
       );
     }
@@ -295,13 +299,16 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
             ))}
           </Select>
         </div>
-        <Button
-          variant="outlined"
-          size="small"
-          onClick={() => setIsAddingSeries(true)}
-        >
-          <Plus size={18} />
-        </Button>
+        <Tooltip title="Add New Series">
+          <Button
+            disabled={isAddingSeries}
+            variant="contained"
+            size="medium"
+            onClick={() => setIsAddingSeries(true)}
+          >
+            <Plus />
+          </Button>
+        </Tooltip>
       </Box>
     );
   };
@@ -329,7 +336,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
 
   return (
     <>
-      <DialogTitle style={{ maxWidth: "31rem" }}>
+      <DialogTitle>
         {book.title}
         <Typography variant="body2" color="text.secondary">
           Edit metadata: Id {book.id}
@@ -342,13 +349,13 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
           >
             Get Metadata
           </Typography>
-          <ButtonGroup id="metadataButtons" fullWidth>
-            <Button
-              variant="contained"
-              color="inherit"
-              onClick={handleOpenLibrary}
-              disabled={isSyncing}
-            >
+          <ButtonGroup
+            id="metadataButtons"
+            variant="outlined"
+            color="secondary"
+            fullWidth
+          >
+            <Button onClick={handleOpenLibrary} disabled={isSyncing}>
               {isSyncing ? (
                 <>
                   <CircularProgress size={14} sx={{ mr: 1 }} />
@@ -358,12 +365,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
                 "Open Library"
               )}
             </Button>
-            <Button
-              variant="contained"
-              color="inherit"
-              onClick={handleWikidata}
-              disabled={isWikiSyncing}
-            >
+            <Button onClick={handleWikidata} disabled={isWikiSyncing}>
               {isWikiSyncing ? (
                 <>
                   <CircularProgress size={14} sx={{ mr: 1 }} />
@@ -373,12 +375,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
                 "Wikidata"
               )}
             </Button>
-            <Button
-              variant="contained"
-              color="inherit"
-              onClick={handleFetchCover}
-              disabled={isSyncing}
-            >
+            <Button onClick={handleFetchCover} disabled={isSyncing}>
               {isSyncing ? <CircularProgress size={14} /> : "Fetch Cover"}
             </Button>
           </ButtonGroup>
@@ -392,10 +389,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
           )}
         </Box>
       </DialogTitle>
-      <DialogContent
-        style={{ maxWidth: "31rem" }}
-        className="bookCardDialogContent"
-      >
+      <DialogContent className="bookCardDialogContent">
         <Box sx={{ display: "grid", gap: 2, py: 2 }}>
           {FIELD_ORDER.map(renderField)}
         </Box>

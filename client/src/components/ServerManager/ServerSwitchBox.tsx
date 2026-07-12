@@ -23,7 +23,13 @@ export const ServerSwitchBox: React.FC<ServerSwitchBoxProps> = ({
       <Stack
         direction="row"
         spacing={2}
-        sx={{ alignItems: "center", justifyContent: "space-between" }}
+        sx={{
+          alignItems: "center",
+          justifyContent: "space-between",
+          border: "1px solid var(--border)",
+          borderRadius: "15px",
+          padding: "0.5em",
+        }}
       >
         <Box>
           <Typography component="label" htmlFor={id}>

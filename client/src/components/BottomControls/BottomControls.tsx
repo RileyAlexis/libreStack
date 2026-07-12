@@ -16,8 +16,6 @@ import {
 
 // UI
 import {
-  BottomNavigation,
-  BottomNavigationAction,
   Menu,
   MenuItem,
   Divider,
@@ -27,6 +25,7 @@ import {
   Dialog,
   Typography,
   Box,
+  Button,
 } from "@mui/material";
 
 import {
@@ -185,6 +184,18 @@ export const BottomControls: React.FC = () => {
     );
   };
 
+  const menubarButtonSx = {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 0.25,
+    minWidth: 0,
+    flex: 1,
+    py: 0.75,
+    color: "text.primary",
+    "& .MuiButton-startIcon": { margin: 0 },
+  };
+
   return (
     <div className="bottomControlsContainer">
       <input
@@ -194,37 +205,45 @@ export const BottomControls: React.FC = () => {
         style={{ display: "none" }}
       />
 
-      <BottomNavigation showLabels className="bottomMenuBar">
-        <BottomNavigationAction
-          label="Library"
-          icon={<LandmarkIcon />}
+      <Box className="bottomMenuBar" sx={{ display: "flex" }}>
+        <Button
+          sx={menubarButtonSx}
+          startIcon={<LandmarkIcon />}
           onClick={(e) => {
             navigate("/library");
             openMenu("library", e);
           }}
-        />
-        <BottomNavigationAction
-          label="Manage"
-          icon={<LibraryBig />}
+        >
+          <Typography variant="caption">Library</Typography>
+        </Button>
+        <Button
+          sx={menubarButtonSx}
+          startIcon={<LibraryBig />}
           onClick={(e) => {
             navigate("/library");
             openMenu("manage", e);
           }}
-        />
-        <BottomNavigationAction
-          label="Layout"
-          icon={<LayoutDashboard />}
+        >
+          <Typography variant="caption">Manage</Typography>
+        </Button>
+        <Button
+          sx={menubarButtonSx}
+          startIcon={<LayoutDashboard />}
           onClick={(e) => openMenu("layout", e)}
-        />
-        <BottomNavigationAction
-          label="Series"
-          icon={<SquareLibrary />}
+        >
+          <Typography variant="caption">Layout</Typography>
+        </Button>
+        <Button
+          sx={menubarButtonSx}
+          startIcon={<SquareLibrary />}
           onClick={(e) => {
             e.stopPropagation();
             navigate("/series");
           }}
-        />
-      </BottomNavigation>
+        >
+          <Typography variant="caption">Series</Typography>
+        </Button>
+      </Box>
 
       {/* Library menu */}
       <Menu
