@@ -80,7 +80,6 @@ export const ServerLibraryStats: React.FC<ServerLibraryStatsProps> = ({
         console.error(error);
       });
   };
-  œ;
 
   return (
     <div className="libraryStatsBox" key={item.libraryName}>

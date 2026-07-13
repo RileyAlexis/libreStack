@@ -26,7 +26,7 @@ import { ServerSwitchBox } from "./ServerSwitchBox";
 import { ServerLibraryStats } from "./ServerLibraryStats";
 
 import "./ServerManager.css";
-import { Dot, DotIcon } from "lucide-react";
+import { DotIcon } from "lucide-react";
 
 export const ServerManager: React.FC = () => {
   //   const dispatch = useDispatch<AppDispatch>();
