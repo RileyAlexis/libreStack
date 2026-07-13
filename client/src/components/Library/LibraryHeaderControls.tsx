@@ -256,26 +256,6 @@ export const LibraryHeaderControls: React.FC = () => {
                 </Menu>
               </div>
 
-              {/* <ButtonGroup variant="outlined" size="small">
-                <Button onClick={handleMarkAsRead}>Mark Read</Button>
-                <Button onClick={handleMarkAsUnread}>Mark Unread</Button>
-                <Button
-                  disabled={appSettings.isSyncing}
-                  onClick={handleQueryOpenLibrary}
-                >
-                  Query Open Library
-                </Button>
-                <Button
-                  disabled={appSettings.isSyncing}
-                  onClick={handleQueryWikidata}
-                >
-                  Query Wikidata
-                </Button>
-                <Button color="error" onClick={() => setIsDeleteOpen(true)}>
-                  Delete
-                </Button>
-              </ButtonGroup> */}
-
               <Dialog
                 open={isDeleteOpen}
                 onClose={() => setIsDeleteOpen(false)}
