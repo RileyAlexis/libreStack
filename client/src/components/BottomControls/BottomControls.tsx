@@ -184,6 +184,15 @@ export const BottomControls: React.FC = () => {
     );
   };
 
+  const handleChangeGroupBySeries = () => {
+    dispatch(
+      setLayout({
+        ...appSettings.libraryLayout,
+        groupBySeries: !appSettings.libraryLayout.groupBySeries,
+      }),
+    );
+  };
+
   const menubarButtonSx = {
     display: "flex",
     flexDirection: "column",
@@ -361,6 +370,17 @@ export const BottomControls: React.FC = () => {
               />
             }
             label="Show Series"
+          />
+        </MenuItem>
+        <MenuItem className="menubarSwitch" disableRipple>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={appSettings.libraryLayout.groupBySeries}
+                onChange={handleChangeGroupBySeries}
+              />
+            }
+            label="Group By Series"
           />
         </MenuItem>
         <Divider />

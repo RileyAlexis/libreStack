@@ -46,6 +46,20 @@ public class LibraryController : ControllerBase
         return Ok(result.Value);
     }
 
+    [HttpGet("getListOfLibraries")]
+    [Authorize]
+    public async Task<IActionResult> GetListOfLibraries()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null) return Unauthorized();
+
+        var result = await _iLibraryService.GetListOfLibraries(userId);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok(result.Value);
+    }
+
     [HttpPost("addBookToLibrary")]
     [Authorize]
     public async Task<IActionResult> AddBookToLibrary([FromQuery] int libraryId, [FromQuery] int bookId)

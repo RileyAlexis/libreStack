@@ -36,8 +36,9 @@ export const Library: React.FC = () => {
           libraryData[appSettings.lastSelectedLibrary].books
             .filter(
               (book: BookType) =>
-                !book.readingProgress?.isComplete ||
-                appSettings.libraryLayout.showCompleted,
+                (!book.readingProgress?.isComplete ||
+                  appSettings.libraryLayout.showCompleted) &&
+                (!book.seriesId || !appSettings.libraryLayout.groupBySeries),
             )
             .map((book: BookType) => <BookCard key={book.id} book={book} />)}
       </div>

@@ -54,6 +54,8 @@ public class UserSettingsService : IUserSettingsService
             existing.SortBy = settings.SortBy;
             existing.SortAscending = settings.SortAscending;
             existing.LastSelectedLibrary = settings.LastSelectedLibrary;
+            existing.GroupByseries = settings.GroupByseries;
+            existing.GroupByCollections = settings.GroupByCollections;
         }
 
         await _db.SaveChangesAsync();

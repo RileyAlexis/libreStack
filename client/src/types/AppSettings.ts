@@ -22,6 +22,8 @@ export interface LibraryLayout {
   showCollections: boolean;
   showCompleted: boolean;
   showDescriptionOnHover: boolean;
+  groupBySeries: boolean;
+  groupByCollections: boolean;
 }
 
 export type SortByType =
