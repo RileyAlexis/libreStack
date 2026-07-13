@@ -44,6 +44,9 @@ import {
   CircleMinus,
   BookXIcon,
   EllipsisVertical,
+  ArrowDownUp,
+  ArrowUpDown,
+  ArrowDownWideNarrow,
 } from "lucide-react";
 
 import "./LibraryHeaderControls.css";
@@ -56,7 +59,10 @@ export const LibraryHeaderControls: React.FC = () => {
   const library = useSelector((state: LibreRootState) => state.library);
   const selections = useSelector((state: LibreRootState) => state.selections);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
+  const sortMenuOpen = Boolean(sortAnchorEl);
   const menuOpen = Boolean(anchorEl);
+  const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
 
   const sortingOptions: SortByType[] = [
     "Author",
@@ -203,6 +209,14 @@ export const LibraryHeaderControls: React.FC = () => {
     setAnchorEl(null);
   };
 
+  const handleClickSortMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setSortAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseSortMenu = () => {
+    setSortAnchorEl(null);
+  };
+
   return (
     <div className="libraryHeaderControlsContainer">
       <div className="libraryHeaderControls">
@@ -285,35 +299,112 @@ export const LibraryHeaderControls: React.FC = () => {
           </div>
         )}
         <div className="sortingContainer">
-          <ButtonGroup>
-            <Button variant="outlined" onClick={handleAscending}>
-              <ArrowDownAZ size={18} />
-            </Button>
-            <Button variant="outlined" onClick={handleDescending}>
-              <ArrowUpAZ size={18} />
-            </Button>
-          </ButtonGroup>
-          <Typography
-            id="sortingLabel"
-            component="label"
-            htmlFor="sortingCombo"
-          >
-            Sort By:{" "}
-          </Typography>
-          <Autocomplete<SortByType, false, true>
-            id="sortingCombo"
-            size="small"
-            disableClearable
-            options={sortingOptions}
-            value={appSettings.libraryLayout.sortBy ?? "Recently Added"}
-            onChange={(_, value) => {
-              if (value) handleSortChange(value);
-            }}
-            sx={{ minWidth: 180 }}
-            renderInput={(params) => (
-              <TextField {...params} placeholder="Sort by" />
-            )}
-          />
+          {!isTouchDevice && (
+            <div className="sortingBox">
+              <ButtonGroup>
+                <Button variant="outlined" onClick={handleAscending}>
+                  <ArrowDownAZ size={18} />
+                </Button>
+                <Button variant="outlined" onClick={handleDescending}>
+                  <ArrowUpAZ size={18} />
+                </Button>
+              </ButtonGroup>
+              <Typography
+                id="sortingLabel"
+                component="label"
+                htmlFor="sortingCombo"
+              >
+                Sort By:{" "}
+              </Typography>
+              <Autocomplete<SortByType, false, true>
+                id="sortingCombo"
+                size="small"
+                disableClearable
+                options={sortingOptions}
+                value={appSettings.libraryLayout.sortBy ?? "Recently Added"}
+                onChange={(_, value) => {
+                  if (value) handleSortChange(value);
+                }}
+                sx={{ minWidth: 180 }}
+                renderInput={(params) => (
+                  <TextField {...params} placeholder="Sort by" />
+                )}
+              />
+            </div>
+          )}
+          {isTouchDevice && (
+            <div>
+              {appSettings.libraryLayout.sortAscending && (
+                <IconButton onClick={handleDescending}>
+                  <ArrowDownUp />
+                </IconButton>
+              )}
+              {!appSettings.libraryLayout.sortAscending && (
+                <IconButton onClick={handleAscending}>
+                  <ArrowUpDown />
+                </IconButton>
+              )}
+            </div>
+          )}
+          {isTouchDevice && (
+            <div>
+              <IconButton
+                onClick={handleClickSortMenu}
+                aria-label="more"
+                aria-controls={sortMenuOpen ? "long-menu" : undefined}
+                aria-expanded={sortMenuOpen}
+                aria-haspopup="true"
+              >
+                <ArrowDownWideNarrow />
+              </IconButton>
+              <Menu
+                anchorEl={sortAnchorEl}
+                open={sortMenuOpen}
+                onClose={handleCloseSortMenu}
+              >
+                <MenuItem
+                  onClick={() =>
+                    handleSortChange(
+                      "Title",
+                      appSettings.libraryLayout.sortAscending,
+                    )
+                  }
+                >
+                  Sort by Title
+                </MenuItem>
+                <MenuItem
+                  onClick={() =>
+                    handleSortChange(
+                      "Author",
+                      appSettings.libraryLayout.sortAscending,
+                    )
+                  }
+                >
+                  Sort by Author
+                </MenuItem>
+                <MenuItem
+                  onClick={() =>
+                    handleSortChange(
+                      "Last Read",
+                      appSettings.libraryLayout.sortAscending,
+                    )
+                  }
+                >
+                  Sort by Last Read
+                </MenuItem>
+                <MenuItem
+                  onClick={() =>
+                    handleSortChange(
+                      "Recently Added",
+                      appSettings.libraryLayout.sortAscending,
+                    )
+                  }
+                >
+                  Sort by Recently Added
+                </MenuItem>
+              </Menu>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -52,3 +52,12 @@
   align-items: center;
   gap: 0.5em;
 }
+
+.sortingBox {
+  grid-column: 3 / span 2;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5em;
+}
