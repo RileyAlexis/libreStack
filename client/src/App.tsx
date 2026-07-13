@@ -30,6 +30,7 @@ import { LoginScreen } from "./components/LoginScreen/LoginScreen";
 import "./App.css";
 import { SeriesManager } from "./components/SeriesManager/SeriesManager";
 import { ServerManager } from "./components/ServerManager/ServerManager";
+import { Tester } from "./components/Testers/Tester";
 
 function App() {
   const navigate = useNavigate();
@@ -66,12 +67,10 @@ function App() {
         dispatch(setUser(response.data));
       })
       .catch(() => {
-        // apiClient's 401 interceptor already tried refreshing and failed
         setIsLoginOpen(true);
       });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Fetch settings once authenticated
   useEffect(() => {
     if (!accessToken) return;
 
@@ -80,7 +79,6 @@ function App() {
     });
   }, [accessToken, dispatch]);
 
-  // Routing based on home preference
   useEffect(() => {
     if (location.pathname !== "/") return;
 
@@ -156,6 +154,15 @@ function App() {
             <div>
               <HeaderBanner />
               {/* <LogIn /> */}
+            </div>
+          }
+        />
+        <Route
+          path="/tester"
+          element={
+            <div>
+              <HeaderBanner />
+              <Tester />
             </div>
           }
         />

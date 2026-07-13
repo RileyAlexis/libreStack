@@ -31,6 +31,20 @@ public class SeriesController : ControllerBase
         return Ok(result.Value);
     }
 
+    [HttpGet("GetSeriesByLibrary")]
+    [Authorize]
+    public async Task<IActionResult> GetseriesByLibrary(int libraryId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null) return Unauthorized();
+
+        var result = await _iSeriesService.GetSeriesByLibrary(libraryId, userId);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok(result.Value);
+    }
+
     public record UpdateSeriesRequest(int SeriesId, string SeriesTitle, int SeriesTotal);
 
     [HttpPatch]

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { api } from "@/utils/api";
 import type { BookType, SeriesType } from "@/types/BookType";
 import type { AppDispatch } from "@/redux/store";
@@ -24,6 +24,8 @@ import {
 import { Plus } from "lucide-react";
 
 import "./BookCardDialog.css";
+import type { LibreRootState } from "@/types/LibreRootState";
+import type { LibraryBaseType } from "@/types/LibraryType";
 
 // ---------------------------------------------------------------------------
 // FIELD ORDER
@@ -71,6 +73,8 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [isWikiSyncing, setIsWikiSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  const [library, setLibrary] = useState<LibraryBaseType[]>();
 
   // -- Data loading ----------------------------------------------------------
 
@@ -82,10 +86,21 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
   }, [bookId]);
 
   useEffect(() => {
-    api
-      .get("series")
-      .then((response) => setSeriesList(response.data))
-      .catch((error) => console.error(error));
+    const fetchSeriesData = async () => {
+      try {
+        const libraryList = await api.get("Library/getListOfLibraries");
+        setLibrary(libraryList.data);
+
+        const seriesResponse = await api.get(
+          `Series/GetSeriesByLibrary?libraryId=${libraryList.data[appSettings.lastSelectedLibrary].id}`,
+        );
+        setSeriesList(seriesResponse.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchSeriesData();
   }, []);
 
   useEffect(() => {

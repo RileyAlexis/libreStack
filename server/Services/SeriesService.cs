@@ -155,4 +155,23 @@ public class SeriesService : ISeriesService
 
         return Result<List<ApiSeries>>.Success(series);
     }
+
+    public async Task<Result<List<ApiSeries>>> GetSeriesByLibrary(int libraryId, string userId)
+    {
+        var series = await _db.Series.Where(s => s.UserId == userId &&
+        s.Books.Any(b => b.Libraries.Any(l => l.Id == libraryId)))
+        .Select(s => new ApiSeries
+        {
+            Id = s.Id,
+            SeriesTitle = s.SeriesTitle!,
+            SeriesTotal = s.SeriesTotal,
+            BookCount = s.Books.Count(b => b.Libraries.Any(l => l.Id == libraryId))
+        })
+        .ToListAsync();
+
+        if (series is null)
+            return Result<List<ApiSeries>>.Failure("No series found for library", ErrorType.NotFound);
+
+        return Result<List<ApiSeries>>.Success(series);
+    }
 }
