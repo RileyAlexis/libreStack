@@ -36,7 +36,6 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-top: 0;
 }
 
 .libraryStatsBox {
@@ -85,7 +84,8 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  gap: 0.25em;
+  padding: 0;
+  margin: 0;
 }
 
 .pathEditContainer {

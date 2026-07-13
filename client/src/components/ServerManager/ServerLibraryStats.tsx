@@ -15,8 +15,11 @@ import {
   DialogContent,
   DialogActions,
   Typography,
+  List,
+  ListItem,
+  ListItemIcon,
 } from "@mui/material";
-import { CircleX, FolderPen, SaveCheck } from "lucide-react";
+import { CircleX, FolderPen, SaveCheck, DotIcon } from "lucide-react";
 import "./ServerManager.css";
 import { api } from "@/utils/api";
 
@@ -77,23 +80,49 @@ export const ServerLibraryStats: React.FC<ServerLibraryStatsProps> = ({
         console.error(error);
       });
   };
+  œ;
 
   return (
     <div className="libraryStatsBox" key={item.libraryName}>
       <div>
-        <h4>{item.libraryName}</h4>
-        <ul>
-          <li>Books: {item.bookCount}</li>
-          <li>Authors: {item.authorCount}</li>
-          <li>Series: {item.seriesCount}</li>
-          <li>Read: {item.completedBookCount}</li>
-          <li>
+        <Typography variant="h5">{item.libraryName}</Typography>
+        <List dense disablePadding>
+          <ListItem disablePadding>
+            <ListItemIcon>
+              <DotIcon />{" "}
+            </ListItemIcon>
+            Books: {item.bookCount}
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemIcon>
+              <DotIcon />{" "}
+            </ListItemIcon>
+            Authors: {item.authorCount}
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemIcon>
+              <DotIcon />{" "}
+            </ListItemIcon>
+            Series: {item.seriesCount}
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemIcon>
+              <DotIcon />{" "}
+            </ListItemIcon>
+            Read: {item.completedBookCount}
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemIcon>
+              <DotIcon />{" "}
+            </ListItemIcon>
             {!isEditing && (
               <div className="pathBox">
-                <p>Path : {item.libraryPath} </p>
-                <IconButton onClick={handleStartEditing}>
-                  <FolderPen size={18} />
-                </IconButton>
+                Path : {item.libraryPath}
+                <Tooltip title="Edit Path">
+                  <IconButton onClick={handleStartEditing}>
+                    <FolderPen size={18} />
+                  </IconButton>
+                </Tooltip>
               </div>
             )}
             {isEditing && (
@@ -139,12 +168,22 @@ export const ServerLibraryStats: React.FC<ServerLibraryStatsProps> = ({
                 </Dialog>
               </div>
             )}
-          </li>
-          <li>Storage Size : {formatStorageSize(item?.storageSizeKb ?? 0)}</li>
-          <li>
+          </ListItem>
+          <ListItem disablePadding>
+            {" "}
+            <ListItemIcon>
+              <DotIcon />{" "}
+            </ListItemIcon>
+            Storage Size : {formatStorageSize(item?.storageSizeKb ?? 0)}
+          </ListItem>
+          <ListItem disablePadding>
+            {" "}
+            <ListItemIcon>
+              <DotIcon />{" "}
+            </ListItemIcon>
             Free Disk Space : {formatStorageSize(item?.driveFreeSpace ?? 0)}
-          </li>
-        </ul>
+          </ListItem>
+        </List>
       </div>
     </div>
   );

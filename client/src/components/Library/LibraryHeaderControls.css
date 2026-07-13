@@ -28,6 +28,12 @@
   align-items: center;
 }
 
+.selectedButtonsContainer {
+  display: flex;
+  flex-direction: row;
+  margin-left: 0.25em;
+}
+
 .selectedItems {
   grid-column: 1;
   display: flex;

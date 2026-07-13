@@ -30,8 +30,21 @@ import {
   ButtonGroup,
   Button,
   Typography,
+  IconButton,
+  Tooltip,
+  Divider,
+  Menu,
+  MenuItem,
 } from "@mui/material";
-import { CircleXIcon, ArrowDownAZ, ArrowUpAZ } from "lucide-react";
+import {
+  CircleXIcon,
+  ArrowDownAZ,
+  ArrowUpAZ,
+  CirclePlus,
+  CircleMinus,
+  BookXIcon,
+  EllipsisVertical,
+} from "lucide-react";
 
 import "./LibraryHeaderControls.css";
 import { api } from "@/utils/api";
@@ -42,6 +55,8 @@ export const LibraryHeaderControls: React.FC = () => {
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const library = useSelector((state: LibreRootState) => state.library);
   const selections = useSelector((state: LibreRootState) => state.selections);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const menuOpen = Boolean(anchorEl);
 
   const sortingOptions: SortByType[] = [
     "Author",
@@ -181,6 +196,13 @@ export const LibraryHeaderControls: React.FC = () => {
     dispatch(fetchLibraryData());
   };
 
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <div className="libraryHeaderControlsContainer">
       <div className="libraryHeaderControls">
@@ -196,8 +218,45 @@ export const LibraryHeaderControls: React.FC = () => {
               />
               {selections.selectedBooks.length}
             </div>
+            <Divider orientation="vertical" aria-hidden="true" flexItem />
             <div className="selectedMenuContainer">
-              <ButtonGroup variant="contained" size="small">
+              <div className="selectedButtonsContainer">
+                <Tooltip title="Mark as Read">
+                  <IconButton onClick={handleMarkAsRead}>
+                    <CirclePlus />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Mark as Unread">
+                  <IconButton onClick={handleMarkAsUnread}>
+                    <CircleMinus />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Delete">
+                  <IconButton onClick={() => setIsDeleteOpen(true)}>
+                    <BookXIcon color="var(--destructive" />
+                  </IconButton>
+                </Tooltip>
+                <Divider orientation="vertical" aria-hidden="true" flexItem />
+                <IconButton
+                  onClick={handleClick}
+                  aria-label="more"
+                  aria-controls={menuOpen ? "long-menu" : undefined}
+                  aria-expanded={menuOpen}
+                  aria-haspopup="true"
+                >
+                  <EllipsisVertical />
+                </IconButton>
+                <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleClose}>
+                  <MenuItem onClick={handleQueryOpenLibrary}>
+                    Query Open Library
+                  </MenuItem>
+                  <MenuItem onClick={handleQueryWikidata}>
+                    Query Wikidata
+                  </MenuItem>
+                </Menu>
+              </div>
+
+              {/* <ButtonGroup variant="outlined" size="small">
                 <Button onClick={handleMarkAsRead}>Mark Read</Button>
                 <Button onClick={handleMarkAsUnread}>Mark Unread</Button>
                 <Button
@@ -215,7 +274,7 @@ export const LibraryHeaderControls: React.FC = () => {
                 <Button color="error" onClick={() => setIsDeleteOpen(true)}>
                   Delete
                 </Button>
-              </ButtonGroup>
+              </ButtonGroup> */}
 
               <Dialog
                 open={isDeleteOpen}

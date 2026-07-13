@@ -82,12 +82,12 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
 
   const handleMarkIncomplete = (bookId: number) => {
     api
-      .post(`ReadingProgress/markIncomplete?bookId=${bookId}`)
+      .post(`ReadingProgress/markNotcomplete?bookId=${bookId}`)
       .then((_) => {
         dispatch(fetchLibraryData());
       })
       .catch((error) => {
-        console.error(error.response.data);
+        console.error(error);
       });
   };
 
@@ -195,7 +195,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
             }}
           >
             <CircleCheck
-              strokeWidth={2}
+              strokeWidth={3}
               className="bookIcon"
               style={iconSize}
             />

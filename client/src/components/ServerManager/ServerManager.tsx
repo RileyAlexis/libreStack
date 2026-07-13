@@ -135,37 +135,32 @@ export const ServerManager: React.FC = () => {
                     Status : {serverHealth.status}
                   </Typography>
                 </div>
-
                 <List dense disablePadding>
-                  <ListItem>
+                  <ListItem disablePadding>
                     <ListItemIcon>
                       <DotIcon />
                     </ListItemIcon>
                     Books : {serverStats?.totalBooks}
                   </ListItem>
-                  <ListItem>
-                    {" "}
+                  <ListItem disablePadding>
                     <ListItemIcon>
                       <DotIcon />
                     </ListItemIcon>
                     Authors : {serverStats?.totalAuthorCount}
                   </ListItem>
-                  <ListItem>
-                    {" "}
+                  <ListItem disablePadding>
                     <ListItemIcon>
                       <DotIcon />
                     </ListItemIcon>
                     Series : {serverStats?.totalSeriesCount}
                   </ListItem>
-                  <ListItem>
-                    {" "}
+                  <ListItem disablePadding>
                     <ListItemIcon>
                       <DotIcon />
                     </ListItemIcon>
                     Read : {serverStats?.totalCompletedCount}
                   </ListItem>
-                  <ListItem>
-                    {" "}
+                  <ListItem disablePadding>
                     <ListItemIcon>
                       <DotIcon />
                     </ListItemIcon>
@@ -180,6 +175,7 @@ export const ServerManager: React.FC = () => {
         <div className="serverStatsCard">
           {isServerLoading && (
             <div className="libraryStatsBox">
+              <SkeletonText />
               <SkeletonText />
               <SkeletonText />
             </div>
