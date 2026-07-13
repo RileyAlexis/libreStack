@@ -53,6 +53,23 @@ public class BookController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("getBooksBySeries")]
+    [Authorize]
+    public async Task<ActionResult<Book>> GetBooksBySeries(int seriesId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
+            return Unauthorized();
+
+        var result = await _bookService.GetBooksBySeries(seriesId, userId);
+
+        if (result is null)
+            return BadRequest(new { error = result?.Error });
+
+        return Ok(result);
+    }
+
+
     [HttpPatch("updateBookEntry")]
     [Authorize]
     public async Task<ActionResult<ApiBook>> UpdateBookEntry(ApiBook book)
@@ -118,5 +135,6 @@ public class BookController : ControllerBase
 
         return Ok(result);
     }
+
 
 }

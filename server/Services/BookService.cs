@@ -42,6 +42,9 @@ public class BookService : IBookService
 
     public async Task<Result> AddBookEntry(IFormFile file, string userId, int libraryId)
     {
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
+            return Result.Failure("User Id is required", ErrorType.BadRequest);
+
         if (file is null || file.Length == 0)
             return Result.Failure("File not found", ErrorType.NotFound);
 
@@ -95,6 +98,9 @@ public class BookService : IBookService
 
     public async Task<Result> DeleteBookEntry(int id, string userId)
     {
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
+            return Result.Failure("User Id is required", ErrorType.BadRequest);
+
         var bookEntry = await _db.Books
             .Include(b => b.Libraries)
             .FirstOrDefaultAsync(l => l.Id == id && l.UserId == userId);
@@ -126,6 +132,9 @@ public class BookService : IBookService
 
     public async Task<Result<(Stream, string)>> DownloadBookEntry(string userId, int id)
     {
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
+            return Result<(Stream, string)>.Failure("User Id is required", ErrorType.BadRequest);
+
         var bookEntry = await _db.Books.FirstOrDefaultAsync(b => b.Id == id && b.UserId == userId);
         if (bookEntry is null)
             return Result<(Stream, string)>.Failure("Book not found", ErrorType.NotFound);
@@ -141,6 +150,9 @@ public class BookService : IBookService
 
     public async Task<Result<List<Book>>> GetUserBooks(string userId)
     {
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
+            return Result<List<Book>>.Failure("User Id is required", ErrorType.BadRequest);
+
         var result = await _db.Books.Where(l => l.UserId == userId)
             .Include(l => l.BookTags)
             .Include(l => l.ReadingProgress)
@@ -156,6 +168,9 @@ public class BookService : IBookService
 
     public async Task<Result<Book>> GetBookEntry(int id, string userId)
     {
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
+            return Result<Book>.Failure("User Id is required", ErrorType.BadRequest);
+
         var result = await _db.Books.Where(l => l.UserId == userId && l.Id == id)
             .Include(l => l.BookTags)
             .Include(l => l.Bookmarks)
@@ -171,6 +186,9 @@ public class BookService : IBookService
 
     public async Task<Result<ApiBook>> UpdateBookMetaData(ApiBook book, string userId)
     {
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
+            return Result<ApiBook>.Failure("User Id is required", ErrorType.BadRequest);
+
         var existing = await _db.Books
             .Include(l => l.Series)
             .FirstOrDefaultAsync(l => l.Id == book.Id && l.UserId == userId);
@@ -242,6 +260,9 @@ public class BookService : IBookService
 
     public async Task<Result> AddBookEntryFromPath(string filePath, string userId, int libraryId)
     {
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
+            return Result.Failure("User Id is required", ErrorType.BadRequest);
+
         var library = await _db.Libraries
         .Include(l => l.Books)
         .FirstOrDefaultAsync(l => l.Id == libraryId && l.UserId == userId);
@@ -267,5 +288,18 @@ public class BookService : IBookService
         await _db.SaveChangesAsync();
 
         return Result.Success();
+    }
+
+    public async Task<Result<List<Book>>> GetBooksBySeries(int seriesId, string userId)
+    {
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
+            return Result<List<Book>>.Failure("User Id is required", ErrorType.BadRequest);
+
+        var response = await _db.Books.Where(b => b.SeriesId == seriesId && b.UserId == userId).ToListAsync();
+
+        if (response is null)
+            return Result<List<Book>>.Failure("No books found in series", ErrorType.NotFound);
+
+        return Result<List<Book>>.Success(response);
     }
 }
