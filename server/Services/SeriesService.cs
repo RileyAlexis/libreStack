@@ -147,7 +147,7 @@ public class SeriesService : ISeriesService
                 SeriesTitle = s.SeriesTitle!,
                 SeriesTotal = s.SeriesTotal,
                 BookCount = s.Books.Count
-            }).OrderBy(l => l.Id)
+            }).OrderBy(l => l.SeriesTitle)
             .ToListAsync();
 
         if (series.Count == 0)
