@@ -28,7 +28,9 @@ export const fetchLibraryData = createAsyncThunk(
               ? sortByAuthor(lib.books, sortAscending)
               : sortBy === "Last Read"
                 ? sortByLastRead(lib.books)
-                : lib.books,
+                : sortBy === "Recently Added"
+                  ? sortyByRecentlyAdded(lib.books)
+                  : lib.books,
       }));
     } catch (error) {
       return rejectWithValue((error as Error).message);
