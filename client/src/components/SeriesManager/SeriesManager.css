@@ -11,7 +11,6 @@
 .seriesListContainer {
   display: flex;
   flex-direction: column;
-  width: 80%;
   border: 1px solid var(--secondary-foreground);
   border-radius: 20px;
   padding: 0.75em;

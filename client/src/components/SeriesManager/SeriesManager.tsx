@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 // import { useSelector, useDispatch } from "react-redux";
 // import type { AppDispatch } from "@/redux/store";
 import type { SeriesType } from "@/types/BookType";
@@ -12,6 +12,7 @@ import {
   TableHead,
   TableRow,
   TableCell,
+  TableSortLabel,
   Button,
   TextField,
   ButtonGroup,
@@ -32,6 +33,9 @@ import { BottomControls } from "../BottomControls/BottomControls";
 import "./SeriesManager.css";
 import { Delete, TextCursor } from "lucide-react";
 
+type SortColumn = "Title" | "Books";
+type SortDirection = "asc" | "desc";
+
 export const SeriesManager: React.FC = () => {
   // const dispatch = useDispatch<AppDispatch>();
   const [series, setSeries] = useState<SeriesType[] | null>(null);
@@ -39,6 +43,8 @@ export const SeriesManager: React.FC = () => {
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState<boolean>(false);
   const [isAddingSeries, setIsAddingSeries] = useState<boolean>(false);
   const [newSeries, setNewSeries] = useState<string>("");
+  const [sortBy, setSortBy] = useState<SortColumn>("Title");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   // const appSettings = useSelector((state: LibreRootState) => state.appSettings);
 
   useEffect(() => {
@@ -118,6 +124,35 @@ export const SeriesManager: React.FC = () => {
     setIsDeleteAlertOpen(false);
   };
 
+  const handleSort = (column: SortColumn) => {
+    if (sortBy === column) {
+      setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortBy(column);
+      setSortDirection("asc");
+    }
+  };
+
+  const sortedSeries = useMemo(() => {
+    if (!series) return null;
+
+    const sorted = [...series].sort((a, b) => {
+      let comparison = 0;
+
+      if (sortBy === "Title") {
+        comparison = a.seriesTitle.localeCompare(b.seriesTitle, undefined, {
+          sensitivity: "base",
+        });
+      } else if (sortBy === "Books") {
+        comparison = a.bookCount - b.bookCount;
+      }
+
+      return sortDirection === "asc" ? comparison : -comparison;
+    });
+
+    return sorted;
+  }, [series, sortBy, sortDirection]);
+
   return (
     <div className="seriesManagerContainer">
       <div className="seriesListContainer">
@@ -125,14 +160,34 @@ export const SeriesManager: React.FC = () => {
           <Table>
             <TableHead className="seriesHeader">
               <TableRow>
-                <TableCell>Series Title</TableCell>
-                <TableCell>Count of Books</TableCell>
+                <TableCell
+                  sortDirection={sortBy === "Title" ? sortDirection : false}
+                >
+                  <TableSortLabel
+                    active={sortBy === "Title"}
+                    direction={sortBy === "Title" ? sortDirection : "asc"}
+                    onClick={() => handleSort("Title")}
+                  >
+                    Series Title
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell
+                  sortDirection={sortBy === "Books" ? sortDirection : false}
+                >
+                  <TableSortLabel
+                    active={sortBy === "Books"}
+                    direction={sortBy === "Books" ? sortDirection : "asc"}
+                    onClick={() => handleSort("Books")}
+                  >
+                    Count of Books
+                  </TableSortLabel>
+                </TableCell>
                 <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {series &&
-                series.map((item) => (
+              {sortedSeries &&
+                sortedSeries.map((item) => (
                   <TableRow key={item.id} style={{ cursor: "pointer" }}>
                     {selectedSeries?.id === item.id ? (
                       <TableCell>
