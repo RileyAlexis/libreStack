@@ -38,6 +38,8 @@ const initialState: AppSettings = {
     showCollections: true,
     showCompleted: false,
     showDescriptionOnHover: true,
+    groupByCollections: false,
+    groupBySeries: false,
     libraryCoverSize: {
       width: 200,
       height: 300,
