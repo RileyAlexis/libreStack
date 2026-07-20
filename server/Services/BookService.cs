@@ -148,12 +148,12 @@ public class BookService : IBookService
     }
 
 
-    public async Task<Result<List<Book>>> GetUserBooks(string userId)
+    public async Task<Result<List<Book>>> GetBooksByLibrary(string userId, int libraryId)
     {
         if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
             return Result<List<Book>>.Failure("User Id is required", ErrorType.BadRequest);
 
-        var result = await _db.Books.Where(l => l.UserId == userId)
+        var result = await _db.Books.Where(l => l.UserId == userId && l.Id == libraryId)
             .Include(l => l.BookTags)
             .Include(l => l.ReadingProgress)
             .Include(l => l.Bookmarks)

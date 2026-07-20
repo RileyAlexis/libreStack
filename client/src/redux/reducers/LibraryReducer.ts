@@ -33,6 +33,7 @@ export const fetchLibraryData = createAsyncThunk(
                   : lib.books,
       }));
     } catch (error) {
+      console.error(error);
       return rejectWithValue((error as Error).message);
     }
   },
