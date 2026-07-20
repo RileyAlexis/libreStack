@@ -9,21 +9,27 @@ import { switchLibraryAsHome } from "@/redux/reducers/AppSettingsReducer";
 import { logout } from "@/utils/api";
 
 // UI
-import { useTheme } from "../themeProvider";
+// import { useTheme } from "../themeProvider";
 import {
   IconButton,
   Avatar,
   Menu,
   MenuItem,
   Divider,
-  ButtonGroup,
-  Tooltip,
+  // ButtonGroup,
+  // Tooltip,
   Switch,
   FormControlLabel,
-  Typography,
-  Box,
+  // Typography,
+  // Box,
 } from "@mui/material";
-import { Sun, Moon, Rainbow, LogIn, LogOut, Landmark, Cog } from "lucide-react";
+import {
+  // Sun, Moon, Rainbow,
+  LogIn,
+  LogOut,
+  Landmark,
+  Cog,
+} from "lucide-react";
 
 export const MainMenu: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -31,7 +37,7 @@ export const MainMenu: React.FC = () => {
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const auth = useSelector((state: LibreRootState) => state.auth);
   const isLoggedIn = Boolean(auth.accessToken);
-  const { setTheme, theme } = useTheme();
+  // const { setTheme, theme } = useTheme();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -87,7 +93,7 @@ export const MainMenu: React.FC = () => {
               <Cog size={18} style={{ marginRight: 8 }} />
               Settings
             </MenuItem>
-            <Divider />
+            {/* <Divider />
             <Box sx={{ px: 2, py: 1 }}>
               <Typography variant="caption" color="text.secondary">
                 Theme
@@ -127,7 +133,7 @@ export const MainMenu: React.FC = () => {
                   </span>
                 </Tooltip>
               </ButtonGroup>
-            </Box>
+            </Box> */}
             <Divider />
             <MenuItem onClick={() => dispatch(switchLibraryAsHome())}>
               <FormControlLabel
