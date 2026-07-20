@@ -26,13 +26,10 @@ export const Library: React.FC = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    try {
-      dispatch(fetchLibraryData());
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
+    dispatch(fetchLibraryData())
+      .unwrap()
+      .catch((err) => console.error(err))
+      .finally(() => setIsLoading(false));
   }, [location.pathname]);
 
   return (
