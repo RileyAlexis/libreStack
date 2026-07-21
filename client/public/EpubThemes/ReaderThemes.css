@@ -1,0 +1,24 @@
+.dark {
+  background: #000;
+  color: #fff;
+}
+
+.medium-dark {
+  background: #6d6d6d;
+  color: white;
+}
+
+.light {
+  background: #ffffff;
+  color: black;
+}
+
+.medium-light {
+  background: #d2d2d2;
+  color: black;
+}
+
+.paper {
+  background: #f7e6ca;
+  color: black;
+}
