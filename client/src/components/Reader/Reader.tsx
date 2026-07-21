@@ -1,51 +1,39 @@
 import { useState, useRef, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { api } from "../../utils/api";
 import Epub, { Book, Rendition, type Location } from "@likecoin/epub-ts";
+import type { LibreRootState } from "@/types/LibreRootState";
+import type { AppSettings } from "@/types/AppSettings"; // adjust path to wherever this lives
+
+//Actions
+
+//UI
+import { Typography } from "@mui/material";
 
 import "./Reader.css";
-import { Fab, Menu, MenuItem, Typography } from "@mui/material";
-import { GripIcon } from "lucide-react";
-
-type ReaderTheme = "light" | "dark" | "paper" | "medium-dark" | "medium-light";
-
-interface ReaderSettings {
-  fontSize: string; // e.g. "100%"
-  fontFamily: string; // web-safe only, e.g. "Georgia, serif"
-  lineHeight: string; // e.g. "1.5"
-  theme: ReaderTheme;
-}
-
-const DEFAULT_READER_SETTINGS: ReaderSettings = {
-  fontSize: "100%",
-  fontFamily: "Georgia, serif",
-  lineHeight: "1.5",
-  theme: "paper",
-};
+import { InReaderTopBar } from "./InReaderTopBar";
 
 export const Reader: React.FC = () => {
   const { id } = useParams();
 
+  const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  const [isMenuShowing, setIsMenuShowing] = useState(false);
   const [progress, setProgress] = useState<string>("");
   const [bookInstance, setBookInstance] = useState<Book | null>(null);
   const [chapterProgress, setChapterProgress] = useState({ page: 0, total: 0 });
   const [bookProgress, setBookProgress] = useState({ page: 0, total: 0 });
-  const [isMenuShowing, setIsMenuShowing] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const [readerSettings, setReaderSettings] = useState<ReaderSettings>(
-    DEFAULT_READER_SETTINGS,
-  );
 
   const renderAreaRef = useRef<HTMLDivElement>(null);
   const renditionRef = useRef<Rendition | null>(null);
-  const readerSettingsRef = useRef<ReaderSettings>(readerSettings);
 
-  // keep a ref in sync so the content hook (registered once per rendition)
-  // can always read the *current* settings, not a stale closure
+  // keep a ref in sync so closures registered once per rendition (the
+  // content hook) can always read the *current* redux settings, not a
+  // stale value captured when the effect first ran
+  const appSettingsRef = useRef<AppSettings>(appSettings);
   useEffect(() => {
-    readerSettingsRef.current = readerSettings;
-  }, [readerSettings]);
+    appSettingsRef.current = appSettings;
+  }, [appSettings]);
 
   const updateLocation = (cfiLocation: Location) => {
     api
@@ -59,14 +47,24 @@ export const Reader: React.FC = () => {
       });
   };
 
-  const applyReaderSettings = (
-    rendition: Rendition,
-    settings: ReaderSettings,
-  ) => {
-    rendition.themes.fontSize(settings.fontSize);
-    rendition.themes.font(settings.fontFamily);
-    rendition.themes.select(settings.theme);
+  // Applied and reRenders changes to use settings
+  const applyReaderSettings = (rendition: Rendition, settings: AppSettings) => {
+    rendition.themes.fontSize(`${settings.readingFontSize}pt`);
+    rendition.themes.font(settings.readingFont.value);
+    rendition.themes.select(settings.readingTheme);
+    rendition.themes.override("line-height", `${settings.lineHeight}`, true);
   };
+
+  // re-apply live when redux settings change, without tearing down the rendition
+  useEffect(() => {
+    if (!renditionRef.current) return;
+    applyReaderSettings(renditionRef.current, appSettings);
+  }, [
+    appSettings.readingFontSize,
+    appSettings.readingFont,
+    appSettings.readingTheme,
+    appSettings.lineHeight,
+  ]);
 
   // Load the book + saved reading progress from the API
   useEffect(() => {
@@ -93,11 +91,7 @@ export const Reader: React.FC = () => {
 
     const generateLocations = async () => {
       try {
-        // CRITICAL FIX: Wait for the book to be fully opened before generating locations
         await bookInstance.opened;
-        console.log("Waiting for book instance to open...");
-
-        // Now, generate the locations map
         await bookInstance.locations.generate(1600);
         if (isCancelled) return;
 
@@ -125,6 +119,7 @@ export const Reader: React.FC = () => {
       width: "100%",
       height: "100%",
       allowScriptedContent: true,
+      spread: appSettings.spread,
     });
 
     rendition.themes.registerUrl("dark", "/EpubThemes/ReaderThemes.css");
@@ -136,7 +131,7 @@ export const Reader: React.FC = () => {
       "/EpubThemes/ReaderThemes.css",
     );
 
-    applyReaderSettings(rendition, readerSettingsRef.current);
+    applyReaderSettings(rendition, appSettingsRef.current);
 
     rendition.display(progress ?? undefined).then(() => {
       if (destroyed) {
@@ -147,19 +142,18 @@ export const Reader: React.FC = () => {
     rendition.on("relocated", (location) => {
       updateLocation(location);
 
-      // per-chapter progress — built into epub.js's pagination for the
-      // currently rendered section, no setup required
       setChapterProgress({
         page: location.start.displayed.page,
         total: location.start.displayed.total,
       });
 
-      // whole-book progress — uses displayed page number directly for accuracy
-      if (location.start.displayed && bookInstance.locations.total) {
-        const currentPage = Math.max(1, location.start.displayed.page); // Ensure at least 1
+      if (bookInstance.locations.total) {
+        const globalLocation = bookInstance.locations.locationFromCfi(
+          location.start.cfi,
+        );
+        const currentPage = Math.max(1, globalLocation as number);
         setBookProgress((prev) => ({
           ...prev,
-          // Use the current displayed page number as the most accurate progress indicator
           page: currentPage,
           total: bookInstance.locations.total ?? prev.total,
         }));
@@ -170,11 +164,11 @@ export const Reader: React.FC = () => {
       const el = contents.document.documentElement;
       if (!el) return;
 
-      // re-assert current line-height against this section's own CSS,
-      // some embedded book stylesheets fight the theme override otherwise
+      // re-assert current line-height against this section's own CSS —
+      // reads from the ref so it's always the latest redux value
       contents.addStylesheetRules({
         body: {
-          "line-height": `${readerSettingsRef.current.lineHeight} !important`,
+          "line-height": `${appSettingsRef.current.lineHeight} !important`,
         },
       });
 
@@ -228,23 +222,8 @@ export const Reader: React.FC = () => {
     };
   }, [bookInstance]);
 
-  // re-apply live when settings change, without tearing down the rendition
-  useEffect(() => {
-    if (!renditionRef.current) return;
-    applyReaderSettings(renditionRef.current, readerSettings);
-  }, [readerSettings]);
-
   const handleShowMenu = () => {
     setIsMenuShowing((prev) => !prev);
-  };
-
-  const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault();
-    setAnchorEl(e.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
   };
 
   return (
@@ -254,30 +233,7 @@ export const Reader: React.FC = () => {
     >
       {isMenuShowing && (
         <div>
-          <div className="inReaderTopBar">
-            <Fab color="primary" onClick={handleOpen}>
-              <GripIcon />
-            </Fab>
-            <Menu
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              className="mainDropDownMenu"
-              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-            >
-              <MenuItem
-                onClick={() =>
-                  setReaderSettings((prev) => ({
-                    ...prev,
-                    fontSize: "150%",
-                  }))
-                }
-              >
-                Add
-              </MenuItem>
-              <MenuItem>More</MenuItem>
-            </Menu>
-          </div>
+          <InReaderTopBar />
           <div className="inReaderBottomBar">
             <Typography>{bookInstance?.package?.metadata.title}</Typography>
             <Typography>{bookInstance?.package?.metadata.creator}</Typography>
@@ -286,7 +242,8 @@ export const Reader: React.FC = () => {
             </Typography>
             {bookProgress.total > 0 && (
               <Typography>
-                {bookProgress.page} / {bookProgress.total} pages
+                {((bookProgress.page / bookProgress.total) * 100).toFixed(0)}%
+                through book
               </Typography>
             )}
           </div>

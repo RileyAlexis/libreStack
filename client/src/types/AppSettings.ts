@@ -1,7 +1,7 @@
 export interface AppSettings {
   showLibraryAsHome: boolean;
-  readingTheme: string;
-  spread: string;
+  readingTheme: ReadingThemeType;
+  spread: "none" | "always" | "auto";
   readingFont: ReadingFontType;
   availableReadingFonts: ReadingFontType[];
   readingFontSize: number;
@@ -25,6 +25,13 @@ export interface LibraryLayout {
   groupBySeries: boolean;
   groupByCollections: boolean;
 }
+
+export type ReadingThemeType =
+  | "light"
+  | "dark"
+  | "paper"
+  | "medium-dark"
+  | "medium-light";
 
 export type SortByType =
   | "Title"

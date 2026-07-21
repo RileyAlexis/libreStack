@@ -7,6 +7,7 @@ import type {
   AppSettings,
   LibraryLayout,
   ReadingFontType,
+  ReadingThemeType,
   SortByType,
 } from "../../types/AppSettings";
 import { api } from "@/utils/api";
@@ -14,7 +15,7 @@ import { api } from "@/utils/api";
 const initialState: AppSettings = {
   showLibraryAsHome: true,
   spread: "none",
-  readingTheme: "base",
+  readingTheme: "light",
   readingFont: {
     label: "Georgia",
     value: "Georgia, serif",
@@ -97,6 +98,12 @@ const AppSettingsSlice = createSlice({
     setSpread(state, action: PayloadAction<string>) {
       state.spread = action.payload;
     },
+    setLineHeight(state, action: PayloadAction<number>) {
+      state.lineHeight = action.payload;
+    },
+    setReadingTheme(state, action: PayloadAction<ReadingThemeType>) {
+      state.readingTheme = action.payload;
+    },
     setLayout(state, action: PayloadAction<LibraryLayout>) {
       state.libraryLayout = action.payload;
     },
@@ -127,6 +134,8 @@ export const {
   setReadingFontSize,
   setReadingFont,
   setSpread,
+  setLineHeight,
+  setReadingTheme,
   setLayout,
   setSortBy,
   setAscending,
