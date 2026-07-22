@@ -278,7 +278,6 @@ export const Reader: React.FC = () => {
       {isMenuShowing && (
         <InReaderBottomBar
           title={bookInstance?.package?.metadata.title}
-          author={bookInstance?.package?.metadata.creator}
           chapterProgress={chapterProgress}
           bookProgress={bookProgress}
         />
