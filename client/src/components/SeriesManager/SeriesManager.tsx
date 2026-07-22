@@ -87,7 +87,7 @@ export const SeriesManager: React.FC = () => {
         seriesTitle: seriesTitle,
         seriesTotal: 0,
       })
-      .then((response) => {
+      .then((_) => {
         setIsAddingSeries(false);
         api
           .get("series")
@@ -107,7 +107,7 @@ export const SeriesManager: React.FC = () => {
   const handleDeleteSeries = (item: SeriesType) => {
     api
       .delete(`series?seriesId=${item.id}`)
-      .then((response) => {
+      .then((_) => {
         setSelectedSeries(null);
         api
           .get("series")

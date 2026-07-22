@@ -1,4 +1,4 @@
-import { useState } from "react";
+// import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import type { AppDispatch } from "@/redux/store";
 import type { LibreRootState } from "@/types/LibreRootState";
@@ -7,7 +7,7 @@ import type { LibreRootState } from "@/types/LibreRootState";
 import {
   setReadingFont,
   setReadingFontSize,
-  setSpread,
+  //   setSpread,
   setReadingTheme,
   setLineHeight,
 } from "@/redux/reducers/AppSettingsReducer";
@@ -16,17 +16,13 @@ import {
 import {
   ButtonGroup,
   Button,
-  Fab,
-  Menu,
   MenuItem,
   FormControl,
   Select,
   Typography,
   Tooltip,
-  Divider,
-  InputLabel,
 } from "@mui/material";
-import { GripIcon, ListChevronsDownUp, ListChevronsUpDown } from "lucide-react";
+import { ListChevronsDownUp, ListChevronsUpDown } from "lucide-react";
 import type { SelectChangeEvent } from "@mui/material";
 import { availableReadingFonts } from "./AvailableReadingFonts";
 import { availableReadingThemes } from "./AvailableReadingThemes";
@@ -37,20 +33,6 @@ import "./InReaderTopBar.css";
 export const InReaderTopBar: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
-
-  //Top Menu Floating Button
-
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-
-  const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault();
-    setAnchorEl(e.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const handleReadingFontSelect = (event: SelectChangeEvent<string>) => {
     const selected = availableReadingFonts.findLast(

@@ -6,12 +6,9 @@ import Epub, { Book, Rendition, type Location } from "@likecoin/epub-ts";
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { AppSettings } from "@/types/AppSettings"; // adjust path to wherever this lives
 
-//Actions
-
-//UI
-import { Typography } from "@mui/material";
-
 import "./Reader.css";
+
+// Components
 import { InReaderTopBar } from "./InReaderTopBar";
 import { InReaderBottomBar } from "./InReaderBottomBar";
 
