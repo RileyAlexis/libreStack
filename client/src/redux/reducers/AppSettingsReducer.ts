@@ -61,8 +61,8 @@ export const saveUserSettings = createAsyncThunk(
   "userSettings/saveUserSettings",
   async (settings: AppSettings, { rejectWithValue }) => {
     try {
-      const { availableReadingFonts, ...payload } = settings;
-      const result = await api.post("userSettings", payload);
+      // const { availableReadingFonts, ...payload } = settings;
+      const result = await api.post("userSettings", settings);
       console.log(result);
       console.log(settings);
     } catch (error) {

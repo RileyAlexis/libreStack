@@ -29,8 +29,10 @@ import {
 import { GripIcon, ListChevronsDownUp, ListChevronsUpDown } from "lucide-react";
 import type { SelectChangeEvent } from "@mui/material";
 import { availableReadingFonts } from "./AvailableReadingFonts";
+import { availableReadingThemes } from "./AvailableReadingThemes";
 
 import "./InReaderTopBar.css";
+import type { ReadingThemeType } from "@/types/AppSettings";
 
 export const InReaderTopBar: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -63,90 +65,83 @@ export const InReaderTopBar: React.FC = () => {
     dispatch(setReadingFont(selected));
   };
 
+  const handleChangeTheme = (event: SelectChangeEvent<string>) => {
+    dispatch(setReadingTheme(event.target.value as ReadingThemeType));
+  };
+
   return (
     <div className="inReaderTopBar">
-      {/* <Fab color="primary" onClick={handleOpen}>
-        <GripIcon />
-      </Fab>
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        className="mainDropDownMenu"
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <MenuItem
-          onClick={() =>
-            dispatch(setReadingFontSize(appSettings.readingFontSize + 10))
-          }
-        >
-          Increase font size
-        </MenuItem>
-        <MenuItem
-          onClick={() =>
-            dispatch(setReadingFontSize(appSettings.readingFontSize - 10))
-          }
-        >
-          Decrease font size
-        </MenuItem>
-        <MenuItem>More</MenuItem>
-      </Menu> */}
-
-      {/* Font Size */}
-      <ButtonGroup variant="text" sx={{ marginRight: "0.45em" }}>
-        <Button
-          onClick={() =>
-            dispatch(setReadingFontSize(appSettings.readingFontSize - 1))
-          }
-        >
-          <Typography variant="button">A</Typography>
-        </Button>
-        <Button
-          onClick={() =>
-            dispatch(setReadingFontSize(appSettings.readingFontSize + 1))
-          }
-        >
-          <Typography variant="h5">A</Typography>
-        </Button>
-      </ButtonGroup>
-      {/* Line Height */}
-      <ButtonGroup variant="text" sx={{ marginLeft: "0.45em" }}>
-        <Tooltip title="Decrease Line Height">
-          <Button
-            variant="text"
-            onClick={() =>
-              dispatch(setLineHeight(appSettings.lineHeight - 0.1))
-            }
-          >
-            <ListChevronsDownUp />
-          </Button>
-        </Tooltip>
-        <Tooltip title="Increase Line Height">
+      <div className="inReaderTopBarControls">
+        {/* Font Size */}
+        <ButtonGroup variant="text" sx={{ marginRight: "0.45em" }}>
           <Button
             onClick={() =>
-              dispatch(setLineHeight(appSettings.lineHeight + 0.1))
+              dispatch(setReadingFontSize(appSettings.readingFontSize - 1))
             }
           >
-            <ListChevronsUpDown />
+            <Typography variant="button">A</Typography>
           </Button>
-        </Tooltip>
-      </ButtonGroup>
-      <FormControl>
-        <InputLabel id="readingFontSelector-label">Font</InputLabel>
-        <Select
-          labelId="readingFontSelector-label"
-          id="readingFontSelector"
-          value={appSettings.readingFont.value}
-          label="Font"
-          onChange={handleReadingFontSelect}
-        >
-          {availableReadingFonts.map((item) => (
-            <MenuItem key={item.label} value={item.value}>
-              {item.label}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+          <Button
+            onClick={() =>
+              dispatch(setReadingFontSize(appSettings.readingFontSize + 1))
+            }
+          >
+            <Typography variant="h5">A</Typography>
+          </Button>
+        </ButtonGroup>
+        {/* Line Height */}
+        <ButtonGroup variant="text" sx={{ marginLeft: "0.45em" }}>
+          <Tooltip title="Decrease Line Height">
+            <Button
+              variant="text"
+              onClick={() =>
+                dispatch(setLineHeight(appSettings.lineHeight - 0.1))
+              }
+            >
+              <ListChevronsDownUp />
+            </Button>
+          </Tooltip>
+          <Tooltip title="Increase Line Height">
+            <Button
+              onClick={() =>
+                dispatch(setLineHeight(appSettings.lineHeight + 0.1))
+              }
+            >
+              <ListChevronsUpDown />
+            </Button>
+          </Tooltip>
+        </ButtonGroup>
+        <FormControl sx={{ m: 1, minWidth: 80 }} size="small">
+          <Select
+            id="readingFontSelector"
+            variant="standard"
+            value={appSettings.readingFont.value}
+            label="Font"
+            onChange={handleReadingFontSelect}
+          >
+            {availableReadingFonts.map((item) => (
+              <MenuItem key={item.label} value={item.value}>
+                {item.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl sx={{ m: 1, minWidth: 80 }} size="small">
+          <Select
+            id="readingThemeSelector"
+            variant="standard"
+            value={appSettings.readingTheme}
+            label="Font"
+            onChange={handleChangeTheme}
+          >
+            {availableReadingThemes.map((item) => (
+              <MenuItem key={item} value={item}>
+                {item}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </div>
     </div>
   );
 };
