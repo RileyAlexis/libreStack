@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import type { LibreRootState } from "@/types/LibreRootState";
 
 import { Typography, Drawer, Button } from "@mui/material";
 
@@ -25,7 +23,6 @@ export const InReaderBottomBar: React.FC<InReaderBottomBarProps> = ({
 }) => {
   const [isSpineOpen, setIsSpineOpen] = useState(false);
   const isSmallScreen = window.innerWidth <= 400;
-  const appSettings = useSelector((state: LibreRootState) => state.appSettings);
 
   const handleOpenSpine = (e: React.MouseEvent) => {
     e.stopPropagation();
