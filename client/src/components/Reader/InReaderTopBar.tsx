@@ -19,11 +19,16 @@ import {
   Fab,
   Menu,
   MenuItem,
+  FormControl,
+  Select,
   Typography,
   Tooltip,
   Divider,
+  InputLabel,
 } from "@mui/material";
 import { GripIcon, ListChevronsDownUp, ListChevronsUpDown } from "lucide-react";
+import type { SelectChangeEvent } from "@mui/material";
+import { availableReadingFonts } from "./AvailableReadingFonts";
 
 import "./InReaderTopBar.css";
 
@@ -44,6 +49,20 @@ export const InReaderTopBar: React.FC = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleReadingFontSelect = (event: SelectChangeEvent<string>) => {
+    const selected = availableReadingFonts.findLast(
+      (font) => font.value === event.target.value,
+    );
+
+    if (!selected) {
+      console.warn("Selected Font not found", event.target.value);
+      return;
+    }
+
+    dispatch(setReadingFont(selected));
+  };
+
   return (
     <div className="inReaderTopBar">
       {/* <Fab color="primary" onClick={handleOpen}>
@@ -112,6 +131,22 @@ export const InReaderTopBar: React.FC = () => {
           </Button>
         </Tooltip>
       </ButtonGroup>
+      <FormControl>
+        <InputLabel id="readingFontSelector-label">Font</InputLabel>
+        <Select
+          labelId="readingFontSelector-label"
+          id="readingFontSelector"
+          value={appSettings.readingFont.value}
+          label="Font"
+          onChange={handleReadingFontSelect}
+        >
+          {availableReadingFonts.map((item) => (
+            <MenuItem key={item.label} value={item.value}>
+              {item.label}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
     </div>
   );
 };

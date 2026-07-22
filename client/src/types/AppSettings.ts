@@ -1,15 +1,16 @@
 export interface AppSettings {
   showLibraryAsHome: boolean;
   readingTheme: ReadingThemeType;
-  spread: "none" | "always" | "auto";
+  spread: SpreadType;
   readingFont: ReadingFontType;
-  availableReadingFonts: ReadingFontType[];
   readingFontSize: number;
   lineHeight: number;
   libraryLayout: LibraryLayout;
   lastSelectedLibrary: number;
   isSyncing: boolean;
 }
+
+export type SpreadType = "none" | "always" | "auto";
 
 export interface LibraryLayout {
   base: "Grid" | "List";

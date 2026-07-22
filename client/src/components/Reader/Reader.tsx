@@ -68,6 +68,9 @@ export const Reader: React.FC = () => {
 
   // Load the book + saved reading progress from the API
   useEffect(() => {
+    let cancelled = false;
+    let createdBook: Book | null = null;
+
     Promise.all([
       api.get(`/Book/downloadBookEntry?id=${id}`, {
         responseType: "arraybuffer",
@@ -75,12 +78,19 @@ export const Reader: React.FC = () => {
       api.get(`/ReadingProgress/readingProgress?bookId=${id}`),
     ])
       .then(([bookResponse, progressResponse]) => {
-        setBookInstance(Epub(bookResponse.data));
+        if (cancelled) return;
+        createdBook = Epub(bookResponse.data);
+        setBookInstance(createdBook);
         setProgress(progressResponse.data?.value?.cfiLocation ?? null);
       })
       .catch((error) => {
-        console.log(error);
+        if (!cancelled) console.log(error);
       });
+
+    return () => {
+      cancelled = true;
+      createdBook?.destroy();
+    };
   }, [id]);
 
   // Generate the book-wide location map once the book instance exists.

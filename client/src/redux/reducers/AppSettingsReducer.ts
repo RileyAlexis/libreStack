@@ -9,6 +9,7 @@ import type {
   ReadingFontType,
   ReadingThemeType,
   SortByType,
+  SpreadType,
 } from "../../types/AppSettings";
 import { api } from "@/utils/api";
 
@@ -22,11 +23,6 @@ const initialState: AppSettings = {
   },
   isSyncing: false,
   lastSelectedLibrary: 0,
-  availableReadingFonts: [
-    { label: "Georgia", value: "Georgia, serif" },
-    { label: "Arial", value: "Arial, sans-serif" },
-    { label: "Times New Roman", value: "'Times New Roman', serif" },
-  ],
   readingFontSize: 18,
   lineHeight: 1.5,
   libraryLayout: {
@@ -95,7 +91,7 @@ const AppSettingsSlice = createSlice({
     setReadingFont(state, action: PayloadAction<ReadingFontType>) {
       state.readingFont = action.payload;
     },
-    setSpread(state, action: PayloadAction<string>) {
+    setSpread(state, action: PayloadAction<SpreadType>) {
       state.spread = action.payload;
     },
     setLineHeight(state, action: PayloadAction<number>) {

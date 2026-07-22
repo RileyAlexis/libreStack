@@ -32,8 +32,7 @@ const storeInstance = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }),
-  // .concat(logger),
+    }).concat(logger),
 });
 
 export { storeInstance };
