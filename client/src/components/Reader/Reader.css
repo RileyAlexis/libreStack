@@ -1,51 +1,70 @@
-.readerOuterWrapper {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  overscroll-behavior: none;
+@layer base {
+  .readerOuterWrapper {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overscroll-behavior: none;
+  }
+
+  .readerTextArea {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    overscroll-behavior: none;
+    padding-bottom: 3em;
+    padding-top: 2em;
+    padding-left: 2.5em;
+    padding-right: 2.5em;
+    box-sizing: border-box;
+    touch-action: pan-y;
+    overscroll-behavior: contain;
+  }
+
+  .readerPrevious {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 30%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 12;
+  }
+
+  .readerCenter {
+    position: absolute;
+    top: 0;
+    left: 30%;
+    width: 40%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 10;
+  }
+
+  .readerNext {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 12;
+  }
 }
 
-.readerTextArea {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  touch-action: none;
-  overscroll-behavior: none;
-  padding-bottom: 3em;
-  padding-top: 2em;
-  padding-left: 2.5em;
-  padding-right: 2.5em;
-  box-sizing: border-box;
-  touch-action: pan-y;
-  overscroll-behavior: contain;
-}
-
-.readerPrevious {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 30%;
-  height: 100%;
-  cursor: pointer;
-  z-index: 12;
-}
-
-.readerCenter {
-  position: absolute;
-  top: 0;
-  left: 30%;
-  width: 40%;
-  height: 100%;
-  cursor: pointer;
-  z-index: 10;
-}
-
-.readerNext {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 30%;
-  height: 100%;
-  cursor: pointer;
-  z-index: 12;
+@media only screen and (max-width: 768px) and (orientation: portrait) {
+  .readerTextArea {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    overscroll-behavior: none;
+    padding-bottom: 1em;
+    padding-top: 0.6em;
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+    box-sizing: border-box;
+    touch-action: pan-y;
+    overscroll-behavior: contain;
+  }
 }
