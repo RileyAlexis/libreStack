@@ -18,12 +18,23 @@
   align-items: center;
 }
 
-.readerContainer {
+.readerOuterWrapper {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.readerTextArea {
   position: relative;
   width: 100%;
   height: 100%;
   touch-action: none;
   overscroll-behavior: none;
+  padding-bottom: 5em;
+  padding-top: 2em;
+  padding-left: 2.5em;
+  padding-right: 2.5em;
+  box-sizing: border-box;
 }
 
 .readerPrevious {

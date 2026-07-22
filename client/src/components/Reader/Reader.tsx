@@ -237,32 +237,14 @@ export const Reader: React.FC = () => {
   };
 
   return (
-    <div
-      className="readerContainer"
-      style={{ display: "flex", flexDirection: "column", height: "100vh" }}
-    >
+    <div className="readerOuterWrapper">
       {isMenuShowing && (
-        <div>
+        <div className="inReaderTopBarWrapper">
           <InReaderTopBar />
-          <div className="inReaderBottomBar">
-            <Typography>{bookInstance?.package?.metadata.title}</Typography>
-            <Typography>{bookInstance?.package?.metadata.creator}</Typography>
-            <Typography>
-              Page {chapterProgress.page} of {chapterProgress.total} in chapter
-            </Typography>
-            {bookProgress.total > 0 && (
-              <Typography>
-                {((bookProgress.page / bookProgress.total) * 100).toFixed(0)}%
-                through book
-              </Typography>
-            )}
-          </div>
         </div>
       )}
-      <div
-        ref={renderAreaRef}
-        style={{ position: "relative", width: "100%", height: "100%" }}
-      >
+
+      <div className="readerTextArea" ref={renderAreaRef}>
         {bookInstance && (
           <>
             <div
@@ -277,6 +259,22 @@ export const Reader: React.FC = () => {
           </>
         )}
       </div>
+
+      {isMenuShowing && (
+        <div className="inReaderBottomBar">
+          <Typography>{bookInstance?.package?.metadata.title}</Typography>
+          <Typography>{bookInstance?.package?.metadata.creator}</Typography>
+          <Typography>
+            Page {chapterProgress.page} of {chapterProgress.total} in chapter
+          </Typography>
+          {bookProgress.total > 0 && (
+            <Typography>
+              {((bookProgress.page / bookProgress.total) * 100).toFixed(0)}%
+              through book
+            </Typography>
+          )}
+        </div>
+      )}
     </div>
   );
 };
