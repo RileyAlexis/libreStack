@@ -118,6 +118,7 @@ export const InReaderTopBar: React.FC = () => {
             value={appSettings.readingFont.value}
             label="Font"
             onChange={handleReadingFontSelect}
+            sx={{ color: "var(--lightText)" }}
           >
             {availableReadingFonts.map((item) => (
               <MenuItem key={item.label} value={item.value}>
@@ -133,6 +134,7 @@ export const InReaderTopBar: React.FC = () => {
             value={appSettings.readingTheme}
             label="Font"
             onChange={handleChangeTheme}
+            sx={{ color: "var(--lightText)" }}
           >
             {availableReadingThemes.map((item) => (
               <MenuItem key={item} value={item}>

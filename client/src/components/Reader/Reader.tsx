@@ -26,6 +26,7 @@ export const Reader: React.FC = () => {
   const [bookProgress, setBookProgress] = useState({ page: 0, total: 0 });
 
   const renderAreaRef = useRef<HTMLDivElement>(null);
+  const readerRootRef = useRef<HTMLDivElement>(null);
   const renditionRef = useRef<Rendition | null>(null);
 
   // keep a ref in sync so closures registered once per rendition (the
@@ -252,6 +253,7 @@ export const Reader: React.FC = () => {
   return (
     <div
       className={`readerOuterWrapper readerTheme-${appSettings.readingTheme}`}
+      ref={readerRootRef}
     >
       {isMenuShowing && (
         <div className="inReaderTopBarWrapper">
