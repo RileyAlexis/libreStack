@@ -62,7 +62,6 @@ export const ServerManager: React.FC = () => {
     api
       .get("config/serverStats")
       .then((response) => {
-        console.log(response.data.value);
         setServerStats(response.data.value);
       })
       .catch((error) => {
@@ -80,7 +79,6 @@ export const ServerManager: React.FC = () => {
       })
       .then(() => {
         api.get("config/getConfig").then((response) => {
-          console.log(response.data.value);
           setServerSettings(response.data.value);
         });
       })

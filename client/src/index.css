@@ -40,7 +40,7 @@
       5.3px 4.2px 5.4px -2.8px hsl(var(--shadow-color) / 0.08),
       11.5px 9.2px 11.8px -3.7px hsl(var(--shadow-color) / 0.06),
       21.9px 17.4px 22.4px -4.6px hsl(var(--shadow-color) / 0.03);
-    --menu-background: #faf1e261;
+    --menu-background: #faf1e298;
     --popover: #faf1e2;
     --popover-foreground: #0a0a0a;
     --primary: #de9e27;

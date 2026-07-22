@@ -21,6 +21,7 @@ import {
   MenuItem,
   Typography,
   Tooltip,
+  Divider,
 } from "@mui/material";
 import { GripIcon, ListChevronsDownUp, ListChevronsUpDown } from "lucide-react";
 
@@ -73,7 +74,7 @@ export const InReaderTopBar: React.FC = () => {
       </Menu> */}
 
       {/* Font Size */}
-      <ButtonGroup variant="text">
+      <ButtonGroup variant="text" sx={{ marginRight: "0.45em" }}>
         <Button
           onClick={() =>
             dispatch(setReadingFontSize(appSettings.readingFontSize - 1))
@@ -86,12 +87,11 @@ export const InReaderTopBar: React.FC = () => {
             dispatch(setReadingFontSize(appSettings.readingFontSize + 1))
           }
         >
-          <Typography variant="h6">A</Typography>
+          <Typography variant="h5">A</Typography>
         </Button>
       </ButtonGroup>
-
       {/* Line Height */}
-      <ButtonGroup variant="text">
+      <ButtonGroup variant="text" sx={{ marginLeft: "0.45em" }}>
         <Tooltip title="Decrease Line Height">
           <Button
             variant="text"
