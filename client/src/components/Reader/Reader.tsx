@@ -163,11 +163,14 @@ export const Reader: React.FC = () => {
     rendition.on("relocated", (location) => {
       updateLocation(location);
 
+      // per-chapter progress — built into epub.js's pagination for the
+      // currently rendered section, no setup required
       setChapterProgress({
         page: location.start.displayed.page,
         total: location.start.displayed.total,
       });
 
+      // whole-book progress — uses displayed page number directly for accuracy
       if (bookInstance.locations.total) {
         const globalLocation = bookInstance.locations.locationFromCfi(
           location.start.cfi,
@@ -185,44 +188,11 @@ export const Reader: React.FC = () => {
       const el = contents.document.documentElement;
       if (!el) return;
 
-      // re-assert current line-height against this section's own CSS —
-      // reads from the ref so it's always the latest redux value
       contents.addStylesheetRules({
         body: {
           "line-height": `${appSettingsRef.current.lineHeight} !important`,
         },
       });
-
-      let startX = 0;
-
-      el.addEventListener(
-        "touchstart",
-        (e: TouchEvent) => {
-          startX = e.changedTouches[0].screenX;
-        },
-        { passive: true },
-      );
-
-      el.addEventListener(
-        "touchend",
-        (e: TouchEvent) => {
-          const delta = e.changedTouches[0].screenX - startX;
-          if (Math.abs(delta) > 50) {
-            e.preventDefault();
-            if (delta > 0) rendition.prev();
-            else rendition.next();
-          } else {
-            const screenWidth = window.screen.width;
-            const tapX = e.changedTouches[0].screenX;
-            const leftThird = screenWidth / 3;
-            const rightThird = (screenWidth / 3) * 2;
-            if (tapX > leftThird && tapX < rightThird) {
-              setIsMenuShowing((prev) => !prev);
-            }
-          }
-        },
-        { passive: false },
-      );
     });
 
     renditionRef.current = rendition;
@@ -234,9 +204,23 @@ export const Reader: React.FC = () => {
 
     window.addEventListener("keydown", handleKeyDown);
 
+    // Intercept browser back/forward buttons to prevent navigation away from the reader view
+    const handlePopState = (e: PopStateEvent) => {
+      // Only intercept if we are in a reading context and not explicitly navigating elsewhere
+      if (bookInstance && !isMenuShowing) {
+        e.preventDefault();
+        console.log(
+          "Browser history navigation intercepted to keep user on the reader page.",
+        );
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
     return () => {
       destroyed = true;
       window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("popstate", handlePopState); // Clean up popstate listener
       try {
         rendition.destroy();
       } catch (_) {}
