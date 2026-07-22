@@ -3,16 +3,26 @@
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 20;
   padding-bottom: 0.5em;
+  z-index: 20;
 }
 
 .inReaderBottomBarContent {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5em;
+  color: var(--lightText);
+}
+
+.inReaderBottomBarText {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 0.5em;
+  width: 75%;
   color: var(--lightText);
 }
 
@@ -30,4 +40,13 @@
   width: 100%;
   justify-content: center;
   align-items: center;
+}
+
+.drawerTableOfContents {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.1em;
+  overflow-y: scroll;
 }

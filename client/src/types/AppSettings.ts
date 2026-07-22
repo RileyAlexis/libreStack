@@ -10,7 +10,7 @@ export interface AppSettings {
   isSyncing: boolean;
 }
 
-export type SpreadType = "none" | "always" | "auto";
+export type SpreadType = "none" | "auto";
 
 export interface LibraryLayout {
   base: "Grid" | "List";

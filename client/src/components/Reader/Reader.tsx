@@ -52,6 +52,7 @@ export const Reader: React.FC = () => {
     rendition.themes.font(settings.readingFont.value);
     rendition.themes.select(`readerTheme-${settings.readingTheme}`);
     rendition.themes.override("line-height", `${settings.lineHeight}`, true);
+    rendition.spread(settings.spread);
   };
 
   // re-apply live when redux settings change, without tearing down the rendition
@@ -63,6 +64,7 @@ export const Reader: React.FC = () => {
     appSettings.readingFont,
     appSettings.readingTheme,
     appSettings.lineHeight,
+    appSettings.spread,
   ]);
 
   // Load the book + saved reading progress from the API
@@ -263,6 +265,8 @@ export const Reader: React.FC = () => {
           title={bookInstance?.package?.metadata.title}
           chapterProgress={chapterProgress}
           bookProgress={bookProgress}
+          bookInstance={bookInstance}
+          renditionRef={renditionRef}
         />
       )}
     </div>

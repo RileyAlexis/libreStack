@@ -18,3 +18,41 @@
   padding-left: 1.5em;
   padding-right: 1.5em;
 }
+
+.inReaderTopBarControlsMobile {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+}
+
+.mobileSettingsDialog {
+  height: 100vh;
+  width: 100vw;
+  overflow-x: scroll;
+  z-index: 99;
+  border: none;
+  background: transparent;
+  backdrop-filter: blur(5px);
+}
+
+.mobileSettingsControlsContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+}
+
+.mobileSettingsCard {
+  border: 1px solid darkgray;
+  border-radius: 25px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2em;
+}
