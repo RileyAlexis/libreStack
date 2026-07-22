@@ -1,4 +1,6 @@
-import { useState, type SetStateAction } from "react";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import type { LibreRootState } from "@/types/LibreRootState";
 
 import { Typography, Drawer, Button } from "@mui/material";
 
@@ -22,8 +24,8 @@ export const InReaderBottomBar: React.FC<InReaderBottomBarProps> = ({
   renditionRef,
 }) => {
   const [isSpineOpen, setIsSpineOpen] = useState(false);
-
   const isSmallScreen = window.innerWidth <= 400;
+  const appSettings = useSelector((state: LibreRootState) => state.appSettings);
 
   const handleOpenSpine = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -81,18 +83,21 @@ export const InReaderBottomBar: React.FC<InReaderBottomBarProps> = ({
         open={isSpineOpen}
         onClose={() => setIsSpineOpen(false)}
         anchor="left"
-        sx={{ width: "50%" }}
       >
         <div className="drawerTableOfContents">
-          {bookInstance?.navigation.toc.map((item) => (
-            <Button
-              variant="text"
-              key={item.id}
-              onClick={() => handleNavigate(item.href)}
-            >
-              {item.label}
-            </Button>
-          ))}
+          <ul>
+            {bookInstance?.navigation.toc.map((item) => (
+              <li>
+                <Button
+                  variant="text"
+                  key={item.id}
+                  onClick={() => handleNavigate(item.href)}
+                >
+                  {item.label}
+                </Button>
+              </li>
+            ))}
+          </ul>
         </div>
       </Drawer>
     </div>
