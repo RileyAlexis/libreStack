@@ -1,24 +1,29 @@
-.dark {
+.readerTheme-dark {
   background: #000;
   color: #fff;
+  --lightText: lightgray;
 }
 
-.medium-dark {
+.readerTheme-medium-dark {
   background: #6d6d6d;
   color: white;
+  --lightText: rgb(174, 173, 173);
 }
 
-.light {
+.readerTheme-light {
   background: #ffffff;
   color: black;
+  --lightText: #ababab;
 }
 
-.medium-light {
+.readerTheme-medium-light {
   background: #eaeaea;
   color: black;
+  --lightText: #969696;
 }
 
-.paper {
+.readerTheme-paper {
   background: #f7e6ca;
   color: black;
+  --lightText: rgb(126, 126, 126);
 }

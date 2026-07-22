@@ -13,6 +13,7 @@ import { Typography } from "@mui/material";
 
 import "./Reader.css";
 import { InReaderTopBar } from "./InReaderTopBar";
+import { InReaderBottomBar } from "./InReaderBottomBar";
 
 export const Reader: React.FC = () => {
   const { id } = useParams();
@@ -51,7 +52,7 @@ export const Reader: React.FC = () => {
   const applyReaderSettings = (rendition: Rendition, settings: AppSettings) => {
     rendition.themes.fontSize(`${settings.readingFontSize}pt`);
     rendition.themes.font(settings.readingFont.value);
-    rendition.themes.select(settings.readingTheme);
+    rendition.themes.select(`readerTheme-${settings.readingTheme}`);
     rendition.themes.override("line-height", `${settings.lineHeight}`, true);
   };
 
@@ -132,12 +133,24 @@ export const Reader: React.FC = () => {
       spread: appSettings.spread,
     });
 
-    rendition.themes.registerUrl("dark", "/EpubThemes/ReaderThemes.css");
-    rendition.themes.registerUrl("light", "/EpubThemes/ReaderThemes.css");
-    rendition.themes.registerUrl("paper", "/EpubThemes/ReaderThemes.css");
-    rendition.themes.registerUrl("medium-dark", "/EpubThemes/ReaderThemes.css");
     rendition.themes.registerUrl(
-      "medium-light",
+      "readerTheme-dark",
+      "/EpubThemes/ReaderThemes.css",
+    );
+    rendition.themes.registerUrl(
+      "readerTheme-light",
+      "/EpubThemes/ReaderThemes.css",
+    );
+    rendition.themes.registerUrl(
+      "readerTheme-paper",
+      "/EpubThemes/ReaderThemes.css",
+    );
+    rendition.themes.registerUrl(
+      "readerTheme-medium-dark",
+      "/EpubThemes/ReaderThemes.css",
+    );
+    rendition.themes.registerUrl(
+      "readerTheme-medium-light",
       "/EpubThemes/ReaderThemes.css",
     );
 
@@ -237,7 +250,9 @@ export const Reader: React.FC = () => {
   };
 
   return (
-    <div className="readerOuterWrapper">
+    <div
+      className={`readerOuterWrapper readerTheme-${appSettings.readingTheme}`}
+    >
       {isMenuShowing && (
         <div className="inReaderTopBarWrapper">
           <InReaderTopBar />
@@ -261,19 +276,12 @@ export const Reader: React.FC = () => {
       </div>
 
       {isMenuShowing && (
-        <div className="inReaderBottomBar">
-          <Typography>{bookInstance?.package?.metadata.title}</Typography>
-          <Typography>{bookInstance?.package?.metadata.creator}</Typography>
-          <Typography>
-            Page {chapterProgress.page} of {chapterProgress.total} in chapter
-          </Typography>
-          {bookProgress.total > 0 && (
-            <Typography>
-              {((bookProgress.page / bookProgress.total) * 100).toFixed(0)}%
-              through book
-            </Typography>
-          )}
-        </div>
+        <InReaderBottomBar
+          title={bookInstance?.package?.metadata.title}
+          author={bookInstance?.package?.metadata.creator}
+          chapterProgress={chapterProgress}
+          bookProgress={bookProgress}
+        />
       )}
     </div>
   );

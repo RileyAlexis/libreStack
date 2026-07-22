@@ -5,19 +5,6 @@
   }
 }
 
-.inReaderBottomBar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 20;
-  border: 1px solid darkblue;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .readerOuterWrapper {
   position: relative;
   width: 100%;

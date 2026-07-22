@@ -30,9 +30,9 @@ import { GripIcon, ListChevronsDownUp, ListChevronsUpDown } from "lucide-react";
 import type { SelectChangeEvent } from "@mui/material";
 import { availableReadingFonts } from "./AvailableReadingFonts";
 import { availableReadingThemes } from "./AvailableReadingThemes";
+import type { ReadingThemeType } from "@/types/AppSettings";
 
 import "./InReaderTopBar.css";
-import type { ReadingThemeType } from "@/types/AppSettings";
 
 export const InReaderTopBar: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
