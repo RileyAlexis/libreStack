@@ -75,79 +75,43 @@ export const MainMenu: React.FC = () => {
             className="mainDropDownMenu"
             anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
           >
-            <MenuItem
-              onClick={() => {
-                navigate("/library");
-                handleClose();
-              }}
-            >
-              <Landmark size={18} style={{ marginRight: 8 }} />
-              Library
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                navigate("/serverManager");
-                handleClose();
-              }}
-            >
-              <Cog size={18} style={{ marginRight: 8 }} />
-              Settings
-            </MenuItem>
-            {/* <Divider />
-            <Box sx={{ px: 2, py: 1 }}>
-              <Typography variant="caption" color="text.secondary">
-                Theme
-              </Typography>
-              <ButtonGroup size="small" sx={{ mt: 0.5, display: "flex" }}>
-                <Tooltip title="Light Mode">
-                  <span>
-                    <IconButton
-                      disabled={theme === "light"}
-                      aria-label="light mode"
-                      onClick={() => setTheme("light")}
-                    >
-                      <Sun size={18} />
-                    </IconButton>
-                  </span>
-                </Tooltip>
-                <Tooltip title="System Preference">
-                  <span>
-                    <IconButton
-                      disabled={theme === "system"}
-                      aria-label="system mode"
-                      onClick={() => setTheme("system")}
-                    >
-                      <Rainbow size={18} />
-                    </IconButton>
-                  </span>
-                </Tooltip>
-                <Tooltip title="Dark Mode">
-                  <span>
-                    <IconButton
-                      disabled={theme === "dark"}
-                      aria-label="dark mode"
-                      onClick={() => setTheme("dark")}
-                    >
-                      <Moon size={18} />
-                    </IconButton>
-                  </span>
-                </Tooltip>
-              </ButtonGroup>
-            </Box> */}
-            <Divider />
-            <MenuItem onClick={() => dispatch(switchLibraryAsHome())}>
-              <FormControlLabel
-                onClick={(e) => e.stopPropagation()}
-                control={
-                  <Switch
-                    id="librarySwitch"
-                    checked={Boolean(appSettings.showLibraryAsHome)}
-                    onChange={() => dispatch(switchLibraryAsHome())}
+            {auth.user?.role === "Admin" && (
+              <>
+                <MenuItem
+                  onClick={() => {
+                    navigate("/library");
+                    handleClose();
+                  }}
+                >
+                  <Landmark size={18} style={{ marginRight: 8 }} />
+                  Library
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    navigate("/serverManager");
+                    handleClose();
+                  }}
+                >
+                  <Cog size={18} style={{ marginRight: 8 }} />
+                  Settings
+                </MenuItem>
+
+                <Divider />
+                <MenuItem onClick={() => dispatch(switchLibraryAsHome())}>
+                  <FormControlLabel
+                    onClick={(e) => e.stopPropagation()}
+                    control={
+                      <Switch
+                        id="librarySwitch"
+                        checked={Boolean(appSettings.showLibraryAsHome)}
+                        onChange={() => dispatch(switchLibraryAsHome())}
+                      />
+                    }
+                    label="Library as Home Page"
                   />
-                }
-                label="Library as Home Page"
-              />
-            </MenuItem>
+                </MenuItem>
+              </>
+            )}
             <MenuItem onClick={handleLogout}>
               <LogOut size={18} style={{ marginRight: 8 }} />
               Log Out

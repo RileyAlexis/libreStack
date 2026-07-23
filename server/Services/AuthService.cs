@@ -96,7 +96,9 @@ public class AuthService : IAuthService
         if (user is null)
             return null;
 
-        return new AuthUserResponse(user.Id, user.UserName ?? string.Empty, user.Email ?? string.Empty);
+        var roles = await _userManager.GetRolesAsync(user);
+
+        return new AuthUserResponse(user.Id, user.UserName ?? string.Empty, user.Email ?? string.Empty, roles.FirstOrDefault() ?? string.Empty);
     }
 
     public async Task<bool> RoleExistsAsync(string roleName)
