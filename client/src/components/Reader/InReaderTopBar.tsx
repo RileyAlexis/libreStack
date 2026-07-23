@@ -182,6 +182,7 @@ export const InReaderTopBar: React.FC = () => {
                 onClick={() =>
                   dispatch(setReadingFontSize(appSettings.readingFontSize - 1))
                 }
+                aria-label="Decrease Font Size"
               >
                 <Typography variant="button">A</Typography>
               </Button>
@@ -189,6 +190,7 @@ export const InReaderTopBar: React.FC = () => {
                 onClick={() =>
                   dispatch(setReadingFontSize(appSettings.readingFontSize + 1))
                 }
+                aria-label="Increase Font Size"
               >
                 <Typography variant="h5">A</Typography>
               </Button>
@@ -205,6 +207,7 @@ export const InReaderTopBar: React.FC = () => {
                 onClick={() =>
                   dispatch(setLineHeight(appSettings.lineHeight - 0.1))
                 }
+                aria-label="Decrease Line Spacing"
               >
                 <ListChevronsDownUp />
               </Button>
@@ -213,6 +216,7 @@ export const InReaderTopBar: React.FC = () => {
                 onClick={() =>
                   dispatch(setLineHeight(appSettings.lineHeight + 0.1))
                 }
+                aria-label="Increase Line Spacing"
               >
                 <ListChevronsUpDown />
               </Button>
@@ -230,9 +234,14 @@ export const InReaderTopBar: React.FC = () => {
                 label="Font"
                 onChange={handleReadingFontSelect}
                 sx={{ color: "var(--lightText)" }}
+                aria-label="Font Selector"
               >
                 {availableReadingFonts.map((item) => (
-                  <MenuItem key={item.label} value={item.value}>
+                  <MenuItem
+                    key={item.label}
+                    value={item.value}
+                    aria-label={item.label}
+                  >
                     {item.label}
                   </MenuItem>
                 ))}
@@ -251,9 +260,10 @@ export const InReaderTopBar: React.FC = () => {
                 label="Font"
                 onChange={handleChangeTheme}
                 sx={{ color: "var(--lightText)" }}
+                aria-label="Theme Selector"
               >
                 {availableReadingThemes.map((item) => (
-                  <MenuItem key={item} value={item}>
+                  <MenuItem key={item} value={item} aria-label={item}>
                     {item}
                   </MenuItem>
                 ))}
@@ -272,9 +282,14 @@ export const InReaderTopBar: React.FC = () => {
                 label="Font"
                 onChange={handleChangeSpread}
                 sx={{ color: "var(--lightText)" }}
+                aria-label="Spread Selector"
               >
-                <MenuItem value="none">Single</MenuItem>
-                <MenuItem value="auto">Auto</MenuItem>
+                <MenuItem value="none" aria-label="Single">
+                  Single
+                </MenuItem>
+                <MenuItem value="auto" aria-label="Auto">
+                  Auto
+                </MenuItem>
               </Select>
             </FormControl>
           </div>

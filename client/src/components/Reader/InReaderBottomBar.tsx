@@ -37,7 +37,12 @@ export const InReaderBottomBar: React.FC<InReaderBottomBarProps> = ({
   return (
     <div className="inReaderBottomBar">
       <div className="inReaderBottomBarContent">
-        <Button variant="text" size="small" onClick={(e) => handleOpenSpine(e)}>
+        <Button
+          variant="text"
+          size="small"
+          onClick={(e) => handleOpenSpine(e)}
+          aria-label="Open Spine"
+        >
           <PanelLeftOpenIcon size={32} />
         </Button>
         <div className="inReaderBottomBarText">
@@ -82,7 +87,11 @@ export const InReaderBottomBar: React.FC<InReaderBottomBarProps> = ({
         anchor="left"
       >
         <div className="closeButton">
-          <IconButton size="small" onClick={() => setIsSpineOpen(false)}>
+          <IconButton
+            size="small"
+            onClick={() => setIsSpineOpen(false)}
+            aria-label="close"
+          >
             <CircleXIcon />
           </IconButton>
         </div>
@@ -94,6 +103,7 @@ export const InReaderBottomBar: React.FC<InReaderBottomBarProps> = ({
                   variant="text"
                   key={item.id}
                   onClick={() => handleNavigate(item.href)}
+                  aria-label={item.label}
                 >
                   {item.label}
                 </Button>

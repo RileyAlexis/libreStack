@@ -43,6 +43,7 @@ export const ServerSwitchBox: React.FC<ServerSwitchBoxProps> = ({
           id={id}
           checked={checked}
           onChange={(e) => onCheckedChange(fieldKey, e.target.checked)}
+          aria-label={fieldKey}
         />
       </Stack>
     </Box>

@@ -166,6 +166,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
       onTouchEnd={handlePressEnd}
       onTouchMove={handlePressEnd}
       onClick={handleTap}
+      aria-label={book.title}
     >
       <div
         className="bookControlsTop"
@@ -181,6 +182,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
               e.stopPropagation();
               handleSelectBook(book.id);
             }}
+            aria-label={`Select ${book.title}`}
           >
             <Circle strokeWidth={2} className="bookIcon" style={iconSize} />
           </IconButton>
@@ -193,6 +195,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
               e.stopPropagation();
               handleUnselectBook(book.id);
             }}
+            aria-label={`Unselect ${book.title}`}
           >
             <CircleCheck
               strokeWidth={3}
@@ -209,6 +212,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
               e.stopPropagation();
               setIsBookDialogOpen(true);
             }}
+            aria-label={`Metadata for ${book.title}`}
           >
             <FileTextIcon
               strokeWidth={2}
@@ -224,6 +228,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
               e.stopPropagation();
               setMenuAnchorEl(e.currentTarget);
             }}
+            aria-label="Show Book Context Menu"
           >
             <EllipsisIcon
               strokeWidth={2}
@@ -242,6 +247,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
                 setIsDescDialogOpen(true);
                 handleMenuClose();
               }}
+              aria-label="View Description"
             >
               View Description
             </MenuItem>
@@ -251,6 +257,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
                   handleMarkIncomplete(book.id);
                   handleMenuClose();
                 }}
+                aria-label="Mark as Unfinished"
               >
                 Mark as Unfinished
               </MenuItem>
@@ -260,6 +267,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
                   handleMarkComplete(book.id);
                   handleMenuClose();
                 }}
+                aria-label="Mark as Finished"
               >
                 Mark as Finished
               </MenuItem>
@@ -269,6 +277,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
                 setIsFixMismatchDialogOpen(true);
                 handleMenuClose();
               }}
+              aria-label="Fix Mismatch"
             >
               Fix Mismatch
             </MenuItem>
