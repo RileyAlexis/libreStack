@@ -1,10 +1,10 @@
 import { useState } from "react";
 
-import { Typography, Drawer, Button } from "@mui/material";
+import { Typography, Drawer, Button, IconButton } from "@mui/material";
 
 import "./InReaderBottomBar.css";
 import type { Book, Rendition } from "@likecoin/epub-ts";
-import { PanelLeftOpenIcon } from "lucide-react";
+import { CircleXIcon, PanelLeftOpenIcon } from "lucide-react";
 
 interface InReaderBottomBarProps {
   title: string | undefined;
@@ -81,6 +81,11 @@ export const InReaderBottomBar: React.FC<InReaderBottomBarProps> = ({
         onClose={() => setIsSpineOpen(false)}
         anchor="left"
       >
+        <div className="closeButton">
+          <IconButton size="small" onClick={() => setIsSpineOpen(false)}>
+            <CircleXIcon />
+          </IconButton>
+        </div>
         <div className="drawerTableOfContents">
           <ul>
             {bookInstance?.navigation.toc.map((item) => (
