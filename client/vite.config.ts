@@ -11,7 +11,7 @@ export default defineConfig({
   plugins: [
     react(),
     babel({ presets: [reactCompilerPreset()] }),
-    visualizer({ open: true }),
+    visualizer({ open: false }),
     legacy({
       targets: ["safari >= 12"],
       additionalLegacyPolyfills: ["regenerator-runtime/runtime"],
