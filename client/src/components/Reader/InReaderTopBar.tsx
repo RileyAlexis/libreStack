@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import type { AppDispatch } from "@/redux/store";
 import type { LibreRootState } from "@/types/LibreRootState";
@@ -56,26 +56,8 @@ export const InReaderTopBar: React.FC = () => {
     dispatch(setReadingFont(selected));
   };
 
-  function getReaderBgColor(): string {
-    const el =
-      document.querySelector(".reader-container") ?? document.documentElement;
-    return getComputedStyle(el).getPropertyValue("--reader-background").trim();
-  }
-
-  function syncStatusBarToTheme() {
-    const bg = getReaderBgColor();
-
-    document.getElementById("theme-color-meta")?.setAttribute("content", bg);
-    document.documentElement.style.backgroundColor = bg;
-    document.body.style.backgroundColor = bg;
-
-    // if using the fixed spacer approach
-    document.documentElement.style.setProperty("--reader-bg", bg);
-  }
-
   const handleChangeTheme = (event: SelectChangeEvent<string>) => {
     dispatch(setReadingTheme(event.target.value as ReadingThemeType));
-    syncStatusBarToTheme();
   };
 
   const handleChangeSpread = (event: SelectChangeEvent<string>) => {

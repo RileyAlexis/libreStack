@@ -67,6 +67,40 @@ export const Reader: React.FC = () => {
     appSettings.spread,
   ]);
 
+  function getReaderBgColor(): string {
+    const el =
+      document.querySelector(".readerOuterWrapper") ?? document.documentElement;
+    return getComputedStyle(el).getPropertyValue("--reader-background").trim();
+  }
+
+  function syncStatusBarToTheme() {
+    const bg = getReaderBgColor();
+
+    document.getElementById("theme-color-meta")?.setAttribute("content", bg);
+    document.documentElement.style.backgroundColor = bg;
+    document.body.style.backgroundColor = bg;
+    document.documentElement.style.setProperty("--reader-background", bg);
+  }
+
+  function resetStatusBarToDefault() {
+    const APP_DEFAULT_BG = getComputedStyle(
+      document.documentElement,
+    ).getPropertyValue("--background");
+    document
+      .getElementById("theme-color-meta")
+      ?.setAttribute("content", APP_DEFAULT_BG);
+    document.documentElement.style.backgroundColor = APP_DEFAULT_BG;
+    document.body.style.backgroundColor = APP_DEFAULT_BG;
+    document.documentElement.style.removeProperty("--reader-background");
+  }
+
+  useEffect(() => {
+    syncStatusBarToTheme();
+    return () => {
+      resetStatusBarToDefault();
+    };
+  }, [appSettings.readingTheme]);
+
   // Load the book + saved reading progress from the API
   useEffect(() => {
     let cancelled = false;
