@@ -34,10 +34,31 @@ export const Tester: React.FC = () => {
       });
   }, []);
 
+  const handleCreateNewUser = () => {
+    const body = {
+      username: "newUser",
+      email: "new@more.com",
+      password: "Pa$$W0rd",
+      libraryName: "whatever",
+      libraryPath: "/Users/rileyalexis/Calibre Library",
+    };
+    api
+      .post("Auth/createNewUser", body)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   return (
     <div className="testingContainer">
       <Button variant="contained" onClick={handleGetSeriesByLibrary}>
         Get Series By Library
+      </Button>
+      <Button onClick={handleCreateNewUser} variant="contained">
+        Create New User
       </Button>
     </div>
   );

@@ -2,7 +2,7 @@ using Librestack.Models;
 using Librestack.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-// removed ambiguous Identity.Data using
+using Librestack.Models.APIModels;
 
 namespace Librestack.Controllers;
 
@@ -11,10 +11,12 @@ namespace Librestack.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly ILibraryService _libraryService;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService, ILibraryService libraryService)
     {
         _authService = authService;
+        _libraryService = libraryService;
     }
 
     [HttpPost("register")]
@@ -25,6 +27,44 @@ public class AuthController : ControllerBase
             return BadRequest(result.Errors);
 
         return Ok(new { message = "User created successfully" });
+    }
+
+    [HttpPost("createNewUser")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> CreateNewUser(ApiCreateNewUserModel newUserModel)
+    {
+        if (string.IsNullOrWhiteSpace(newUserModel.LibraryName) || string.IsNullOrWhiteSpace(newUserModel.LibraryPath))
+        {
+            return BadRequest("User must have a library name and path");
+        }
+
+        var newUser = new RegisterRequest(
+            Username: newUserModel.Username,
+            Email: newUserModel.Email,
+            Password: newUserModel.Password);
+
+        var response = await _authService.CreateNewUser(newUser);
+        if (!response.Result.Succeeded)
+            return BadRequest(response.Result.Errors);
+
+        var userId = response.UserId;
+
+        var libraryData = new Library
+        {
+            Name = newUserModel.LibraryName,
+            LibraryPath = newUserModel.LibraryPath
+        };
+
+        var libraryResponse = await _libraryService.CreateLibrary(userId!, libraryData);
+
+        if (libraryResponse.IsSuccess)
+        {
+            return Ok(new { message = "User and Library successfully created" });
+        }
+        else
+        {
+            return BadRequest("Unexpected Error");
+        }
     }
 
     [HttpPost("login")]

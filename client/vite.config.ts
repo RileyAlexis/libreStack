@@ -13,7 +13,8 @@ export default defineConfig({
     babel({ presets: [reactCompilerPreset()] }),
     visualizer({ open: false }),
     legacy({
-      targets: ["safari >= 12"],
+      targets: ["safari >= 14"],
+      modernPolyfills: ["es.object.from-entries"],
       additionalLegacyPolyfills: ["regenerator-runtime/runtime"],
     }),
     VitePWA({

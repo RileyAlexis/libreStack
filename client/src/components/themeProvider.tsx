@@ -50,8 +50,29 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = () => setMode(getSystemPreference());
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
+
+    const legacyMediaQuery = mediaQuery as MediaQueryList & {
+      addListener?: (
+        listener: (this: MediaQueryList, ev: MediaQueryListEvent) => void,
+      ) => void;
+      removeListener?: (
+        listener: (this: MediaQueryList, ev: MediaQueryListEvent) => void,
+      ) => void;
+    };
+
+    if ("addEventListener" in mediaQuery) {
+      mediaQuery.addEventListener("change", handleChange);
+
+      return () => {
+        mediaQuery.removeEventListener("change", handleChange);
+      };
+    }
+
+    legacyMediaQuery.addListener?.(handleChange);
+
+    return () => {
+      legacyMediaQuery.removeListener?.(handleChange);
+    };
   }, [theme]);
 
   const muiTheme = useMemo(
