@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
 import type { AppDispatch } from "@/redux/store";
 import type { LibreRootState } from "@/types/LibreRootState";
 
@@ -22,11 +23,13 @@ import {
   Select,
   Typography,
   Tooltip,
+  IconButton,
 } from "@mui/material";
 import {
   ListChevronsDownUp,
   ListChevronsUpDown,
   BookTypeIcon,
+  CircleXIcon,
 } from "lucide-react";
 import type { SelectChangeEvent } from "@mui/material";
 import type { ReadingThemeType, SpreadType } from "@/types/AppSettings";
@@ -39,6 +42,7 @@ import "./InReaderTopBar.css";
 
 export const InReaderTopBar: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const [isFormattingDialogOpen, setIsFormatDialogOpen] = useState(false);
   const isSmallScreen = window.innerWidth <= 400;
@@ -153,8 +157,13 @@ export const InReaderTopBar: React.FC = () => {
               <MenuItem value="auto">Auto</MenuItem>
             </Select>
           </FormControl>
+          <IconButton onClick={() => navigate("/library")}>
+            <CircleXIcon />
+          </IconButton>
         </div>
       )}
+
+      {/* Mobile Controls */}
 
       {isSmallScreen && (
         <div className="inReaderTopBarControlsMobile">
@@ -165,6 +174,9 @@ export const InReaderTopBar: React.FC = () => {
           >
             <BookTypeIcon size={28} />
           </Button>
+          <IconButton onClick={() => navigate("/library")}>
+            <CircleXIcon />
+          </IconButton>
         </div>
       )}
       <dialog
