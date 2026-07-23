@@ -18,6 +18,8 @@ import {
   FileTextIcon,
   CircleCheckBig,
 } from "lucide-react";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 
 import { BookCardDialog } from "./BookCardDialog";
 import "./BookCard.css";
@@ -45,6 +47,8 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const didLongPress = useRef(false);
   const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   useEffect(() => {
     const handler = () => setScreenWidth(window.innerWidth);
@@ -329,8 +333,14 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
           onClose={handleDialogClosing}
           maxWidth="md"
           fullWidth={true}
+          fullScreen={fullScreen}
         >
-          {isBookDialogOpen && <BookCardDialog bookId={book.id} />}
+          {isBookDialogOpen && (
+            <BookCardDialog
+              bookId={book.id}
+              close={() => setIsBookDialogOpen(false)}
+            />
+          )}
         </Dialog>
       </div>
       <div onClick={(e) => e.stopPropagation()}>
@@ -349,6 +359,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
           onClose={() => setIsFixMismatchDialogOpen(false)}
           maxWidth="lg"
           fullWidth={true}
+          fullScreen={fullScreen}
         >
           {isFixMismatchDialogOpen && (
             <FixMismatchDialog

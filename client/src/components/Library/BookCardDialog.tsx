@@ -20,8 +20,9 @@ import {
   Typography,
   Box,
   Tooltip,
+  IconButton,
 } from "@mui/material";
-import { Plus } from "lucide-react";
+import { Plus, CircleXIcon } from "lucide-react";
 
 import "./BookCardDialog.css";
 import type { LibreRootState } from "@/types/LibreRootState";
@@ -61,9 +62,13 @@ const FIELD_ORDER: FieldConfig[] = [
 
 interface BookCardDialogProps {
   bookId: number;
+  close: () => void;
 }
 
-export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
+export const BookCardDialog: React.FC<BookCardDialogProps> = ({
+  bookId,
+  close,
+}) => {
   const dispatch = useDispatch<AppDispatch>();
 
   const [book, setBook] = useState<BookType>();
@@ -409,6 +414,13 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({ bookId }) => {
           )}
         </Box>
       </DialogTitle>
+      <IconButton
+        aria-label="Close"
+        onClick={close}
+        sx={{ position: "absolute", right: 8, top: 8 }}
+      >
+        <CircleXIcon />
+      </IconButton>
       <DialogContent className="bookCardDialogContent">
         <Box sx={{ display: "grid", gap: 2, py: 2 }}>
           {FIELD_ORDER.map(renderField)}

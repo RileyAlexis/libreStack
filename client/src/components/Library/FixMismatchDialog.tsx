@@ -24,7 +24,9 @@ import {
   CircularProgress,
   Typography,
   Box,
+  IconButton,
 } from "@mui/material";
+import { CircleXIcon } from "lucide-react";
 
 import "./FixMisMatchDialog.css";
 import { setIsSyncing } from "@/redux/reducers/AppSettingsReducer";
@@ -145,6 +147,13 @@ export const FixMismatchDialog: React.FC<FixMismatchDialogProps> = ({
           </Box>
         )}
       </DialogTitle>
+      <IconButton
+        aria-label="Close"
+        onClick={() => setIsSelectOpen(false)}
+        sx={{ position: "absolute", right: 8, top: 8 }}
+      >
+        <CircleXIcon />
+      </IconButton>
 
       <DialogContent
         style={{ maxWidth: "90vw" }}
