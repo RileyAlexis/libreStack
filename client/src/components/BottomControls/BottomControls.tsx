@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { api } from "@/utils/api";
@@ -27,6 +27,7 @@ import {
   Box,
   Button,
 } from "@mui/material";
+import InstallMobileIcon from "@mui/icons-material/InstallMobile";
 
 import {
   LandmarkIcon,
@@ -53,8 +54,43 @@ export const BottomControls: React.FC = () => {
   const library = useSelector((state: LibreRootState) => state.library);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
 
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const [deferredPrompt, setDeferredPrompt] = useState<any | null>(null);
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [activeMenu, setActiveMenu] = useState<ActiveMenu>(null);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (event: Event) => {
+      event.preventDefault();
+      setDeferredPrompt(event);
+    };
+    console.log(deferredPrompt);
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt,
+      );
+    };
+  }, []);
+
+  const installApp = () => {
+    console.log(deferredPrompt);
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult: any) => {
+        if (choiceResult.outcome === "accepted") {
+          console.log("Accepted");
+        } else {
+          console.log("Rejected");
+        }
+        setDeferredPrompt(null);
+      });
+    }
+  };
 
   const openMenu = (menu: ActiveMenu, e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(e.currentTarget);
@@ -252,6 +288,15 @@ export const BottomControls: React.FC = () => {
         >
           <Typography variant="caption">Series</Typography>
         </Button>
+        {deferredPrompt && !isIOS && (
+          <Button
+            sx={menubarButtonSx}
+            startIcon={<InstallMobileIcon />}
+            onClick={() => installApp()}
+          >
+            <Typography variant="caption">Install App</Typography>
+          </Button>
+        )}
       </Box>
 
       {/* Library menu */}
