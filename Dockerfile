@@ -15,9 +15,12 @@ copy server/ ./
 RUN dotnet restore libreStack.csproj && \
     dotnet publish libreStack.csproj -c Release -r linux-x64 --self-contained false -o /publish
 
+    
 # Stage 3: Production Image (Runtime)
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
+RUN apt-get update && apt-get install -y zip && rm -rf /var/lib/apt/lists/*
+
 # Copy published API code
 COPY --from=backend-build /publish .
 # Copy the static assets into the webroot directory for ASP.NET Core to serve them from root path (/)
