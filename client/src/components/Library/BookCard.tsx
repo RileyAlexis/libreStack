@@ -10,7 +10,14 @@ import type { BookType } from "@/types/BookType";
 import type { LibreRootState } from "@/types/LibreRootState";
 
 // UI
-import { IconButton, Dialog, Menu, MenuItem, Tooltip } from "@mui/material";
+import {
+  IconButton,
+  Dialog,
+  Menu,
+  MenuItem,
+  Tooltip,
+  Typography,
+} from "@mui/material";
 import {
   Circle,
   CircleCheck,
@@ -313,14 +320,40 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
           appSettings.libraryLayout.showSeries) && (
           <div className="infoBox">
             <div className="infoTextContainer">
-              {appSettings.libraryLayout.showTitles && <h5>{book.title}</h5>}
-              {appSettings.libraryLayout.showAuthors && <h6>{book.author}</h6>}
+              {appSettings.libraryLayout.showTitles && (
+                <div className="textContainer">
+                  <Typography
+                    variant="caption"
+                    noWrap
+                    sx={{ display: "block", width: "100%" }}
+                  >
+                    {book.title}
+                  </Typography>
+                </div>
+              )}
+              {appSettings.libraryLayout.showAuthors && (
+                <div className="textContainer">
+                  <Typography
+                    variant="caption"
+                    noWrap
+                    sx={{ display: "block", width: "100%" }}
+                  >
+                    {book.author}
+                  </Typography>
+                </div>
+              )}
               {appSettings.libraryLayout.showSeries &&
                 book.seriesId !== null && (
-                  <p>
-                    {book.series?.seriesTitle}
-                    {!book.seriesOrder ? "" : ` - ${book.seriesOrder}`}
-                  </p>
+                  <div className="textContainer">
+                    <Typography
+                      variant="caption"
+                      noWrap
+                      sx={{ display: "block", width: "100%" }}
+                    >
+                      {book.series?.seriesTitle}
+                      {!book.seriesOrder ? "" : ` - ${book.seriesOrder}`}
+                    </Typography>
+                  </div>
                 )}
             </div>
           </div>
