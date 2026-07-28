@@ -25,7 +25,7 @@
 .readerTheme-medium-light {
   background: var(--reader-background);
   color: black;
-  --lightText: #969696;
+  --lightText: #2f2f2f;
   --menu-background: rgba(176, 176, 176, 0.698);
   --reader-background: #eaeaea;
 }

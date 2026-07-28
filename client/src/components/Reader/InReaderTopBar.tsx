@@ -45,7 +45,7 @@ export const InReaderTopBar: React.FC = () => {
   const navigate = useNavigate();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const [isFormattingDialogOpen, setIsFormatDialogOpen] = useState(false);
-  const isSmallScreen = window.innerWidth <= 400;
+  const isSmallScreen = window.innerWidth <= 450;
 
   const handleReadingFontSelect = (event: SelectChangeEvent<string>) => {
     const selected = availableReadingFonts.findLast(
