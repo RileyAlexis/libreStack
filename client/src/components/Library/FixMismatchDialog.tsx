@@ -9,33 +9,26 @@ import type { BookSearchType } from "@/types/BookSearchType";
 // UI
 import {
   DialogContent,
-  DialogHeader,
   DialogTitle,
-  DialogDescription,
-} from "../ui/dialog";
-import { Empty, EmptyHeader, EmptyMedia, EmptyTitle } from "../ui/empty";
-import {
   Table,
-  TableHeader,
   TableHead,
   TableRow,
   TableBody,
   TableCell,
-} from "../ui/table";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-} from "../ui/alert-dialog";
-import { Alert, AlertTitle, AlertDescription } from "../ui/alert";
-import { Button } from "../ui/button";
-import { Spinner } from "../ui/spinner";
+  Dialog,
+  DialogActions,
+  Alert,
+  AlertTitle,
+  Button,
+  TextField,
+  CircularProgress,
+  Typography,
+  Box,
+  IconButton,
+} from "@mui/material";
+import { CircleXIcon } from "lucide-react";
 
 import "./FixMisMatchDialog.css";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
 import { setIsSyncing } from "@/redux/reducers/AppSettingsReducer";
 
 interface FixMismatchDialogProps {
@@ -86,7 +79,7 @@ export const FixMismatchDialog: React.FC<FixMismatchDialogProps> = ({
 
   const handleNewSearch = () => {
     if (!searchTerm || searchTerm === "") return;
-    setIsSyncing(true);
+    dispatch(setIsSyncing(true));
     api
       .get(
         `metadata/searchOpenLibrary?bookId=${book.id}&searchTerm=${searchTerm}`,
@@ -98,12 +91,11 @@ export const FixMismatchDialog: React.FC<FixMismatchDialogProps> = ({
         console.error(error);
       })
       .finally(() => {
-        setIsSyncing(false);
+        dispatch(setIsSyncing(false));
       });
   };
 
   const handleSelectResult = async (item: BookSearchType) => {
-    setIsSyncing(true);
     setError(null);
     dispatch(setIsSyncing(true));
 
@@ -130,7 +122,6 @@ export const FixMismatchDialog: React.FC<FixMismatchDialogProps> = ({
       );
       console.error(error);
     } finally {
-      setIsSyncing(false);
       setIsSelectOpen(false);
       dispatch(fetchLibraryData());
       dispatch(setIsSyncing(false));
@@ -138,126 +129,154 @@ export const FixMismatchDialog: React.FC<FixMismatchDialogProps> = ({
   };
 
   return (
-    <DialogContent
-      style={{ maxWidth: "90vw" }}
-      className="max-h-[80vh] overflow-y-auto"
-    >
-      <DialogHeader>
-        <DialogTitle>Fix Mismatch</DialogTitle>
-        <DialogDescription>
-          <p>{book.title}</p>
-          <p>{book.author}</p>
-        </DialogDescription>
+    <>
+      <DialogTitle style={{ maxWidth: "90vw" }}>
+        Fix Mismatch
+        <Typography variant="body2" color="text.secondary">
+          {book.title}
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          {book.author}
+        </Typography>
         {error && (
-          <div className="mt-2">
-            <Alert>
+          <Box sx={{ mt: 2 }}>
+            <Alert severity="error">
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
+              {error}
             </Alert>
-          </div>
+          </Box>
         )}
-      </DialogHeader>
+      </DialogTitle>
+      <IconButton
+        aria-label="Close"
+        onClick={() => setIsSelectOpen(false)}
+        sx={{ position: "absolute", right: 8, top: 8 }}
+      >
+        <CircleXIcon />
+      </IconButton>
 
-      <div className="mismatchContentContainer">
-        <div className="tableHeaderContainer">
-          <div>
-            <p style={{ textAlign: "center" }}>
-              Open Library Results {searchResults?.[0]?.numResults ?? 0}
-            </p>
+      <DialogContent
+        style={{ maxWidth: "90vw" }}
+        className="max-h-[80vh] overflow-y-auto"
+      >
+        <div className="mismatchContentContainer">
+          <div className="tableHeaderContainer">
+            <div>
+              <p style={{ textAlign: "center" }}>
+                Open Library Results {searchResults?.[0]?.numResults ?? 0}
+              </p>
+            </div>
+            <div className="searchTermContainer">
+              <TextField
+                id="searchTermBox"
+                label="Search Term"
+                size="small"
+                placeholder="use search term"
+                value={searchTerm ?? ""}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <Button variant="outlined" onClick={handleNewSearch}>
+                Search
+              </Button>
+            </div>
           </div>
-          <div className="searchTermContainer">
-            <Label htmlFor="searchTermBox">Search Term</Label>
-            <Input
-              id="searchTermBox"
-              placeholder="use search term"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <Button variant="secondary" onClick={handleNewSearch}>
-              Search
-            </Button>
-          </div>
-        </div>
-        {isLoading && (
-          <div className="emptyLoadingContainer">
-            <Empty>
-              <EmptyHeader>
-                <EmptyMedia>
-                  <Spinner />
-                </EmptyMedia>
-                <EmptyTitle>Searching Open Library</EmptyTitle>
-              </EmptyHeader>
-            </Empty>
-          </div>
-        )}
-
-        {!isLoading && (
-          <>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Author</TableHead>
-                  <TableHead>Publisher</TableHead>
-                  <TableHead>Publish Date</TableHead>
-                  <TableHead>Series Title</TableHead>
-                  <TableHead>Series Position</TableHead>
-                  <TableHead>Language</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {searchResults?.map((item, index) => (
-                  <TableRow
-                    key={index}
-                    onClick={() => {
-                      setSelectedResult(item);
-                      setIsAlertSelectOpen(true);
-                    }}
-                  >
-                    <TableCell title={item.title ?? ""}>
-                      {truncate(item.title)}
-                    </TableCell>
-                    <TableCell className="truncate-cell">
-                      {item.author}
-                    </TableCell>
-                    <TableCell>{item.publisher}</TableCell>
-                    <TableCell>{item.publishDate}</TableCell>
-                    <TableCell>{item.seriesName}</TableCell>
-                    <TableCell>{item.seriesOrder}</TableCell>
-                    <TableCell>{item.language}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-
-            <AlertDialog
-              open={isAlertSelectOpen}
-              onOpenChange={(open) => {
-                setIsAlertSelectOpen(open);
-                if (!open) setSelectedResult(null);
+          {isLoading && (
+            <Box
+              className="emptyLoadingContainer"
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 1,
+                py: 4,
               }}
             >
-              <AlertDialogContent>
-                <AlertDialogDescription>
-                  Replace book meta data with {selectedResult?.title} by{" "}
-                  {selectedResult?.author}
-                </AlertDialogDescription>
-                <AlertDialogCancel variant="outline">Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  variant="default"
-                  onClick={() => {
-                    if (selectedResult) handleSelectResult(selectedResult);
-                    setIsAlertSelectOpen(false);
-                    setIsSelectOpen(false);
-                  }}
-                >
-                  Confirm
-                </AlertDialogAction>
-              </AlertDialogContent>
-            </AlertDialog>
-          </>
-        )}
-      </div>
-    </DialogContent>
+              <CircularProgress />
+              <Typography variant="body2">Searching Open Library</Typography>
+            </Box>
+          )}
+
+          {!isLoading && (
+            <>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Title</TableCell>
+                    <TableCell>Author</TableCell>
+                    <TableCell>Publisher</TableCell>
+                    <TableCell>Publish Date</TableCell>
+                    <TableCell>Series Title</TableCell>
+                    <TableCell>Series Position</TableCell>
+                    <TableCell>Language</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {searchResults?.map((item, index) => (
+                    <TableRow
+                      key={index}
+                      hover
+                      sx={{ cursor: "pointer" }}
+                      onClick={() => {
+                        setSelectedResult(item);
+                        setIsAlertSelectOpen(true);
+                      }}
+                    >
+                      <TableCell title={item.title ?? ""}>
+                        {truncate(item.title)}
+                      </TableCell>
+                      <TableCell className="truncate-cell">
+                        {item.author}
+                      </TableCell>
+                      <TableCell>{item.publisher}</TableCell>
+                      <TableCell>{item.publishDate}</TableCell>
+                      <TableCell>{item.seriesName}</TableCell>
+                      <TableCell>{item.seriesOrder}</TableCell>
+                      <TableCell>{item.language}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+
+              <Dialog
+                open={isAlertSelectOpen}
+                onClose={() => {
+                  setIsAlertSelectOpen(false);
+                  setSelectedResult(null);
+                }}
+              >
+                <DialogContent>
+                  <Typography>
+                    Replace book meta data with {selectedResult?.title} by{" "}
+                    {selectedResult?.author}
+                  </Typography>
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      setIsAlertSelectOpen(false);
+                      setSelectedResult(null);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      if (selectedResult) handleSelectResult(selectedResult);
+                      setIsAlertSelectOpen(false);
+                      setIsSelectOpen(false);
+                    }}
+                  >
+                    Confirm
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </>
+          )}
+        </div>
+      </DialogContent>
+    </>
   );
 };

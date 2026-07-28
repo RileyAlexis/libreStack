@@ -2,7 +2,6 @@ import { defineConfig } from "vite";
 import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import babel from "@rolldown/plugin-babel";
 import legacy from "@vitejs/plugin-legacy";
-import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import { visualizer } from "rollup-plugin-visualizer";
 import { VitePWA } from "vite-plugin-pwa";
@@ -12,10 +11,10 @@ export default defineConfig({
   plugins: [
     react(),
     babel({ presets: [reactCompilerPreset()] }),
-    visualizer({ open: true }),
-    tailwindcss(),
+    visualizer({ open: false }),
     legacy({
-      targets: ["safari >= 12"],
+      targets: ["safari >= 14"],
+      modernPolyfills: ["es.object.from-entries"],
       additionalLegacyPolyfills: ["regenerator-runtime/runtime"],
     }),
     VitePWA({

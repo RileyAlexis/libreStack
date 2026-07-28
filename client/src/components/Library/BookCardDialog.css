@@ -19,3 +19,8 @@
   flex: 1 1 0;
   min-width: 0;
 }
+
+.bookCardDialogContent {
+  max-height: 80vh;
+  overflow-y: auto;
+}

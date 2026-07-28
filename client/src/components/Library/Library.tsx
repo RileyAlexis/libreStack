@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router";
 
@@ -14,30 +14,43 @@ import { BookCard } from "./BookCard";
 
 import { BottomControls } from "../BottomControls/BottomControls";
 import { LibraryHeaderControls } from "./LibraryHeaderControls";
+import { CircularProgress } from "@mui/material";
 
 export const Library: React.FC = () => {
   const location = useLocation();
   const dispatch = useDispatch<AppDispatch>();
+  const [isLoading, setIsLoading] = useState(false);
 
   const libraryData = useSelector((state: LibreRootState) => state.library);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
 
   useEffect(() => {
-    dispatch(fetchLibraryData());
+    setIsLoading(true);
+    dispatch(fetchLibraryData())
+      .unwrap()
+      .catch((err) => console.error(err))
+      .finally(() => setIsLoading(false));
   }, [location.pathname]);
 
   return (
     <div className="libraryContainer">
       <LibraryHeaderControls />
+      {isLoading && (
+        <div className="libraryLoader">
+          <CircularProgress size={48} sx={{ mr: 1 }} />
+        </div>
+      )}
       <div className="booksContainer">
-        {libraryData &&
+        {!isLoading &&
+          libraryData &&
           libraryData[appSettings.lastSelectedLibrary] &&
           libraryData[appSettings.lastSelectedLibrary].books &&
           libraryData[appSettings.lastSelectedLibrary].books
             .filter(
               (book: BookType) =>
-                !book.readingProgress?.isComplete ||
-                appSettings.libraryLayout.showCompleted,
+                (!book.readingProgress?.isComplete ||
+                  appSettings.libraryLayout.showCompleted) &&
+                (!book.seriesId || !appSettings.libraryLayout.groupBySeries),
             )
             .map((book: BookType) => <BookCard key={book.id} book={book} />)}
       </div>

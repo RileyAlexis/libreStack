@@ -30,9 +30,9 @@ public class Book
     public string? Language { get; set; } = null;
     public int? CollectionId { get; set; }
     public required string EpubPath { get; set; }
-    public DateTime OpenLibraryMetadataLastUpdated { get; set; }
-    public DateTime WikidataMetaLastUpdated { get; set; }
-    public DateTime AddedDate { get; set; }
+    public DateTime? OpenLibraryMetadataLastUpdated { get; set; }
+    public DateTime? WikidataMetaLastUpdated { get; set; }
+    public DateTime? AddedDate { get; set; }
 
     [JsonIgnore]
     public ICollection<Library> Libraries { get; set; } = new List<Library>();

@@ -5,18 +5,21 @@ import type {
 } from "@/types/ServerStatsType";
 import { formatStorageSize } from "@/utils/formatter";
 // UI
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { CircleX, FolderPen, SaveCheck } from "lucide-react";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogHeader,
-} from "../ui/alert-dialog";
-import { Tooltip, TooltipTrigger, TooltipContent } from "../ui/tooltip";
+  Button,
+  TextField,
+  IconButton,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+  List,
+  ListItem,
+  ListItemIcon,
+} from "@mui/material";
+import { CircleX, FolderPen, SaveCheck, DotIcon } from "lucide-react";
 import "./ServerManager.css";
 import { api } from "@/utils/api";
 
@@ -81,86 +84,105 @@ export const ServerLibraryStats: React.FC<ServerLibraryStatsProps> = ({
   return (
     <div className="libraryStatsBox" key={item.libraryName}>
       <div>
-        <h4>{item.libraryName}</h4>
-        <ul>
-          <li>Books: {item.bookCount}</li>
-          <li>Authors: {item.authorCount}</li>
-          <li>Series: {item.seriesCount}</li>
-          <li>Read: {item.completedBookCount}</li>
-          <li>
+        <Typography variant="h5">{item.libraryName}</Typography>
+        <List dense disablePadding>
+          <ListItem disablePadding>
+            <ListItemIcon>
+              <DotIcon />{" "}
+            </ListItemIcon>
+            Books: {item.bookCount}
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemIcon>
+              <DotIcon />{" "}
+            </ListItemIcon>
+            Authors: {item.authorCount}
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemIcon>
+              <DotIcon />{" "}
+            </ListItemIcon>
+            Series: {item.seriesCount}
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemIcon>
+              <DotIcon />{" "}
+            </ListItemIcon>
+            Read: {item.completedBookCount}
+          </ListItem>
+          <ListItem disablePadding>
+            <ListItemIcon>
+              <DotIcon />{" "}
+            </ListItemIcon>
             {!isEditing && (
               <div className="pathBox">
-                <p>Path : {item.libraryPath} </p>
-                <Button
-                  variant="outline"
-                  size="xs"
-                  onClick={handleStartEditing}
-                >
-                  <FolderPen />
-                </Button>
+                Path : {item.libraryPath}
+                <Tooltip title="Edit Path">
+                  <IconButton onClick={handleStartEditing}>
+                    <FolderPen size={18} />
+                  </IconButton>
+                </Tooltip>
               </div>
             )}
             {isEditing && (
               <div className="pathEditContainer">
-                <Input
+                <TextField
+                  size="small"
                   placeholder="Library full path"
                   value={libraryPath}
                   onChange={(e) => setLibraryPath(e.target.value)}
                 />
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <Button
-                        variant="outline"
-                        size="xs"
-                        onClick={handleCancelEditing}
-                      >
-                        <CircleX />
-                      </Button>
-                    }
-                  />
-                  <TooltipContent>Cancel</TooltipContent>
+                <Tooltip title="Cancel">
+                  <IconButton onClick={handleCancelEditing}>
+                    <CircleX size={18} />
+                  </IconButton>
                 </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <Button
-                        variant="outline"
-                        size="xs"
-                        onClick={() => setIsAlertOpen(true)}
-                      >
-                        <SaveCheck />
-                      </Button>
-                    }
-                  />
-                  <TooltipContent>Save</TooltipContent>
+                <Tooltip title="Save">
+                  <IconButton onClick={() => setIsAlertOpen(true)}>
+                    <SaveCheck size={18} />
+                  </IconButton>
                 </Tooltip>
-                <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>Are You Sure?</AlertDialogHeader>
-                    <AlertDialogDescription>
+                <Dialog
+                  open={isAlertOpen}
+                  onClose={() => setIsAlertOpen(false)}
+                >
+                  <DialogTitle>Are You Sure?</DialogTitle>
+                  <DialogContent>
+                    <Typography>
                       Updating the Library path may result in a loss of data and
                       removal of books.
-                    </AlertDialogDescription>
-                    <AlertDialogCancel variant="outline">
-                      Cancel
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      variant="default"
-                      onClick={handleUpdatePath}
+                    </Typography>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button
+                      variant="outlined"
+                      onClick={() => setIsAlertOpen(false)}
                     >
+                      Cancel
+                    </Button>
+                    <Button variant="contained" onClick={handleUpdatePath}>
                       Confirm
-                    </AlertDialogAction>
-                  </AlertDialogContent>
-                </AlertDialog>
+                    </Button>
+                  </DialogActions>
+                </Dialog>
               </div>
             )}
-          </li>
-          <li>Storage Size : {formatStorageSize(item?.storageSizeKb ?? 0)}</li>
-          <li>
+          </ListItem>
+          <ListItem disablePadding>
+            {" "}
+            <ListItemIcon>
+              <DotIcon />{" "}
+            </ListItemIcon>
+            Storage Size : {formatStorageSize(item?.storageSizeKb ?? 0)}
+          </ListItem>
+          <ListItem disablePadding>
+            {" "}
+            <ListItemIcon>
+              <DotIcon />{" "}
+            </ListItemIcon>
             Free Disk Space : {formatStorageSize(item?.driveFreeSpace ?? 0)}
-          </li>
-        </ul>
+          </ListItem>
+        </List>
       </div>
     </div>
   );

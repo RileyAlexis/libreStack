@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Identity;
+
 namespace Librestack.Models;
 
 public record RegisterRequest(string Username, string Email, string Password);
 public record LoginRequest(string Username, string Password);
-public record AuthUserResponse(string Id, string UserName, string Email);
+public record AuthUserResponse(string Id, string UserName, string Email, string Role);
 public record AssignRoleRequest(string UserId);
 public record LoginResponse(string AccessToken, string RefreshToken);
 public record RefreshRequest(string RefreshToken);

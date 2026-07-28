@@ -21,25 +21,33 @@ import {
 
 // UI
 import {
-  Combobox,
-  ComboboxContent,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from "../ui/combobox";
+  Autocomplete,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  ButtonGroup,
+  Button,
+  Typography,
+  IconButton,
+  Tooltip,
+  Divider,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 import {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogHeader,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "../ui/alert-dialog";
-import { ButtonGroup, ButtonGroupSeparator } from "../ui/button-group";
-import { Button } from "../ui/button";
-import { CircleXIcon, ArrowDownAZ, ArrowUpAZ } from "lucide-react";
-import { Label } from "../ui/label";
+  CircleXIcon,
+  ArrowDownAZ,
+  ArrowUpAZ,
+  CirclePlus,
+  CircleMinus,
+  BookXIcon,
+  EllipsisVertical,
+  ArrowDownUp,
+  ArrowUpDown,
+  ArrowDownWideNarrow,
+} from "lucide-react";
 
 import "./LibraryHeaderControls.css";
 import { api } from "@/utils/api";
@@ -50,8 +58,18 @@ export const LibraryHeaderControls: React.FC = () => {
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const library = useSelector((state: LibreRootState) => state.library);
   const selections = useSelector((state: LibreRootState) => state.selections);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
+  const sortMenuOpen = Boolean(sortAnchorEl);
+  const menuOpen = Boolean(anchorEl);
+  const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
 
-  const sortingOptions = ["Author", "Title", "Last Read", "Recently Added"];
+  const sortingOptions: SortByType[] = [
+    "Author",
+    "Title",
+    "Last Read",
+    "Recently Added",
+  ];
 
   const handleSortChange = (value: SortByType, ascending?: boolean) => {
     dispatch(setSortBy(value));
@@ -184,6 +202,21 @@ export const LibraryHeaderControls: React.FC = () => {
     dispatch(fetchLibraryData());
   };
 
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleClickSortMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setSortAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseSortMenu = () => {
+    setSortAnchorEl(null);
+  };
+
   return (
     <div className="libraryHeaderControlsContainer">
       <div className="libraryHeaderControls">
@@ -199,93 +232,179 @@ export const LibraryHeaderControls: React.FC = () => {
               />
               {selections.selectedBooks.length}
             </div>
+            <Divider orientation="vertical" aria-hidden="true" flexItem />
             <div className="selectedMenuContainer">
-              <ButtonGroup>
-                <Button variant="outline" size="xs" onClick={handleMarkAsRead}>
-                  Mark Read
-                </Button>
-                <Button
-                  variant="outline"
-                  size="xs"
-                  onClick={handleMarkAsUnread}
+              <div className="selectedButtonsContainer">
+                <Tooltip title="Mark as Read">
+                  <IconButton onClick={handleMarkAsRead}>
+                    <CirclePlus />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Mark as Unread">
+                  <IconButton onClick={handleMarkAsUnread}>
+                    <CircleMinus />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Delete">
+                  <IconButton onClick={() => setIsDeleteOpen(true)}>
+                    <BookXIcon color="var(--destructive" />
+                  </IconButton>
+                </Tooltip>
+                <Divider orientation="vertical" aria-hidden="true" flexItem />
+                <IconButton
+                  onClick={handleClick}
+                  aria-label="more"
+                  aria-controls={menuOpen ? "long-menu" : undefined}
+                  aria-expanded={menuOpen}
+                  aria-haspopup="true"
                 >
-                  Mark Unread
-                </Button>
-                <Button
-                  variant="outline"
-                  size="xs"
-                  disabled={appSettings.isSyncing}
-                  onClick={handleQueryOpenLibrary}
-                >
-                  Query Open Library
-                </Button>
-                <Button
-                  variant="outline"
-                  size="xs"
-                  disabled={appSettings.isSyncing}
-                  onClick={handleQueryWikidata}
-                >
-                  Query Wikidata
-                </Button>
-                <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-                  <AlertDialogTrigger
-                    render={
-                      <Button variant="destructive" size="xs">
-                        Delete
-                      </Button>
-                    }
-                  />
-                  <AlertDialogContent>
-                    <AlertDialogHeader>Are you sure?</AlertDialogHeader>
-                    <AlertDialogDescription>
-                      This will permanently delete books from disk and they
-                      cannot be recovered.
-                    </AlertDialogDescription>
-                    <AlertDialogCancel variant="outline">
-                      Cancel
-                    </AlertDialogCancel>
-                    <AlertDialogAction
-                      variant="destructive"
-                      onClick={handleDeleteSelections}
-                    >
-                      Delete!
-                    </AlertDialogAction>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </ButtonGroup>
+                  <EllipsisVertical />
+                </IconButton>
+                <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleClose}>
+                  <MenuItem onClick={handleQueryOpenLibrary}>
+                    Query Open Library
+                  </MenuItem>
+                  <MenuItem onClick={handleQueryWikidata}>
+                    Query Wikidata
+                  </MenuItem>
+                </Menu>
+              </div>
+
+              <Dialog
+                open={isDeleteOpen}
+                onClose={() => setIsDeleteOpen(false)}
+              >
+                <DialogTitle>Are you sure?</DialogTitle>
+                <DialogContent>
+                  This will permanently delete books from disk and they cannot
+                  be recovered.
+                </DialogContent>
+                <DialogActions>
+                  <Button
+                    variant="outlined"
+                    onClick={() => setIsDeleteOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={handleDeleteSelections}
+                  >
+                    Delete!
+                  </Button>
+                </DialogActions>
+              </Dialog>
             </div>
           </div>
         )}
         <div className="sortingContainer">
-          <ButtonGroup>
-            <Button variant="outline" size="icon" onClick={handleAscending}>
-              <ArrowDownAZ />
-            </Button>
-            <ButtonGroupSeparator />
-            <Button variant="outline" size="icon" onClick={handleDescending}>
-              <ArrowUpAZ />
-            </Button>
-          </ButtonGroup>
-          <Label id="sortingLabel" htmlFor="sortingCombo">
-            Sort By:{" "}
-          </Label>
-          <Combobox
-            id="sortingCombo"
-            items={sortingOptions}
-            value={appSettings.libraryLayout.sortBy}
-            onValueChange={(value) => handleSortChange(value)}
-          >
-            <ComboboxInput placeholder="Sort by" />
-            <ComboboxContent>
-              <ComboboxList>
-                {(item) => (
-                  <ComboboxItem key={item} value={item}>
-                    {item}
-                  </ComboboxItem>
+          {!isTouchDevice && (
+            <div className="sortingBox">
+              <ButtonGroup>
+                <Button variant="outlined" onClick={handleAscending}>
+                  <ArrowDownAZ size={18} />
+                </Button>
+                <Button variant="outlined" onClick={handleDescending}>
+                  <ArrowUpAZ size={18} />
+                </Button>
+              </ButtonGroup>
+              <Typography
+                id="sortingLabel"
+                component="label"
+                htmlFor="sortingCombo"
+              >
+                Sort By:{" "}
+              </Typography>
+              <Autocomplete<SortByType, false, true>
+                id="sortingCombo"
+                size="small"
+                disableClearable
+                options={sortingOptions}
+                value={appSettings.libraryLayout.sortBy ?? "Recently Added"}
+                onChange={(_, value) => {
+                  if (value) handleSortChange(value);
+                }}
+                sx={{ minWidth: 180 }}
+                renderInput={(params) => (
+                  <TextField {...params} placeholder="Sort by" />
                 )}
-              </ComboboxList>
-            </ComboboxContent>
-          </Combobox>
+              />
+            </div>
+          )}
+          {isTouchDevice && (
+            <div>
+              {appSettings.libraryLayout.sortAscending && (
+                <IconButton onClick={handleDescending}>
+                  <ArrowDownUp />
+                </IconButton>
+              )}
+              {!appSettings.libraryLayout.sortAscending && (
+                <IconButton onClick={handleAscending}>
+                  <ArrowUpDown />
+                </IconButton>
+              )}
+            </div>
+          )}
+          {isTouchDevice && (
+            <div>
+              <IconButton
+                onClick={handleClickSortMenu}
+                aria-label="more"
+                aria-controls={sortMenuOpen ? "long-menu" : undefined}
+                aria-expanded={sortMenuOpen}
+                aria-haspopup="true"
+              >
+                <ArrowDownWideNarrow />
+              </IconButton>
+              <Menu
+                anchorEl={sortAnchorEl}
+                open={sortMenuOpen}
+                onClose={handleCloseSortMenu}
+              >
+                <MenuItem
+                  onClick={() =>
+                    handleSortChange(
+                      "Title",
+                      appSettings.libraryLayout.sortAscending,
+                    )
+                  }
+                >
+                  Sort by Title
+                </MenuItem>
+                <MenuItem
+                  onClick={() =>
+                    handleSortChange(
+                      "Author",
+                      appSettings.libraryLayout.sortAscending,
+                    )
+                  }
+                >
+                  Sort by Author
+                </MenuItem>
+                <MenuItem
+                  onClick={() =>
+                    handleSortChange(
+                      "Last Read",
+                      appSettings.libraryLayout.sortAscending,
+                    )
+                  }
+                >
+                  Sort by Last Read
+                </MenuItem>
+                <MenuItem
+                  onClick={() =>
+                    handleSortChange(
+                      "Recently Added",
+                      appSettings.libraryLayout.sortAscending,
+                    )
+                  }
+                >
+                  Sort by Recently Added
+                </MenuItem>
+              </Menu>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -6,21 +6,16 @@
   margin-left: 1em;
   margin-right: 1em;
   margin-top: 1.5em;
-  /* border: 1px solid tomato; */
 }
 
 .seriesListContainer {
   display: flex;
   flex-direction: column;
-  width: 80%;
   border: 1px solid var(--secondary-foreground);
   border-radius: 20px;
   padding: 0.75em;
   overflow-y: auto;
-}
-
-.seriesHeader {
-  text-align: center;
+  margin-bottom: 1em;
 }
 
 .addSeriesRow {

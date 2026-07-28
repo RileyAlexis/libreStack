@@ -1,44 +1,73 @@
-@media (pointer: coarse) {
-  .readerPrevious,
+@layer base {
+  .readerOuterWrapper {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overscroll-behavior: none;
+  }
+
+  .readerTextArea {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+    overscroll-behavior: none;
+    padding-bottom: 2.5em;
+    padding-top: 2em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    box-sizing: border-box;
+    touch-action: pan-y;
+    overscroll-behavior: contain;
+  }
+
+  .readerPrevious {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 30%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 12;
+  }
+
+  .readerCenter {
+    position: absolute;
+    top: 0;
+    left: 30%;
+    width: 40%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 10;
+  }
+
   .readerNext {
-    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 30%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 12;
   }
 }
 
-.readerContainer {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  touch-action: none;
-  overscroll-behavior: none;
-}
+@media only screen and (max-width: 500px) and (orientation: portrait) {
+  .readerOuterWrapper {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overscroll-behavior: none;
+  }
 
-.readerPrevious {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 30%;
-  height: 100%;
-  cursor: pointer;
-  z-index: 12;
-}
-
-.readerCenter {
-  position: absolute;
-  top: 0;
-  left: 30%;
-  width: 40%;
-  height: 100%;
-  cursor: pointer;
-  z-index: 10;
-}
-
-.readerNext {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 30%;
-  height: 100%;
-  cursor: pointer;
-  z-index: 12;
+  .readerTextArea {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    touch-action: pan-y;
+    overscroll-behavior: contain;
+    box-sizing: border-box;
+    padding-top: calc(2em + env(safe-area-inset-top));
+    padding-bottom: calc(2.5em + env(safe-area-inset-bottom));
+  }
 }

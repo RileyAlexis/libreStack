@@ -2,16 +2,17 @@ import { StrictMode } from "react";
 import { Provider } from "react-redux";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
+import { ThemeProvider } from "./components/themeProvider";
 import App from "./App";
 import "./index.css";
 import { storeInstance } from "./redux/store";
 
-import { ThemeProvider } from "./components/themeProvider";
-
 function Root() {
   return (
     <BrowserRouter>
-      <App />
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
     </BrowserRouter>
   );
 }
@@ -21,11 +22,9 @@ if (container) {
   const root = createRoot(container);
   root.render(
     <StrictMode>
-      <ThemeProvider defaultTheme="light" storageKey="libreStack-theme">
-        <Provider store={storeInstance}>
-          <Root />
-        </Provider>
-      </ThemeProvider>
+      <Provider store={storeInstance}>
+        <Root />
+      </Provider>
     </StrictMode>,
   );
 }

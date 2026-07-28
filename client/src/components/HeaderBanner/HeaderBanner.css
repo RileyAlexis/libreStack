@@ -8,6 +8,7 @@
   margin-right: 1.5em;
   margin-bottom: 0;
   padding-bottom: 0;
+  max-height: 4em;
   border-bottom: 1px solid var(--muted-foreground);
   /* border: 1px solid orchid; */
 }

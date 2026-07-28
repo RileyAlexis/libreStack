@@ -1,0 +1,71 @@
+@layer base {
+  .inReaderBottomBar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding-bottom: calc(1.5em + env(safe-area-inset-bottom));
+    z-index: 20;
+    background: var(--menu-background);
+    backdrop-filter: blur(5px);
+    box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .inReaderBottomBarContent {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.5em;
+    color: var(--lightText);
+  }
+
+  .inReaderBottomBarText {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5em;
+    width: 75%;
+    color: var(--lightText);
+  }
+
+  .inReaderBottomBarProgress {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+
+  .inReaderBottomBarInfo {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .drawerTableOfContents {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    overflow-y: scroll;
+    margin-left: 0.5em;
+    margin-top: 1em;
+    margin-right: 1.5em;
+  }
+
+  .closeButton {
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 0.25em;
+  }
+}
+
+@media only screen and (max-width: 500px) and (orientation: portrait) {
+  .inReaderBottomBar {
+    padding-bottom: calc(2.5em + env(safe-area-inset-bottom));
+  }
+}

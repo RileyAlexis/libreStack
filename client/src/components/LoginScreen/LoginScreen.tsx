@@ -2,10 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { setTokens, setUser } from "@/redux/reducers/AuthReducer";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Field, FieldLabel } from "../ui/field";
+import { Button, TextField, Alert, Stack } from "@mui/material";
 import { AlertCircle } from "lucide-react";
 import "./LoginScreen.css";
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
@@ -87,67 +84,66 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ setIsLoginOpen }) => {
       <h1>Login</h1>
       <div className="loginInputsContainer">
         {errMessage !== "" && (
-          <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{errMessage}</AlertDescription>
+          <Alert severity="error" icon={<AlertCircle size={18} />}>
+            {errMessage}
           </Alert>
         )}
-        <Field>
-          <FieldLabel htmlFor="username">Username:</FieldLabel>
-          <Input
+        <Stack spacing={2}>
+          <TextField
             required
             id="username"
+            label="Username"
             placeholder="User Name"
+            fullWidth
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
-        </Field>
-        {registerNew && (
-          <Field>
-            <FieldLabel htmlFor="email">Email:</FieldLabel>
-            <Input
+          {registerNew && (
+            <TextField
               required
               id="email"
+              label="Email"
               placeholder="email"
               type="email"
+              fullWidth
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-          </Field>
-        )}
-        <Field>
-          <FieldLabel htmlFor="password">Password:</FieldLabel>
-          <Input
+          )}
+          <TextField
             required
             id="password"
+            label="Password"
             placeholder="Password"
             type="password"
+            fullWidth
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-        </Field>
-        {registerNew && (
-          <Field>
-            <FieldLabel htmlFor="confirmPassword">Confirm Password:</FieldLabel>
-            <Input
+          {registerNew && (
+            <TextField
               required
               id="confirmPassword"
+              label="Confirm Password"
               placeholder="Confirm Password"
               type="password"
+              fullWidth
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
-          </Field>
-        )}
-        <div className="loginButtons">
-          <Button onClick={submitLogin}>Submit</Button>
-          <Button
-            variant="outline"
-            onClick={() => setRegisterNew(!registerNew)}
-          >
-            {!registerNew ? "Register New User" : "Log In Existing User"}
-          </Button>
-        </div>
+          )}
+          <div className="loginButtons">
+            <Button variant="contained" onClick={submitLogin}>
+              Submit
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => setRegisterNew(!registerNew)}
+            >
+              {!registerNew ? "Register New User" : "Log In Existing User"}
+            </Button>
+          </div>
+        </Stack>
       </div>
     </div>
   );

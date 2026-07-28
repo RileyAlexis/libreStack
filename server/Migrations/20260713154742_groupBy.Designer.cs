@@ -3,6 +3,7 @@ using System;
 using Librestack.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace libreStack.Migrations
 {
     [DbContext(typeof(LibrestackDbContext))]
-    partial class LibrestackDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260713154742_groupBy")]
+    partial class groupBy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,7 +34,7 @@ namespace libreStack.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("AddedDate")
+                    b.Property<DateTime>("AddedDate")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("added_date");
 
@@ -93,7 +96,7 @@ namespace libreStack.Migrations
                         .HasColumnType("text")
                         .HasColumnName("open_library_edition_id");
 
-                    b.Property<DateTime?>("OpenLibraryMetadataLastUpdated")
+                    b.Property<DateTime>("OpenLibraryMetadataLastUpdated")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("open_library_metadata_last_updated");
 
@@ -132,7 +135,7 @@ namespace libreStack.Migrations
                         .HasColumnType("text")
                         .HasColumnName("wikidata_id");
 
-                    b.Property<DateTime?>("WikidataMetaLastUpdated")
+                    b.Property<DateTime>("WikidataMetaLastUpdated")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("wikidata_meta_last_updated");
 
@@ -314,7 +317,7 @@ namespace libreStack.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("is_complete");
 
-                    b.Property<DateTime?>("LastRead")
+                    b.Property<DateTime>("LastRead")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("last_read");
 
@@ -392,6 +395,7 @@ namespace libreStack.Migrations
                         .HasColumnName("series_total");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("user_id");
 

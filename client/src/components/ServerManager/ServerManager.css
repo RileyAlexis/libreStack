@@ -43,7 +43,7 @@
   flex-direction: column;
   justify-content: flex-start;
   gap: 0.5em;
-  border: 1px solid vaR(--border);
+  border: 1px solid var(--border);
   border-radius: 25px;
   padding: 1em;
   margin-bottom: 0.5em;
@@ -51,43 +51,6 @@
   overflow-y: auto;
   background-color: var(--card-elevated);
   box-shadow: var(--shadow-elevation-low);
-}
-
-ul {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35em;
-  padding: 0;
-  margin: 0;
-}
-
-li {
-  position: relative;
-  padding-left: 1em;
-  font-size: 0.9em;
-  color: var(--muted-foreground);
-}
-
-li::before {
-  content: "•";
-  position: absolute;
-  left: 0;
-  color: var(--primary);
-}
-
-h4 {
-  margin: 0 0 0.25em 0;
-  font-size: 1.1em;
-  font-weight: 600;
-  color: var(--card-foreground);
-}
-
-h5 {
-  margin: 0 0 0.15em 0;
-  font-size: 0.95em;
-  font-weight: 400;
-  color: var(--card-foreground);
 }
 
 .serverConfigContainer {
@@ -121,7 +84,8 @@ h5 {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  gap: 0.25em;
+  padding: 0;
+  margin: 0;
 }
 
 .pathEditContainer {
@@ -130,4 +94,51 @@ h5 {
   justify-content: flex-start;
   align-items: center;
   gap: 0.25em;
+}
+
+/* ---- Mobile / tablet ---- */
+@media (max-width: 900px) {
+  .serverManagerContainer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .serverStatsContainer,
+  .serverConfigContainer {
+    width: 95%;
+    max-height: none;
+    overflow-y: visible;
+    margin-left: 1em;
+    margin-right: 1em;
+  }
+
+  .serverStatsContainer {
+    margin-top: 1em;
+  }
+
+  .serverConfigContainer {
+    margin-top: 1.5em;
+    margin-bottom: 1em;
+  }
+
+  .serverStatsCard {
+    padding-right: 1em;
+  }
+
+  .libraryStatsBox {
+    max-height: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .serverStatsContainer,
+  .serverConfigContainer {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+  }
+
+  .serverStatsCard {
+    padding-left: 0.75em;
+    padding-right: 0.75em;
+  }
 }

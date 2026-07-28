@@ -7,25 +7,22 @@ import type {
   AppSettings,
   LibraryLayout,
   ReadingFontType,
+  ReadingThemeType,
   SortByType,
+  SpreadType,
 } from "../../types/AppSettings";
 import { api } from "@/utils/api";
 
 const initialState: AppSettings = {
   showLibraryAsHome: true,
   spread: "none",
-  readingTheme: "base",
+  readingTheme: "light",
   readingFont: {
     label: "Georgia",
     value: "Georgia, serif",
   },
   isSyncing: false,
   lastSelectedLibrary: 0,
-  availableReadingFonts: [
-    { label: "Georgia", value: "Georgia, serif" },
-    { label: "Arial", value: "Arial, sans-serif" },
-    { label: "Times New Roman", value: "'Times New Roman', serif" },
-  ],
   readingFontSize: 18,
   lineHeight: 1.5,
   libraryLayout: {
@@ -38,6 +35,8 @@ const initialState: AppSettings = {
     showCollections: true,
     showCompleted: false,
     showDescriptionOnHover: true,
+    groupByCollections: false,
+    groupBySeries: false,
     libraryCoverSize: {
       width: 200,
       height: 300,
@@ -62,8 +61,8 @@ export const saveUserSettings = createAsyncThunk(
   "userSettings/saveUserSettings",
   async (settings: AppSettings, { rejectWithValue }) => {
     try {
-      const { availableReadingFonts, ...payload } = settings;
-      const result = await api.post("userSettings", payload);
+      // const { availableReadingFonts, ...payload } = settings;
+      const result = await api.post("userSettings", settings);
       console.log(result);
       console.log(settings);
     } catch (error) {
@@ -92,8 +91,14 @@ const AppSettingsSlice = createSlice({
     setReadingFont(state, action: PayloadAction<ReadingFontType>) {
       state.readingFont = action.payload;
     },
-    setSpread(state, action: PayloadAction<string>) {
+    setSpread(state, action: PayloadAction<SpreadType>) {
       state.spread = action.payload;
+    },
+    setLineHeight(state, action: PayloadAction<number>) {
+      state.lineHeight = action.payload;
+    },
+    setReadingTheme(state, action: PayloadAction<ReadingThemeType>) {
+      state.readingTheme = action.payload;
     },
     setLayout(state, action: PayloadAction<LibraryLayout>) {
       state.libraryLayout = action.payload;
@@ -125,6 +130,8 @@ export const {
   setReadingFontSize,
   setReadingFont,
   setSpread,
+  setLineHeight,
+  setReadingTheme,
   setLayout,
   setSortBy,
   setAscending,

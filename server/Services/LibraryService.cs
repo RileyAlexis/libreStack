@@ -121,6 +121,19 @@ public class LibraryService : ILibraryService
             : Result<Library>.Success(result);
     }
 
+    public async Task<Result<List<Library>>> GetListOfLibraries(string UserId)
+    {
+        if (string.IsNullOrEmpty(UserId) || string.IsNullOrWhiteSpace(UserId))
+            return Result<List<Library>>.Failure("User Id is required", ErrorType.BadRequest);
+
+        var response = await _db.Libraries.Where(l => l.UserId == UserId).ToListAsync();
+
+        if (response is null)
+            return Result<List<Library>>.Failure("No Libraries found for user", ErrorType.NotFound);
+
+        return Result<List<Library>>.Success(response);
+    }
+
     public async Task<Result> RemoveBookFromLibrary(string userId, int libraryId, int bookId)
     {
         if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))

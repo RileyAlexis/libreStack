@@ -6,6 +6,7 @@ using VersOne.Epub.Options;
 using System.Text.RegularExpressions;
 using Librestack.Database;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace Librestack.Services;
 
@@ -30,8 +31,42 @@ public class EpubParserService : IEpubParseService
 
     }
 
+    private static async Task<string> RepairEpubZipAsync(string filePath)
+    {
+        var repairedPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.epub");
+
+        var psi = new ProcessStartInfo
+        {
+            FileName = "zip",
+            ArgumentList = { "-FF", "-FF", filePath, "--out", repairedPath },
+            RedirectStandardInput = true,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+        };
+
+        using var process = Process.Start(psi)
+            ?? throw new InvalidOperationException("Failed to start zip repair process");
+
+        // zip -FF sometimes asks "Is this a single-disk archive?" - answer yes
+        await process.StandardInput.WriteLineAsync("y");
+        process.StandardInput.Close();
+
+        await process.WaitForExitAsync();
+
+        if (!File.Exists(repairedPath) || new FileInfo(repairedPath).Length == 0)
+        {
+            var stderr = await process.StandardError.ReadToEndAsync();
+            throw new InvalidOperationException($"zip -FF failed to repair {Path.GetFileName(filePath)}: {stderr}");
+        }
+
+        return repairedPath;
+    }
+
     private static string? StripHtml(string? input) =>
         input == null ? null : Regex.Replace(input, "<.*?>", string.Empty).Trim();
+
+
 
     public async Task<Book> ParseMetadata(string filePath, string UserId)
     {
@@ -46,9 +81,24 @@ public class EpubParserService : IEpubParseService
         };
         options.BookCoverReaderOptions.Epub2MetadataIgnoreMissingContentFile = true;
 
+        EpubBook book;
+        string? tempRepairedPath = null;
+
         try
         {
-            var book = await EpubReader.ReadBookAsync(filePath, options) ?? throw new Exception("Failed to Parse Epub File");
+            try
+            {
+                book = await EpubReader.ReadBookAsync(filePath, options)
+                    ?? throw new Exception("Failed to Parse Epub File");
+            }
+            catch (InvalidDataException ex)
+            {
+                _logger.LogWarning(ex, "Corrupt zip structure in {FilePath}, attempting repair", filePath);
+                tempRepairedPath = await RepairEpubZipAsync(filePath);
+                book = await EpubReader.ReadBookAsync(tempRepairedPath, options)
+                    ?? throw new Exception("Failed to parse EPUB even after repair");
+            }
+
             var cover = book.CoverImage;
             var description = book.Description;
             var metaData = book.Schema.Package.Metadata;
@@ -57,7 +107,6 @@ public class EpubParserService : IEpubParseService
             Series? series = null;
             if (libreStackConfig.AttemptSeriesParsing)
             {
-
                 var parsedSeries = _bookParser.ParseSeries(filename, book.Title);
                 _logger.LogInformation("Book Title: {Title}", book.Title);
                 _logger.LogInformation("Parsed Title Data: {ParsedTitle}", parsedSeries);
@@ -92,7 +141,13 @@ public class EpubParserService : IEpubParseService
         }
         catch (Exception ex)
         {
-            throw new Exception(ex.Message);
+            _logger.LogError(ex, "Failed to parse EPUB at {FilePath}", filePath);
+            throw;
+        }
+        finally
+        {
+            if (tempRepairedPath is not null && File.Exists(tempRepairedPath))
+                File.Delete(tempRepairedPath);
         }
     }
 }

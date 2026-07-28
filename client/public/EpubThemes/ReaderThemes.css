@@ -1,0 +1,39 @@
+.readerTheme-dark {
+  background: var(--reader-background);
+  color: #fff;
+  --lightText: lightgray;
+  --menu-background: rgba(119, 119, 119, 0.668);
+  --reader-background: #000;
+}
+
+.readerTheme-medium-dark {
+  background: var(--reader-background);
+  color: white;
+  --lightText: rgb(206, 206, 206);
+  --menu-background: rgba(59, 59, 59, 0.607);
+  --reader-background: #6d6d6d;
+}
+
+.readerTheme-light {
+  background: var(--reader-background);
+  color: black;
+  --lightText: #ababab;
+  --menu-background: rgba(232, 232, 232, 0.607);
+  --reader-background: #ffffff;
+}
+
+.readerTheme-medium-light {
+  background: var(--reader-background);
+  color: black;
+  --lightText: #2f2f2f;
+  --menu-background: rgba(176, 176, 176, 0.698);
+  --reader-background: #eaeaea;
+}
+
+.readerTheme-paper {
+  background: var(--reader-background);
+  color: black;
+  --lightText: rgb(126, 126, 126);
+  --menu-background: rgba(222, 222, 222, 0.498);
+  --reader-background: #f7e6ca;
+}

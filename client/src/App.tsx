@@ -15,11 +15,11 @@ import {
 import { setUser } from "./redux/reducers/AuthReducer";
 
 // UI
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, IconButton } from "@mui/material";
+import { X } from "lucide-react";
 
 // Components
 import { Setup } from "./components/Setup/ Setup";
-import { Tester } from "./components/Testers/Tester";
 import { HeaderBanner } from "./components/HeaderBanner/HeaderBanner";
 import { Reader } from "./components/Reader/Reader";
 import { Library } from "./components/Library/Library";
@@ -30,7 +30,7 @@ import { LoginScreen } from "./components/LoginScreen/LoginScreen";
 import "./App.css";
 import { SeriesManager } from "./components/SeriesManager/SeriesManager";
 import { ServerManager } from "./components/ServerManager/ServerManager";
-import { Toaster } from "./components/ui/sonner";
+import { Tester } from "./components/Testers/Tester";
 
 function App() {
   const navigate = useNavigate();
@@ -64,15 +64,14 @@ function App() {
     api
       .get("/Auth/user")
       .then((response) => {
+        console.log(response.data);
         dispatch(setUser(response.data));
       })
       .catch(() => {
-        // apiClient's 401 interceptor already tried refreshing and failed
         setIsLoginOpen(true);
       });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Fetch settings once authenticated
   useEffect(() => {
     if (!accessToken) return;
 
@@ -81,7 +80,6 @@ function App() {
     });
   }, [accessToken, dispatch]);
 
-  // Routing based on home preference
   useEffect(() => {
     if (location.pathname !== "/") return;
 
@@ -106,16 +104,6 @@ function App() {
     <div className="primaryContainer">
       <Routes>
         <Route path="/" element={<HeaderBanner />} />
-        <Route
-          path="/tester"
-          element={
-            <div className="pageContent">
-              <HeaderBanner />
-              <Tester />
-              {isTouchDevice && <BottomControls />}
-            </div>
-          }
-        />
         <Route
           path="/setup"
           element={
@@ -170,13 +158,29 @@ function App() {
             </div>
           }
         />
+        <Route
+          path="/tester"
+          element={
+            <div>
+              <HeaderBanner />
+              <Tester />
+            </div>
+          }
+        />
       </Routes>
-      <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-        <DialogContent showCloseButton={showClose}>
+      <Dialog open={isLoginOpen} onClose={() => setIsLoginOpen(false)}>
+        <DialogContent sx={{ position: "relative" }}>
+          {showClose && (
+            <IconButton
+              onClick={() => setIsLoginOpen(false)}
+              sx={{ position: "absolute", top: 8, right: 8 }}
+            >
+              <X size={18} />
+            </IconButton>
+          )}
           <LoginScreen setIsLoginOpen={setIsLoginOpen} />
         </DialogContent>
       </Dialog>
-      <Toaster />
     </div>
   );
 }

@@ -8,7 +8,7 @@
   z-index: 50;
   margin-top: 0.25em;
   padding: 0.5em 1em;
-  padding-top: calc(0.5em + env(safe-area-inset-bottom));
+  padding-top: 0.25em;
   background: var(--menu-background);
   backdrop-filter: blur(5px);
   box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.15);
@@ -28,6 +28,12 @@
   align-items: center;
 }
 
+.selectedButtonsContainer {
+  display: flex;
+  flex-direction: row;
+  margin-left: 0.25em;
+}
+
 .selectedItems {
   grid-column: 1;
   display: flex;
@@ -43,5 +49,15 @@
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
-  gap: 0.25em;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.sortingBox {
+  grid-column: 3 / span 2;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5em;
 }

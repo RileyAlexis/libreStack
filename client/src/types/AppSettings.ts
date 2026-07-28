@@ -1,15 +1,16 @@
 export interface AppSettings {
   showLibraryAsHome: boolean;
-  readingTheme: string;
-  spread: string;
+  readingTheme: ReadingThemeType;
+  spread: SpreadType;
   readingFont: ReadingFontType;
-  availableReadingFonts: ReadingFontType[];
   readingFontSize: number;
   lineHeight: number;
   libraryLayout: LibraryLayout;
   lastSelectedLibrary: number;
   isSyncing: boolean;
 }
+
+export type SpreadType = "none" | "auto";
 
 export interface LibraryLayout {
   base: "Grid" | "List";
@@ -22,9 +23,23 @@ export interface LibraryLayout {
   showCollections: boolean;
   showCompleted: boolean;
   showDescriptionOnHover: boolean;
+  groupBySeries: boolean;
+  groupByCollections: boolean;
 }
 
-export type SortByType = "Title" | "Author" | "Last Read" | null;
+export type ReadingThemeType =
+  | "light"
+  | "dark"
+  | "paper"
+  | "medium-dark"
+  | "medium-light";
+
+export type SortByType =
+  | "Title"
+  | "Author"
+  | "Last Read"
+  | "Recently Added"
+  | null;
 
 interface LibraryCoverSize {
   width: number;

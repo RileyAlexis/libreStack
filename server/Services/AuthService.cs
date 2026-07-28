@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.OpenApi;
 
 namespace Librestack.Services;
 
@@ -61,6 +62,25 @@ public class AuthService : IAuthService
         return createResult;
     }
 
+    public async Task<(IdentityResult Result, string? UserId)> CreateNewUser(RegisterRequest request)
+    {
+        Console.WriteLine(request.ToString());
+
+        var user = new IdentityUser { UserName = request.Username, Email = request.Email };
+        var createResult = await _userManager.CreateAsync(user, request.Password);
+
+        if (!createResult.Succeeded)
+        {
+            return (createResult, null);
+        }
+
+        var userSettings = new UserSettings { UserId = user.Id, ShowLibraryAsHome = true };
+        _dbContext.UserSettings.Add(userSettings);
+        await _dbContext.SaveChangesAsync();
+
+        return (createResult, user.Id);
+    }
+
     public Task LogoutAsync()
     {
         return _signInManager.SignOutAsync();
@@ -76,7 +96,9 @@ public class AuthService : IAuthService
         if (user is null)
             return null;
 
-        return new AuthUserResponse(user.Id, user.UserName ?? string.Empty, user.Email ?? string.Empty);
+        var roles = await _userManager.GetRolesAsync(user);
+
+        return new AuthUserResponse(user.Id, user.UserName ?? string.Empty, user.Email ?? string.Empty, roles.FirstOrDefault() ?? string.Empty);
     }
 
     public async Task<bool> RoleExistsAsync(string roleName)
@@ -248,4 +270,6 @@ public class AuthService : IAuthService
         await _dbContext.SaveChangesAsync();
         return true;
     }
+
+
 }
