@@ -12,7 +12,7 @@
     height: 100%;
     touch-action: none;
     overscroll-behavior: none;
-    padding-bottom: 2em;
+    padding-bottom: 2.5em;
     padding-top: 2em;
     padding-left: 0.5em;
     padding-right: 0.5em;
@@ -67,7 +67,7 @@
     touch-action: pan-y;
     overscroll-behavior: contain;
     box-sizing: border-box;
-    padding-top: 0.25em;
-    padding-bottom: calc(5.5em + env(safe-area-inset-bottom));
+    padding-top: calc(2em + env(safe-area-inset-top));
+    padding-bottom: calc(2.5em + env(safe-area-inset-bottom));
   }
 }
