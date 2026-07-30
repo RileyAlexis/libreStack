@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   z-index: 20;
-  padding-top: 0.25em;
+  padding-top: calc(0.25em + env(safe-area-inset-top));
   background: var(--menu-background);
   box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.15);
 }

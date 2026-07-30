@@ -2,7 +2,7 @@
   .readerOuterWrapper {
     position: relative;
     width: 100%;
-    height: 100vh;
+    height: 100dvh;
     overscroll-behavior: none;
   }
 
@@ -18,7 +18,7 @@
     padding-right: 0.5em;
     box-sizing: border-box;
     touch-action: pan-y;
-    overscroll-behavior: contain;
+    overflow: hidden;
   }
 
   .readerPrevious {
