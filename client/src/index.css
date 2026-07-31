@@ -141,8 +141,10 @@
     height: 100vh;
     width: 100vw;
   }
+}
 
-  /* .pageContent {
-    padding-bottom: calc(4em + env(safe-area-inset-bottom));
-  } */
+@media only screen and (max-width: 500px) and (orientation: portrait) {
+  .pageContent {
+    padding-top: 1.5em;
+  }
 }
