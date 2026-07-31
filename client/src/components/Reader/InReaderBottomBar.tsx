@@ -85,6 +85,10 @@ export const InReaderBottomBar: React.FC<InReaderBottomBarProps> = ({
         open={isSpineOpen}
         onClose={() => setIsSpineOpen(false)}
         anchor="left"
+        sx={{
+          paddingTop: "calc(env(safe-area-inset-top))",
+          paddingRight: "0.5em",
+        }}
       >
         <div className="closeButton">
           <IconButton

@@ -116,8 +116,6 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    height: 100%;
-    overflow: hidden;
   }
 
   h1 {
@@ -144,7 +142,7 @@
     width: 100vw;
   }
 
-  .pageContent {
+  /* .pageContent {
     padding-bottom: calc(4em + env(safe-area-inset-bottom));
-  }
+  } */
 }
