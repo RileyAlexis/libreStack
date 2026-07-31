@@ -55,12 +55,14 @@
     margin-left: 0.5em;
     margin-top: 1em;
     margin-right: 1.5em;
+    padding-top: calc(env(safe-area-inset-top));
   }
 
   .closeButton {
     display: flex;
     justify-content: flex-end;
     margin-right: 0.25em;
+    padding-top: calc(env(safe-area-inset-top));
   }
 }
 
