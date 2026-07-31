@@ -12,10 +12,19 @@ import {
   saveUserSettings,
   fetchUserSettings,
 } from "./redux/reducers/AppSettingsReducer";
+import { clearSnack } from "./redux/reducers/SnackReducer";
 import { setUser } from "./redux/reducers/AuthReducer";
 
 // UI
-import { Dialog, DialogContent, IconButton } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  IconButton,
+  Snackbar,
+  type SnackbarCloseReason,
+  Alert,
+} from "@mui/material";
+
 import { X } from "lucide-react";
 
 // Components
@@ -40,6 +49,7 @@ function App() {
   const [showClose, _] = useState<boolean>(true);
   const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  const snackData = useSelector((state: LibreRootState) => state.snack);
   const accessToken = useSelector(
     (state: LibreRootState) => state.auth.accessToken,
   );
@@ -99,6 +109,17 @@ function App() {
 
     return () => clearTimeout(timeoutId);
   }, [appSettings, dispatch]);
+
+  const handleCloseSnack = (
+    _: React.SyntheticEvent | Event,
+    reason?: SnackbarCloseReason,
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    dispatch(clearSnack());
+  };
 
   return (
     <div className="primaryContainer">
@@ -181,6 +202,20 @@ function App() {
           <LoginScreen setIsLoginOpen={setIsLoginOpen} />
         </DialogContent>
       </Dialog>
+      <Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        open={snackData.isOpen}
+        autoHideDuration={3000}
+        onClose={handleCloseSnack}
+      >
+        <Alert
+          onClose={handleCloseSnack}
+          severity={snackData?.severity}
+          variant="filled"
+        >
+          {snackData?.description}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

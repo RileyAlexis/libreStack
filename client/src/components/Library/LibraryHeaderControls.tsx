@@ -3,6 +3,7 @@ import { useState } from "react";
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { AppDispatch } from "@/redux/store";
 import type { SortByType } from "@/types/AppSettings";
+import { api } from "@/utils/api";
 
 // Actions
 import {
@@ -12,6 +13,7 @@ import {
   sortLibraryByLastRead,
   sortLibraryByTitle,
 } from "@/redux/reducers/LibraryReducer";
+import { runSnack } from "@/redux/reducers/SnackReducer";
 import { clearSelectedBooks } from "@/redux/reducers/SelectedReducer";
 import {
   setSortBy,
@@ -50,7 +52,6 @@ import {
 } from "lucide-react";
 
 import "./LibraryHeaderControls.css";
-import { api } from "@/utils/api";
 
 export const LibraryHeaderControls: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -130,6 +131,21 @@ export const LibraryHeaderControls: React.FC = () => {
         `${failures.length} mark-as-read requests failed`,
         failures,
       );
+      dispatch(
+        runSnack({
+          isOpen: true,
+          severity: "error",
+          description: `Request Failed: ${failures}`,
+        }),
+      );
+    } else {
+      dispatch(
+        runSnack({
+          isOpen: true,
+          severity: "success",
+          description: `${selections.selectedBooks.length} book(s) marked as read`,
+        }),
+      );
     }
     dispatch(fetchLibraryData());
   };
@@ -144,8 +160,23 @@ export const LibraryHeaderControls: React.FC = () => {
     const failures = results.filter((r) => r.status === "rejected");
     if (failures.length > 0) {
       console.error(
-        `${failures.length} mark-as-unread requests failed`,
+        `${failures.length} mark-as-read requests failed`,
         failures,
+      );
+      dispatch(
+        runSnack({
+          isOpen: true,
+          severity: "error",
+          description: `Request Failed: ${failures}`,
+        }),
+      );
+    } else {
+      dispatch(
+        runSnack({
+          isOpen: true,
+          severity: "success",
+          description: `${selections.selectedBooks.length} book(s) marked as unread`,
+        }),
       );
     }
     dispatch(fetchLibraryData());
@@ -196,7 +227,22 @@ export const LibraryHeaderControls: React.FC = () => {
 
     const failures = results.filter((r) => r.status === "rejected");
     if (failures.length > 0) {
-      console.error(`${failures.length} deleting requests failed`, failures);
+      console.error(`${failures.length} delete requests failed`, failures);
+      dispatch(
+        runSnack({
+          isOpen: true,
+          severity: "error",
+          description: `Request Failed: ${failures}`,
+        }),
+      );
+    } else {
+      dispatch(
+        runSnack({
+          isOpen: true,
+          severity: "success",
+          description: `${selections.selectedBooks.length} book(s) deleted`,
+        }),
+      );
     }
     dispatch(clearSelectedBooks());
     dispatch(fetchLibraryData());
