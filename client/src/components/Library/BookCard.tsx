@@ -367,6 +367,9 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
           maxWidth="md"
           fullWidth={true}
           fullScreen={fullScreen}
+          sx={{
+            paddingTop: "calc(env(safe-area-inset-top))",
+          }}
         >
           {isBookDialogOpen && (
             <BookCardDialog
