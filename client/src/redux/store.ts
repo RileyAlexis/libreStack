@@ -7,6 +7,7 @@ import appSettingsSlice from "./reducers/AppSettingsReducer";
 import selectionSlice from "./reducers/SelectedReducer";
 import authSlice from "./reducers/AuthReducer";
 import snackSlice from "./reducers/SnackReducer";
+import downloadSlice from "./reducers/DownloadReducer";
 
 const logger: Middleware = (store) => (next) => (action) => {
   if (import.meta.env.DEV) {
@@ -27,6 +28,7 @@ const allReducers = combineReducers({
   selections: selectionSlice,
   auth: authSlice,
   snack: snackSlice,
+  downloads: downloadSlice,
 });
 
 const storeInstance = configureStore({

@@ -14,6 +14,7 @@ import {
 } from "./redux/reducers/AppSettingsReducer";
 import { clearSnack } from "./redux/reducers/SnackReducer";
 import { setUser } from "./redux/reducers/AuthReducer";
+import { hydrateDownloads } from "./redux/reducers/DownloadReducer";
 
 // UI
 import {
@@ -81,6 +82,10 @@ function App() {
         setIsLoginOpen(true);
       });
   }, []);
+
+  useEffect(() => {
+    dispatch(hydrateDownloads());
+  }, [dispatch]);
 
   useEffect(() => {
     if (!accessToken) return;

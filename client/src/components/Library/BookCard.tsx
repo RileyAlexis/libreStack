@@ -8,6 +8,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectBook, unSelectBook } from "@/redux/reducers/SelectedReducer";
 import type { BookType } from "@/types/BookType";
 import type { LibreRootState } from "@/types/LibreRootState";
+import { selectDownloadStatus } from "@/redux/reducers/DownloadReducer";
+import { downloadBook } from "@/redux/reducers/DownloadReducer";
 
 // UI
 import {
@@ -17,6 +19,7 @@ import {
   MenuItem,
   Tooltip,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import {
   Circle,
@@ -24,6 +27,8 @@ import {
   EllipsisIcon,
   FileTextIcon,
   CircleCheckBig,
+  CloudDownload,
+  CloudAlert,
 } from "lucide-react";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
@@ -56,6 +61,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const downloadStatus = useSelector(selectDownloadStatus(String(book.id)));
 
   useEffect(() => {
     const handler = () => setScreenWidth(window.innerWidth);
@@ -78,6 +84,11 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
 
   const handleUnselectBook = (bookId: number) => {
     dispatch(unSelectBook(bookId));
+  };
+
+  const handleDownloadBook = (e: React.MouseEvent | React.TouchEvent) => {
+    e.stopPropagation();
+    dispatch(downloadBook(String(book.id)));
   };
 
   const handleMarkComplete = (bookId: number) => {
@@ -296,14 +307,6 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
         </div>
       </div>
 
-      <div className="bookControlsIsRead">
-        {book.readingProgress?.isComplete && (
-          <Tooltip title="Read">
-            <CircleCheckBig color="green" />
-          </Tooltip>
-        )}
-      </div>
-
       <div className={`bookCover ${isSelected ? "selected" : ""}`}>
         <img
           src={`data:${book.contentType};base64,${book.coverImage}`}
@@ -358,6 +361,27 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
             </div>
           </div>
         )}
+        <div className="bookControlsBottomRow">
+          <div className="bookControlsIsRead">
+            {book.readingProgress?.isComplete && (
+              <Tooltip title="Read">
+                <CircleCheckBig color="green" />
+              </Tooltip>
+            )}
+          </div>
+          <div>
+            {downloadStatus === "not-downloaded" && (
+              <IconButton
+                className="rounded-full"
+                onClick={(e) => handleDownloadBook(e)}
+              >
+                <CloudDownload />
+              </IconButton>
+            )}
+            {downloadStatus === "downloading" && <CircularProgress />}
+            {downloadStatus === "error" && <CloudAlert />}
+          </div>
+        </div>
       </div>
 
       <div onClick={(e) => e.stopPropagation()}>

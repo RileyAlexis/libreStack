@@ -11,6 +11,7 @@ import "./Reader.css";
 // Components
 import { InReaderTopBar } from "./InReaderTopBar";
 import { InReaderBottomBar } from "./InReaderBottomBar";
+import { getOfflineEpub } from "@/redux/reducers/DownloadReducer";
 
 export const Reader: React.FC = () => {
   const { id } = useParams();
@@ -101,26 +102,51 @@ export const Reader: React.FC = () => {
     };
   }, [appSettings.readingTheme]);
 
-  // Load the book + saved reading progress from the API
   useEffect(() => {
+    if (!id) return;
+
     let cancelled = false;
     let createdBook: Book | null = null;
 
-    Promise.all([
-      api.get(`/Book/downloadBookEntry?id=${id}`, {
-        responseType: "arraybuffer",
-      }),
-      api.get(`/ReadingProgress/readingProgress?bookId=${id}`),
-    ])
-      .then(([bookResponse, progressResponse]) => {
+    async function loadBook() {
+      try {
+        // Try IndexedDB first
+        let arrayBuffer = await getOfflineEpub(String(id));
+
+        // Fall back to network if not downloaded
+        if (!arrayBuffer) {
+          const bookResponse = await api.get(
+            `/Book/downloadBookEntry?id=${id}`,
+            {
+              responseType: "arraybuffer",
+            },
+          );
+          arrayBuffer = bookResponse.data as ArrayBuffer;
+        }
+
+        if (!arrayBuffer) {
+          throw new Error(`No book data available for id ${id}`);
+        }
+
         if (cancelled) return;
-        createdBook = Epub(bookResponse.data);
+        createdBook = Epub(arrayBuffer);
         setBookInstance(createdBook);
-        setProgress(progressResponse.data?.value?.cfiLocation ?? null);
-      })
-      .catch((error) => {
+      } catch (error) {
         if (!cancelled) console.log(error);
-      });
+      }
+
+      try {
+        const progressResponse = await api.get(
+          `/ReadingProgress/readingProgress?bookId=${id}`,
+        );
+        if (!cancelled)
+          setProgress(progressResponse.data?.value?.cfiLocation ?? null);
+      } catch (error) {
+        if (!cancelled) console.log(error);
+      }
+    }
+
+    loadBook();
 
     return () => {
       cancelled = true;
