@@ -273,6 +273,15 @@ export const BottomControls: React.FC = () => {
     );
   };
 
+  const handleShowOnlyDownloaded = () => {
+    dispatch(
+      setLayout({
+        ...appSettings.libraryLayout,
+        showOnlyDownloaded: !appSettings.libraryLayout.showOnlyDownloaded,
+      }),
+    );
+  };
+
   const menubarButtonSx = {
     display: "flex",
     flexDirection: "column",
@@ -470,6 +479,17 @@ export const BottomControls: React.FC = () => {
               />
             }
             label="Group By Series"
+          />
+        </MenuItem>
+        <MenuItem className="menubarSwitch" disableRipple>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={appSettings.libraryLayout.showOnlyDownloaded}
+                onChange={handleShowOnlyDownloaded}
+              />
+            }
+            label="Show Only Downloaded"
           />
         </MenuItem>
         <Divider />

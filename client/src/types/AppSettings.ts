@@ -18,6 +18,7 @@ export interface LibraryLayout {
   showAuthors: boolean;
   libraryCoverSize: LibraryCoverSize;
   showSeries: boolean;
+  showOnlyDownloaded: boolean;
   sortBy: SortByType;
   sortAscending: boolean;
   showCollections: boolean;

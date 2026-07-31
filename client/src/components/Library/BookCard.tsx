@@ -8,8 +8,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectBook, unSelectBook } from "@/redux/reducers/SelectedReducer";
 import type { BookType } from "@/types/BookType";
 import type { LibreRootState } from "@/types/LibreRootState";
-import { selectDownloadStatus } from "@/redux/reducers/DownloadReducer";
-import { downloadBook } from "@/redux/reducers/DownloadReducer";
+import {
+  selectDownloadStatus,
+  selectTotalDownloadedSize,
+} from "@/redux/reducers/DownloadReducer";
+import { downloadBook, deleteDownload } from "@/redux/reducers/DownloadReducer";
 
 // UI
 import {
@@ -43,6 +46,17 @@ interface BookCardProps {
   book: BookType;
 }
 
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB"];
+  const exponent = Math.min(
+    Math.floor(Math.log(bytes) / Math.log(1024)),
+    units.length - 1,
+  );
+  const value = bytes / Math.pow(1024, exponent);
+  return `${value.toFixed(exponent === 0 ? 0 : 1)} ${units[exponent]}`;
+}
+
 export const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
@@ -62,6 +76,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const downloadStatus = useSelector(selectDownloadStatus(String(book.id)));
+  const totalSize = useSelector(selectTotalDownloadedSize);
 
   useEffect(() => {
     const handler = () => setScreenWidth(window.innerWidth);
@@ -303,6 +318,15 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
             >
               Fix Mismatch
             </MenuItem>
+            {downloadStatus === "downloaded" && (
+              <MenuItem
+                onClick={() => {
+                  dispatch(deleteDownload(String(book.id)));
+                }}
+              >
+                Remove Download - {formatBytes(totalSize)}
+              </MenuItem>
+            )}
           </Menu>
         </div>
       </div>

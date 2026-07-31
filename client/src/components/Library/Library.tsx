@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router";
 
@@ -11,6 +11,7 @@ import type { BookType } from "../../types/BookType";
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 import "./Library.css";
 import { BookCard } from "./BookCard";
+import { selectDownloadedBookIds } from "@/redux/reducers/DownloadReducer";
 
 import { BottomControls } from "../BottomControls/BottomControls";
 import { LibraryHeaderControls } from "./LibraryHeaderControls";
@@ -23,6 +24,11 @@ export const Library: React.FC = () => {
 
   const libraryData = useSelector((state: LibreRootState) => state.library);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  const downloadedIds = useSelector(selectDownloadedBookIds);
+  const downloadedIdSet = useMemo(
+    () => new Set(downloadedIds),
+    [downloadedIds],
+  );
 
   useEffect(() => {
     setIsLoading(true);
@@ -50,7 +56,9 @@ export const Library: React.FC = () => {
               (book: BookType) =>
                 (!book.readingProgress?.isComplete ||
                   appSettings.libraryLayout.showCompleted) &&
-                (!book.seriesId || !appSettings.libraryLayout.groupBySeries),
+                (!book.seriesId || !appSettings.libraryLayout.groupBySeries) &&
+                (!appSettings.libraryLayout.showOnlyDownloaded ||
+                  downloadedIdSet.has(String(book.id))),
             )
             .map((book: BookType) => <BookCard key={book.id} book={book} />)}
       </div>

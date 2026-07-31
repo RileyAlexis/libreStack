@@ -199,6 +199,14 @@ export const selectDownloadedBookIds = createSelector(
       .map(([bookId]) => bookId),
 );
 
+export const selectTotalDownloadedSize = createSelector(
+  selectDownloadsState,
+  (byBookId) =>
+    Object.values(byBookId)
+      .filter((record) => record.status === "downloaded")
+      .reduce((total, record) => total + (record.size ?? 0), 0),
+);
+
 // ---------- Direct IndexedDB access (for the reader component) ----------
 
 export async function getOfflineEpub(

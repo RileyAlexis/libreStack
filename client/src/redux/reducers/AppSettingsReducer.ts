@@ -30,6 +30,7 @@ const initialState: AppSettings = {
     showTitles: false,
     showAuthors: true,
     showSeries: true,
+    showOnlyDownloaded: false,
     sortBy: null,
     sortAscending: true,
     showCollections: true,
