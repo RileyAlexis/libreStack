@@ -42,6 +42,8 @@ import {
 import { NewLibraryDialog } from "../Library/NewLibraryDialog";
 
 import "./BottomControls.css";
+import { runSnack } from "@/redux/reducers/SnackReducer";
+import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 
 type ActiveMenu = "library" | "manage" | "layout" | null;
 
@@ -116,12 +118,27 @@ export const BottomControls: React.FC = () => {
       )
       .then((response) => {
         console.log(response.data);
+        dispatch(
+          runSnack({
+            isOpen: true,
+            severity: "success",
+            description: `${library[appSettings.lastSelectedLibrary].name} scanned.`,
+          }),
+        );
       })
       .catch((error) => {
         console.error(error.response.data);
+        dispatch(
+          runSnack({
+            isOpen: true,
+            severity: "warning",
+            description: `${library[appSettings.lastSelectedLibrary].name} scanned. ${error.response.data}`,
+          }),
+        );
       })
       .finally(() => {
         dispatch(setIsSyncing(false));
+        dispatch(fetchLibraryData());
       });
     closeMenu();
   };
@@ -132,12 +149,25 @@ export const BottomControls: React.FC = () => {
       .get(
         `metadata/refreshOpenLibraryData?libraryId=${library[appSettings.lastSelectedLibrary].id}`,
       )
-      .then((response) => {
-        console.log(response.data);
+      .then(() => {
+        dispatch(
+          runSnack({
+            isOpen: true,
+            severity: "success",
+            description: `${library[appSettings.lastSelectedLibrary].name} refreshed with Open Library data.`,
+          }),
+        );
         dispatch(setIsSyncing(false));
       })
       .catch((error) => {
         console.error(error);
+        dispatch(
+          runSnack({
+            isOpen: true,
+            severity: "error",
+            description: `Error refreshing Open Library Data: ${error.response.data}`,
+          }),
+        );
         dispatch(setIsSyncing(false));
       });
     closeMenu();
@@ -149,12 +179,25 @@ export const BottomControls: React.FC = () => {
       .get(
         `metadata/refreshWikidata?libraryId=${library[appSettings.lastSelectedLibrary].id}`,
       )
-      .then((response) => {
-        console.log(response.data);
+      .then(() => {
+        dispatch(
+          runSnack({
+            isOpen: true,
+            severity: "success",
+            description: `${library[appSettings.lastSelectedLibrary].name} refreshed with Wiki data.`,
+          }),
+        );
         dispatch(setIsSyncing(false));
       })
       .catch((error) => {
         console.error(error);
+        dispatch(
+          runSnack({
+            isOpen: true,
+            severity: "error",
+            description: `Error refreshing Open Library Data: ${error.response.data}`,
+          }),
+        );
         dispatch(setIsSyncing(false));
       });
     closeMenu();
@@ -176,6 +219,7 @@ export const BottomControls: React.FC = () => {
       .catch((error) => console.error(error.response.data))
       .finally(() => {
         if (fileInputRef.current) fileInputRef.current.value = "";
+        dispatch(fetchLibraryData());
       });
   };
 

@@ -232,7 +232,7 @@ export const LibraryHeaderControls: React.FC = () => {
         runSnack({
           isOpen: true,
           severity: "error",
-          description: `Request Failed: ${failures}`,
+          description: `Request Failed: ${failures[0].reason.response.data.error}`,
         }),
       );
     } else {

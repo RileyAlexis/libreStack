@@ -13,12 +13,15 @@ public class BookService : IBookService
     private readonly LibrestackDbContext _db;
     private readonly IEpubParseService _epubParser;
     private readonly ISeriesService _iSeriesService;
+    private readonly ILogger<BookService> _logger;
 
-    public BookService(LibrestackDbContext db, IEpubParseService epubParser, ISeriesService seriesService)
+    public BookService(LibrestackDbContext db, IEpubParseService epubParser, ISeriesService seriesService, ILogger<BookService> logger)
     {
         _db = db;
         _epubParser = epubParser;
         _iSeriesService = seriesService;
+        _logger = logger;
+
     }
 
     private static byte[]? ResizeBookCover(byte[]? cover)
@@ -111,6 +114,9 @@ public class BookService : IBookService
 
         if (!config!.AllowRemoveBooksFromLibrary)
             return Result.Failure("Server settings do not allow removing books from library", ErrorType.Forbidden);
+
+        if (!config.AllowDeleteFromDisk)
+            return Result.Failure("Server settings do not allow deleting books from disk", ErrorType.Forbidden);
 
         var filePath = bookEntry.EpubPath;
         if (filePath is not null && File.Exists(filePath) && config!.AllowDeleteFromDisk)
