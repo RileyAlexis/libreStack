@@ -344,6 +344,11 @@ export const LibraryHeaderControls: React.FC = () => {
             </div>
           </div>
         )}
+        {appSettings.libraryLayout.showOnlyDownloaded && (
+          <div className="headerInfoContainer">
+            <Typography variant="h5">Downloaded Books</Typography>
+          </div>
+        )}
         <div className="sortingContainer">
           {!isTouchDevice && (
             <div className="sortingBox">

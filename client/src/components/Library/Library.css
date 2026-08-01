@@ -1,8 +1,7 @@
 .libraryContainer {
   position: relative;
   overflow: hidden;
-  height: 90vh;
-  /* width: 100vw; */
+  height: 100vh;
 }
 
 .libraryLoader {
@@ -25,6 +24,6 @@
   row-gap: 1.5em;
   margin-bottom: 1.25em;
   margin-left: 0.5em;
-  margin-top: 4.5em;
+  margin-top: 4em;
   margin-right: 0.25em;
 }

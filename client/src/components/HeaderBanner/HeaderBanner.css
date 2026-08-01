@@ -1,5 +1,8 @@
 .headerBannerContainer {
+  position: relative;
+  z-index: 2;
   display: flex;
+  width: 100%;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
@@ -8,9 +11,10 @@
   margin-right: 1.5em;
   margin-bottom: 0;
   padding-bottom: 0;
+  padding-right: 1em;
   max-height: 4em;
   border-bottom: 1px solid var(--muted-foreground);
-  flex-shrink: 0;
+  background-color: var(--background);
 }
 
 .menuContainer {
