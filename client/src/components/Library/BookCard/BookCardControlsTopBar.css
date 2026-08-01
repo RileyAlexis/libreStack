@@ -1,12 +1,11 @@
 .bookControlsTop {
   position: absolute;
   top: -10px;
-  left: 0;
+  left: 5px;
   z-index: 10;
   width: 100%;
   display: flex;
   align-items: flex-start;
-  gap: 2em;
   justify-content: space-between;
   transition: opacity 0.2s ease-in-out;
 }

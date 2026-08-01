@@ -46,7 +46,7 @@
   justify-content: center;
   padding: 8%;
   overflow: hidden;
-  background-color: var(--library-active-bg);
+  /* background-color: var(--library-active-bg); */
   transition: padding 0.2s ease-in-out;
 }
 

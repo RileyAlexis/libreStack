@@ -219,51 +219,60 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
           )}
         </Menu>
       </div>
-      <div onClick={(e) => e.stopPropagation()}>
-        <Dialog
-          open={isBookDialogOpen}
-          onClose={handleDialogClosing}
-          maxWidth="md"
-          fullWidth={true}
-          fullScreen={fullScreen}
-          sx={{
-            paddingTop: "calc(env(safe-area-inset-top))",
-          }}
-        >
-          {isBookDialogOpen && (
-            <BookCardDialog
-              bookId={book.id}
-              close={() => setIsBookDialogOpen(false)}
-            />
-          )}
-        </Dialog>
-      </div>
-      <div onClick={(e) => e.stopPropagation()}>
-        <Dialog
-          open={isDescDialogOpen}
-          onClose={() => setIsDescDialogOpen(false)}
-          maxWidth="lg"
-          fullWidth={true}
-        >
-          {isDescDialogOpen && <DescriptionDialog book={book} />}
-        </Dialog>
-      </div>
-      <div onClick={(e) => e.stopPropagation()}>
-        <Dialog
-          open={isFixMismatchDialogOpen}
-          onClose={() => setIsFixMismatchDialogOpen(false)}
-          maxWidth="lg"
-          fullWidth={true}
-          fullScreen={fullScreen}
-        >
-          {isFixMismatchDialogOpen && (
-            <FixMismatchDialog
-              book={book}
-              setIsSelectOpen={setIsFixMismatchDialogOpen}
-            />
-          )}
-        </Dialog>
-      </div>
+
+      {isBookDialogOpen && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <Dialog
+            open={isBookDialogOpen}
+            onClose={handleDialogClosing}
+            maxWidth="md"
+            fullWidth={true}
+            fullScreen={fullScreen}
+            sx={{
+              paddingTop: "calc(env(safe-area-inset-top))",
+            }}
+          >
+            {isBookDialogOpen && (
+              <BookCardDialog
+                bookId={book.id}
+                close={() => setIsBookDialogOpen(false)}
+              />
+            )}
+          </Dialog>
+        </div>
+      )}
+
+      {isDescDialogOpen && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <Dialog
+            open={isDescDialogOpen}
+            onClose={() => setIsDescDialogOpen(false)}
+            maxWidth="lg"
+            fullWidth={true}
+          >
+            {isDescDialogOpen && <DescriptionDialog book={book} />}
+          </Dialog>
+        </div>
+      )}
+
+      {isFixMismatchDialogOpen && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <Dialog
+            open={isFixMismatchDialogOpen}
+            onClose={() => setIsFixMismatchDialogOpen(false)}
+            maxWidth="lg"
+            fullWidth={true}
+            fullScreen={fullScreen}
+          >
+            {isFixMismatchDialogOpen && (
+              <FixMismatchDialog
+                book={book}
+                setIsSelectOpen={setIsFixMismatchDialogOpen}
+              />
+            )}
+          </Dialog>
+        </div>
+      )}
     </div>
   );
 };
