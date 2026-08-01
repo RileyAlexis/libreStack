@@ -11,12 +11,7 @@ import { selectDownloadStatus } from "@/redux/reducers/DownloadReducer";
 import { downloadBook } from "@/redux/reducers/DownloadReducer";
 
 // UI
-import {
-  IconButton,
-  Tooltip,
-  Typography,
-  CircularProgress,
-} from "@mui/material";
+import { IconButton, Tooltip, CircularProgress } from "@mui/material";
 import { CircleCheckBig, CloudDownload, CloudAlert } from "lucide-react";
 
 import "./BookCard.css";

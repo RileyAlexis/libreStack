@@ -237,33 +237,6 @@ export const BottomControls: React.FC = () => {
     );
   };
 
-  const handleShowTitles = () => {
-    dispatch(
-      setLayout({
-        ...appSettings.libraryLayout,
-        showTitles: !appSettings.libraryLayout.showTitles,
-      }),
-    );
-  };
-
-  const handleShowAuthors = () => {
-    dispatch(
-      setLayout({
-        ...appSettings.libraryLayout,
-        showAuthors: !appSettings.libraryLayout.showAuthors,
-      }),
-    );
-  };
-
-  const handleShowSeries = () => {
-    dispatch(
-      setLayout({
-        ...appSettings.libraryLayout,
-        showSeries: !appSettings.libraryLayout.showSeries,
-      }),
-    );
-  };
-
   const handleChangeGroupBySeries = () => {
     dispatch(
       setLayout({
@@ -437,39 +410,6 @@ export const BottomControls: React.FC = () => {
             label="Show Read"
           />
         </MenuItem>
-        {/* <MenuItem className="menubarSwitch" disableRipple>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={appSettings.libraryLayout.showTitles}
-                onChange={handleShowTitles}
-              />
-            }
-            label="Show Titles"
-          />
-        </MenuItem>
-        <MenuItem className="menubarSwitch" disableRipple>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={appSettings.libraryLayout.showAuthors}
-                onChange={handleShowAuthors}
-              />
-            }
-            label="Show Authors"
-          />
-        </MenuItem>
-        <MenuItem className="menubarSwitch" disableRipple>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={appSettings.libraryLayout.showSeries}
-                onChange={handleShowSeries}
-              />
-            }
-            label="Show Series"
-          />
-        </MenuItem> */}
         <MenuItem className="menubarSwitch" disableRipple>
           <FormControlLabel
             control={
