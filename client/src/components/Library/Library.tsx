@@ -10,7 +10,7 @@ import type { BookType } from "../../types/BookType";
 //Actions
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 import "./Library.css";
-import { BookCard } from "./BookCard";
+import { BookCard } from "./BookCard/BookCard";
 import { selectDownloadedBookIds } from "@/redux/reducers/DownloadReducer";
 
 import { BottomControls } from "../BottomControls/BottomControls";
