@@ -107,38 +107,28 @@ export const Reader: React.FC = () => {
 
     async function loadBook() {
       try {
-        // Try IndexedDB first
-        let arrayBuffer = await getOfflineEpub(String(id));
+        const [arrayBuffer, progressResponse] = await Promise.all([
+          getOfflineEpub(String(id)).then(
+            async (buf) =>
+              buf ??
+              (
+                await api.get(`/Book/downloadBookEntry?id=${id}`, {
+                  responseType: "arraybuffer",
+                })
+              ).data,
+          ),
+          api
+            .get(`/ReadingProgress/readingProgress?bookId=${id}`)
+            .catch(() => null),
+        ]);
 
-        // Fall back to network if not downloaded
-        if (!arrayBuffer) {
-          const bookResponse = await api.get(
-            `/Book/downloadBookEntry?id=${id}`,
-            {
-              responseType: "arraybuffer",
-            },
-          );
-          arrayBuffer = bookResponse.data as ArrayBuffer;
-        }
-
-        if (!arrayBuffer) {
+        if (!arrayBuffer)
           throw new Error(`No book data available for id ${id}`);
-        }
-
         if (cancelled) return;
-        createdBook = Epub(arrayBuffer);
-        console.log(createdBook);
-        setBookInstance(createdBook);
-      } catch (error) {
-        if (!cancelled) console.log(error);
-      }
+        setProgress(progressResponse?.data?.value?.cfiLocation ?? null);
 
-      try {
-        const progressResponse = await api.get(
-          `/ReadingProgress/readingProgress?bookId=${id}`,
-        );
-        if (!cancelled)
-          setProgress(progressResponse.data?.value?.cfiLocation ?? null);
+        createdBook = Epub(arrayBuffer);
+        setBookInstance(createdBook);
       } catch (error) {
         if (!cancelled) console.log(error);
       }
