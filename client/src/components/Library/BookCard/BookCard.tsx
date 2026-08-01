@@ -131,16 +131,12 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
         book={book}
       />
 
-      <div className={`bookCover ${isSelected ? "selected" : ""}`}>
+      <div
+        className={`bookCover ${isSelected ? "selected" : ""} ${isHovering ? "isHovering" : ""}`}
+      >
         <img
           src={`data:${book.contentType};base64,${book.coverImage}`}
           alt={book.title}
-          style={{
-            filter: isHovering
-              ? "opacity(80%) brightness(0.4) grayscale(30%)"
-              : "none",
-            transition: "filter 0.2s ease-in-out",
-          }}
         />
         <div className="bookControlsBottomRow">
           <div className="bookControlsIsRead">
