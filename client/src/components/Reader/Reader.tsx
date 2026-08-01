@@ -27,9 +27,6 @@ export const Reader: React.FC = () => {
   const readerRootRef = useRef<HTMLDivElement>(null);
   const renditionRef = useRef<Rendition | null>(null);
 
-  // keep a ref in sync so closures registered once per rendition (the
-  // content hook) can always read the *current* redux settings, not a
-  // stale value captured when the effect first ran
   const appSettingsRef = useRef<AppSettings>(appSettings);
   useEffect(() => {
     appSettingsRef.current = appSettings;
@@ -130,6 +127,7 @@ export const Reader: React.FC = () => {
 
         if (cancelled) return;
         createdBook = Epub(arrayBuffer);
+        console.log(createdBook);
         setBookInstance(createdBook);
       } catch (error) {
         if (!cancelled) console.log(error);

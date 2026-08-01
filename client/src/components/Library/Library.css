@@ -1,11 +1,8 @@
 .libraryContainer {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
   position: relative;
-  /* remove max-height: 90vh and height: 90vh entirely */
+  overflow: hidden;
+  height: 90vh;
+  /* width: 100vw; */
 }
 
 .libraryLoader {
@@ -16,9 +13,10 @@
 }
 
 .booksContainer {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
   display: flex;
-  flex: 1;
-  min-height: 0;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
@@ -27,7 +25,6 @@
   row-gap: 1.5em;
   margin-bottom: 1.25em;
   margin-left: 0.5em;
-  margin-top: 0.5em;
+  margin-top: 4.5em;
   margin-right: 0.25em;
-  overflow-y: auto;
 }
