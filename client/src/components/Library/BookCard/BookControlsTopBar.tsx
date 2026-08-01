@@ -140,14 +140,14 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
         </IconButton>
       )}
 
-      <div className="metaDataButton">
+      <div className="descriptionButton">
         <IconButton
           className="rounded-full"
           onClick={(e) => {
             e.stopPropagation();
-            setIsBookDialogOpen(true);
+            setIsDescDialogOpen(true);
           }}
-          aria-label={`Metadata for ${book.title}`}
+          aria-label={`Description for ${book.title}`}
         >
           <FileTextIcon strokeWidth={2} className="bookIcon" style={iconSize} />
         </IconButton>
@@ -171,12 +171,12 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
         >
           <MenuItem
             onClick={() => {
-              setIsDescDialogOpen(true);
+              setIsBookDialogOpen(true);
               handleMenuClose();
             }}
             aria-label="View Description"
           >
-            View Description
+            Edit Metadata
           </MenuItem>
           {book.readingProgress?.isComplete ? (
             <MenuItem

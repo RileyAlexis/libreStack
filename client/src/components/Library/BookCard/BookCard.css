@@ -44,7 +44,7 @@
   height: 100%;
   align-items: center;
   justify-content: center;
-  padding: 4%;
+  padding: 8%;
   overflow: hidden;
   background-color: var(--library-active-bg);
   transition: padding 0.2s ease-in-out;
