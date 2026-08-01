@@ -44,6 +44,7 @@
 }
 
 .libraryStatsBox {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -145,5 +146,11 @@
   .serverStatsCard {
     padding-left: 0.75em;
     padding-right: 0.75em;
+  }
+  .deleteContainer {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    padding: 2%;
   }
 }

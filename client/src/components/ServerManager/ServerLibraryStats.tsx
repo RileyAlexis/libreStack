@@ -1,4 +1,7 @@
 import { useState, type SetStateAction } from "react";
+import { useDispatch } from "react-redux";
+import { runSnack } from "@/redux/reducers/SnackReducer";
+import type { AppDispatch } from "@/redux/store";
 import type {
   LibraryStatsType,
   ServerStatsType,
@@ -32,6 +35,8 @@ export const ServerLibraryStats: React.FC<ServerLibraryStatsProps> = ({
   item,
   setServerStats,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
+
   const [libraryPath, setLibraryPath] = useState<string>(item.libraryPath);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isAlertOpen, setIsAlertOpen] = useState<boolean>(false);
@@ -78,6 +83,42 @@ export const ServerLibraryStats: React.FC<ServerLibraryStatsProps> = ({
       })
       .catch((error) => {
         console.error(error);
+      });
+  };
+
+  const handleDeleteLibrary = () => {
+    api
+      .delete(`Library/deleteLibrary?libraryId=${item.libraryId}`)
+      .then(() => {
+        setServerStats((prev) => {
+          if (!prev || !prev.libraryStats) return prev;
+
+          const updatedLibraryStats = prev.libraryStats.filter(
+            (statsItem) => statsItem.libraryId !== item.libraryId,
+          );
+          return {
+            ...prev,
+            libraryStats: updatedLibraryStats,
+          };
+        });
+
+        dispatch(
+          runSnack({
+            isOpen: true,
+            description: `${item.libraryName} succssfully deleted`,
+            severity: "success",
+          }),
+        );
+      })
+      .catch((error) => {
+        console.log(error);
+        dispatch(
+          runSnack({
+            isOpen: true,
+            description: `Request Failed: ${error.reason.response.data.error}`,
+            severity: "error",
+          }),
+        );
       });
   };
 
@@ -183,6 +224,18 @@ export const ServerLibraryStats: React.FC<ServerLibraryStatsProps> = ({
             Free Disk Space : {formatStorageSize(item?.driveFreeSpace ?? 0)}
           </ListItem>
         </List>
+        {item.bookCount === 0 && (
+          <div className="deleteContainer">
+            <Button
+              variant="contained"
+              color="error"
+              size="small"
+              onClick={handleDeleteLibrary}
+            >
+              Delete Library
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
