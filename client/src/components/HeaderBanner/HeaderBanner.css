@@ -10,7 +10,7 @@
   padding-bottom: 0;
   max-height: 4em;
   border-bottom: 1px solid var(--muted-foreground);
-  /* border: 1px solid orchid; */
+  flex-shrink: 0;
 }
 
 .menuContainer {
