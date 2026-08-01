@@ -346,7 +346,7 @@ export const LibraryHeaderControls: React.FC = () => {
         )}
         {appSettings.libraryLayout.showOnlyDownloaded && (
           <div className="headerInfoContainer">
-            <Typography variant="h5">Downloaded Books</Typography>
+            <Typography variant="h6">Downloaded Books</Typography>
           </div>
         )}
         <div className="sortingContainer">
