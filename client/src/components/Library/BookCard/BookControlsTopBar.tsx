@@ -107,117 +107,131 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
   };
 
   return (
-    <div
-      className="bookControlsTop"
-      style={{
-        opacity: isTouchDevice || isHovering ? 1 : 0,
-        pointerEvents: isTouchDevice || isHovering ? "auto" : "none",
-      }}
-    >
-      {!isSelected && (
-        <IconButton
-          className="rounded-full"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleSelectBook(book.id);
-          }}
-          aria-label={`Select ${book.title}`}
-        >
-          <Circle strokeWidth={2} className="bookIcon" style={iconSize} />
-        </IconButton>
-      )}
-
-      {isSelected && (
-        <IconButton
-          className="rounded-full"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleUnselectBook(book.id);
-          }}
-          aria-label={`Unselect ${book.title}`}
-        >
-          <CircleCheck strokeWidth={3} className="bookIcon" style={iconSize} />
-        </IconButton>
-      )}
-
-      <div className="descriptionButton">
-        <IconButton
-          className="rounded-full"
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsDescDialogOpen(true);
-          }}
-          aria-label={`Description for ${book.title}`}
-        >
-          <FileTextIcon strokeWidth={2} className="bookIcon" style={iconSize} />
-        </IconButton>
-      </div>
-
-      <div className="contextData">
-        <IconButton
-          onClick={(e) => {
-            e.stopPropagation();
-            setMenuAnchorEl(e.currentTarget);
-          }}
-          aria-label="Show Book Context Menu"
-        >
-          <EllipsisIcon strokeWidth={2} className="bookIcon" style={iconSize} />
-        </IconButton>
-        <Menu
-          anchorEl={menuAnchorEl}
-          open={Boolean(menuAnchorEl)}
-          onClose={handleMenuClose}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <MenuItem
-            onClick={() => {
-              setIsBookDialogOpen(true);
-              handleMenuClose();
+    <div>
+      <div
+        className="bookControlsTop"
+        style={{
+          opacity: isTouchDevice || isHovering ? 1 : 0,
+          pointerEvents: isTouchDevice || isHovering ? "auto" : "none",
+        }}
+      >
+        {!isSelected && (
+          <IconButton
+            className="rounded-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleSelectBook(book.id);
             }}
-            aria-label="View Description"
+            aria-label={`Select ${book.title}`}
           >
-            Edit Metadata
-          </MenuItem>
-          {book.readingProgress?.isComplete ? (
+            <Circle strokeWidth={2} className="bookIcon" style={iconSize} />
+          </IconButton>
+        )}
+
+        {isSelected && (
+          <IconButton
+            className="rounded-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleUnselectBook(book.id);
+            }}
+            aria-label={`Unselect ${book.title}`}
+          >
+            <CircleCheck
+              strokeWidth={3}
+              className="bookIcon"
+              style={iconSize}
+            />
+          </IconButton>
+        )}
+
+        <div className="descriptionButton">
+          <IconButton
+            className="rounded-full"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsDescDialogOpen(true);
+            }}
+            aria-label={`Description for ${book.title}`}
+          >
+            <FileTextIcon
+              strokeWidth={2}
+              className="bookIcon"
+              style={iconSize}
+            />
+          </IconButton>
+        </div>
+
+        <div className="contextData">
+          <IconButton
+            onClick={(e) => {
+              e.stopPropagation();
+              setMenuAnchorEl(e.currentTarget);
+            }}
+            aria-label="Show Book Context Menu"
+          >
+            <EllipsisIcon
+              strokeWidth={2}
+              className="bookIcon"
+              style={iconSize}
+            />
+          </IconButton>
+          <Menu
+            anchorEl={menuAnchorEl}
+            open={Boolean(menuAnchorEl)}
+            onClose={handleMenuClose}
+            onClick={(e) => e.stopPropagation()}
+          >
             <MenuItem
               onClick={() => {
-                handleMarkIncomplete(book.id);
+                setIsBookDialogOpen(true);
                 handleMenuClose();
               }}
-              aria-label="Mark as Unfinished"
+              aria-label="View Description"
             >
-              Mark as Unfinished
+              Edit Metadata
             </MenuItem>
-          ) : (
+            {book.readingProgress?.isComplete ? (
+              <MenuItem
+                onClick={() => {
+                  handleMarkIncomplete(book.id);
+                  handleMenuClose();
+                }}
+                aria-label="Mark as Unfinished"
+              >
+                Mark as Unfinished
+              </MenuItem>
+            ) : (
+              <MenuItem
+                onClick={() => {
+                  handleMarkComplete(book.id);
+                  handleMenuClose();
+                }}
+                aria-label="Mark as Finished"
+              >
+                Mark as Finished
+              </MenuItem>
+            )}
             <MenuItem
               onClick={() => {
-                handleMarkComplete(book.id);
+                setIsFixMismatchDialogOpen(true);
                 handleMenuClose();
               }}
-              aria-label="Mark as Finished"
+              aria-label="Fix Mismatch"
             >
-              Mark as Finished
+              Fix Mismatch
             </MenuItem>
-          )}
-          <MenuItem
-            onClick={() => {
-              setIsFixMismatchDialogOpen(true);
-              handleMenuClose();
-            }}
-            aria-label="Fix Mismatch"
-          >
-            Fix Mismatch
-          </MenuItem>
-          {downloadStatus === "downloaded" && (
-            <MenuItem
-              onClick={() => {
-                dispatch(deleteDownload(String(book.id)));
-              }}
-            >
-              Remove Download - {formatBytes(totalSize)}
-            </MenuItem>
-          )}
-        </Menu>
+            {downloadStatus === "downloaded" && (
+              <MenuItem
+                onClick={() => {
+                  dispatch(deleteDownload(String(book.id)));
+                }}
+              >
+                Remove Download - {formatBytes(totalSize)}
+              </MenuItem>
+            )}
+          </Menu>
+        </div>
       </div>
 
       {isBookDialogOpen && (

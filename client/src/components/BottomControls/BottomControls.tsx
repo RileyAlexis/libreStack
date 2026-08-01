@@ -437,7 +437,7 @@ export const BottomControls: React.FC = () => {
             label="Show Read"
           />
         </MenuItem>
-        <MenuItem className="menubarSwitch" disableRipple>
+        {/* <MenuItem className="menubarSwitch" disableRipple>
           <FormControlLabel
             control={
               <Switch
@@ -469,7 +469,7 @@ export const BottomControls: React.FC = () => {
             }
             label="Show Series"
           />
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem className="menubarSwitch" disableRipple>
           <FormControlLabel
             control={

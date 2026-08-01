@@ -135,6 +135,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
         handleUnselectBook={handleUnselectBook}
         book={book}
       />
+
       <div className={`bookCover ${isSelected ? "selected" : ""}`}>
         <img
           src={`data:${book.contentType};base64,${book.coverImage}`}
@@ -146,49 +147,6 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
             transition: "filter 0.2s ease-in-out",
           }}
         />
-        {(appSettings.libraryLayout.showAuthors ||
-          appSettings.libraryLayout.showTitles ||
-          appSettings.libraryLayout.showSeries) && (
-          <div className="infoBox">
-            <div className="infoTextContainer">
-              {appSettings.libraryLayout.showTitles && (
-                <div className="textContainer">
-                  <Typography
-                    variant="caption"
-                    noWrap
-                    sx={{ display: "block", width: "100%" }}
-                  >
-                    {book.title}
-                  </Typography>
-                </div>
-              )}
-              {appSettings.libraryLayout.showAuthors && (
-                <div className="textContainer">
-                  <Typography
-                    variant="caption"
-                    noWrap
-                    sx={{ display: "block", width: "100%" }}
-                  >
-                    {book.author}
-                  </Typography>
-                </div>
-              )}
-              {appSettings.libraryLayout.showSeries &&
-                book.seriesId !== null && (
-                  <div className="textContainer">
-                    <Typography
-                      variant="caption"
-                      noWrap
-                      sx={{ display: "block", width: "100%" }}
-                    >
-                      {book.series?.seriesTitle}
-                      {!book.seriesOrder ? "" : ` - ${book.seriesOrder}`}
-                    </Typography>
-                  </div>
-                )}
-            </div>
-          </div>
-        )}
         <div className="bookControlsBottomRow">
           <div className="bookControlsIsRead">
             {book.readingProgress?.isComplete && (
