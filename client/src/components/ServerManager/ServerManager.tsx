@@ -272,11 +272,9 @@ export const ServerManager: React.FC = () => {
                       or removed files in a library. Default 15 minutes.
                     </Typography>
                   </Box>
-                  <TextField
+                  <input
                     id="scanInterval"
                     type="number"
-                    size="small"
-                    sx={{ marginRight: "0.25em" }}
                     value={serverSettings?.libraryScanInterval ?? 15}
                     onChange={(e) =>
                       handleServerSettingChange(

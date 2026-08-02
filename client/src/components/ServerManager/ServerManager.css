@@ -77,8 +77,12 @@
 }
 
 .scanIntervalField input {
-  width: 5rem;
+  width: 3rem;
   flex-shrink: 0;
+  height: 2rem;
+  text-align: right;
+  font-size: large;
+  appearance: textfield;
 }
 
 .scanIntervalField .field-content {
@@ -139,13 +143,14 @@
 @media (max-width: 480px) {
   .serverStatsContainer,
   .serverConfigContainer {
-    margin-left: 0.5em;
-    margin-right: 0.5em;
+    flex-direction: column;
+    margin-left: 0.25em;
+    margin-right: 0.25em;
   }
 
   .serverStatsCard {
-    padding-left: 0.75em;
-    padding-right: 0.75em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
   }
   .deleteContainer {
     position: absolute;
