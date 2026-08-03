@@ -44,7 +44,7 @@ public class LibraryService : ILibraryService
 
         var config = await _db.LibreStackConfig.FirstOrDefaultAsync();
 
-        if (!config!.AllowNewLibraries)
+        if (config is not null && !config!.AllowNewLibraries)
         {
             return Result<Library>.Failure("Server settings does not allow new libraries", ErrorType.Forbidden);
         }
