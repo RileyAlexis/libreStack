@@ -20,6 +20,7 @@
   flex-wrap: wrap;
   justify-content: flex-start;
   align-items: flex-start;
+  align-content: flex-start;
   column-gap: 1.5em;
   row-gap: 1.5em;
   margin-bottom: 1.25em;
@@ -27,5 +28,5 @@
   margin-top: 0.25em;
   margin-right: 0.25em;
   padding-bottom: 12em;
-  padding-top: 5em;
+  padding-top: 3.5em;
 }
