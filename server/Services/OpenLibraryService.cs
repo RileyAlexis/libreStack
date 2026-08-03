@@ -5,7 +5,6 @@ using Librestack.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Librestack.Services;
 
@@ -399,18 +398,24 @@ public class OpenLibraryService : IOpenLibraryService
 
         var cutoff = DateTime.UtcNow.AddMonths(-1);
         var booksToUpdate = library.Books
-            .Where(b => b.OpenLibraryMetadataLastUpdated == DateTime.MinValue ||
-                        b.OpenLibraryMetadataLastUpdated == DateTime.MaxValue ||
+            .Where(b => b.OpenLibraryMetadataLastUpdated == null ||
+                        b.OpenLibraryMetadataLastUpdated == DateTime.MinValue ||
                         b.OpenLibraryMetadataLastUpdated < cutoff)
             .ToList();
+
+        _logger.LogInformation("Updating count of books to refresh with Open Library data: {Count}", booksToUpdate.Count);
 
         var errors = new List<string>();
 
         foreach (var book in booksToUpdate)
         {
+            _logger.LogInformation("Querying Open Library for {Title}", book.Title);
+
             var result = await QueryOpenLibrary(userId, book.Id);
             if (!result.IsSuccess)
                 errors.Add($"{book.Title}: {result.Error}");
+
+            _logger.LogInformation("Result: {Result}", result.IsSuccess ? "Success" : "Error");
         }
 
         return errors.Count == 0

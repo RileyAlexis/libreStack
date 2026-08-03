@@ -259,10 +259,11 @@ public class WikidataService : IWikidataService
 
         var cutoff = DateTime.UtcNow.AddMonths(-1);
         var booksToUpdate = library.Books
-            .Where(b => b.WikidataMetaLastUpdated == DateTime.MinValue ||
-                        b.WikidataMetaLastUpdated == DateTime.MaxValue ||
+            .Where(b => b.WikidataMetaLastUpdated == null ||
+                        b.WikidataMetaLastUpdated == DateTime.MinValue ||
                         b.WikidataMetaLastUpdated < cutoff)
             .ToList();
+        _logger.LogInformation("Updating count of books to refresh with Wikidata: {Count}", booksToUpdate.Count);
 
         var errors = new List<string>();
 
