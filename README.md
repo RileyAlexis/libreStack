@@ -50,8 +50,8 @@ Books can be uploaded through the app: Manage -> Upload Book. Currently LibreSta
 
 LibreStack is a Progressive Web App and can be installed directly from the web browser.
 
-Android - Press Install App button and follow prompts
-iOS - Click Share icon -> More -> Add to Home Screen. Ensure Open as Web App is checked. Click Add
+- Android - Press Install App button and follow prompts
+- iOS - Click Share icon -> More -> Add to Home Screen. Ensure Open as Web App is checked. Click Add
 
 Librestack is offline capable but books are not automatically downloaded. Click the download icon at the bottom right of each book in order to save for offline reading.
 
@@ -61,7 +61,7 @@ LibreStack connects to both Open Library and Wikidata in order to download metad
 
 ## Tech
 
-Librestack uses dot net 10 on the back end with a Postgres 17 database with a React 19 front end. Simple API documentation is available via Swagger at http://localhost:[port]/swagger/.
+Librestack uses Dotnet 10 on the back end with a Postgres 17 database and a React 19 front end. Simple API documentation is available via Swagger at http://localhost:[server_port]/swagger/.
 
 ## Feature Roadmap
 
