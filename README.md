@@ -58,3 +58,16 @@ Librestack is offline capable but books are not automatically downloaded. Click 
 ## Book Metadata
 
 LibreStack connects to both Open Library and Wikidata in order to download metadata for each book. Availablilty of data for a given book is spotty. Librestack will attempt to place books into a series and order if data is available. This can also be set manually on the Edit Metadata screen.
+
+## Tech
+
+Librestack uses dot net 10 on the back end with a Postgres 17 database with a React 19 front end. Simple API documentation is available via Swagger at http://localhost:[port]/swagger/.
+
+## Feature Roadmap
+
+- Implement Bookmarking
+- Implement category tagging
+- Implement collections
+- Implement in reader dictionary or web search lookup
+- Implement ability to share books between libraries
+- Plan to implement ability to share libraries/books between server instances
