@@ -105,6 +105,10 @@ public class WikidataService : IWikidataService
 
         var response = await client.GetAsync(url);
         var json = await response.Content.ReadAsStringAsync();
+
+        if (string.IsNullOrWhiteSpace(json))
+            return Result<Book>.Failure("No Wikidata results found", ErrorType.NotFound);
+
         var root = JsonDocument.Parse(json);
         var bindings = root.RootElement
             .GetProperty("results")
@@ -175,6 +179,8 @@ public class WikidataService : IWikidataService
 
         var response = await client.GetAsync(url);
         var json = await response.Content.ReadAsStringAsync();
+        if (string.IsNullOrWhiteSpace(json))
+            return Result<Book>.Failure("No Wikidata results found", ErrorType.NotFound);
         var root = JsonDocument.Parse(json);
         var binding = root.RootElement
             .GetProperty("results")
