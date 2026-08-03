@@ -165,7 +165,7 @@ export const BottomControls: React.FC = () => {
           runSnack({
             isOpen: true,
             severity: "error",
-            description: `Error refreshing Open Library Data: ${error.response.data}`,
+            description: `Error refreshing Open Library Data: ${error.response.data.error}`,
           }),
         );
         dispatch(setIsSyncing(false));
@@ -195,7 +195,7 @@ export const BottomControls: React.FC = () => {
           runSnack({
             isOpen: true,
             severity: "error",
-            description: `Error refreshing Open Library Data: ${error.response.data}`,
+            description: `Error refreshing Open Library Data: ${error.response.data.error}`,
           }),
         );
         dispatch(setIsSyncing(false));
