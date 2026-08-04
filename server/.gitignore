@@ -22,3 +22,4 @@ Library/
 # Environment specific files
 appsettings.{Development,Production}.json
 appsettings.Development.json
+**/wwwroot/
