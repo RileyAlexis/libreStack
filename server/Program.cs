@@ -1,5 +1,4 @@
 using System.Text;
-using DotNetEnv;
 using Librestack.Database;
 using Librestack.Services;
 using Librestack.Interfaces;
@@ -8,9 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
-
-
-Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,10 +32,10 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         RefreshBeforeValidation = true,
-        ValidIssuer = Environment.GetEnvironmentVariable("JWT_ISSUER"),
-        ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
+        ValidIssuer = builder.Configuration.GetValue<string>("JWT_ISSUER") ?? string.Empty,
+        ValidAudience = builder.Configuration.GetValue<string>("JWT_AUDIENCE") ?? string.Empty,
         IssuerSigningKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_KEY") ?? throw new InvalidOperationException("JWT_KEY is not configured")))
+            Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("JWT_KEY") ?? throw new InvalidOperationException("JWT_KEY is not configured")))
     };
 })
 .AddCookie("AdminCookie", options =>

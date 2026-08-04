@@ -8,8 +8,6 @@ using Librestack.Database;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.OpenApi;
 
 namespace Librestack.Services;
 
