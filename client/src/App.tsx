@@ -1,17 +1,13 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router";
-
-import { api } from "./utils/api";
-import { Route, Routes, useLocation } from "react-router";
+import { useNavigate, useLocation, Route, Routes } from "react-router";
 
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "./redux/store";
 
+import { api } from "./utils/api";
+
 // Redux Actions
-import {
-  saveUserSettings,
-  fetchUserSettings,
-} from "./redux/reducers/AppSettingsReducer";
+import { fetchUserSettings } from "./redux/reducers/AppSettingsReducer";
 import { clearSnack } from "./redux/reducers/SnackReducer";
 import { setUser } from "./redux/reducers/AuthReducer";
 import { hydrateDownloads } from "./redux/reducers/DownloadReducer";
@@ -26,7 +22,7 @@ import {
   Alert,
 } from "@mui/material";
 
-import { X } from "lucide-react";
+import { XIcon } from "lucide-react";
 
 // Components
 import { Setup } from "./components/Setup/ Setup";
@@ -42,78 +38,129 @@ import { SeriesManager } from "./components/SeriesManager/SeriesManager";
 import { ServerManager } from "./components/ServerManager/ServerManager";
 import { Tester } from "./components/Testers/Tester";
 
-function App() {
-  const navigate = useNavigate();
-  const dispatch = useDispatch<AppDispatch>();
-  const location = useLocation();
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [showClose, _] = useState<boolean>(true);
-  const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
-  const appSettings = useSelector((state: LibreRootState) => state.appSettings);
-  const snackData = useSelector((state: LibreRootState) => state.snack);
-  const accessToken = useSelector(
-    (state: LibreRootState) => state.auth.accessToken,
-  );
+type AuthStatus = "checking" | "authenticated" | "unauthenticated";
 
-  const hasInitialized = useRef(false);
+function useSetupCheck() {
+  const [setupComplete, setSetupComplete] = useState<boolean | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
+
     api
       .get("Config/checkIfSetupComplete")
-      .then((response) => {
-        if (response.data.isSetupComplete === false) {
-          navigate("/setup");
-        }
+      .then((res) => {
+        if (!cancelled) setSetupComplete(res.data.isSetupComplete);
       })
-      .catch((error) => console.error(error));
+      .catch((err) => {
+        console.error(err);
+        // Fail open - don't block the whole app behind a flaky check.
+        if (!cancelled) setSetupComplete(true);
+      });
 
-    if (!accessToken) {
-      setIsLoginOpen(true);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return setupComplete;
+}
+
+function useAuthBootstrap(): AuthStatus {
+  const dispatch = useDispatch<AppDispatch>();
+  const accessToken = useSelector((s: LibreRootState) => s.auth.accessToken);
+  const hasToken = !!accessToken;
+
+  const [authStatus, setAuthStatus] = useState<AuthStatus>(
+    hasToken ? "checking" : "unauthenticated",
+  );
+
+  const prevHasTokenRef = useRef(hasToken);
+  const statusRef = useRef(authStatus);
+  statusRef.current = authStatus;
+
+  useEffect(() => {
+    const wasLoggedIn = prevHasTokenRef.current;
+    prevHasTokenRef.current = hasToken;
+
+    if (!hasToken) {
+      setAuthStatus("unauthenticated");
       return;
     }
 
+    if (wasLoggedIn && statusRef.current === "authenticated") return;
+
+    let cancelled = false;
+    setAuthStatus("checking");
+
     api
       .get("/Auth/user")
-      .then((response) => {
-        console.log(response.data);
-        dispatch(setUser(response.data));
+      .then((res) => {
+        if (cancelled) return;
+        dispatch(setUser(res.data));
+        setAuthStatus("authenticated");
       })
       .catch(() => {
-        setIsLoginOpen(true);
+        if (!cancelled) setAuthStatus("unauthenticated");
       });
-  }, []);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [hasToken]);
+
+  return authStatus;
+}
+
+function useSettingsSync(authStatus: AuthStatus) {
+  const dispatch = useDispatch<AppDispatch>();
+  const hasFetchedRef = useRef(false);
 
   useEffect(() => {
-    dispatch(hydrateDownloads());
-  }, [dispatch]);
+    if (authStatus !== "authenticated" || hasFetchedRef.current) return;
+    hasFetchedRef.current = true;
+    dispatch(fetchUserSettings());
+  }, [authStatus, dispatch]);
+}
+
+function useNavigationGate(
+  setupComplete: boolean | null,
+  showLibraryAsHome: boolean,
+) {
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    if (!accessToken) return;
-
-    dispatch(fetchUserSettings()).finally(() => {
-      hasInitialized.current = true;
-    });
-  }, [accessToken, dispatch]);
-
-  useEffect(() => {
-    if (location.pathname !== "/") return;
-
-    if (appSettings.showLibraryAsHome) {
-      navigate("/library");
-    } else {
-      navigate("/serverManager");
+    if (setupComplete === null) return;
+    if (setupComplete === false) {
+      if (location.pathname !== "/setup") navigate("/setup");
+      return;
     }
-  }, [location.pathname, appSettings.showLibraryAsHome, navigate]);
+
+    if (location.pathname === "/") {
+      navigate(showLibraryAsHome ? "/library" : "/serverManager");
+    }
+  }, [setupComplete, location.pathname, showLibraryAsHome, navigate]);
+}
+
+function App() {
+  const dispatch = useDispatch<AppDispatch>();
+  const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
+  const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  const snackData = useSelector((state: LibreRootState) => state.snack);
+
+  const setupComplete = useSetupCheck();
+  const authStatus = useAuthBootstrap();
+  useSettingsSync(authStatus);
+  useNavigationGate(setupComplete, appSettings.showLibraryAsHome);
+
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  useEffect(() => {
+    setIsLoginOpen(authStatus === "unauthenticated");
+  }, [authStatus]);
 
   useEffect(() => {
-    if (!hasInitialized.current) return;
-
-    const timeoutId = setTimeout(() => {
-      dispatch(saveUserSettings(appSettings));
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
-  }, [appSettings, dispatch]);
+    if (authStatus === "authenticated") dispatch(hydrateDownloads());
+  }, [authStatus, dispatch]);
 
   const handleCloseSnack = (
     _: React.SyntheticEvent | Event,
@@ -196,14 +243,12 @@ function App() {
       </Routes>
       <Dialog open={isLoginOpen} onClose={() => setIsLoginOpen(false)}>
         <DialogContent sx={{ position: "relative" }}>
-          {showClose && (
-            <IconButton
-              onClick={() => setIsLoginOpen(false)}
-              sx={{ position: "absolute", top: 8, right: 8 }}
-            >
-              <X size={18} />
-            </IconButton>
-          )}
+          <IconButton
+            onClick={() => setIsLoginOpen(false)}
+            sx={{ position: "absolute", top: 8, right: 8 }}
+          >
+            <XIcon size={18} />
+          </IconButton>
           <LoginScreen setIsLoginOpen={setIsLoginOpen} />
         </DialogContent>
       </Dialog>
