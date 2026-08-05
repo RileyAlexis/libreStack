@@ -5,7 +5,6 @@ import { useLocation } from "react-router";
 //Types
 import type { AppDispatch } from "@/redux/store";
 import type { LibreRootState } from "../../types/LibreRootState";
-import type { BookType } from "../../types/BookType";
 
 //Actions
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
@@ -20,17 +19,8 @@ import { LibraryHeaderControls } from "./LibraryHeaderControls";
 // UI
 import { CircularProgress } from "@mui/material";
 import "./Library.css";
-
-interface SortedBookStateType {
-  isSeries: Boolean;
-  seriesId: number;
-  sortedTitle: string;
-  sortedAuthor: string;
-  seriesCover: string;
-  book: BookType | null;
-  seriesBooks: BookType[];
-  lastRead: Date;
-}
+import { selectSortedBookState } from "@/redux/Selectors/LibrarySelector";
+import { SeriesCard } from "./SeriesCard/SeriesCard";
 
 export const Library: React.FC = () => {
   const location = useLocation();
@@ -39,65 +29,12 @@ export const Library: React.FC = () => {
 
   const libraryData = useSelector((state: LibreRootState) => state.library);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
-  const [sortedBookState, setSortedBookState] = useState<SortedBookStateType[]>(
-    [],
-  );
+  const sortedBookState = useSelector(selectSortedBookState);
   const downloadedIds = useSelector(selectDownloadedBookIds);
   const downloadedIdSet = useMemo(
     () => new Set(downloadedIds),
     [downloadedIds],
   );
-
-  useEffect(() => {
-    const sortTheThings = () => {
-      setSortedBookState([]);
-      let sortedData: { [id: string]: SortedBookStateType } = {};
-
-      libraryData.books.forEach((book) => {
-        if (book.seriesId !== null && appSettings.libraryLayout.groupBySeries) {
-          // Found series and updating with most recent last read
-          if (sortedData["series" + book.seriesId]) {
-            if (
-              sortedData["series" + book.seriesId].lastRead <
-              (book.readingProgress?.lastRead ?? new Date())
-            ) {
-              sortedData["series" + book.seriesId].lastRead =
-                book.readingProgress?.lastRead ?? new Date();
-            }
-            sortedData["series" + book.seriesId].seriesBooks.push(book);
-            // Series does not exist yet and needs to be added
-          } else {
-            sortedData["series" + book.seriesId] = {
-              isSeries: true,
-              seriesId: book.seriesId,
-              sortedTitle: book.series!.seriesTitle!,
-              sortedAuthor: book.author,
-              seriesCover: book.coverImage,
-              book: null,
-              seriesBooks: new Array<BookType>(book),
-              lastRead: book.readingProgress?.lastRead ?? new Date(),
-            };
-          }
-        } else {
-          sortedData["book" + book.id] = {
-            isSeries: false,
-            seriesId: 0,
-            sortedTitle: book.title,
-            sortedAuthor: book.author,
-            seriesCover: "",
-            book: book,
-            seriesBooks: [],
-            lastRead: book.readingProgress?.lastRead ?? new Date(),
-          };
-        }
-      });
-      // End foreach loop
-
-      setSortedBookState(Object.values(sortedData));
-    };
-
-    sortTheThings();
-  }, [appSettings.libraryLayout.groupBySeries]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -148,16 +85,12 @@ export const Library: React.FC = () => {
 
       <div className="booksContainer">
         {sortedBookState.map((item) =>
-          item.isSeries ? (
-            <div key={`series-${item.seriesId}`}>
-              <p>I'm a series! yay!!!</p>
-              {item.sortedTitle}
-            </div>
+          item.isSeries && item.seriesBooks.length > 1 ? (
+            <SeriesCard key={`series-${item.seriesId}`} series={item} />
+          ) : item.isSeries ? (
+            <BookCard key={item.seriesBooks[0].id} book={item.seriesBooks[0]} />
           ) : (
-            <div key={`series-${item.sortedTitle}`}>
-              <p>I'm a book yay books!!!!!</p>
-              {item.sortedTitle}
-            </div>
+            <BookCard key={item.book?.id} book={item.book!} />
           ),
         )}
       </div>

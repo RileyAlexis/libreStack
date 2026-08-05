@@ -1,0 +1,42 @@
+.seriesCardContainer {
+  position: relative;
+  background: var(--card);
+  box-shadow: var(--shadow-elevation-high);
+  transition:
+    background 0.2s ease-in-out,
+    outline 0.2s ease-in-out,
+    outline-offset 0.2s ease-in-out;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.seriesCover {
+  display: flex;
+  gap: 0.25em;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  padding: 2%;
+  overflow: hidden;
+  transition: padding 0.2s ease-in-out;
+}
+
+.seriesCover img {
+  height: fit-content;
+  object-fit: contain;
+}
+
+.seriesInfoContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25em;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .bookCover.isHovering img {
+    filter: opacity(80%) brightness(0.4) grayscale(30%);
+  }
+}
