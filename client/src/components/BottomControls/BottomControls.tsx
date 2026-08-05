@@ -55,6 +55,7 @@ export const BottomControls: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const library = useSelector((state: LibreRootState) => state.library);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  const libraryList = useSelector((state: LibreRootState) => state.libraryList);
 
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const [deferredPrompt, setDeferredPrompt] = useState<any | null>(null);
@@ -67,8 +68,6 @@ export const BottomControls: React.FC = () => {
       event.preventDefault();
       setDeferredPrompt(event);
     };
-    console.log(deferredPrompt);
-
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
     return () => {
@@ -80,7 +79,6 @@ export const BottomControls: React.FC = () => {
   }, []);
 
   const installApp = () => {
-    console.log(deferredPrompt);
     if (deferredPrompt) {
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then((choiceResult: any) => {
@@ -105,24 +103,27 @@ export const BottomControls: React.FC = () => {
   };
 
   const handleSelectLibrary = (libraryId: number) => {
+    const updatedSettings = {
+      ...appSettings,
+      lastSelectedLibrary: libraryId,
+    };
+
     dispatch(setLastSelectedLibrary(libraryId));
-    dispatch(saveUserSettings(appSettings));
+    dispatch(saveUserSettings(updatedSettings));
     closeMenu();
   };
 
   const handleScanLibrary = () => {
     dispatch(setIsSyncing(true));
     api
-      .post(
-        `/LibraryScan/scanLibrary?libraryId=${library[appSettings.lastSelectedLibrary].id}`,
-      )
+      .post(`/LibraryScan/scanLibrary?libraryId=${library.id}`)
       .then((response) => {
         console.log(response.data);
         dispatch(
           runSnack({
             isOpen: true,
             severity: "success",
-            description: `${library[appSettings.lastSelectedLibrary].name} scanned.`,
+            description: `${library.name} scanned.`,
           }),
         );
       })
@@ -132,13 +133,13 @@ export const BottomControls: React.FC = () => {
           runSnack({
             isOpen: true,
             severity: "warning",
-            description: `${library[appSettings.lastSelectedLibrary].name} scanned. ${error.response.data}`,
+            description: `${library.name} scanned. ${error.response.data}`,
           }),
         );
       })
       .finally(() => {
         dispatch(setIsSyncing(false));
-        dispatch(fetchLibraryData());
+        dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
       });
     closeMenu();
   };
@@ -146,15 +147,13 @@ export const BottomControls: React.FC = () => {
   const handleMetadataRefresh = () => {
     dispatch(setIsSyncing(true));
     api
-      .get(
-        `metadata/refreshOpenLibraryData?libraryId=${library[appSettings.lastSelectedLibrary].id}`,
-      )
+      .get(`metadata/refreshOpenLibraryData?libraryId=${library.id}`)
       .then(() => {
         dispatch(
           runSnack({
             isOpen: true,
             severity: "success",
-            description: `${library[appSettings.lastSelectedLibrary].name} refreshed with Open Library data.`,
+            description: `${library.name} refreshed with Open Library data.`,
           }),
         );
         dispatch(setIsSyncing(false));
@@ -176,15 +175,13 @@ export const BottomControls: React.FC = () => {
   const handleWikidataRefresh = () => {
     dispatch(setIsSyncing(true));
     api
-      .get(
-        `metadata/refreshWikidata?libraryId=${library[appSettings.lastSelectedLibrary].id}`,
-      )
+      .get(`metadata/refreshWikidata?libraryId=${library.id}`)
       .then(() => {
         dispatch(
           runSnack({
             isOpen: true,
             severity: "success",
-            description: `${library[appSettings.lastSelectedLibrary].name} refreshed with Wiki data.`,
+            description: `${library.name} refreshed with Wiki data.`,
           }),
         );
         dispatch(setIsSyncing(false));
@@ -213,13 +210,13 @@ export const BottomControls: React.FC = () => {
     api
       .post("/Book/addBookEntry", formData, {
         headers: { "Content-Type": "multipart/form-data" },
-        params: { libraryId: library[appSettings.lastSelectedLibrary].id },
+        params: { libraryId: library.id },
       })
       .then((response) => console.log(response.data))
       .catch((error) => console.error(error.response.data))
       .finally(() => {
         if (fileInputRef.current) fileInputRef.current.value = "";
-        dispatch(fetchLibraryData());
+        dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
       });
   };
 
@@ -333,7 +330,7 @@ export const BottomControls: React.FC = () => {
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         transformOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        {library.map((item, index) => (
+        {libraryList.map((item) => (
           <MenuItem
             key={item.id}
             selected={item.id === appSettings.lastSelectedLibrary}

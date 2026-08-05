@@ -10,7 +10,6 @@ export interface LibraryType {
 
 export interface LibraryListType {
   id: number;
-  userId: string;
   name: string;
   libraryPath: string;
 }

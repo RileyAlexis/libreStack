@@ -1,4 +1,8 @@
 .seriesManagerContainer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -6,6 +10,8 @@
   margin-left: 1em;
   margin-right: 1em;
   margin-top: 1.5em;
+  padding-top: 3.25em;
+  padding-bottom: 4.5em;
 }
 
 .seriesListContainer {

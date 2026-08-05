@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
-// import { useSelector, useDispatch } from "react-redux";
-// import type { AppDispatch } from "@/redux/store";
+import { useSelector } from "react-redux";
 import type { SeriesType } from "@/types/BookType";
-// import type { LibreRootState } from "@/types/LibreRootState";
+import type { LibreRootState } from "@/types/LibreRootState";
 import { api } from "@/utils/api";
 
 // UI
@@ -45,11 +44,13 @@ export const SeriesManager: React.FC = () => {
   const [newSeries, setNewSeries] = useState<string>("");
   const [sortBy, setSortBy] = useState<SortColumn>("Title");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-  // const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  const appSettings = useSelector((state: LibreRootState) => state.appSettings);
 
   useEffect(() => {
     api
-      .get("series")
+      .get(
+        `Series/GetSeriesByLibrary?libraryId=${appSettings.lastSelectedLibrary}`,
+      )
       .then((response) => {
         setSeries(response.data);
       })

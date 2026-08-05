@@ -1,5 +1,5 @@
 import { useState, useEffect, type SetStateAction } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "@/redux/store";
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 import { api } from "@/utils/api";
@@ -30,6 +30,7 @@ import { CircleXIcon } from "lucide-react";
 
 import "./FixMisMatchDialog.css";
 import { setIsSyncing } from "@/redux/reducers/AppSettingsReducer";
+import type { LibreRootState } from "@/types/LibreRootState";
 
 interface FixMismatchDialogProps {
   book: BookType;
@@ -41,6 +42,7 @@ export const FixMismatchDialog: React.FC<FixMismatchDialogProps> = ({
   setIsSelectOpen,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>();
   const [error, setError] = useState<string | null>(null);
@@ -123,7 +125,7 @@ export const FixMismatchDialog: React.FC<FixMismatchDialogProps> = ({
       console.error(error);
     } finally {
       setIsSelectOpen(false);
-      dispatch(fetchLibraryData());
+      dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
       dispatch(setIsSyncing(false));
     }
   };

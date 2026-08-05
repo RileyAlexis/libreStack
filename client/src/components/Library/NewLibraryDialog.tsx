@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "@/redux/store";
 import { api } from "@/utils/api";
 
 // Actions
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
+import type { LibreRootState } from "@/types/LibreRootState";
 
 import {
   DialogContent,
@@ -24,6 +25,7 @@ export const NewLibraryDialog: React.FC<NewLibraryDialogProps> = ({
   setIsCreateLibraryOpen,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const [libraryName, setLibraryName] = useState<string>("");
   const [libraryPath, setLibraryPath] = useState<string>("");
 
@@ -39,10 +41,9 @@ export const NewLibraryDialog: React.FC<NewLibraryDialogProps> = ({
         name: libraryName,
         libraryPath: libraryPath,
       })
-      .then((response) => {
-        console.log(response.data);
+      .then(() => {
         setIsCreateLibraryOpen(false);
-        dispatch(fetchLibraryData());
+        dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
       })
       .catch((error) => {
         console.error(error);

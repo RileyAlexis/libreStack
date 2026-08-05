@@ -79,18 +79,14 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({
   const [isWikiSyncing, setIsWikiSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
-  const [_, setLibrary] = useState<LibraryBaseType[]>();
 
   // -- Data loading ----------------------------------------------------------
 
   useEffect(() => {
     const fetchSeriesData = async () => {
       try {
-        const libraryList = await api.get("Library/getListOfLibraries");
-        setLibrary(libraryList.data);
-
         const seriesResponse = await api.get(
-          `Series/GetSeriesByLibrary?libraryId=${libraryList.data[appSettings.lastSelectedLibrary].id}`,
+          `Series/GetSeriesByLibrary?libraryId=${appSettings.lastSelectedLibrary}`,
         );
         setSeriesList(seriesResponse.data);
       } catch (error) {
@@ -173,7 +169,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({
           setSeriesInput("");
         }
 
-        dispatch(fetchLibraryData());
+        dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
       })
       .catch((err) => {
         console.error("Failed to save series", err);
@@ -221,7 +217,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({
     api
       .get(`metadata/fetchOpenLibraryCover?bookId=${bookId}`)
       .then((_) => {
-        dispatch(fetchLibraryData());
+        dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
       })
       .catch((error) => {
         setError(

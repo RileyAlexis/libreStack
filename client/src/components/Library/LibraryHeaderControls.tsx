@@ -57,7 +57,6 @@ export const LibraryHeaderControls: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
-  const library = useSelector((state: LibreRootState) => state.library);
   const selections = useSelector((state: LibreRootState) => state.selections);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
@@ -76,31 +75,13 @@ export const LibraryHeaderControls: React.FC = () => {
     dispatch(setSortBy(value));
     const asc = ascending ?? appSettings.libraryLayout.sortAscending;
     if (value === "Author") {
-      dispatch(
-        sortLibraryByAuthor({
-          libraryId: library[appSettings.lastSelectedLibrary].id,
-          ascending: asc,
-        }),
-      );
+      dispatch(sortLibraryByAuthor({ ascending: asc }));
     } else if (value === "Title") {
-      dispatch(
-        sortLibraryByTitle({
-          libraryId: library[appSettings.lastSelectedLibrary].id,
-          ascending: asc,
-        }),
-      );
+      dispatch(sortLibraryByTitle({ ascending: asc }));
     } else if (value === "Last Read") {
-      dispatch(
-        sortLibraryByLastRead({
-          libraryId: library[appSettings.lastSelectedLibrary].id,
-        }),
-      );
+      dispatch(sortLibraryByLastRead());
     } else if (value === "Recently Added") {
-      dispatch(
-        sortLibraryByDateAdded({
-          libraryId: library[appSettings.lastSelectedLibrary].id,
-        }),
-      );
+      dispatch(sortLibraryByDateAdded());
     }
   };
 
@@ -147,7 +128,7 @@ export const LibraryHeaderControls: React.FC = () => {
         }),
       );
     }
-    dispatch(fetchLibraryData());
+    dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
   };
 
   const handleMarkAsUnread = async () => {
@@ -179,7 +160,7 @@ export const LibraryHeaderControls: React.FC = () => {
         }),
       );
     }
-    dispatch(fetchLibraryData());
+    dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
   };
 
   const handleQueryOpenLibrary = async () => {
@@ -198,7 +179,7 @@ export const LibraryHeaderControls: React.FC = () => {
       );
     }
     dispatch(setIsSyncing(false));
-    dispatch(fetchLibraryData());
+    dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
   };
 
   const handleQueryWikidata = async () => {
@@ -213,7 +194,7 @@ export const LibraryHeaderControls: React.FC = () => {
     if (failures.length > 0) {
       console.error(`${failures.length} wikidata requests failed`, failures);
     }
-    dispatch(fetchLibraryData());
+    dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
     dispatch(setIsSyncing(false));
   };
 
@@ -245,7 +226,7 @@ export const LibraryHeaderControls: React.FC = () => {
       );
     }
     dispatch(clearSelectedBooks());
-    dispatch(fetchLibraryData());
+    dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
   };
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {

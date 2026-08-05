@@ -70,7 +70,7 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
     api
       .post(`ReadingProgress/markComplete?bookId=${bookId}`)
       .then((_) => {
-        dispatch(fetchLibraryData());
+        dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
       })
       .catch((error) => {
         console.error(error.response.data);
@@ -81,7 +81,7 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
     api
       .post(`ReadingProgress/markNotcomplete?bookId=${bookId}`)
       .then((_) => {
-        dispatch(fetchLibraryData());
+        dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
       })
       .catch((error) => {
         console.error(error);
@@ -99,7 +99,7 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
 
   const handleDialogClosing = () => {
     setIsBookDialogOpen(false);
-    dispatch(fetchLibraryData());
+    dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
   };
 
   const handleMenuClose = () => {

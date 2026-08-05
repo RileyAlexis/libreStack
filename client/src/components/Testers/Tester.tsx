@@ -4,10 +4,12 @@ import { api } from "@/utils/api";
 import { Button } from "@mui/material";
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { LibraryBaseType } from "@/types/LibraryType";
+// import type { AppDispatch } from "@/redux/store";
 
 export const Tester: React.FC = () => {
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const [library, setLibrary] = useState<LibraryBaseType[]>();
+  // const dispatch = useDispatch<AppDispatch>();
 
   const handleGetSeriesByLibrary = () => {
     if (!library) return;
@@ -63,6 +65,28 @@ export const Tester: React.FC = () => {
       });
   };
 
+  const handleFetchLibrary = (id: number) => {
+    api
+      .get(`/Library/getLibrary?libraryId=${id}`)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error.data);
+      });
+  };
+
+  const handleGetSeries = () => {
+    api
+      .get(`/Series/GetSeriesByLibrary?libraryId=1`)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
   return (
     <div className="testingContainer">
       <Button variant="contained" onClick={handleGetSeriesByLibrary}>
@@ -72,6 +96,9 @@ export const Tester: React.FC = () => {
         Create New User
       </Button>
       <Button onClick={handleGetListOfLibraries}>List of Libraries</Button>
+      <Button onClick={() => handleFetchLibrary(1)}>Get Library 1</Button>
+      <Button onClick={() => handleFetchLibrary(2)}>Get Library 2</Button>
+      <Button onClick={handleGetSeries}>Get Series</Button>
     </div>
   );
 };

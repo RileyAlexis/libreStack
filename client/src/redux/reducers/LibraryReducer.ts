@@ -3,37 +3,20 @@ import {
   type PayloadAction,
   createAsyncThunk,
 } from "@reduxjs/toolkit";
-import type { LibreRootState } from "@/types/LibreRootState";
 import type { LibraryType } from "../../types/LibraryType";
 import type { BookType } from "../../types/BookType";
 import { api } from "@/utils/api";
 
 export const fetchLibraryData = createAsyncThunk(
   "library/fetchLibraryData",
-  async (libraryId: number, { rejectWithValue, getState }) => {
+  async (libraryId: number, { rejectWithValue }) => {
     try {
       const response = await api.get(
         `/Library/getLibrary?libraryId=${libraryId}`,
       );
-      const state = getState() as LibreRootState;
-      const { sortBy, sortAscending } = state.appSettings.libraryLayout;
-      const libraries: LibraryType[] = response.data;
+      const libraries: LibraryType = response.data;
 
-      if (!sortBy) return libraries;
-
-      return libraries.map((lib) => ({
-        ...lib,
-        books:
-          sortBy === "Title"
-            ? sortByTitle(lib.books, sortAscending)
-            : sortBy === "Author"
-              ? sortByAuthor(lib.books, sortAscending)
-              : sortBy === "Last Read"
-                ? sortByLastRead(lib.books)
-                : sortBy === "Recently Added"
-                  ? sortyByRecentlyAdded(lib.books)
-                  : lib.books,
-      }));
+      return libraries;
     } catch (error) {
       console.error(error);
       return rejectWithValue((error as Error).message);
@@ -79,7 +62,7 @@ const sortByLastRead = (books: BookType[]) =>
     return bDate - aDate;
   });
 
-const sortyByRecentlyAdded = (books: BookType[]) =>
+const sortByRecentlyAdded = (books: BookType[]) =>
   [...books].sort((a, b) => {
     const aDate = a.addedDate ? new Date(a.addedDate).getTime() : null;
     const bDate = b.addedDate ? new Date(b.addedDate).getTime() : null;
@@ -90,41 +73,32 @@ const sortyByRecentlyAdded = (books: BookType[]) =>
     return bDate - aDate;
   });
 
-const initialState: LibraryType[] = [];
+const initialState: LibraryType = {
+  id: 1,
+  userId: "",
+  libraryPath: "",
+  name: "",
+  books: [],
+};
 
 const LibrarySlice = createSlice({
   name: "library",
   initialState,
   reducers: {
-    setLibrary(_, action: PayloadAction<LibraryType[]>) {
+    setLibrary(_, action: PayloadAction<LibraryType>) {
       return action.payload;
     },
-    sortLibraryByTitle(
-      state,
-      action: PayloadAction<{ libraryId: number; ascending: boolean }>,
-    ) {
-      const library = state.find((l) => l.id === action.payload.libraryId);
-      if (library)
-        library.books = sortByTitle(library.books, action.payload.ascending);
+    sortLibraryByTitle(state, action: PayloadAction<{ ascending: boolean }>) {
+      state.books = sortByTitle(state.books, action.payload.ascending);
     },
-    sortLibraryByAuthor(
-      state,
-      action: PayloadAction<{ libraryId: number; ascending: boolean }>,
-    ) {
-      const library = state.find((l) => l.id === action.payload.libraryId);
-      if (library)
-        library.books = sortByAuthor(library.books, action.payload.ascending);
+    sortLibraryByAuthor(state, action: PayloadAction<{ ascending: boolean }>) {
+      state.books = sortByAuthor(state.books, action.payload.ascending);
     },
-    sortLibraryByLastRead(state, action: PayloadAction<{ libraryId: number }>) {
-      const library = state.find((l) => l.id === action.payload.libraryId);
-      if (library) library.books = sortByLastRead(library.books);
+    sortLibraryByLastRead(state) {
+      state.books = sortByLastRead(state.books);
     },
-    sortLibraryByDateAdded(
-      state,
-      action: PayloadAction<{ libraryId: number }>,
-    ) {
-      const library = state.find((l) => l.id === action.payload.libraryId);
-      if (library) library.books = sortyByRecentlyAdded(library.books);
+    sortLibraryByDateAdded(state) {
+      state.books = sortByRecentlyAdded(state.books);
     },
   },
   extraReducers: (builder) => {

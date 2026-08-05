@@ -9,13 +9,17 @@ import type { BookType } from "../../types/BookType";
 
 //Actions
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
-import "./Library.css";
+import { fetchLibraryList } from "@/redux/reducers/LibraryListReducer";
 import { BookCard } from "./BookCard/BookCard";
 import { selectDownloadedBookIds } from "@/redux/reducers/DownloadReducer";
 
+// Components
 import { BottomControls } from "../BottomControls/BottomControls";
 import { LibraryHeaderControls } from "./LibraryHeaderControls";
+
+// UI
 import { CircularProgress } from "@mui/material";
+import "./Library.css";
 
 export const Library: React.FC = () => {
   const location = useLocation();
@@ -32,11 +36,20 @@ export const Library: React.FC = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    dispatch(fetchLibraryData(appSettings.lastSelectedLibrary))
+    dispatch(fetchLibraryList())
       .unwrap()
       .catch((err) => console.error(err))
       .finally(() => setIsLoading(false));
   }, [location.pathname]);
+
+  useEffect(() => {
+    if (
+      appSettings.lastSelectedLibrary !== 0 ||
+      appSettings.lastSelectedLibrary !== undefined
+    ) {
+      dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
+    }
+  }, [appSettings.lastSelectedLibrary]);
 
   return (
     <div className="libraryContainer">
@@ -49,9 +62,9 @@ export const Library: React.FC = () => {
       <div className="booksContainer">
         {!isLoading &&
           libraryData &&
-          libraryData[appSettings.lastSelectedLibrary] &&
-          libraryData[appSettings.lastSelectedLibrary].books &&
-          libraryData[appSettings.lastSelectedLibrary].books
+          libraryData &&
+          libraryData.books &&
+          libraryData.books
             .filter(
               (book: BookType) =>
                 (!book.readingProgress?.isComplete ||
