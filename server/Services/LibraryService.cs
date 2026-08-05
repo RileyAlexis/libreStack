@@ -3,6 +3,9 @@ using Librestack.Database;
 using Librestack.Interfaces;
 
 using Microsoft.EntityFrameworkCore;
+using Librestack.Models.APIModels;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Librestack.Services;
 
@@ -121,17 +124,24 @@ public class LibraryService : ILibraryService
             : Result<Library>.Success(result);
     }
 
-    public async Task<Result<List<Library>>> GetListOfLibraries(string UserId)
+    public async Task<Result<List<ApiLibrary>>> GetListOfLibraries(string UserId)
     {
         if (string.IsNullOrEmpty(UserId) || string.IsNullOrWhiteSpace(UserId))
-            return Result<List<Library>>.Failure("User Id is required", ErrorType.BadRequest);
+            return Result<List<ApiLibrary>>.Failure("User Id is required", ErrorType.BadRequest);
 
         var response = await _db.Libraries.Where(l => l.UserId == UserId).ToListAsync();
 
-        if (response is null)
-            return Result<List<Library>>.Failure("No Libraries found for user", ErrorType.NotFound);
+        if (response.Count == 0)
+            return Result<List<ApiLibrary>>.Failure("No Libraries found for user", ErrorType.NotFound);
 
-        return Result<List<Library>>.Success(response);
+        List<ApiLibrary> responseData = response.Select(item => new ApiLibrary
+        {
+            Id = item.Id,
+            Name = item.Name,
+            LibraryPath = item.LibraryPath
+        }).ToList();
+
+        return Result<List<ApiLibrary>>.Success(responseData);
     }
 
     public async Task<Result> RemoveBookFromLibrary(string userId, int libraryId, int bookId)

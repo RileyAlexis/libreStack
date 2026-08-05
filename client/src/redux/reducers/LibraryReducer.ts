@@ -10,9 +10,11 @@ import { api } from "@/utils/api";
 
 export const fetchLibraryData = createAsyncThunk(
   "library/fetchLibraryData",
-  async (_, { rejectWithValue, getState }) => {
+  async (libraryId: number, { rejectWithValue, getState }) => {
     try {
-      const response = await api.get("/Library/getAllLibraries");
+      const response = await api.get(
+        `/Library/getLibrary?libraryId=${libraryId}`,
+      );
       const state = getState() as LibreRootState;
       const { sortBy, sortAscending } = state.appSettings.libraryLayout;
       const libraries: LibraryType[] = response.data;

@@ -8,6 +8,13 @@ export interface LibraryType {
   books: BookType[];
 }
 
+export interface LibraryListType {
+  id: number;
+  userId: string;
+  name: string;
+  libraryPath: string;
+}
+
 export interface LibraryBaseType {
   id: number;
   libraryPath: string;

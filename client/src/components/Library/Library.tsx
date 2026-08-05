@@ -32,7 +32,7 @@ export const Library: React.FC = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    dispatch(fetchLibraryData())
+    dispatch(fetchLibraryData(appSettings.lastSelectedLibrary))
       .unwrap()
       .catch((err) => console.error(err))
       .finally(() => setIsLoading(false));

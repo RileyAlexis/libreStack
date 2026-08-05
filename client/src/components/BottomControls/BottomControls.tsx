@@ -104,8 +104,8 @@ export const BottomControls: React.FC = () => {
     setActiveMenu(null);
   };
 
-  const handleSelectLibrary = (index: number) => {
-    dispatch(setLastSelectedLibrary(index));
+  const handleSelectLibrary = (libraryId: number) => {
+    dispatch(setLastSelectedLibrary(libraryId));
     dispatch(saveUserSettings(appSettings));
     closeMenu();
   };
@@ -335,9 +335,9 @@ export const BottomControls: React.FC = () => {
       >
         {library.map((item, index) => (
           <MenuItem
-            key={index}
-            selected={index === appSettings.lastSelectedLibrary}
-            onClick={() => handleSelectLibrary(index)}
+            key={item.id}
+            selected={item.id === appSettings.lastSelectedLibrary}
+            onClick={() => handleSelectLibrary(item.id)}
           >
             {item.name}
           </MenuItem>

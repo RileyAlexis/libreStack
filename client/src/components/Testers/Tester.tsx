@@ -52,6 +52,17 @@ export const Tester: React.FC = () => {
       });
   };
 
+  const handleGetListOfLibraries = () => {
+    api
+      .get("/Library/getListOfLibraries")
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error.data);
+      });
+  };
+
   return (
     <div className="testingContainer">
       <Button variant="contained" onClick={handleGetSeriesByLibrary}>
@@ -60,6 +71,7 @@ export const Tester: React.FC = () => {
       <Button onClick={handleCreateNewUser} variant="contained">
         Create New User
       </Button>
+      <Button onClick={handleGetListOfLibraries}>List of Libraries</Button>
     </div>
   );
 };
