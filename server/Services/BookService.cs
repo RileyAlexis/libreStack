@@ -154,6 +154,7 @@ public class BookService : IBookService
     }
 
 
+    // ! Broken and redundant remove
     public async Task<Result<List<Book>>> GetBooksByLibrary(string userId, int libraryId)
     {
         if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))

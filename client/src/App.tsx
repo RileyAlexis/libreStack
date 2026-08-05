@@ -53,7 +53,6 @@ function useSetupCheck() {
       })
       .catch((err) => {
         console.error(err);
-        // Fail open - don't block the whole app behind a flaky check.
         if (!cancelled) setSetupComplete(true);
       });
 
