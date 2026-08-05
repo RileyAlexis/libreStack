@@ -1,5 +1,5 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-
+import { listenerMiddleware } from "./listenerMiddleware";
 import type { Middleware, UnknownAction } from "@reduxjs/toolkit";
 
 import libraryReducer from "./reducers/LibraryReducer";
@@ -38,7 +38,9 @@ const storeInstance = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }).concat(logger),
+    })
+      .prepend(listenerMiddleware.middleware)
+      .concat(logger),
 });
 
 export { storeInstance };

@@ -30,6 +30,6 @@ public class UserSettings
     public int CoverHeight { get; set; } = 220;
     public string? SortBy { get; set; } = null;
     public bool SortAscending { get; set; } = true;
-    public bool GroupByseries { get; set; } = false;
-    public bool GroupByCollections { get; set; } = false;
+    public bool GroupBySeries { get; set; }
+    public bool GroupByCollections { get; set; }
 }

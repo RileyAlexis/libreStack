@@ -7,7 +7,6 @@ import type { AppDispatch } from "@/redux/store";
 
 // Actions
 import {
-  saveUserSettings,
   setCoverSize,
   setIsSyncing,
   setLastSelectedLibrary,
@@ -103,13 +102,7 @@ export const BottomControls: React.FC = () => {
   };
 
   const handleSelectLibrary = (libraryId: number) => {
-    const updatedSettings = {
-      ...appSettings,
-      lastSelectedLibrary: libraryId,
-    };
-
     dispatch(setLastSelectedLibrary(libraryId));
-    dispatch(saveUserSettings(updatedSettings));
     closeMenu();
   };
 

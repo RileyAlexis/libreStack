@@ -24,8 +24,8 @@ public class LibraryLayoutDto
     public LibraryCoverSizeDto LibraryCoverSize { get; set; } = null!;
     public string? SortBy { get; set; }
     public bool SortAscending { get; set; }
-    public bool GroupByseries { get; set; } = false;
-    public bool GroupByCollections { get; set; } = false;
+    public bool GroupBySeries { get; set; }
+    public bool GroupByCollections { get; set; }
 }
 
 public class LibraryCoverSizeDto

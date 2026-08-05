@@ -50,6 +50,7 @@ export const fetchUserSettings = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get("userSettings");
+      console.log("Fetch User Settings **********************************");
       console.log(response);
       return response.data;
     } catch (error) {
@@ -62,11 +63,9 @@ export const saveUserSettings = createAsyncThunk(
   "userSettings/saveUserSettings",
   async (settings: AppSettings, { rejectWithValue }) => {
     try {
-      // const { availableReadingFonts, ...payload } = settings;
-      const result = await api.post("userSettings", settings);
-      console.log(result);
-      console.log(settings);
-    } catch (error) {
+      const response = await api.post("userSettings", settings);
+      return response.data;
+    } catch (error: any) {
       return rejectWithValue((error as Error).message);
     }
   },
@@ -118,9 +117,17 @@ const AppSettingsSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchUserSettings.fulfilled, (_, action) => {
-      return action.payload;
-    });
+    builder
+      .addCase(fetchUserSettings.fulfilled, (_, action) => action.payload)
+      .addCase(saveUserSettings.pending, (state) => {
+        state.isSyncing = true;
+      })
+      .addCase(saveUserSettings.fulfilled, (state) => {
+        state.isSyncing = false;
+      })
+      .addCase(saveUserSettings.rejected, (state) => {
+        state.isSyncing = false;
+      });
   },
 });
 

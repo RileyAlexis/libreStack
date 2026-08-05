@@ -108,6 +108,7 @@ public class LibraryService : ILibraryService
     {
         if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
             return Result<Library>.Failure("User Id is required", ErrorType.BadRequest);
+
         var result = await _db.Libraries
             .Include(l => l.Books)
                 .ThenInclude(b => b.BookTags)
@@ -122,6 +123,7 @@ public class LibraryService : ILibraryService
         return result is null
             ? Result<Library>.Failure("Library not found", ErrorType.NotFound)
             : Result<Library>.Success(result);
+
     }
 
     public async Task<Result<List<ApiLibrary>>> GetListOfLibraries(string UserId)

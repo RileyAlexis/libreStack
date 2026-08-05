@@ -20,6 +20,8 @@ public static class UserSettingsMapper
         ShowCollections = dto.LibraryLayout.ShowCollections,
         ShowCompleted = dto.LibraryLayout.ShowCompleted,
         ShowDescriptionOnHover = dto.LibraryLayout.ShowDescriptionOnHover,
+        GroupBySeries = dto.LibraryLayout.GroupBySeries,
+        GroupByCollections = dto.LibraryLayout.GroupByCollections,
         CoverWidth = dto.LibraryLayout.LibraryCoverSize.Width,
         CoverHeight = dto.LibraryLayout.LibraryCoverSize.Height,
         SortBy = dto.LibraryLayout.SortBy,
@@ -48,6 +50,8 @@ public static class UserSettingsMapper
             LibraryCoverSize = new LibraryCoverSizeDto { Width = s.CoverWidth, Height = s.CoverHeight },
             SortBy = s.SortBy,
             SortAscending = s.SortAscending,
+            GroupByCollections = s.GroupByCollections,
+            GroupBySeries = s.GroupBySeries,
         },
     };
 }
