@@ -41,7 +41,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
     window.addEventListener("resize", handler);
 
     setCoverMultiplier(() =>
-      screenWidth < 480 ? 0.75 : screenWidth < 768 ? 0.85 : 1,
+      screenWidth < 480 ? 0.65 : screenWidth < 768 ? 0.75 : 1,
     );
 
     return () => window.removeEventListener("resize", handler);

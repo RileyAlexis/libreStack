@@ -1,6 +1,6 @@
 .seriesCardContainer {
   position: relative;
-  background: var(--card);
+  background: linear-gradient(var(--seriesCard), var(--seriesCardEnd));
   box-shadow: var(--shadow-elevation-high);
   transition:
     background 0.2s ease-in-out,
@@ -9,30 +9,66 @@
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
-}
-
-.seriesCover {
-  display: flex;
-  gap: 0.25em;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  padding: 2%;
-  overflow: hidden;
-  transition: padding 0.2s ease-in-out;
-}
-
-.seriesCover img {
-  height: fit-content;
-  object-fit: contain;
+  padding: 0.25em;
+  border: 3px solid var(--seriesCardBorder);
+  --cover-width: 15px;
 }
 
 .seriesInfoContainer {
   display: flex;
+  height: 100%;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-content: space-evenly;
   gap: 0.25em;
+}
+
+.seriesCoverContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 65%;
+  min-height: 65%;
+  overflow: hidden;
+  gap: 0.1em;
+}
+
+.seriesCover-middle {
+  height: 100%;
+  object-fit: cover;
+  overflow: hidden;
+  box-shadow: var(--shadow-elevation-high);
+}
+
+.seriesCover-before {
+  flex-shrink: 0;
+  height: 100%;
+  width: 20px;
+  overflow: visible;
+  object-fit: cover;
+  border: 4px groove white;
+  max-height: 90%;
+  background-color: var(--seriesBackgroundFaderColor);
+  mix-blend-mode: multiply;
+  filter: opacity(0.75);
+}
+
+.seriesCover-after {
+  flex-shrink: 0;
+  width: 20px;
+  height: 100%;
+  overflow: visible;
+  object-fit: cover;
+  border: 4px groove white;
+  max-height: 90%;
+  background-color: var(--seriesBackgroundFaderColor);
+  mix-blend-mode: multiply;
+  filter: opacity(0.75);
+}
+
+.seriesText {
+  overflow: hidden;
 }
 
 @media (hover: hover) and (pointer: fine) {

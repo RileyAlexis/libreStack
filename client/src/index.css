@@ -22,6 +22,10 @@
     --foreground: #0a0a0a;
     --card: #faf1e2;
     --card-elevated: #e8d3b0;
+    --seriesCard: #d0c2aaba;
+    --seriesCardEnd: #a59372c2;
+    --seriesCardBorder: #2e2b25;
+    --seriesBackgroundFaderColor: blue;
     --card-foreground: #0a0a0a;
     --select-color: #00bf23;
 

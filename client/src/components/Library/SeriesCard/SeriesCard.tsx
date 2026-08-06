@@ -6,6 +6,7 @@ import type { LibreRootState } from "@/types/LibreRootState";
 
 import "./SeriesCard.css";
 import { Typography } from "@mui/material";
+import { LibraryBigIcon } from "lucide-react";
 
 interface SeriesCardProps {
   series: SortedBookStateType;
@@ -16,13 +17,19 @@ export const SeriesCard: React.FC<SeriesCardProps> = ({ series }) => {
   const [isHovering, setIsHovering] = useState(false);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const [coverMultiplier, setCoverMultiplier] = useState<number>(1);
+  const middleIndex = Math.floor(
+    (series.seriesBooks.slice(0, 5).length - 1) / 2,
+  );
+  const STRIP_WIDTH = 18;
+  const VERTICAL_STEP = 2;
 
   useEffect(() => {
+    console.log(coverMultiplier);
     const handler = () => setScreenWidth(window.innerWidth);
     window.addEventListener("resize", handler);
 
     setCoverMultiplier(() =>
-      screenWidth < 480 ? 0.75 : screenWidth < 768 ? 0.85 : 1,
+      screenWidth < 480 ? 0.65 : screenWidth < 768 ? 0.75 : 1,
     );
 
     return () => window.removeEventListener("resize", handler);
@@ -43,23 +50,81 @@ export const SeriesCard: React.FC<SeriesCardProps> = ({ series }) => {
       }}
       aria-label={series.sortedTitle}
     >
-      <div className="seriesCover" style={{ display: "flex" }}>
-        {series.seriesBooks.slice(0, 9).map((book) => {
-          const count = Math.min(series.seriesBooks.length, 4);
-          return (
-            <img
-              key={book.id}
-              src={`data:${book.contentType};base64,${book.coverImage}`}
-              alt={book.title}
-              style={{ flex: `0 0 ${100 / count}%`, width: `${100 / count}%` }}
-            />
-          );
-        })}
-      </div>
       <div className="seriesInfoContainer">
-        <Typography variant="h6" sx={{ textAlign: "center" }}>
-          {series.sortedTitle}
-        </Typography>
+        <div className="seriesText">
+          <Typography
+            // variant="subtitle1"
+            sx={{
+              textAlign: "center",
+              fontWeight: "600",
+            }}
+            style={{ fontSize: `${1 * coverMultiplier}rem` }}
+          >
+            {series.sortedTitle}
+          </Typography>
+        </div>
+        <div className="seriesCoverContainer">
+          {appSettings.libraryLayout.libraryCoverSize.height >= 210 &&
+            series.seriesBooks.slice(0, 5).map((book, index) => {
+              const distance = index - middleIndex;
+              const isMiddle = distance === 0;
+              const isBefore = distance < 0;
+              const src = `data:${book.contentType};base64,${book.coverImage}`;
+
+              if (isMiddle) {
+                return (
+                  <img
+                    key={book.id}
+                    src={src}
+                    alt={book.title}
+                    className="seriesCover-middle"
+                  />
+                );
+              }
+
+              if (isBefore) {
+                return (
+                  <img
+                    key={book.id}
+                    src={src}
+                    className="seriesCover-before"
+                    style={{
+                      marginBottom: `${distance * VERTICAL_STEP}em`,
+                      clipPath: `inset(0 calc((100% - ${STRIP_WIDTH}px) / 2))`,
+                    }}
+                  />
+                );
+              }
+
+              if (!isBefore && !isMiddle) {
+                return (
+                  <img
+                    key={book.id}
+                    src={src}
+                    className="seriesCover-after"
+                    style={{
+                      marginTop: `${distance * VERTICAL_STEP}em`,
+                      clipPath: `inset(0 calc((100% - ${STRIP_WIDTH}px) / 2))`,
+                    }}
+                  />
+                );
+              }
+            })}
+          {appSettings.libraryLayout.libraryCoverSize.height < 210 && (
+            <LibraryBigIcon />
+          )}
+        </div>
+        {appSettings.libraryLayout.libraryCoverSize.height >= 210 && (
+          <div className="seriesText">
+            <Typography
+              // variant="subtitle1"
+              sx={{ textAlign: "center" }}
+              style={{ fontSize: `${1 * coverMultiplier}rem` }}
+            >
+              {series.sortedAuthor}
+            </Typography>
+          </div>
+        )}
       </div>
     </div>
   );
