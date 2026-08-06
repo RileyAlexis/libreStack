@@ -6,7 +6,6 @@ import type { LibreRootState } from "@/types/LibreRootState";
 
 import "./SeriesCard.css";
 import { Typography } from "@mui/material";
-import { LibraryBigIcon } from "lucide-react";
 
 interface SeriesCardProps {
   series: SortedBookStateType;
@@ -63,9 +62,9 @@ export const SeriesCard: React.FC<SeriesCardProps> = ({ series }) => {
             {series.sortedTitle}
           </Typography>
         </div>
-        <div className="seriesCoverContainer">
-          {appSettings.libraryLayout.libraryCoverSize.height >= 210 &&
-            series.seriesBooks.slice(0, 5).map((book, index) => {
+        {appSettings.libraryLayout.libraryCoverSize.height >= 210 && (
+          <div className="seriesCoverContainer">
+            {series.seriesBooks.slice(0, 5).map((book, index) => {
               const distance = index - middleIndex;
               const isMiddle = distance === 0;
               const isBefore = distance < 0;
@@ -96,24 +95,21 @@ export const SeriesCard: React.FC<SeriesCardProps> = ({ series }) => {
                 );
               }
 
-              if (!isBefore && !isMiddle) {
-                return (
-                  <img
-                    key={book.id}
-                    src={src}
-                    className="seriesCover-after"
-                    style={{
-                      marginTop: `${distance * VERTICAL_STEP}em`,
-                      clipPath: `inset(0 calc((100% - ${STRIP_WIDTH}px) / 2))`,
-                    }}
-                  />
-                );
-              }
+              return (
+                <img
+                  key={book.id}
+                  src={src}
+                  className="seriesCover-after"
+                  style={{
+                    marginTop: `${distance * VERTICAL_STEP}em`,
+                    clipPath: `inset(0 calc((100% - ${STRIP_WIDTH}px) / 2))`,
+                  }}
+                />
+              );
             })}
-          {appSettings.libraryLayout.libraryCoverSize.height < 210 && (
-            <LibraryBigIcon />
-          )}
-        </div>
+          </div>
+        )}
+
         {appSettings.libraryLayout.libraryCoverSize.height >= 210 && (
           <div className="seriesText">
             <Typography
