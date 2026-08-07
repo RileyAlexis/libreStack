@@ -10,6 +10,10 @@ const selectSortBy = (state: LibreRootState) =>
   state.appSettings.libraryLayout.sortBy;
 const selectSortAscending = (state: LibreRootState) =>
   state.appSettings.libraryLayout.sortAscending;
+const selectShowOnlyDownloaded = (state: LibreRootState) =>
+  state.appSettings.libraryLayout.showOnlyDownloaded;
+const selectDownloadsByBookId = (state: LibreRootState) =>
+  state.downloads.byBookId;
 
 const getLastName = (author: string): string => {
   if (author.includes(",")) {
@@ -71,11 +75,31 @@ const applySort = (
 };
 
 export const selectSortedBookState = createSelector(
-  [selectBooks, selectGroupBySeries, selectSortBy, selectSortAscending],
-  (books, groupBySeries, sortBy, sortAscending): SortedBookStateType[] => {
+  [
+    selectBooks,
+    selectGroupBySeries,
+    selectSortBy,
+    selectSortAscending,
+    selectShowOnlyDownloaded,
+    selectDownloadsByBookId,
+  ],
+  (
+    books,
+    groupBySeries,
+    sortBy,
+    sortAscending,
+    showOnlyDownloaded,
+    downloadsByBookId,
+  ): SortedBookStateType[] => {
     const sortedData: { [id: string]: SortedBookStateType } = {};
 
     books.forEach((book) => {
+      if (showOnlyDownloaded) {
+        const status = downloadsByBookId[String(book.id)]?.status;
+        if (status !== "downloaded") {
+          return;
+        }
+      }
       const bookAddedDate = book.addedDate ? new Date(book.addedDate) : null;
 
       if (book.seriesId !== null && groupBySeries) {
