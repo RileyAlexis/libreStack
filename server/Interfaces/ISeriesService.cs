@@ -11,4 +11,5 @@ public interface ISeriesService
     Task<Result<ApiSeries>> UpdateSeries(ApiSeries apiSeries, string userId);
     Task<Result<ApiSeries>> CreateNewSeries(ApiSeries apiSeries, string userId);
     Task<Result> DeleteSeries(int seriesId, string userId);
+    Task<Result> ReassignSeries(int bookId, string userId, int seriesId);
 }

@@ -108,6 +108,23 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
       });
   };
 
+  const handleRemoveSeries = () => {
+    api
+      .post(`Series/reassignSeries`, {
+        bookId: book.id,
+        seriesId: 0,
+      })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error.response.data);
+      })
+      .finally(() => {
+        dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
+      });
+  };
+
   const iconSize = {
     width:
       appSettings.libraryLayout.libraryCoverSize.width * coverMultiplier * 0.14,
@@ -257,6 +274,11 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
                 }}
               >
                 Remove Download - {formatBytes(totalSize)}
+              </MenuItem>
+            )}
+            {book.seriesId !== null && (
+              <MenuItem onClick={handleRemoveSeries}>
+                Remove From Series
               </MenuItem>
             )}
           </Menu>

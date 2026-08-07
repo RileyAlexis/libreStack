@@ -68,8 +68,23 @@ public class SeriesController : ControllerBase
         return Ok(result.Value);
     }
 
-    public record CreateNewSeriesRequest(string seriesTitle, int seriesTotal);
+    public record ReassignSeriesRecord(int bookId, int seriesId);
 
+    [HttpPost("reassignSeries")]
+    [Authorize]
+    public async Task<IActionResult> ReassignSeries([FromBody] ReassignSeriesRecord seriesData)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null) return Unauthorized();
+
+        var result = await _iSeriesService.ReassignSeries(seriesData.bookId, userId, seriesData.seriesId);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok();
+    }
+
+    public record CreateNewSeriesRequest(string seriesTitle, int seriesTotal);
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> CreateNewSeries([FromBody] CreateNewSeriesRequest newSeries)

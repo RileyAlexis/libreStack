@@ -86,7 +86,10 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({
         const seriesResponse = await api.get(
           `Series/GetSeriesByLibrary?libraryId=${appSettings.lastSelectedLibrary}`,
         );
-        setSeriesList(seriesResponse.data);
+        const sortedSeries = seriesResponse.data.sort((a: any, b: any) =>
+          a.seriesTitle.localeCompare(b.seriesTitle),
+        );
+        setSeriesList(sortedSeries);
       } catch (error) {
         console.error("Failed to fetch global library data:", error);
       }

@@ -4,6 +4,7 @@ using Librestack.Interfaces;
 
 using Microsoft.EntityFrameworkCore;
 using Librestack.Models.APIModels;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Librestack.Services;
 
@@ -173,5 +174,33 @@ public class SeriesService : ISeriesService
             return Result<List<ApiSeries>>.Failure("No series found for library", ErrorType.NotFound);
 
         return Result<List<ApiSeries>>.Success(series);
+    }
+
+    public async Task<Result> ReassignSeries(int bookId, string userId, int seriesId)
+    {
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
+            return Result.Failure("User Id is required", ErrorType.BadRequest);
+
+        var bookResponse = await _db.Books.FirstOrDefaultAsync(b => b.Id == bookId && b.UserId == userId);
+
+        if (bookResponse is null) return Result.Failure("Book not found", ErrorType.NotFound);
+
+        if (seriesId != 0)
+        {
+            var seriesResponse = await _db.Series.FirstOrDefaultAsync(s => s.Id == seriesId);
+            if (seriesResponse is null) return Result.Failure("Series not found", ErrorType.NotFound);
+        }
+        if (seriesId == 0)
+        {
+            bookResponse.SeriesId = null;
+        }
+        else
+        {
+            bookResponse.SeriesId = seriesId;
+        }
+
+        _db.Books.Update(bookResponse);
+        await _db.SaveChangesAsync();
+        return Result.Success();
     }
 }
