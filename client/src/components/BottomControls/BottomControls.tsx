@@ -298,7 +298,7 @@ export const BottomControls: React.FC = () => {
           startIcon={<SquareLibrary />}
           onClick={(e) => {
             e.stopPropagation();
-            navigate("/series");
+            navigate("/seriesManager");
           }}
         >
           <Typography variant="caption">Series</Typography>

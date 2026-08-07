@@ -9,7 +9,7 @@ const initialState: LibreDialogType = {
 };
 
 type SetState = {
-  dialog: true;
+  dialog: boolean;
   bookId: number;
 };
 

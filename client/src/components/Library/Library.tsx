@@ -129,6 +129,20 @@ export const Library: React.FC = () => {
           </Dialog>
         </div>
       )}
+
+      {/* {libreDialogs.isSeriesDialogOpen && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <Dialog
+            open={libreDialogs.isSeriesDialogOpen}
+            onClose={handleDialogClosing}
+            maxWidth="lg"
+            fullWidth={true}
+            fullScreen={true}
+          >
+            <SeriesDialog seriesId={libreDialogs.seriesId!} />
+          </Dialog>
+        </div>
+      )} */}
     </div>
   );
 };

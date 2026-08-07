@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useNavigate } from "react-router";
 
 import type { SortedBookStateType } from "@/types/SortedStateBookType";
 import type { LibreRootState } from "@/types/LibreRootState";
@@ -12,6 +13,7 @@ interface SeriesCardProps {
 }
 
 export const SeriesCard: React.FC<SeriesCardProps> = ({ series }) => {
+  const navigate = useNavigate();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const [_, setIsHovering] = useState(false);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
@@ -34,8 +36,13 @@ export const SeriesCard: React.FC<SeriesCardProps> = ({ series }) => {
     return () => window.removeEventListener("resize", handler);
   }, []);
 
+  const handleOpenSeries = () => {
+    navigate(`/series/${series.seriesId}`);
+  };
+
   return (
     <div
+      onClick={handleOpenSeries}
       className="seriesCardContainer"
       style={{
         width:
@@ -52,7 +59,6 @@ export const SeriesCard: React.FC<SeriesCardProps> = ({ series }) => {
       <div className="seriesInfoContainer">
         <div className="seriesText">
           <Typography
-            // variant="subtitle1"
             sx={{
               textAlign: "center",
               fontWeight: "600",

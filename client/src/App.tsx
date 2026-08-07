@@ -32,6 +32,7 @@ import { Library } from "./components/Library/Library";
 import { BottomControls } from "./components/BottomControls/BottomControls";
 import type { LibreRootState } from "./types/LibreRootState";
 import { LoginScreen } from "./components/LoginScreen/LoginScreen";
+import { SeriesBooks } from "./components/Library/SeriesCard/SeriesBooks";
 
 import "./App.css";
 import { SeriesManager } from "./components/SeriesManager/SeriesManager";
@@ -213,11 +214,20 @@ function App() {
           }
         />
         <Route
-          path="/series"
+          path="/seriesManager"
           element={
             <div className="pageContent">
               <HeaderBanner />
               <SeriesManager />
+            </div>
+          }
+        />
+        <Route
+          path="/series/:seriesId"
+          element={
+            <div className="pageContent">
+              <HeaderBanner />
+              <SeriesBooks />
             </div>
           }
         />
