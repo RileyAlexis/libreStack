@@ -10,8 +10,6 @@
   -webkit-user-select: none;
   user-select: none;
   padding: 0.25em;
-  border: 3px solid var(--seriesCardBorder);
-  --cover-width: 15px;
 }
 
 .seriesInfoContainer {

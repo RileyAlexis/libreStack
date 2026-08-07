@@ -9,20 +9,28 @@ import {
   deleteDownload,
   selectDownloadStatus,
 } from "@/redux/reducers/DownloadReducer";
+import {
+  setIsBookDialogOpen,
+  setIsDescDialogOpen,
+  setIsFixMismatchDialogOpen,
+} from "@/redux/reducers/LibreDialogReducer";
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { BookType } from "@/types/BookType";
 
 // UI
 import { Circle, CircleCheck, EllipsisIcon, FileTextIcon } from "lucide-react";
-import { Menu, MenuItem, IconButton, Dialog } from "@mui/material";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { useTheme } from "@mui/material/styles";
-
-//  Components
-import { BookCardDialog } from "../BookCardDialog";
-import { DescriptionDialog } from "../DescriptionDialog";
-import { FixMismatchDialog } from "../FixMismatchDialog";
+import {
+  Menu,
+  MenuItem,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Typography,
+  DialogActions,
+  Button,
+} from "@mui/material";
 
 import "./BookCardControlsTopBar.css";
 
@@ -53,17 +61,14 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
   book,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const theme = useTheme();
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
   const totalSize = useSelector(selectTotalDownloadedSize);
   const selections = useSelector((state: LibreRootState) => state.selections);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const isSelected = selections.selectedBooks.includes(book.id);
-  const [isBookDialogOpen, setIsBookDialogOpen] = useState(false);
-  const [isDescDialogOpen, setIsDescDialogOpen] = useState(false);
-  const [isFixMismatchDialogOpen, setIsFixMismatchDialogOpen] = useState(false);
-  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const [isResetProgressDialogOpen, setIsResetProgressDialogOpen] =
+    useState(false);
   const downloadStatus = useSelector(selectDownloadStatus(String(book.id)));
 
   const handleMarkComplete = (bookId: number) => {
@@ -88,6 +93,21 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
       });
   };
 
+  const handleResetReadingProgress = () => {
+    api
+      .post(`ReadingProgress/resetProgress?bookId=${book.id}`)
+      .then((response) => {
+        console.log(response.data);
+        dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        setIsResetProgressDialogOpen(false);
+      });
+  };
+
   const iconSize = {
     width:
       appSettings.libraryLayout.libraryCoverSize.width * coverMultiplier * 0.14,
@@ -95,11 +115,6 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
       appSettings.libraryLayout.libraryCoverSize.height *
       coverMultiplier *
       0.14,
-  };
-
-  const handleDialogClosing = () => {
-    setIsBookDialogOpen(false);
-    dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
   };
 
   const handleMenuClose = () => {
@@ -150,7 +165,7 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
             className="rounded-full"
             onClick={(e) => {
               e.stopPropagation();
-              setIsDescDialogOpen(true);
+              dispatch(setIsDescDialogOpen({ dialog: true, bookId: book.id }));
             }}
             aria-label={`Description for ${book.title}`}
           >
@@ -184,7 +199,9 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
           >
             <MenuItem
               onClick={() => {
-                setIsBookDialogOpen(true);
+                dispatch(
+                  setIsBookDialogOpen({ dialog: true, bookId: book.id }),
+                );
                 handleMenuClose();
               }}
               aria-label="View Description"
@@ -214,13 +231,25 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
             )}
             <MenuItem
               onClick={() => {
-                setIsFixMismatchDialogOpen(true);
+                setIsResetProgressDialogOpen(true);
+                handleMenuClose();
+              }}
+              aria-label="Reset Reading Progress"
+            >
+              Reset Reading Progress
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                dispatch(
+                  setIsFixMismatchDialogOpen({ dialog: true, bookId: book.id }),
+                );
                 handleMenuClose();
               }}
               aria-label="Fix Mismatch"
             >
               Fix Mismatch
             </MenuItem>
+
             {downloadStatus === "downloaded" && (
               <MenuItem
                 onClick={() => {
@@ -234,56 +263,36 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
         </div>
       </div>
 
-      {isBookDialogOpen && (
+      {isResetProgressDialogOpen && (
         <div onClick={(e) => e.stopPropagation()}>
           <Dialog
-            open={isBookDialogOpen}
-            onClose={handleDialogClosing}
-            maxWidth="md"
-            fullWidth={true}
-            fullScreen={fullScreen}
-            sx={{
-              paddingTop: "calc(env(safe-area-inset-top))",
-            }}
+            open={isResetProgressDialogOpen}
+            onClose={() => setIsResetProgressDialogOpen(false)}
           >
-            {isBookDialogOpen && (
-              <BookCardDialog
-                bookId={book.id}
-                close={() => setIsBookDialogOpen(false)}
-              />
-            )}
-          </Dialog>
-        </div>
-      )}
-
-      {isDescDialogOpen && (
-        <div onClick={(e) => e.stopPropagation()}>
-          <Dialog
-            open={isDescDialogOpen}
-            onClose={() => setIsDescDialogOpen(false)}
-            maxWidth="lg"
-            fullWidth={true}
-          >
-            {isDescDialogOpen && <DescriptionDialog book={book} />}
-          </Dialog>
-        </div>
-      )}
-
-      {isFixMismatchDialogOpen && (
-        <div onClick={(e) => e.stopPropagation()}>
-          <Dialog
-            open={isFixMismatchDialogOpen}
-            onClose={() => setIsFixMismatchDialogOpen(false)}
-            maxWidth="lg"
-            fullWidth={true}
-            fullScreen={fullScreen}
-          >
-            {isFixMismatchDialogOpen && (
-              <FixMismatchDialog
-                book={book}
-                setIsSelectOpen={setIsFixMismatchDialogOpen}
-              />
-            )}
+            <DialogTitle>Reset Reading Progress?</DialogTitle>
+            <DialogContent>
+              <Typography>
+                This will reset the reading progress for {book.title}. Are you
+                sure?
+              </Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                variant="outlined"
+                onClick={() => {
+                  setIsResetProgressDialogOpen(false);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={handleResetReadingProgress}
+              >
+                Confirm
+              </Button>
+            </DialogActions>
           </Dialog>
         </div>
       )}

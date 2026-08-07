@@ -10,30 +10,34 @@ import type { LibreRootState } from "../../types/LibreRootState";
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 import { fetchLibraryList } from "@/redux/reducers/LibraryListReducer";
 import { BookCard } from "./BookCard/BookCard";
-import { selectDownloadedBookIds } from "@/redux/reducers/DownloadReducer";
+import { closeLibreDialogs } from "@/redux/reducers/LibreDialogReducer";
 
 // Components
 import { BottomControls } from "../BottomControls/BottomControls";
 import { LibraryHeaderControls } from "./LibraryHeaderControls";
+import { BookCardDialog } from "./BookCardDialog";
+import { DescriptionDialog } from "./DescriptionDialog";
+import { FixMismatchDialog } from "./FixMismatchDialog";
 
 // UI
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Dialog } from "@mui/material";
 import "./Library.css";
 import { selectSortedBookState } from "@/redux/Selectors/LibrarySelector";
 import { SeriesCard } from "./SeriesCard/SeriesCard";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 
 export const Library: React.FC = () => {
   const location = useLocation();
   const dispatch = useDispatch<AppDispatch>();
   const [isLoading, setIsLoading] = useState(false);
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
-  const libraryData = useSelector((state: LibreRootState) => state.library);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const sortedBookState = useSelector(selectSortedBookState);
-  const downloadedIds = useSelector(selectDownloadedBookIds);
-  const downloadedIdSet = useMemo(
-    () => new Set(downloadedIds),
-    [downloadedIds],
+  const libreDialogs = useSelector(
+    (state: LibreRootState) => state.libreDialogs,
   );
 
   useEffect(() => {
@@ -53,6 +57,10 @@ export const Library: React.FC = () => {
     }
   }, [appSettings.lastSelectedLibrary]);
 
+  const handleDialogClosing = () => {
+    dispatch(closeLibreDialogs());
+  };
+
   return (
     <div className="libraryContainer">
       <LibraryHeaderControls />
@@ -61,27 +69,6 @@ export const Library: React.FC = () => {
           <CircularProgress size={48} sx={{ mr: 1 }} />
         </div>
       )}
-
-      {/* ? Make meta container that maps books - and decides if it should render a series or not based on that order
-        ensuring no duplicates might be intensive...mabye not with .contains()?
-      */}
-
-      {/* <div className="booksContainer">
-        {!isLoading &&
-          libraryData &&
-          libraryData &&
-          libraryData.books &&
-          libraryData.books
-            .filter(
-              (book: BookType) =>
-                (!book.readingProgress?.isComplete ||
-                  appSettings.libraryLayout.showCompleted) &&
-                (!book.seriesId || !appSettings.libraryLayout.groupBySeries) &&
-                (!appSettings.libraryLayout.showOnlyDownloaded ||
-                  downloadedIdSet.has(String(book.id))),
-            )
-            .map((book: BookType) => <BookCard key={book.id} book={book} />)}
-      </div> */}
 
       <div className="booksContainer">
         {sortedBookState.map((item) =>
@@ -94,8 +81,54 @@ export const Library: React.FC = () => {
           ),
         )}
       </div>
-
       <BottomControls />
+
+      {libreDialogs.isBookDialogOpen && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <Dialog
+            open={libreDialogs.isBookDialogOpen}
+            onClose={handleDialogClosing}
+            maxWidth="md"
+            fullWidth={true}
+            fullScreen={fullScreen}
+            sx={{
+              paddingTop: "calc(env(safe-area-inset-top))",
+            }}
+          >
+            <BookCardDialog
+              bookId={libreDialogs.dialogBookId!}
+              close={handleDialogClosing}
+            />
+          </Dialog>
+        </div>
+      )}
+
+      {libreDialogs.isDescDialogOpen && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <Dialog
+            open={libreDialogs.isDescDialogOpen}
+            onClose={handleDialogClosing}
+            maxWidth="lg"
+            fullWidth={true}
+          >
+            <DescriptionDialog bookId={libreDialogs.dialogBookId} />
+          </Dialog>
+        </div>
+      )}
+
+      {libreDialogs.isFixMismatchDialogOpen && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <Dialog
+            open={libreDialogs.isFixMismatchDialogOpen}
+            onClose={handleDialogClosing}
+            maxWidth="lg"
+            fullWidth={true}
+            fullScreen={fullScreen}
+          >
+            <FixMismatchDialog bookId={libreDialogs.dialogBookId!} />
+          </Dialog>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,17 +1,17 @@
 .setupContainer {
   display: flex;
   flex-direction: column;
-  /* justify-content: center;
-  align-items: center; */
   gap: 1em;
   margin-left: 1em;
   margin-right: 1em;
+  margin-top: 3em;
 }
 
 .setupTitle {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
   margin-top: 0.5em;
   margin-bottom: 3em;
 }

@@ -4,6 +4,7 @@ import type { SelectType } from "./SelectType";
 import type { SnackType } from "./SnackType";
 import type { DownloadsState } from "@/redux/reducers/DownloadReducer";
 import type { LibraryType, LibraryListType } from "./LibraryType";
+import type { LibreDialogType } from "./LibreDialogType";
 
 export interface LibreRootState {
   library: LibraryType;
@@ -13,4 +14,5 @@ export interface LibreRootState {
   auth: AuthType;
   snack: SnackType;
   downloads: DownloadsState;
+  libreDialogs: LibreDialogType;
 }

@@ -6,13 +6,7 @@ import type { SortByType } from "@/types/AppSettings";
 import { api } from "@/utils/api";
 
 // Actions
-import {
-  fetchLibraryData,
-  sortLibraryByAuthor,
-  sortLibraryByDateAdded,
-  sortLibraryByLastRead,
-  sortLibraryByTitle,
-} from "@/redux/reducers/LibraryReducer";
+import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 import { runSnack } from "@/redux/reducers/SnackReducer";
 import { clearSelectedBooks } from "@/redux/reducers/SelectedReducer";
 import {
@@ -37,6 +31,7 @@ import {
   Divider,
   Menu,
   MenuItem,
+  CircularProgress,
 } from "@mui/material";
 import {
   CircleXIcon,
@@ -63,6 +58,9 @@ export const LibraryHeaderControls: React.FC = () => {
   const sortMenuOpen = Boolean(sortAnchorEl);
   const menuOpen = Boolean(anchorEl);
   const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
+  const isSyncing = useSelector(
+    (state: LibreRootState) => state.appSettings.isSyncing,
+  );
 
   const sortingOptions: SortByType[] = [
     "Author",
@@ -71,18 +69,8 @@ export const LibraryHeaderControls: React.FC = () => {
     "Recently Added",
   ];
 
-  const handleSortChange = (value: SortByType, ascending?: boolean) => {
+  const handleSortChange = (value: SortByType) => {
     dispatch(setSortBy(value));
-    const asc = ascending ?? appSettings.libraryLayout.sortAscending;
-    if (value === "Author") {
-      dispatch(sortLibraryByAuthor({ ascending: asc }));
-    } else if (value === "Title") {
-      dispatch(sortLibraryByTitle({ ascending: asc }));
-    } else if (value === "Last Read") {
-      dispatch(sortLibraryByLastRead());
-    } else if (value === "Recently Added") {
-      dispatch(sortLibraryByDateAdded());
-    }
   };
 
   const handleClearSelection = () => {
@@ -91,12 +79,10 @@ export const LibraryHeaderControls: React.FC = () => {
 
   const handleAscending = () => {
     dispatch(setAscending(true));
-    handleSortChange(appSettings.libraryLayout.sortBy, true);
   };
 
   const handleDescending = () => {
     dispatch(setAscending(false));
-    handleSortChange(appSettings.libraryLayout.sortBy, false);
   };
 
   const handleMarkAsRead = async () => {
@@ -289,10 +275,24 @@ export const LibraryHeaderControls: React.FC = () => {
                 </IconButton>
                 <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleClose}>
                   <MenuItem onClick={handleQueryOpenLibrary}>
-                    Query Open Library
+                    {isSyncing ? (
+                      <>
+                        <CircularProgress size={14} sx={{ mr: 1 }} />
+                        Loading
+                      </>
+                    ) : (
+                      "Query Open Library"
+                    )}
                   </MenuItem>
                   <MenuItem onClick={handleQueryWikidata}>
-                    Query Wikidata
+                    {isSyncing ? (
+                      <>
+                        <CircularProgress size={14} sx={{ mr: 1 }} />
+                        Loading
+                      </>
+                    ) : (
+                      "Query Wikidata"
+                    )}
                   </MenuItem>
                 </Menu>
               </div>
@@ -394,44 +394,16 @@ export const LibraryHeaderControls: React.FC = () => {
                 open={sortMenuOpen}
                 onClose={handleCloseSortMenu}
               >
-                <MenuItem
-                  onClick={() =>
-                    handleSortChange(
-                      "Title",
-                      appSettings.libraryLayout.sortAscending,
-                    )
-                  }
-                >
+                <MenuItem onClick={() => handleSortChange("Title")}>
                   Sort by Title
                 </MenuItem>
-                <MenuItem
-                  onClick={() =>
-                    handleSortChange(
-                      "Author",
-                      appSettings.libraryLayout.sortAscending,
-                    )
-                  }
-                >
+                <MenuItem onClick={() => handleSortChange("Author")}>
                   Sort by Author
                 </MenuItem>
-                <MenuItem
-                  onClick={() =>
-                    handleSortChange(
-                      "Last Read",
-                      appSettings.libraryLayout.sortAscending,
-                    )
-                  }
-                >
+                <MenuItem onClick={() => handleSortChange("Last Read")}>
                   Sort by Last Read
                 </MenuItem>
-                <MenuItem
-                  onClick={() =>
-                    handleSortChange(
-                      "Recently Added",
-                      appSettings.libraryLayout.sortAscending,
-                    )
-                  }
-                >
+                <MenuItem onClick={() => handleSortChange("Recently Added")}>
                   Sort by Recently Added
                 </MenuItem>
               </Menu>

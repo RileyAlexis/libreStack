@@ -8,5 +8,6 @@ export interface SortedBookStateType {
   seriesCover: string;
   book: BookType | null;
   seriesBooks: BookType[];
-  lastRead: Date;
+  lastRead: Date | null;
+  dateAdded: Date | null;
 }

@@ -110,8 +110,7 @@ export const BottomControls: React.FC = () => {
     dispatch(setIsSyncing(true));
     api
       .post(`/LibraryScan/scanLibrary?libraryId=${library.id}`)
-      .then((response) => {
-        console.log(response.data);
+      .then(() => {
         dispatch(
           runSnack({
             isOpen: true,
@@ -430,7 +429,7 @@ export const BottomControls: React.FC = () => {
           <Slider
             value={appSettings.libraryLayout.libraryCoverSize.width}
             onChange={handleChangeCoverSize}
-            step={10}
+            // step={10}
             min={80}
             max={500}
           />

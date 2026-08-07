@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
+import { setLastSelectedLibrary } from "@/redux/reducers/AppSettingsReducer";
 import { setTokens, setUser } from "@/redux/reducers/AuthReducer";
 import { Info } from "lucide-react";
 
@@ -97,13 +98,16 @@ export const Setup: React.FC = () => {
           .then(() => navigate("/"))
           .catch((error) => console.error(error));
       })
-      .catch((error) => console.error(error));
+      .catch((error) => console.error(error))
+      .finally(() => {
+        dispatch(setLastSelectedLibrary(1));
+      });
   };
 
   return (
     <div className="setupContainer">
       <div className="setupTitle">
-        <h1>LibreStack Initial Setup</h1>
+        <Typography variant="h1">Initial Setup</Typography>
       </div>
       <div className="setupArea">
         <div className="setupEntry">

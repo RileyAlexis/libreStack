@@ -113,7 +113,6 @@ export const SeriesCard: React.FC<SeriesCardProps> = ({ series }) => {
         {appSettings.libraryLayout.libraryCoverSize.height >= 210 && (
           <div className="seriesText">
             <Typography
-              // variant="subtitle1"
               sx={{ textAlign: "center" }}
               style={{ fontSize: `${1 * coverMultiplier}rem` }}
             >

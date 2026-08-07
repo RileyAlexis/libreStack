@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "@/redux/store";
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 import { api } from "@/utils/api";
-import type { BookType } from "@/types/BookType";
 import type { BookSearchType } from "@/types/BookSearchType";
 
 // UI
@@ -31,18 +30,20 @@ import { CircleXIcon } from "lucide-react";
 import "./FixMisMatchDialog.css";
 import { setIsSyncing } from "@/redux/reducers/AppSettingsReducer";
 import type { LibreRootState } from "@/types/LibreRootState";
+import { closeLibreDialogs } from "@/redux/reducers/LibreDialogReducer";
 
 interface FixMismatchDialogProps {
-  book: BookType;
-  setIsSelectOpen: React.Dispatch<SetStateAction<boolean>>;
+  bookId: number;
 }
 
 export const FixMismatchDialog: React.FC<FixMismatchDialogProps> = ({
-  book,
-  setIsSelectOpen,
+  bookId,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  const book = useSelector((state: LibreRootState) =>
+    state.library.books.find((b) => b.id === bookId),
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>();
   const [error, setError] = useState<string | null>(null);
@@ -64,7 +65,7 @@ export const FixMismatchDialog: React.FC<FixMismatchDialogProps> = ({
       setIsLoading(true);
       setError(null);
       api
-        .get(`metadata/searchOpenLibrary?bookId=${book.id}`)
+        .get(`metadata/searchOpenLibrary?bookId=${book!.id}`)
         .then((response) => {
           console.log(response.data.value);
           setSearchResults(response.data.value);
@@ -84,7 +85,7 @@ export const FixMismatchDialog: React.FC<FixMismatchDialogProps> = ({
     dispatch(setIsSyncing(true));
     api
       .get(
-        `metadata/searchOpenLibrary?bookId=${book.id}&searchTerm=${searchTerm}`,
+        `metadata/searchOpenLibrary?bookId=${book!.id}&searchTerm=${searchTerm}`,
       )
       .then((response) => {
         setSearchResults(response.data.value);
@@ -124,7 +125,6 @@ export const FixMismatchDialog: React.FC<FixMismatchDialogProps> = ({
       );
       console.error(error);
     } finally {
-      setIsSelectOpen(false);
       dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
       dispatch(setIsSyncing(false));
     }
@@ -135,10 +135,10 @@ export const FixMismatchDialog: React.FC<FixMismatchDialogProps> = ({
       <DialogTitle style={{ maxWidth: "90vw" }}>
         Fix Mismatch
         <Typography variant="body2" color="text.secondary">
-          {book.title}
+          {book!.title}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {book.author}
+          {book!.author}
         </Typography>
         {error && (
           <Box sx={{ mt: 2 }}>
@@ -151,7 +151,7 @@ export const FixMismatchDialog: React.FC<FixMismatchDialogProps> = ({
       </DialogTitle>
       <IconButton
         aria-label="Close"
-        onClick={() => setIsSelectOpen(false)}
+        onClick={() => dispatch(closeLibreDialogs())}
         sx={{ position: "absolute", right: 8, top: 8 }}
       >
         <CircleXIcon />
@@ -268,7 +268,6 @@ export const FixMismatchDialog: React.FC<FixMismatchDialogProps> = ({
                     onClick={() => {
                       if (selectedResult) handleSelectResult(selectedResult);
                       setIsAlertSelectOpen(false);
-                      setIsSelectOpen(false);
                     }}
                   >
                     Confirm
