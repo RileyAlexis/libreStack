@@ -37,7 +37,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ setIsLoginOpen }) => {
       })
       .then((response) => {
         dispatch(setUser(response.data));
-        dispatch(fetchLibraryData());
+        dispatch(fetchLibraryData(1));
         setIsLoginOpen(false);
         navigate("/");
       })

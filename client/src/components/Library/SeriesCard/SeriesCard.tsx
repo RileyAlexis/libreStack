@@ -13,7 +13,7 @@ interface SeriesCardProps {
 
 export const SeriesCard: React.FC<SeriesCardProps> = ({ series }) => {
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
-  const [isHovering, setIsHovering] = useState(false);
+  const [_, setIsHovering] = useState(false);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const [coverMultiplier, setCoverMultiplier] = useState<number>(1);
   const middleIndex = Math.floor(
