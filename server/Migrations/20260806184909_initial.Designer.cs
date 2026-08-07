@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace libreStack.Migrations
 {
     [DbContext(typeof(LibrestackDbContext))]
-    [Migration("20260803142437_initial")]
+    [Migration("20260806184909_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -386,6 +386,10 @@ namespace libreStack.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<byte[]>("SeriesImage")
+                        .HasColumnType("bytea")
+                        .HasColumnName("series_image");
+
                     b.Property<string>("SeriesTitle")
                         .HasColumnType("text")
                         .HasColumnName("series_title");
@@ -429,9 +433,9 @@ namespace libreStack.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("group_by_collections");
 
-                    b.Property<bool>("GroupByseries")
+                    b.Property<bool>("GroupBySeries")
                         .HasColumnType("boolean")
-                        .HasColumnName("group_byseries");
+                        .HasColumnName("group_by_series");
 
                     b.Property<int>("LastSelectedLibrary")
                         .HasColumnType("integer")

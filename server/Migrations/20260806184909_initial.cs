@@ -128,7 +128,8 @@ namespace libreStack.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     user_id = table.Column<string>(type: "text", nullable: true),
                     series_title = table.Column<string>(type: "text", nullable: true),
-                    series_total = table.Column<int>(type: "integer", nullable: false)
+                    series_total = table.Column<int>(type: "integer", nullable: false),
+                    series_image = table.Column<byte[]>(type: "bytea", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -267,7 +268,7 @@ namespace libreStack.Migrations
                     cover_height = table.Column<int>(type: "integer", nullable: false),
                     sort_by = table.Column<string>(type: "text", nullable: true),
                     sort_ascending = table.Column<bool>(type: "boolean", nullable: false),
-                    group_byseries = table.Column<bool>(type: "boolean", nullable: false),
+                    group_by_series = table.Column<bool>(type: "boolean", nullable: false),
                     group_by_collections = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
