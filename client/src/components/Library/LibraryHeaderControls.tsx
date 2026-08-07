@@ -32,6 +32,8 @@ import {
   Menu,
   MenuItem,
   CircularProgress,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import {
   CircleXIcon,
@@ -47,10 +49,12 @@ import {
 } from "lucide-react";
 
 import "./LibraryHeaderControls.css";
+import { AssignToSeriesDialog } from "./AssignToSeriesDialog";
 
 export const LibraryHeaderControls: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isAddToSeriesOpen, setIsAddToSeriesOpen] = useState(false);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const selections = useSelector((state: LibreRootState) => state.selections);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -58,6 +62,8 @@ export const LibraryHeaderControls: React.FC = () => {
   const sortMenuOpen = Boolean(sortAnchorEl);
   const menuOpen = Boolean(anchorEl);
   const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const isSyncing = useSelector(
     (state: LibreRootState) => state.appSettings.isSyncing,
   );
@@ -274,6 +280,9 @@ export const LibraryHeaderControls: React.FC = () => {
                   <EllipsisVertical />
                 </IconButton>
                 <Menu anchorEl={anchorEl} open={menuOpen} onClose={handleClose}>
+                  <MenuItem onClick={() => setIsAddToSeriesOpen(true)}>
+                    Assign To Series
+                  </MenuItem>
                   <MenuItem onClick={handleQueryOpenLibrary}>
                     {isSyncing ? (
                       <>
@@ -411,6 +420,15 @@ export const LibraryHeaderControls: React.FC = () => {
           )}
         </div>
       </div>
+      <Dialog
+        open={isAddToSeriesOpen}
+        onClose={setIsAddToSeriesOpen}
+        // maxWidth="lg"
+        // fullWidth={true}
+        // fullScreen={fullScreen}
+      >
+        <AssignToSeriesDialog setIsAddToSeriesOpen={setIsAddToSeriesOpen} />
+      </Dialog>
     </div>
   );
 };
