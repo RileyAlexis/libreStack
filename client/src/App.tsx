@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Route, Routes } from "react-router";
 
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "./redux/store";
-
+import type { LibreRootState } from "./types/LibreRootState";
 import { api } from "./utils/api";
 
 // Redux Actions
@@ -11,6 +11,7 @@ import { fetchUserSettings } from "./redux/reducers/AppSettingsReducer";
 import { clearSnack } from "./redux/reducers/SnackReducer";
 import { setUser } from "./redux/reducers/AuthReducer";
 import { hydrateDownloads } from "./redux/reducers/DownloadReducer";
+import { closeLibreDialogs } from "@/redux/reducers/LibreDialogReducer";
 
 // UI
 import {
@@ -21,7 +22,8 @@ import {
   type SnackbarCloseReason,
   Alert,
 } from "@mui/material";
-
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 import { XIcon } from "lucide-react";
 
 // Components
@@ -30,14 +32,16 @@ import { HeaderBanner } from "./components/HeaderBanner/HeaderBanner";
 import { Reader } from "./components/Reader/Reader";
 import { Library } from "./components/Library/Library";
 import { BottomControls } from "./components/BottomControls/BottomControls";
-import type { LibreRootState } from "./types/LibreRootState";
 import { LoginScreen } from "./components/LoginScreen/LoginScreen";
 import { SeriesBooks } from "./components/Library/SeriesCard/SeriesBooks";
-
-import "./App.css";
+import { BookCardDialog } from "./components/Library/BookCardDialog";
+import { DescriptionDialog } from "./components/Library/DescriptionDialog";
+import { FixMismatchDialog } from "./components/Library/FixMismatchDialog";
 import { SeriesManager } from "./components/SeriesManager/SeriesManager";
 import { ServerManager } from "./components/ServerManager/ServerManager";
 import { Tester } from "./components/Testers/Tester";
+
+import "./App.css";
 
 type AuthStatus = "checking" | "authenticated" | "unauthenticated";
 
@@ -147,6 +151,11 @@ function App() {
   const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const snackData = useSelector((state: LibreRootState) => state.snack);
+  const libreDialogs = useSelector(
+    (state: LibreRootState) => state.libreDialogs,
+  );
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const setupComplete = useSetupCheck();
   const authStatus = useAuthBootstrap();
@@ -171,6 +180,10 @@ function App() {
     }
 
     dispatch(clearSnack());
+  };
+
+  const handleDialogClosing = () => {
+    dispatch(closeLibreDialogs());
   };
 
   return (
@@ -275,6 +288,53 @@ function App() {
           {snackData?.description}
         </Alert>
       </Snackbar>
+
+      {libreDialogs.isBookDialogOpen && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <Dialog
+            open={libreDialogs.isBookDialogOpen}
+            onClose={handleDialogClosing}
+            maxWidth="md"
+            fullWidth={true}
+            fullScreen={fullScreen}
+            sx={{
+              paddingTop: "calc(env(safe-area-inset-top))",
+            }}
+          >
+            <BookCardDialog
+              bookId={libreDialogs.dialogBookId!}
+              close={handleDialogClosing}
+            />
+          </Dialog>
+        </div>
+      )}
+
+      {libreDialogs.isDescDialogOpen && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <Dialog
+            open={libreDialogs.isDescDialogOpen}
+            onClose={handleDialogClosing}
+            maxWidth="lg"
+            fullWidth={true}
+          >
+            <DescriptionDialog bookId={libreDialogs.dialogBookId} />
+          </Dialog>
+        </div>
+      )}
+
+      {libreDialogs.isFixMismatchDialogOpen && (
+        <div onClick={(e) => e.stopPropagation()}>
+          <Dialog
+            open={libreDialogs.isFixMismatchDialogOpen}
+            onClose={handleDialogClosing}
+            maxWidth="lg"
+            fullWidth={true}
+            fullScreen={fullScreen}
+          >
+            <FixMismatchDialog bookId={libreDialogs.dialogBookId!} />
+          </Dialog>
+        </div>
+      )}
     </div>
   );
 }
