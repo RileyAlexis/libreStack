@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { api } from "@/utils/api";
 import type { LibreRootState } from "@/types/LibreRootState";
+import type { AppDispatch } from "@/redux/store";
 import type { Dispatch, SetStateAction } from "react";
 
 import {
@@ -19,6 +20,7 @@ import {
 import { Minus, Plus } from "lucide-react";
 
 import "./AssignToSeriesDialog.css";
+import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 
 interface SeriesListType {
   bookCount: number;
@@ -34,6 +36,7 @@ interface AssignToSeriesDialogProps {
 export const AssignToSeriesDialog: React.FC<AssignToSeriesDialogProps> = ({
   setIsAddToSeriesOpen,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const selections = useSelector(
     (state: LibreRootState) => state.selections.selectedBooks,
@@ -102,6 +105,8 @@ export const AssignToSeriesDialog: React.FC<AssignToSeriesDialogProps> = ({
       setIsAddToSeriesOpen(false);
     } catch (error: any) {
       console.error(error.response.data);
+    } finally {
+      dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
     }
   };
 
