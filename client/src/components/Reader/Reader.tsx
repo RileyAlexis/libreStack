@@ -23,6 +23,11 @@ export const Reader: React.FC = () => {
   const [chapterProgress, setChapterProgress] = useState({ page: 0, total: 0 });
   const [bookProgress, setBookProgress] = useState({ page: 0, total: 0 });
 
+  const currentCfiRef = useRef<string | null>(null);
+  const suppressNextRelocateRef = useRef(false);
+  const settingsDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const renderAreaRef = useRef<HTMLDivElement>(null);
   const readerRootRef = useRef<HTMLDivElement>(null);
   const renditionRef = useRef<Rendition | null>(null);
@@ -53,10 +58,24 @@ export const Reader: React.FC = () => {
     rendition.spread(settings.spread);
   };
 
-  // re-apply live when redux settings change, without tearing down the rendition
   useEffect(() => {
     if (!renditionRef.current) return;
-    applyReaderSettings(renditionRef.current, appSettings);
+
+    if (settingsDebounceRef.current) clearTimeout(settingsDebounceRef.current);
+
+    settingsDebounceRef.current = setTimeout(() => {
+      const cfi = currentCfiRef.current;
+      applyReaderSettings(renditionRef.current!, appSettings);
+      if (cfi) {
+        suppressNextRelocateRef.current = true;
+        renditionRef.current!.display(cfi);
+      }
+    }, 250);
+
+    return () => {
+      if (settingsDebounceRef.current)
+        clearTimeout(settingsDebounceRef.current);
+    };
   }, [
     appSettings.readingFontSize,
     appSettings.readingFont,
@@ -211,16 +230,18 @@ export const Reader: React.FC = () => {
     });
 
     rendition.on("relocated", (location) => {
-      updateLocation(location);
+      if (suppressNextRelocateRef.current) {
+        suppressNextRelocateRef.current = false;
+      } else {
+        currentCfiRef.current = location.start.cfi;
+        updateLocation(location);
+      }
 
-      // per-chapter progress — built into epub.js's pagination for the
-      // currently rendered section, no setup required
       setChapterProgress({
         page: location.start.displayed.page,
         total: location.start.displayed.total,
       });
 
-      // whole-book progress — uses displayed page number directly for accuracy
       if (bookInstance.locations.total) {
         const globalLocation = bookInstance.locations.locationFromCfi(
           location.start.cfi,
