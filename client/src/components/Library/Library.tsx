@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router";
 
@@ -29,6 +29,15 @@ export const Library: React.FC = () => {
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const sortedBookState = useSelector(selectSortedBookState);
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem(`libraryScroll:${location.key}`);
+    if (saved && scrollRef.current) {
+      scrollRef.current.scrollTop = parseInt(saved, 10);
+    }
+  }, []);
+
   useEffect(() => {
     setIsLoading(true);
     dispatch(fetchLibraryList())
@@ -46,6 +55,15 @@ export const Library: React.FC = () => {
     }
   }, [appSettings.lastSelectedLibrary]);
 
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      sessionStorage.setItem(
+        `libraryScroll:${location.key}`,
+        String(scrollRef.current.scrollTop),
+      );
+    }
+  };
+
   return (
     <div className="libraryContainer">
       <LibraryHeaderControls />
@@ -55,7 +73,7 @@ export const Library: React.FC = () => {
         </div>
       )}
 
-      <div className="booksContainer">
+      <div className="booksContainer" ref={scrollRef} onScroll={handleScroll}>
         {sortedBookState.map((item) =>
           item.isSeries && item.seriesBooks.length > 1 ? (
             <SeriesCard key={`series-${item.seriesId}`} series={item} />
