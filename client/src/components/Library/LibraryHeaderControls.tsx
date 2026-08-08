@@ -32,8 +32,6 @@ import {
   Menu,
   MenuItem,
   CircularProgress,
-  useMediaQuery,
-  useTheme,
 } from "@mui/material";
 import {
   CircleXIcon,
@@ -62,8 +60,6 @@ export const LibraryHeaderControls: React.FC = () => {
   const sortMenuOpen = Boolean(sortAnchorEl);
   const menuOpen = Boolean(anchorEl);
   const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
-  const theme = useTheme();
-  const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const isSyncing = useSelector(
     (state: LibreRootState) => state.appSettings.isSyncing,
   );
@@ -420,13 +416,7 @@ export const LibraryHeaderControls: React.FC = () => {
           )}
         </div>
       </div>
-      <Dialog
-        open={isAddToSeriesOpen}
-        onClose={setIsAddToSeriesOpen}
-        // maxWidth="lg"
-        // fullWidth={true}
-        // fullScreen={fullScreen}
-      >
+      <Dialog open={isAddToSeriesOpen} onClose={setIsAddToSeriesOpen}>
         <AssignToSeriesDialog setIsAddToSeriesOpen={setIsAddToSeriesOpen} />
       </Dialog>
     </div>
