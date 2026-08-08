@@ -115,60 +115,59 @@ export const AssignToSeriesDialog: React.FC<AssignToSeriesDialogProps> = ({
       <DialogTitle>Assign {selectedBooks.length} Books To Series</DialogTitle>
       <DialogContent>
         <Box key="series" className="seriesSelectorContainer">
+          <InputLabel id="assignToSeriesSelectLabel">Series:</InputLabel>
           <div className="seriesSelectorBox">
-            <InputLabel id="assignToSeriesSelectLabel">Series:</InputLabel>
+            <div className="seriesSelectorField">
+              {!isAddingSeries && (
+                <Select
+                  fullWidth
+                  size="small"
+                  displayEmpty
+                  value={selectedSeries?.seriesTitle}
+                  onChange={(e) => handleSelectSeries(e)}
+                >
+                  {seriesList?.map((item) => (
+                    <MenuItem key={item.id} value={item.seriesTitle}>
+                      {item.seriesTitle}
+                    </MenuItem>
+                  ))}
+                </Select>
+              )}
+              {isAddingSeries && (
+                <TextField
+                  autoFocus
+                  fullWidth
+                  size="small"
+                  placeholder="New series name"
+                  value={newSeries}
+                  onChange={(e) => setNewSeries(e.target.value)}
+                />
+              )}
+            </div>
+
             {!isAddingSeries && (
-              <Select
-                fullWidth
-                size="small"
-                displayEmpty
-                value={selectedSeries?.seriesTitle}
-                onChange={(e) => handleSelectSeries(e)}
-              >
-                {seriesList?.map((item) => (
-                  <MenuItem key={item.id} value={item.seriesTitle}>
-                    {item.seriesTitle}
-                  </MenuItem>
-                ))}
-              </Select>
+              <Tooltip title="Add New Series">
+                <Button
+                  variant="contained"
+                  size="medium"
+                  onClick={() => setIsAddingSeries(true)}
+                >
+                  <Plus />
+                </Button>
+              </Tooltip>
             )}
             {isAddingSeries && (
-              <TextField
-                autoFocus
-                fullWidth
-                size="small"
-                placeholder="New series name"
-                value={newSeries}
-                onChange={(e) => setNewSeries(e.target.value)}
-              ></TextField>
+              <Tooltip title="Cancel">
+                <Button
+                  variant="contained"
+                  size="medium"
+                  onClick={() => setIsAddingSeries(false)}
+                >
+                  <Minus />
+                </Button>
+              </Tooltip>
             )}
           </div>
-          {!isAddingSeries && (
-            <Tooltip title="Add New Series">
-              <Button
-                disabled={isAddingSeries}
-                variant="contained"
-                size="medium"
-                onClick={() => setIsAddingSeries(true)}
-                sx={{ marginBottom: "0.25em" }}
-              >
-                <Plus />
-              </Button>
-            </Tooltip>
-          )}
-          {isAddingSeries && (
-            <Tooltip title="Cancel">
-              <Button
-                disabled={!isAddingSeries}
-                variant="contained"
-                size="medium"
-                onClick={() => setIsAddingSeries(false)}
-                sx={{ marginBottom: "0.25em" }}
-              >
-                <Minus />
-              </Button>
-            </Tooltip>
-          )}
         </Box>
       </DialogContent>
       <DialogActions>

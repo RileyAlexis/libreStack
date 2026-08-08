@@ -1,13 +1,19 @@
 .seriesSelectorContainer {
   display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+  min-width: 0;
+}
+
+.seriesSelectorBox {
+  display: flex;
   flex-direction: row;
-  justify-content: center;
   align-items: flex-end;
   gap: 0.5em;
   min-width: 0;
 }
 
-.seriesSelectorBox {
+.seriesSelectorField {
   flex: 1 1 0;
   min-width: 0;
 }
