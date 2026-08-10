@@ -42,6 +42,7 @@ const FIELD_ORDER: FieldConfig[] = [
   { kind: "series" },
   { kind: "text", id: "seriesOrder", label: "Series Order" },
   { kind: "text", id: "publisher", label: "Publisher" },
+  { kind: "text", id: "publishDate", label: "Published Date" },
   { kind: "textarea", id: "description", label: "Description" },
   { kind: "text", id: "isbn", label: "ISBN" },
   { kind: "text", id: "isbn13", label: "ISBN-13" },

@@ -4,8 +4,6 @@ using Librestack.Interfaces;
 
 using Microsoft.EntityFrameworkCore;
 using Librestack.Models.APIModels;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Librestack.Services;
 

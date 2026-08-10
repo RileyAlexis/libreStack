@@ -17,6 +17,7 @@ export const DescriptionDialog: React.FC<DescriptionProps> = ({ bookId }) => {
         <div className="descriptionDialogHeaderInfo">
           <Typography variant="h5">{book!.title}</Typography>
           <Typography variant="h6">{book!.author}</Typography>
+          <Typography variant="body1">Published {book?.publishDate}</Typography>
           {book!.series && (
             <Typography variant="body1">
               {book!.series.seriesTitle} - #{book!.seriesOrder}

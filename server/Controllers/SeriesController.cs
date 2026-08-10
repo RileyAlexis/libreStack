@@ -85,6 +85,7 @@ public class SeriesController : ControllerBase
     }
 
     public record CreateNewSeriesRequest(string seriesTitle, int seriesTotal);
+
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> CreateNewSeries([FromBody] CreateNewSeriesRequest newSeries)

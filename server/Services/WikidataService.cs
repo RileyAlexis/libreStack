@@ -199,6 +199,12 @@ public class WikidataService : IWikidataService
         var openLibraryId = GetBindingValue(binding, "openLibraryId");
         var publicationDate = GetBindingValue(binding, "publicationDate");
 
+        string? publishYear = null;
+        if (!string.IsNullOrEmpty(publicationDate) && DateTimeOffset.TryParse(publicationDate, out var parsed))
+        {
+            publishYear = parsed.Year.ToString();
+        }
+
         if (title != null && string.IsNullOrWhiteSpace(book.Title)) book.Title = title;
         if (author != null && string.IsNullOrWhiteSpace(book.Author)) book.Author = author;
         if (series != null)
@@ -212,7 +218,7 @@ public class WikidataService : IWikidataService
         }
         if (openLibraryId != null) book.OpenLibraryWorkId = openLibraryId;
         if (oclc != null) book.OCLCWorldCat = oclc;
-        if (publicationDate != null) book.PublishDate = publicationDate;
+        if (publishYear != null) book.PublishDate = publishYear;
 
         book.WikidataMetaLastUpdated = DateTime.UtcNow;
 

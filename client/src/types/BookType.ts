@@ -27,6 +27,7 @@ export interface BookType {
   title: string;
   author: string;
   publisher: string;
+  publishDate: string;
   description: string;
   coverImage: string;
   seriesId: number | null;

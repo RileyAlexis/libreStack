@@ -69,6 +69,8 @@ public class OpenLibraryService : IOpenLibraryService
         string url = $"https://openlibrary.org/api/works?bibkeys=ISBN:{book.ISBN}&format=json&jscmd=data";
         var client = await CreateClient();
 
+        _logger.LogInformation("Calling by ISBN {title} at URL {url}", book.Title, url);
+
         await RateLimit();
         var response = await client.GetAsync(url);
         if (!response.IsSuccessStatusCode)
@@ -122,7 +124,7 @@ public class OpenLibraryService : IOpenLibraryService
             idents3.TryGetProperty("oclc", out var idents13) &&
             idents13.GetArrayLength() > 0 ? idents13[0].GetString() : null;
 
-        var publishDate = root.TryGetProperty("publish_date", out var publish) ? publish.GetString() : null;
+        var publishDate = root.TryGetProperty("first_publish_date", out var publish) ? publish.GetString() : null;
 
         var publisher = root.TryGetProperty("publishers", out var publishersData) &&
             publishersData[0].TryGetProperty("name", out var pubArray) ? pubArray.GetString() : null;
@@ -149,6 +151,9 @@ public class OpenLibraryService : IOpenLibraryService
 
         book.OpenLibraryMetadataLastUpdated = DateTime.UtcNow;
 
+        _logger.LogInformation("ISBN Results {book}", book.ToString());
+
+
         _db.Books.Update(book);
         await _db.SaveChangesAsync();
         return Result<Book>.Success(book);
@@ -159,6 +164,7 @@ public class OpenLibraryService : IOpenLibraryService
         string url = $"https://openlibrary.org/works/{book.OpenLibraryWorkId}.json";
         var client = await CreateClient();
 
+        _logger.LogInformation("Calling by Open Library Work Id {title} at URL {url}", book.Title, url);
 
         await RateLimit();
         var response = await client.GetAsync(url);
@@ -171,11 +177,6 @@ public class OpenLibraryService : IOpenLibraryService
         var root = doc.RootElement;
         if (root.ValueKind == JsonValueKind.Undefined)
             return Result<Book>.Failure("No Results Found", ErrorType.NotFound);
-
-        Console.WriteLine("************************************");
-        Console.WriteLine($"------------------- {url}");
-        Console.WriteLine("************************************");
-        Console.WriteLine(json);
 
         var title = root.TryGetProperty("title", out var t) ? t.GetString() : null;
 
@@ -232,7 +233,7 @@ public class OpenLibraryService : IOpenLibraryService
                 ? cv[0].GetInt32().ToString()
                 : null;
 
-        var publishDate = root.TryGetProperty("publish_date", out var pub) ? pub.GetString() : null;
+        var publishDate = root.TryGetProperty("first_publish_date", out var pub) ? pub.GetString() : null;
 
         if (title != null && string.IsNullOrWhiteSpace(book.Title)) book.Title = title;
         if (seriesName != null)
@@ -265,9 +266,11 @@ public class OpenLibraryService : IOpenLibraryService
     private async Task<Result<Book>> CallByTitleAndAuthor(Book book)
     {
         var searchTitle = _bookParsing.CleanTitle(book.Title);
-        _logger.LogInformation($"Searching Open Library for id {book.Id} - {book.Title} - Cleaned Title {searchTitle}");
+
         string url = $"https://openlibrary.org/search.json?title={Uri.EscapeDataString(searchTitle)}&author={Uri.EscapeDataString(book.Author)}&limit=1";
         var client = await CreateClient();
+
+        _logger.LogInformation($"Searching Open Library by Title and Author {book.Id} - {book.Title} - Cleaned Title {searchTitle} - {url}");
 
         await RateLimit();
         var response = await client.GetAsync(url);
