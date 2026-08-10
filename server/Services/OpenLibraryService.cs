@@ -364,9 +364,17 @@ public class OpenLibraryService : IOpenLibraryService
             if (!string.IsNullOrWhiteSpace(book.ISBN))
             {
                 var isbnResult = await CallByISBN(book);
-                if (!isbnResult.IsSuccess)
-                    return Result.Failure(isbnResult.Error ?? "Unknown error", ErrorType.Unexpected);
-                book = isbnResult.Value;
+                if (isbnResult.IsSuccess)
+                {
+                    book = isbnResult.Value;
+                }
+                else
+                {
+                    var searchResult = await CallByTitleAndAuthor(book);
+                    if (!searchResult.IsSuccess)
+                        return Result.Failure(searchResult.Error ?? "Unknown error", ErrorType.Unexpected);
+                    book = searchResult.Value;
+                }
             }
             else
             {
