@@ -59,6 +59,7 @@ builder.Services.AddScoped<IBookParsingService, BookParsingService>();
 builder.Services.AddScoped<IUserSettingsService, UserSettingsService>();
 builder.Services.AddScoped<ISeriesService, SeriesService>();
 builder.Services.AddScoped<IServerStatsService, ServerStatsService>();
+builder.Services.AddScoped<ICollectionsService, CollectionsService>();
 
 builder.Services.AddHostedService<LibraryMonitorService>();
 

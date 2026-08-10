@@ -94,6 +94,8 @@ public class LibraryService : ILibraryService
                 .ThenInclude(b => b.Bookmarks)
             .Include(l => l.Books)
                 .ThenInclude(b => b.Series)
+            .Include(l => l.Books)
+                .ThenInclude(b => b.Collections)
             .ToListAsync();
 
         if (libraries.Count == 0)
@@ -116,6 +118,8 @@ public class LibraryService : ILibraryService
                 .ThenInclude(b => b.Bookmarks)
             .Include(l => l.Books)
                 .ThenInclude(b => b.Series)
+            .Include(l => l.Books)
+                .ThenInclude(b => b.Collections)
             .FirstOrDefaultAsync(l => l.UserId == userId && l.Id == id);
 
         return result is null

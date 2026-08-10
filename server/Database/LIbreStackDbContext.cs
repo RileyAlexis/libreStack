@@ -18,7 +18,7 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<UserSettings> UserSettings { get; set; }
     public DbSet<Series> Series { get; set; }
-    public DbSet<CollectionsModel> Collections { get; set; }
+    public DbSet<Collections> Collections { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -48,7 +48,7 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
             .WithMany(collection => collection.Books)
             .UsingEntity<Dictionary<string, object>>(
                 j => j
-                    .HasOne<CollectionsModel>()
+                    .HasOne<Collections>()
                     .WithMany()
                     .HasForeignKey("collection_id"),
                     j => j

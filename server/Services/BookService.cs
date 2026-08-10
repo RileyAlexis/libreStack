@@ -21,7 +21,6 @@ public class BookService : IBookService
         _epubParser = epubParser;
         _iSeriesService = seriesService;
         _logger = logger;
-
     }
 
     private static byte[]? ResizeBookCover(byte[]? cover)
@@ -183,6 +182,7 @@ public class BookService : IBookService
             .Include(l => l.Bookmarks)
             .Include(l => l.ReadingProgress)
             .Include(l => l.Series)
+            .Include(l => l.Collections)
             .FirstOrDefaultAsync();
 
         if (result is null)

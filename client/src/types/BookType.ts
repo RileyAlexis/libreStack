@@ -22,6 +22,12 @@ export interface SeriesType {
   bookCount: number;
 }
 
+export interface CollectionsType {
+  id: number;
+  collectionTitle: string;
+  collectionCover: string;
+}
+
 export interface BookType {
   id: number;
   title: string;
@@ -47,6 +53,7 @@ export interface BookType {
   collectionId: string;
   bookTags: TagsType[];
   bookmarks: BookmarkType[];
+  collections: CollectionsType[];
   readingProgress: ReadingProgress;
   contentType: string;
   addedDate: Date;

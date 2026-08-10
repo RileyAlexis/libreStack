@@ -72,8 +72,6 @@ public class BookTagService : IBookTagService
 
     public async Task<bool> ApplyTag(string userId, int bookId, int tagId)
     {
-        Console.WriteLine($"{tagId}, userId, bookId");
-
         var tagToApply = await _db.BookTags.FirstOrDefaultAsync(l => l.Id == tagId);
         Console.WriteLine(tagToApply);
         if (tagToApply is null)

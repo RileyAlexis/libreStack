@@ -40,7 +40,7 @@ public class Book
     public ICollection<BookTag> BookTags { get; set; } = new List<BookTag>();
     public ReadingProgress? ReadingProgress { get; set; }
     public ICollection<BookmarkModel> Bookmarks { get; set; } = new List<BookmarkModel>();
-    public ICollection<CollectionsModel> Collections { get; set; } = new List<CollectionsModel>();
+    public ICollection<Collections> Collections { get; set; } = new List<Collections>();
 
     public int? SeriesId { get; set; }
     public Series? Series { get; set; }
