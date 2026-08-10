@@ -3,8 +3,6 @@ using Librestack.Interfaces;
 using Librestack.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 
 namespace Librestack.Services;
 
@@ -103,7 +101,6 @@ public class ServerStatsService : IServerStatsService
             BookCount = l.Books.Count(),
             AuthorCount = l.Books.Where(b => b.Author != null).Select(b => b.Author).Distinct().Count(),
             SeriesCount = l.Books.Where(b => b.SeriesId != null).Select(b => b.SeriesId).Distinct().Count(),
-            CollectionCount = l.Books.Where(b => b.CollectionId != null).Select(b => b.CollectionId).Distinct().Count(),
             CompletedBookCount = l.Books.Count(b => b.ReadingProgress != null && b.ReadingProgress.IsComplete),
             StorageSizeKb = CalculateDirectorySize(l.LibraryPath) / 1024,
             LibraryPath = l.LibraryPath,

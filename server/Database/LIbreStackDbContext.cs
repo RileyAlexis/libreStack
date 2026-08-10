@@ -18,6 +18,7 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<UserSettings> UserSettings { get; set; }
     public DbSet<Series> Series { get; set; }
+    public DbSet<CollectionsModel> Collections { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -41,6 +42,25 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
                     j.ToTable("applied_book_tags");
                     j.HasKey("book_id", "tag_id");
                 });
+
+        modelBuilder.Entity<Book>()
+            .HasMany(lib => lib.Collections)
+            .WithMany(collection => collection.Books)
+            .UsingEntity<Dictionary<string, object>>(
+                j => j
+                    .HasOne<CollectionsModel>()
+                    .WithMany()
+                    .HasForeignKey("collection_id"),
+                    j => j
+                    .HasOne<Book>()
+                    .WithMany()
+                    .HasForeignKey("book_id"),
+                j =>
+                {
+                    j.ToTable("applied_collections");
+                    j.HasKey("book_id", "collection_id");
+                }
+            );
 
         modelBuilder.Entity<Book>()
             .HasOne(l => l.User)

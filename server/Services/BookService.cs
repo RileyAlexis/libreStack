@@ -210,7 +210,6 @@ public class BookService : IBookService
         existing.ISBN = book.ISBN;
         existing.LCCN = book.LCCN;
         existing.OCLCWorldCat = book.OCLCWorldCat;
-        existing.CollectionId = book.CollectionId;
         existing.OpenLibraryAuthorId = book.OpenLibraryAuthorId;
         existing.OpenLibraryEditionId = book.OpenLibraryEditionId;
         existing.OpenLibraryWorkId = book.OpenLibraryWorkId;
@@ -251,7 +250,6 @@ public class BookService : IBookService
             OpenLibraryCoverId = existing.OpenLibraryCoverId,
             WikidataId = existing.WikidataId,
             Language = existing.Language,
-            CollectionId = existing.CollectionId,
             Series = existing.Series is null
                 ? null
                 : new ApiSeries

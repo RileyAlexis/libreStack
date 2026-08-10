@@ -30,7 +30,6 @@ public class Book
     public string? WikidataAuthorId { get; set; } = null;
     public string? wikiAuthorURL { get; set; } = null;
     public string? Language { get; set; } = null;
-    public int? CollectionId { get; set; }
     public required string EpubPath { get; set; }
     public DateTime? OpenLibraryMetadataLastUpdated { get; set; }
     public DateTime? WikidataMetaLastUpdated { get; set; }
@@ -41,6 +40,7 @@ public class Book
     public ICollection<BookTag> BookTags { get; set; } = new List<BookTag>();
     public ReadingProgress? ReadingProgress { get; set; }
     public ICollection<BookmarkModel> Bookmarks { get; set; } = new List<BookmarkModel>();
+    public ICollection<CollectionsModel> Collections { get; set; } = new List<CollectionsModel>();
 
     public int? SeriesId { get; set; }
     public Series? Series { get; set; }
