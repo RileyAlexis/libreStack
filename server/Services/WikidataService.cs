@@ -152,23 +152,26 @@ public class WikidataService : IWikidataService
 
         _logger.LogInformation($"Searching wikidata by Wikidata Id for id {book.WikidataId} - {book.Title}");
 
-        var sparql = "SELECT ?title ?authorLabel ?publicationDate ?genreLabel ?seriesLabel ?positionInSeries ?openLibraryId ?oclcId ?isfd ?uncon ?website ?fantLab " +
+        var sparql = "SELECT ?title ?author ?authorLabel ?wikipediaUrl ?publicationDate ?genreLabel ?seriesLabel ?positionInSeries ?openLibraryId ?oclcId ?isfd ?uncon ?website ?fantLab " +
                      "WHERE { " +
-                     $"BIND(wd:{book.WikidataId} AS ?book) " +
-                     "OPTIONAL { ?book wdt:P1476 ?title. FILTER(LANG(?title) = \"en\") } " +
-                     "OPTIONAL { ?book wdt:P50 ?author } " +
-                     "OPTIONAL { ?book wdt:P577 ?publicationDate } " +
-                     "OPTIONAL { ?book wdt:P136 ?genre } " +
-                     "OPTIONAL { ?book wdt:P179 ?series } " +
-                     "OPTIONAL { ?book p:P179 ?seriesStatement. ?seriesStatement pq:P1545 ?positionInSeries } " +
-                     "OPTIONAL { ?book wdt:P648 ?openLibraryId } " +
-                     "OPTIONAL { ?book wdt:P243 ?oclcId } " +
-                     "OPTIONAL { ?book wdt:P1274 ?isfc } " +
-                     "OPTIONAL { ?book wdt:P9821 ?uncon } " +
-                     "OPTIONAL { ?book wdt:P856 ?website } " +
-                     "OPTIONAL { ?book wdt:P7439 ?fantLab } " +
-                     "SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\". } " +
-                     "}";
+        $"BIND(wd:{book.WikidataId} AS ?book) " +
+        "OPTIONAL { ?book wdt:P1476 ?title. FILTER(LANG(?title) = \"en\") } " +
+        "OPTIONAL { " +
+        "?book wdt:P50 ?author. " +
+        "OPTIONAL { ?wikipediaUrl schema:about ?author; schema:isPartOf <https://en.wikipedia.org/> } " +
+        "} " +
+        "OPTIONAL { ?book wdt:P577 ?publicationDate } " +
+        "OPTIONAL { ?book wdt:P136 ?genre } " +
+        "OPTIONAL { ?book wdt:P179 ?series } " +
+        "OPTIONAL { ?book p:P179 ?seriesStatement. ?seriesStatement pq:P1545 ?positionInSeries } " +
+        "OPTIONAL { ?book wdt:P648 ?openLibraryId } " +
+        "OPTIONAL { ?book wdt:P243 ?oclcId } " +
+        "OPTIONAL { ?book wdt:P1274 ?isfc } " +
+        "OPTIONAL { ?book wdt:P9821 ?uncon } " +
+        "OPTIONAL { ?book wdt:P856 ?website } " +
+        "OPTIONAL { ?book wdt:P7439 ?fantLab } " +
+        "SERVICE wikibase:label { bd:serviceParam wikibase:language \"en\". } " +
+        "}";
 
         var url = $"https://query.wikidata.org/sparql?query={Uri.EscapeDataString(sparql)}&format=json";
 
@@ -188,6 +191,8 @@ public class WikidataService : IWikidataService
 
         var title = GetBindingValue(binding, "title");
         var author = GetBindingValue(binding, "authorLabel");
+        var authorId = GetBindingValue(binding, "author")?.Split("/").Last();
+        var wikiAuthorURL = GetBindingValue(binding, "wikipediaUrl");
         var genre = GetBindingValue(binding, "genreLabel");
         var oclc = GetBindingValue(binding, "oclcId");
         var isfd = GetBindingValue(binding, "isfd");
@@ -219,6 +224,9 @@ public class WikidataService : IWikidataService
         if (openLibraryId != null) book.OpenLibraryWorkId = openLibraryId;
         if (oclc != null) book.OCLCWorldCat = oclc;
         if (publishYear != null) book.PublishDate = publishYear;
+
+        if (authorId != null) book.WikidataAuthorId = authorId;
+        if (wikiAuthorURL != null) book.wikiAuthorURL = wikiAuthorURL;
 
         book.WikidataMetaLastUpdated = DateTime.UtcNow;
 

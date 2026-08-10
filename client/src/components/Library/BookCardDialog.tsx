@@ -56,6 +56,8 @@ const FIELD_ORDER: FieldConfig[] = [
   { kind: "text", id: "openLibraryAuthorId", label: "Open Library Author ID" },
   { kind: "text", id: "openLibraryCoverId", label: "Open Library Cover ID" },
   { kind: "text", id: "wikidataId", label: "Wikidata ID" },
+  { kind: "text", id: "wikidataAuthorId", label: "Wikidata Author Id" },
+  { kind: "text", id: "wikiAuthorURL", label: "Wikidata Author URL" },
   { kind: "text", id: "oclcWorldCat", label: "OCLC WorldCat" },
 ];
 

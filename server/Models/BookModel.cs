@@ -27,6 +27,8 @@ public class Book
     public string? OpenLibraryAuthorId { get; set; } = null;
     public string? OpenLibraryCoverId { get; set; } = null;
     public string? WikidataId { get; set; } = null;
+    public string? WikidataAuthorId { get; set; } = null;
+    public string? wikiAuthorURL { get; set; } = null;
     public string? Language { get; set; } = null;
     public int? CollectionId { get; set; }
     public required string EpubPath { get; set; }

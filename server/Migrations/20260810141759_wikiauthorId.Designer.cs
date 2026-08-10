@@ -3,6 +3,7 @@ using System;
 using Librestack.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace libreStack.Migrations
 {
     [DbContext(typeof(LibrestackDbContext))]
-    partial class LibrestackDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260810141759_wikiauthorId")]
+    partial class wikiauthorId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,10 +142,6 @@ namespace libreStack.Migrations
                     b.Property<DateTime?>("WikidataMetaLastUpdated")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("wikidata_meta_last_updated");
-
-                    b.Property<string>("wikiAuthorURL")
-                        .HasColumnType("text")
-                        .HasColumnName("wiki_author_url");
 
                     b.HasKey("Id")
                         .HasName("pk_books");

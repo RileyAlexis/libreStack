@@ -1,5 +1,11 @@
 import type { LibreRootState } from "@/types/LibreRootState";
-import { DialogContent, DialogTitle, Typography, Box } from "@mui/material";
+import {
+  DialogContent,
+  DialogTitle,
+  Typography,
+  Box,
+  Link,
+} from "@mui/material";
 import { useSelector } from "react-redux";
 
 interface DescriptionProps {
@@ -16,7 +22,14 @@ export const DescriptionDialog: React.FC<DescriptionProps> = ({ bookId }) => {
       <DialogTitle>
         <div className="descriptionDialogHeaderInfo">
           <Typography variant="h5">{book!.title}</Typography>
-          <Typography variant="h6">{book!.author}</Typography>
+          <Typography variant="h6">
+            {book?.wikiAuthorURL && (
+              <Link target="_blank" href={book.wikiAuthorURL}>
+                {book.author}
+              </Link>
+            )}
+            {!book?.wikiAuthorURL && book?.author}
+          </Typography>
           <Typography variant="body1">Published {book?.publishDate}</Typography>
           {book!.series && (
             <Typography variant="body1">

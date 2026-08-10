@@ -41,6 +41,8 @@ export interface BookType {
   openLibraryAuthorId: string;
   openLibraryCoverId: string;
   wikidataId: string;
+  wikidataAuthorId: string;
+  wikiAuthorURL: string;
   oclcWorldCat: string;
   collectionId: string;
   bookTags: TagsType[];
