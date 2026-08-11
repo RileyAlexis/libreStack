@@ -5,6 +5,7 @@ namespace Librestack.Interfaces;
 public interface ICollectionsService
 {
     Task<Result<List<Collections>>> GetAllUserCollections(string userId);
+    Task<Result<List<Collections>>> GetCollectionsByLibrary(string userId, int libraryId);
     Task<Result<Collections>> CreateCollection(string userId, string collectionTitle);
     Task<Result<Collections>> UpdateCollection(string userId, Collections updatedCollection);
     Task<Result> DeleteCollection(string userId, int collectionId);

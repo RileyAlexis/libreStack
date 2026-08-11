@@ -97,6 +97,27 @@ public class CollectionsService : ICollectionsService
         return Result<List<Collections>>.Success(collectionEntries);
     }
 
+    public async Task<Result<List<Collections>>> GetCollectionsByLibrary(string userId, int libraryId)
+    {
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
+            return Result<List<Collections>>.Failure("User Id is required", ErrorType.BadRequest);
+
+        var library = await _db.Libraries
+            .Include(l => l.Books)
+            .ThenInclude(b => b.Collections)
+            .FirstOrDefaultAsync(l => l.Id == libraryId && l.UserId == userId);
+
+        if (library is null)
+            return Result<List<Collections>>.Failure("Library not found", ErrorType.NotFound);
+
+        var collections = library.Books
+            .SelectMany(b => b.Collections)
+            .DistinctBy(c => c.Id)
+            .ToList();
+
+        return Result<List<Collections>>.Success(collections);
+    }
+
     public async Task<Result<Collections>> UpdateCollection(string userId, Collections updatedCollection)
     {
         if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))

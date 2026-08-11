@@ -67,6 +67,21 @@ public class CollectionsController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("getCollectionsByLibrary")]
+    [Authorize]
+    public async Task<ActionResult> GetCollectionsByLibrary(int libraryId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
+            return Unauthorized();
+
+        var result = await _collectionsService.GetCollectionsByLibrary(userId, libraryId);
+        if (result is null)
+            return BadRequest(new { error = result?.Error });
+
+        return Ok(result);
+    }
+
     public record AddBookToCollectionRequest(int BookId, int CollectionId);
 
     [HttpPost("addBookToCollection")]

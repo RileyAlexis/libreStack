@@ -1,0 +1,33 @@
+.collectionManagerContainer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-left: 1em;
+  margin-right: 1em;
+  margin-top: 1.5em;
+  padding-top: 3.25em;
+  padding-bottom: 4.5em;
+}
+
+.collectionListContainer {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--secondary-foreground);
+  border-radius: 20px;
+  padding: 0.75em;
+  overflow-y: auto;
+  margin-bottom: 1em;
+}
+
+.addCollectionRow {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5em;
+  margin-top: 1em;
+  margin-left: 0.5em;
+}

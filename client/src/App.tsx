@@ -43,6 +43,7 @@ import { Tester } from "./components/Testers/Tester";
 
 import "./App.css";
 import { CollectionBooks } from "./components/Library/CollectionCard/CollectionBooks";
+import { CollectionManager } from "./components/CollectionManager/CollectionManager";
 
 type AuthStatus = "checking" | "authenticated" | "unauthenticated";
 
@@ -251,6 +252,15 @@ function App() {
             <div className="pageContent">
               <HeaderBanner />
               <CollectionBooks />
+            </div>
+          }
+        />
+        <Route
+          path="/collectionManager"
+          element={
+            <div className="pageContent">
+              <HeaderBanner />
+              <CollectionManager />
             </div>
           }
         />

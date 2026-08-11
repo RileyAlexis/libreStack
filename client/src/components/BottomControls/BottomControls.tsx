@@ -29,6 +29,7 @@ import {
 import InstallMobileIcon from "@mui/icons-material/InstallMobile";
 
 import {
+  BoxesIcon,
   LandmarkIcon,
   LayoutDashboard,
   LibraryBig,
@@ -290,7 +291,6 @@ export const BottomControls: React.FC = () => {
           sx={menubarButtonSx}
           startIcon={<LibraryBig />}
           onClick={(e) => {
-            navigate("/library");
             openMenu("manage", e);
           }}
         >
@@ -363,6 +363,15 @@ export const BottomControls: React.FC = () => {
         >
           <SquareLibrary size={18} style={{ marginRight: 8 }} />
           Series
+        </MenuItem>
+        <MenuItem
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate("/collectionManager");
+          }}
+        >
+          <BoxesIcon size={18} style={{ marginRight: 8 }} />
+          Collections Manager
         </MenuItem>
         <MenuItem
           onClick={handleMetadataRefresh}
