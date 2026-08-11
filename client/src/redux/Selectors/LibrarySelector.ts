@@ -113,7 +113,10 @@ export const sortSeriesBooks = (
   });
 };
 
-const selectCollectionOrder = (books: BookType[], sortBy: SortByType) => {
+export const selectCollectionOrder = (
+  books: BookType[],
+  sortBy: SortByType,
+) => {
   const sorted = [...books];
   sorted.sort((a, b) => {
     if (sortBy === "Last Read") {

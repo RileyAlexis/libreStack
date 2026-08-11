@@ -1,5 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useMatch } from "react-router";
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { AppDispatch } from "@/redux/store";
 import type { SortByType } from "@/types/AppSettings";
@@ -54,9 +55,14 @@ import "./LibraryHeaderControls.css";
 
 export const LibraryHeaderControls: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  const seriesMatch = useMatch("/series/:seriesId");
+  const collectionMatch = useMatch("/collection/:collectionId");
+  const isSeriesView = Boolean(seriesMatch);
+  const isCollectionView = Boolean(collectionMatch);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isAddToSeriesOpen, setIsAddToSeriesOpen] = useState(false);
   const [isAddToCollectionOpen, setIsAddToCollectionOpen] = useState(false);
+  const [viewTitle, setViewTitle] = useState("");
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const selections = useSelector((state: LibreRootState) => state.selections);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -67,6 +73,29 @@ export const LibraryHeaderControls: React.FC = () => {
   const isSyncing = useSelector(
     (state: LibreRootState) => state.appSettings.isSyncing,
   );
+
+  const seriesTitle = useSelector((state: LibreRootState) => {
+    if (!seriesMatch) return null;
+    const seriesId = Number(seriesMatch.params.seriesId);
+    const book = state.library.books.find((b) => b.seriesId === seriesId);
+    return book?.series?.seriesTitle ?? null;
+  });
+
+  const collectionTitle = useSelector((state: LibreRootState) => {
+    if (!collectionMatch) return null;
+    const collectionId = Number(collectionMatch.params.collectionId);
+    const book = state.library.books.find((b) =>
+      b.collections.some((c) => c.id === collectionId),
+    );
+    return (
+      book?.collections.find((c) => c.id === collectionId)?.collectionTitle ??
+      null
+    );
+  });
+
+  useEffect(() => {
+    setViewTitle(seriesTitle ?? collectionTitle ?? "");
+  }, [seriesTitle, collectionTitle]);
 
   const sortingOptions: SortByType[] = [
     "Author",
@@ -286,6 +315,7 @@ export const LibraryHeaderControls: React.FC = () => {
                   <MenuItem onClick={() => setIsAddToCollectionOpen(true)}>
                     Add To Collection
                   </MenuItem>
+
                   <MenuItem onClick={handleQueryOpenLibrary}>
                     {isSyncing ? (
                       <>
@@ -340,6 +370,11 @@ export const LibraryHeaderControls: React.FC = () => {
         {appSettings.libraryLayout.showOnlyDownloaded && (
           <div className="headerInfoContainer">
             <Typography variant="h6">Downloaded Books</Typography>
+          </div>
+        )}
+        {(isSeriesView || isCollectionView) && (
+          <div className="headerInfoContainer">
+            <Typography variant="h6">{viewTitle}</Typography>
           </div>
         )}
         <div className="sortingContainer">

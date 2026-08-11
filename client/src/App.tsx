@@ -42,6 +42,7 @@ import { ServerManager } from "./components/ServerManager/ServerManager";
 import { Tester } from "./components/Testers/Tester";
 
 import "./App.css";
+import { CollectionBooks } from "./components/Library/CollectionCard/CollectionBooks";
 
 type AuthStatus = "checking" | "authenticated" | "unauthenticated";
 
@@ -245,11 +246,11 @@ function App() {
           }
         />
         <Route
-          path="/collection:collectionId"
+          path="/collection/:collectionId"
           element={
             <div className="pageContent">
               <HeaderBanner />
-              {/* <SeriesBooks /> */}
+              <CollectionBooks />
             </div>
           }
         />

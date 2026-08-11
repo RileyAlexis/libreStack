@@ -50,7 +50,6 @@ export interface BookType {
   wikidataAuthorId: string;
   wikiAuthorURL: string;
   oclcWorldCat: string;
-  collectionId: string;
   bookTags: TagsType[];
   bookmarks: BookmarkType[];
   collections: CollectionsType[];
