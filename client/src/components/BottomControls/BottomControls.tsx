@@ -35,6 +35,7 @@ import {
   PlusIcon,
   ScanSearch,
   ScanText,
+  SquareIcon,
   SquareLibrary,
   UploadIcon,
 } from "lucide-react";
@@ -302,16 +303,6 @@ export const BottomControls: React.FC = () => {
         >
           <Typography variant="caption">Layout</Typography>
         </Button>
-        <Button
-          sx={menubarButtonSx}
-          startIcon={<SquareLibrary />}
-          onClick={(e) => {
-            e.stopPropagation();
-            navigate("/seriesManager");
-          }}
-        >
-          <Typography variant="caption">Series</Typography>
-        </Button>
         {deferredPrompt && !isIOS && (
           <Button
             sx={menubarButtonSx}
@@ -364,6 +355,15 @@ export const BottomControls: React.FC = () => {
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         transformOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
+        <MenuItem
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate("/seriesManager");
+          }}
+        >
+          <SquareLibrary size={18} style={{ marginRight: 8 }} />
+          Series
+        </MenuItem>
         <MenuItem
           onClick={handleMetadataRefresh}
           disabled={appSettings.isSyncing}
