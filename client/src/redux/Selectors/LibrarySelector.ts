@@ -74,6 +74,34 @@ const applySort = (
   return sorted;
 };
 
+export const sortSeriesBooks = (
+  seriesBooks: SortedBookStateType["seriesBooks"],
+  sortBy: SortByType,
+) => {
+  seriesBooks.sort((a, b) => {
+    if (sortBy === "Last Read") {
+      const aTime = a.readingProgress?.lastRead
+        ? new Date(a.readingProgress.lastRead).getTime()
+        : null;
+      const bTime = b.readingProgress?.lastRead
+        ? new Date(b.readingProgress.lastRead).getTime()
+        : null;
+
+      if (aTime !== null || bTime !== null) {
+        if (aTime === null) return 1;
+        if (bTime === null) return -1;
+        if (aTime !== bTime) return bTime - aTime;
+      }
+    }
+
+    return String(a.seriesOrder ?? "").localeCompare(
+      String(b.seriesOrder ?? ""),
+      undefined,
+      { numeric: true },
+    );
+  });
+};
+
 export const selectSortedBookState = createSelector(
   [
     selectBooks,
@@ -151,6 +179,12 @@ export const selectSortedBookState = createSelector(
             : null,
           dateAdded: bookAddedDate,
         };
+      }
+    });
+
+    Object.values(sortedData).forEach((entry) => {
+      if (entry.isSeries) {
+        sortSeriesBooks(entry.seriesBooks, sortBy);
       }
     });
 
