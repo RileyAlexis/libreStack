@@ -47,7 +47,6 @@ export const AddToCollectionDialog: React.FC<AssignToCollectionDialogProps> = ({
       api
         .get("Collections/getAllUserCollections")
         .then((response) => {
-          console.log(response.data);
           setCollectionList(response.data.value);
         })
         .catch((error) => {
@@ -72,7 +71,6 @@ export const AddToCollectionDialog: React.FC<AssignToCollectionDialogProps> = ({
           collectionTitle: newCollection,
         });
         collectionId = response.data.value.id;
-        console.log(response.data);
       } else if (selectedCollection) {
         collectionId = selectedCollection.id;
       } else {

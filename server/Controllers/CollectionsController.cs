@@ -84,15 +84,17 @@ public class CollectionsController : ControllerBase
         return Ok(result);
     }
 
+    public record RemoveBookToCollectionRequest(int BookId, int CollectionId);
+
     [HttpPost("removeBookFromCollection")]
     [Authorize]
-    public async Task<ActionResult> RemoveBookFromCollection(int bookId, int collectionId)
+    public async Task<ActionResult> RemoveBookFromCollection([FromBody] RemoveBookToCollectionRequest request)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
             return Unauthorized();
 
-        var result = await _collectionsService.RemoveBookFromCollection(userId, bookId, collectionId);
+        var result = await _collectionsService.RemoveBookFromCollection(userId, request.BookId, request.CollectionId);
         if (result is null)
             return BadRequest(new { error = result?.Error });
 

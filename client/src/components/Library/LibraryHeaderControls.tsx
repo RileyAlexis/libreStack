@@ -62,6 +62,8 @@ export const LibraryHeaderControls: React.FC = () => {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isAddToSeriesOpen, setIsAddToSeriesOpen] = useState(false);
   const [isAddToCollectionOpen, setIsAddToCollectionOpen] = useState(false);
+  const [isRemoveFromCollectionOpen, setIsRemoveFromCollectionOpen] =
+    useState(false);
   const [viewTitle, setViewTitle] = useState("");
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const selections = useSelector((state: LibreRootState) => state.selections);
@@ -250,6 +252,24 @@ export const LibraryHeaderControls: React.FC = () => {
     dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
   };
 
+  const handleRemoveFromCollection = async () => {
+    try {
+      await Promise.all(
+        selections.selectedBooks.map((item) =>
+          api.post("collections/removeBookFromCollection", {
+            bookId: item,
+            collectionId: collectionMatch?.params.collectionId,
+          }),
+        ),
+      );
+    } catch (error: any) {
+      console.error(error.response.data);
+    } finally {
+      setIsRemoveFromCollectionOpen(false);
+      dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
+    }
+  };
+
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -315,7 +335,13 @@ export const LibraryHeaderControls: React.FC = () => {
                   <MenuItem onClick={() => setIsAddToCollectionOpen(true)}>
                     Add To Collection
                   </MenuItem>
-
+                  {isCollectionView && (
+                    <MenuItem
+                      onClick={() => setIsRemoveFromCollectionOpen(true)}
+                    >
+                      Remove From Collection
+                    </MenuItem>
+                  )}
                   <MenuItem onClick={handleQueryOpenLibrary}>
                     {isSyncing ? (
                       <>
@@ -465,6 +491,31 @@ export const LibraryHeaderControls: React.FC = () => {
         <AddToCollectionDialog
           setIsAddToCollectionOpen={setIsAddToCollectionOpen}
         />
+      </Dialog>
+
+      {/* Remove books from Collection confirmation dialog */}
+      <Dialog
+        open={isRemoveFromCollectionOpen}
+        onClose={setIsRemoveFromCollectionOpen}
+      >
+        <DialogTitle>
+          Remove {selections.selectedBooks.length} books from {collectionTitle}?
+        </DialogTitle>
+        <DialogActions>
+          <Button
+            variant="outlined"
+            onClick={() => setIsRemoveFromCollectionOpen(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleRemoveFromCollection}
+          >
+            Confirm!
+          </Button>
+        </DialogActions>
       </Dialog>
     </div>
   );

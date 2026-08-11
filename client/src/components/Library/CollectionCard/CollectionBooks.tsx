@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { BookCard } from "../BookCard/BookCard";
 
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { LibraryHeaderControls } from "../LibraryHeaderControls";
 import { selectCollectionOrder } from "@/redux/Selectors/LibrarySelector";
 
@@ -23,15 +23,6 @@ export const CollectionBooks: React.FC = () => {
   const sortedCollectionBooks = useMemo(() => {
     return selectCollectionOrder(collectionBooks, sortBy);
   }, [collectionBooks, sortBy]);
-
-  useEffect(() => {
-    console.log(collectionId);
-    console.log(sortedCollectionBooks);
-  }, [sortedCollectionBooks]);
-
-  useEffect(() => {
-    console.log("CollectionId - ", collectionId);
-  }, []);
 
   return (
     <div className="libraryContainer">

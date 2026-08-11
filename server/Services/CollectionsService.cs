@@ -42,7 +42,7 @@ public class CollectionsService : ICollectionsService
         if (collection is null)
             return Result.Failure("Collection not found", ErrorType.NotFound);
 
-        var book = await _db.Books.FirstOrDefaultAsync(b => b.UserId == userId && b.Id == bookId);
+        var book = await _db.Books.Include(b => b.Collections).FirstOrDefaultAsync(b => b.UserId == userId && b.Id == bookId);
         if (book is null)
             return Result.Failure("Book not found", ErrorType.NotFound);
 
