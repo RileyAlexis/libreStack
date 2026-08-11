@@ -8,6 +8,8 @@ import type { BookType } from "@/types/BookType";
 const selectBooks = (state: LibreRootState) => state.library.books;
 const selectGroupBySeries = (state: LibreRootState) =>
   state.appSettings.libraryLayout.groupBySeries;
+const selectGroupByCollection = (state: LibreRootState) =>
+  state.appSettings.libraryLayout.groupByCollections;
 const selectSortBy = (state: LibreRootState) =>
   state.appSettings.libraryLayout.sortBy;
 const selectSortAscending = (state: LibreRootState) =>
@@ -25,11 +27,18 @@ const getLastName = (author: string): string => {
   return (parts[parts.length - 1] ?? author).toLowerCase();
 };
 
-const applySort = (
-  items: SortedBookStateType[],
+interface SortableEntry {
+  sortedTitle: string;
+  sortedAuthor: string;
+  lastRead: Date | null;
+  dateAdded: Date | null;
+}
+
+const applySort = <T extends SortableEntry>(
+  items: T[],
   sortBy: SortByType,
   sortAscending: boolean,
-): SortedBookStateType[] => {
+): T[] => {
   const sorted = [...items];
 
   switch (sortBy) {
@@ -49,8 +58,8 @@ const applySort = (
       break;
     case "Last Read":
       sorted.sort((a, b) => {
-        const aTime = a.lastRead ? new Date(a.lastRead).getTime() : null;
-        const bTime = b.lastRead ? new Date(b.lastRead).getTime() : null;
+        const aTime = a.lastRead ? a.lastRead.getTime() : null;
+        const bTime = b.lastRead ? b.lastRead.getTime() : null;
 
         if (aTime === null && bTime === null) return 0;
         if (aTime === null) return 1;
@@ -61,8 +70,8 @@ const applySort = (
       break;
     case "Recently Added":
       sorted.sort((a, b) => {
-        const aTime = a.dateAdded ? new Date(a.dateAdded).getTime() : null;
-        const bTime = b.dateAdded ? new Date(b.dateAdded).getTime() : null;
+        const aTime = a.dateAdded ? a.dateAdded.getTime() : null;
+        const bTime = b.dateAdded ? b.dateAdded.getTime() : null;
 
         if (aTime === null && bTime === null) return 0;
         if (aTime === null) return 1;
@@ -135,6 +144,9 @@ const selectCollectionOrder = (books: BookType[], sortBy: SortByType) => {
   return sorted;
 };
 
+// Kept for any callers that still want collections in isolation (e.g. a
+// dedicated "Collections" page). The unified selector below is what the
+// main Library view should use.
 export const selectCollectionGroupedState = createSelector(
   [
     selectBooks,
@@ -188,6 +200,8 @@ export const selectCollectionGroupedState = createSelector(
   },
 );
 
+// Kept for any callers that still want the series/book-only view without
+// collections mixed in.
 export const selectSortedBookState = createSelector(
   [
     selectBooks,
@@ -275,5 +289,187 @@ export const selectSortedBookState = createSelector(
     });
 
     return applySort(Object.values(sortedData), sortBy, sortAscending);
+  },
+);
+
+// A single library entry: either a standalone book, a series group, or a
+// collection group. `entryKind` is the discriminant Library.tsx renders on.
+// Reuses the existing card prop types so BookCard/SeriesCard/CollectionCard
+// need no changes.
+export type LibraryListEntry =
+  | (SortedBookStateType & { entryKind: "book" | "series" })
+  | (SortedCollectionStateType & {
+      entryKind: "collection";
+      sortedTitle: string;
+      sortedAuthor: string;
+      lastRead: Date | null;
+      dateAdded: Date | null;
+    });
+
+export const selectUnifiedLibraryState = createSelector(
+  [
+    selectBooks,
+    selectGroupBySeries,
+    selectGroupByCollection,
+    selectSortBy,
+    selectSortAscending,
+    selectShowOnlyDownloaded,
+    selectDownloadsByBookId,
+  ],
+  (
+    books,
+    groupBySeries,
+    groupByCollection,
+    sortBy,
+    sortAscending,
+    showOnlyDownloaded,
+    downloadsByBookId,
+  ): LibraryListEntry[] => {
+    const visibleBooks = showOnlyDownloaded
+      ? books.filter(
+          (book) => downloadsByBookId[String(book.id)]?.status === "downloaded",
+        )
+      : books;
+
+    // --- Collections: every collection with books renders as a
+    // CollectionCard, independent of series membership ("show in both"). ---
+    const collectionsMap: {
+      [id: number]: SortedCollectionStateType & {
+        entryKind: "collection";
+        sortedTitle: string;
+        sortedAuthor: string;
+        lastRead: Date | null;
+        dateAdded: Date | null;
+      };
+    } = {};
+    const collectionBookIds = new Set<number>();
+
+    if (groupByCollection) {
+      visibleBooks.forEach((book) => {
+        book.collections.forEach((collection) => {
+          collectionBookIds.add(book.id);
+          if (!collectionsMap[collection.id]) {
+            collectionsMap[collection.id] = {
+              entryKind: "collection",
+              collectionId: collection.id,
+              collectionTitle: collection.collectionTitle,
+              collectionCover: collection.collectionCover,
+              collectionBooks: [],
+              sortedTitle: collection.collectionTitle,
+              sortedAuthor: collection.collectionTitle,
+              lastRead: null,
+              dateAdded: null,
+            };
+          }
+          collectionsMap[collection.id].collectionBooks.push(book);
+        });
+      });
+    }
+
+    const collectionEntries = Object.values(collectionsMap).map((entry) => ({
+      ...entry,
+      collectionBooks: selectCollectionOrder(entry.collectionBooks, sortBy),
+    }));
+
+    // --- Series + standalone books. A book only becomes a standalone
+    // BookCard entry if it belongs to neither a series nor a collection. ---
+    const seriesData: {
+      [id: string]: SortedBookStateType & { entryKind: "series" };
+    } = {};
+    const bookEntries: (SortedBookStateType & { entryKind: "book" })[] = [];
+
+    visibleBooks.forEach((book) => {
+      const bookAddedDate = book.addedDate ? new Date(book.addedDate) : null;
+      const bookLastRead = book.readingProgress?.lastRead
+        ? new Date(book.readingProgress.lastRead)
+        : null;
+
+      if (book.seriesId !== null && groupBySeries) {
+        const key = "series" + book.seriesId;
+
+        if (seriesData[key]) {
+          if (
+            bookLastRead &&
+            (!seriesData[key].lastRead ||
+              seriesData[key].lastRead! < bookLastRead)
+          ) {
+            seriesData[key].lastRead = bookLastRead;
+          }
+          if (
+            bookAddedDate &&
+            (!seriesData[key].dateAdded ||
+              bookAddedDate < seriesData[key].dateAdded!)
+          ) {
+            seriesData[key].dateAdded = bookAddedDate;
+          }
+          seriesData[key].seriesBooks.push(book);
+        } else {
+          seriesData[key] = {
+            entryKind: "series",
+            isSeries: true,
+            seriesId: book.seriesId,
+            sortedTitle: book.series!.seriesTitle!,
+            sortedAuthor: book.author,
+            seriesCover: book.coverImage,
+            book: null,
+            seriesBooks: [book],
+            lastRead: bookLastRead,
+            dateAdded: bookAddedDate,
+          };
+        }
+      } else {
+        if (groupByCollection && collectionBookIds.has(book.id)) {
+          return;
+        }
+        bookEntries.push({
+          entryKind: "book",
+          isSeries: false,
+          seriesId: 0,
+          sortedTitle: book.title,
+          sortedAuthor: book.author,
+          seriesCover: "",
+          book: book,
+          seriesBooks: [],
+          lastRead: bookLastRead,
+          dateAdded: bookAddedDate,
+        });
+      }
+    });
+
+    // A "series" of exactly one book renders as a plain BookCard instead,
+    // unless it's covered by a collection card.
+    const seriesEntries: (SortedBookStateType & { entryKind: "series" })[] = [];
+    Object.values(seriesData).forEach((entry) => {
+      if (entry.seriesBooks.length > 1) {
+        sortSeriesBooks(entry.seriesBooks, sortBy);
+        seriesEntries.push(entry);
+        return;
+      }
+
+      const soloBook = entry.seriesBooks[0];
+      if (groupByCollection && collectionBookIds.has(soloBook.id)) {
+        return;
+      }
+      bookEntries.push({
+        entryKind: "book",
+        isSeries: false,
+        seriesId: 0,
+        sortedTitle: soloBook.title,
+        sortedAuthor: soloBook.author,
+        seriesCover: "",
+        book: soloBook,
+        seriesBooks: [],
+        lastRead: entry.lastRead,
+        dateAdded: entry.dateAdded,
+      });
+    });
+
+    const combined: LibraryListEntry[] = [
+      ...collectionEntries,
+      ...seriesEntries,
+      ...bookEntries,
+    ];
+
+    return applySort(combined, sortBy, sortAscending);
   },
 );

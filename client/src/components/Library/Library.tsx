@@ -9,13 +9,14 @@ import type { LibreRootState } from "../../types/LibreRootState";
 //Actions
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 import { fetchLibraryList } from "@/redux/reducers/LibraryListReducer";
-import { selectSortedBookState } from "@/redux/Selectors/LibrarySelector";
+import { selectUnifiedLibraryState } from "@/redux/Selectors/LibrarySelector";
 import { BookCard } from "./BookCard/BookCard";
 
 // Components
 import { BottomControls } from "../BottomControls/BottomControls";
 import { LibraryHeaderControls } from "./LibraryHeaderControls";
 import { SeriesCard } from "./SeriesCard/SeriesCard";
+import { CollectionCard } from "./CollectionCard/CollectionCard";
 
 // UI
 import { CircularProgress } from "@mui/material";
@@ -27,7 +28,7 @@ export const Library: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
-  const sortedBookState = useSelector(selectSortedBookState);
+  const libraryEntries = useSelector(selectUnifiedLibraryState);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -74,13 +75,16 @@ export const Library: React.FC = () => {
       )}
 
       <div className="booksContainer" ref={scrollRef} onScroll={handleScroll}>
-        {sortedBookState.map((item) =>
-          item.isSeries && item.seriesBooks.length > 1 ? (
+        {libraryEntries.map((item) =>
+          item.entryKind === "collection" ? (
+            <CollectionCard
+              key={`collection-${item.collectionId}`}
+              collection={item}
+            />
+          ) : item.entryKind === "series" ? (
             <SeriesCard key={`series-${item.seriesId}`} series={item} />
-          ) : item.isSeries ? (
-            <BookCard key={item.seriesBooks[0].id} book={item.seriesBooks[0]} />
           ) : (
-            <BookCard key={item.book?.id} book={item.book!} />
+            <BookCard key={item.book!.id} book={item.book!} />
           ),
         )}
       </div>

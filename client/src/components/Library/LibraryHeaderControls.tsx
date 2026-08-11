@@ -46,13 +46,17 @@ import {
   ArrowDownWideNarrow,
 } from "lucide-react";
 
-import "./LibraryHeaderControls.css";
+// Components
 import { AssignToSeriesDialog } from "./AssignToSeriesDialog";
+import { AddToCollectionDialog } from "./AddToCollectionDialog";
+
+import "./LibraryHeaderControls.css";
 
 export const LibraryHeaderControls: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isAddToSeriesOpen, setIsAddToSeriesOpen] = useState(false);
+  const [isAddToCollectionOpen, setIsAddToCollectionOpen] = useState(false);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const selections = useSelector((state: LibreRootState) => state.selections);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -279,6 +283,9 @@ export const LibraryHeaderControls: React.FC = () => {
                   <MenuItem onClick={() => setIsAddToSeriesOpen(true)}>
                     Assign To Series
                   </MenuItem>
+                  <MenuItem onClick={() => setIsAddToCollectionOpen(true)}>
+                    Add To Collection
+                  </MenuItem>
                   <MenuItem onClick={handleQueryOpenLibrary}>
                     {isSyncing ? (
                       <>
@@ -418,6 +425,11 @@ export const LibraryHeaderControls: React.FC = () => {
       </div>
       <Dialog open={isAddToSeriesOpen} onClose={setIsAddToSeriesOpen}>
         <AssignToSeriesDialog setIsAddToSeriesOpen={setIsAddToSeriesOpen} />
+      </Dialog>
+      <Dialog open={isAddToCollectionOpen} onClose={setIsAddToCollectionOpen}>
+        <AddToCollectionDialog
+          setIsAddToCollectionOpen={setIsAddToCollectionOpen}
+        />
       </Dialog>
     </div>
   );

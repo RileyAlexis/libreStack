@@ -1,0 +1,18 @@
+.collectionSelectorContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+  min-width: 0;
+}
+
+.collectionSelectorBox {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 0.5em;
+  min-width: 0;
+}
+
+.collectionSelectorField {
+  flex: 1 1 0;
+}

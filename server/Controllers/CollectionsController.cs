@@ -67,15 +67,17 @@ public class CollectionsController : ControllerBase
         return Ok(result);
     }
 
+    public record AddBookToCollectionRequest(int BookId, int CollectionId);
+
     [HttpPost("addBookToCollection")]
     [Authorize]
-    public async Task<ActionResult> AddBookToCollection(int bookId, int collectionId)
+    public async Task<ActionResult> AddBookToCollection([FromBody] AddBookToCollectionRequest request)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null)
             return Unauthorized();
 
-        var result = await _collectionsService.AddBookToCollection(userId, bookId, collectionId);
+        var result = await _collectionsService.AddBookToCollection(userId, request.BookId, request.CollectionId);
         if (result is null)
             return BadRequest(new { error = result?.Error });
 

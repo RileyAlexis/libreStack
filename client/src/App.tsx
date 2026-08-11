@@ -245,6 +245,15 @@ function App() {
           }
         />
         <Route
+          path="/collection:collectionId"
+          element={
+            <div className="pageContent">
+              <HeaderBanner />
+              {/* <SeriesBooks /> */}
+            </div>
+          }
+        />
+        <Route
           path="/login"
           element={
             <div>
