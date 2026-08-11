@@ -1,7 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useSelector } from "react-redux";
 import type { CollectionsType } from "@/types/BookType";
-import type { LibreRootState } from "@/types/LibreRootState";
 import { api } from "@/utils/api";
 
 // UI

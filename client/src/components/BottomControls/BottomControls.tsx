@@ -36,7 +36,6 @@ import {
   PlusIcon,
   ScanSearch,
   ScanText,
-  SquareIcon,
   SquareLibrary,
   UploadIcon,
 } from "lucide-react";
