@@ -235,6 +235,15 @@ export const BottomControls: React.FC = () => {
     );
   };
 
+  const handleChangeGroupByCollection = () => {
+    dispatch(
+      setLayout({
+        ...appSettings.libraryLayout,
+        groupByCollections: !appSettings.libraryLayout.groupByCollections,
+      }),
+    );
+  };
+
   const handleShowOnlyDownloaded = () => {
     dispatch(
       setLayout({
@@ -408,6 +417,17 @@ export const BottomControls: React.FC = () => {
               />
             }
             label="Group By Series"
+          />
+        </MenuItem>
+        <MenuItem className="menubarSwitch" disableRipple>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={appSettings.libraryLayout.groupByCollections}
+                onChange={handleChangeGroupByCollection}
+              />
+            }
+            label="Group By Collection"
           />
         </MenuItem>
         <MenuItem className="menubarSwitch" disableRipple>
