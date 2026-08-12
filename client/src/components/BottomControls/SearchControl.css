@@ -1,0 +1,7 @@
+.searchControlContainer {
+  position: fixed;
+  bottom: 4.5em;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}

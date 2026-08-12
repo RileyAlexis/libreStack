@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router";
 
@@ -9,7 +9,7 @@ import type { LibreRootState } from "../../types/LibreRootState";
 //Actions
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 import { fetchLibraryList } from "@/redux/reducers/LibraryListReducer";
-import { selectUnifiedLibraryState } from "@/redux/Selectors/LibrarySelector";
+import { selectFilteredLibraryState } from "@/redux/Selectors/LibrarySelector";
 import { BookCard } from "./BookCard/BookCard";
 
 // Components
@@ -28,7 +28,14 @@ export const Library: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
-  const libraryEntries = useSelector(selectUnifiedLibraryState);
+  const librarySearchTerm = useSelector(
+    (state: LibreRootState) => state.selections.librarySearchTerm,
+  );
+  const selectFiltered = useMemo(
+    () => selectFilteredLibraryState(librarySearchTerm),
+    [librarySearchTerm],
+  );
+  const libraryEntries = useSelector(selectFiltered);
 
   const scrollRef = useRef<HTMLDivElement>(null);
 

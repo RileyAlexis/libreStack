@@ -394,16 +394,18 @@ export const LibraryHeaderControls: React.FC = () => {
             </div>
           </div>
         )}
-        {appSettings.libraryLayout.showOnlyDownloaded && (
-          <div className="headerInfoContainer">
-            <Typography variant="h6">Downloaded Books</Typography>
-          </div>
-        )}
-        {(isSeriesView || isCollectionView) && (
-          <div className="headerInfoContainer">
-            <Typography variant="h6">{viewTitle}</Typography>
-          </div>
-        )}
+        {appSettings.libraryLayout.showOnlyDownloaded &&
+          selections.selectedBooks.length === 0 && (
+            <div className="headerInfoContainer">
+              <Typography variant="h6">Downloaded Books</Typography>
+            </div>
+          )}
+        {(isSeriesView || isCollectionView) &&
+          selections.selectedBooks.length === 0 && (
+            <div className="headerInfoContainer">
+              <Typography variant="h6">{viewTitle}</Typography>
+            </div>
+          )}
         <div className="sortingContainer">
           {!isTouchDevice && (
             <div className="sortingBox">

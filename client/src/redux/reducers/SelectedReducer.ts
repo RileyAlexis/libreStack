@@ -2,6 +2,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { SelectType } from "@/types/SelectType";
 
 const initialState: SelectType = {
+  librarySearchTerm: "",
   selectedBooks: [],
 };
 
@@ -17,12 +18,15 @@ const SelectSlice = createSlice({
         (book) => book !== action.payload,
       );
     },
+    setSearchTerm(state, action: PayloadAction<string>) {
+      state.librarySearchTerm = action.payload;
+    },
     clearSelectedBooks(state) {
       state.selectedBooks = [];
     },
   },
 });
 
-export const { selectBook, unSelectBook, clearSelectedBooks } =
+export const { selectBook, unSelectBook, setSearchTerm, clearSelectedBooks } =
   SelectSlice.actions;
 export default SelectSlice.reducer;

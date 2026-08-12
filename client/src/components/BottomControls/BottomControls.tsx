@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { api } from "@/utils/api";
@@ -26,6 +26,7 @@ import {
   Box,
   Button,
 } from "@mui/material";
+
 import InstallMobileIcon from "@mui/icons-material/InstallMobile";
 
 import {
@@ -36,6 +37,7 @@ import {
   PlusIcon,
   ScanSearch,
   ScanText,
+  SearchIcon,
   SquareLibrary,
   UploadIcon,
 } from "lucide-react";
@@ -44,6 +46,7 @@ import { NewLibraryDialog } from "../Library/NewLibraryDialog";
 import "./BottomControls.css";
 import { runSnack } from "@/redux/reducers/SnackReducer";
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
+import { SearchControl } from "./SearchControl";
 
 type ActiveMenu = "library" | "manage" | "layout" | null;
 
@@ -56,6 +59,7 @@ export const BottomControls: React.FC = () => {
   const library = useSelector((state: LibreRootState) => state.library);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const libraryList = useSelector((state: LibreRootState) => state.libraryList);
+  const [isSearching, setIsSearching] = useState(false);
 
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const [deferredPrompt, setDeferredPrompt] = useState<any | null>(null);
@@ -302,6 +306,13 @@ export const BottomControls: React.FC = () => {
         >
           <Typography variant="caption">Layout</Typography>
         </Button>
+        <Button
+          sx={menubarButtonSx}
+          startIcon={<SearchIcon />}
+          onClick={() => setIsSearching(!isSearching)}
+        >
+          <Typography variant="caption">Search</Typography>
+        </Button>
         {deferredPrompt && !isIOS && (
           <Button
             sx={menubarButtonSx}
@@ -463,6 +474,7 @@ export const BottomControls: React.FC = () => {
           />
         </Box>
       </Menu>
+      {isSearching && <SearchControl />}
 
       <Dialog
         open={isCreateLibraryOpen}

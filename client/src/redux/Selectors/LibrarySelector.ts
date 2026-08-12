@@ -34,6 +34,74 @@ interface SortableEntry {
   dateAdded: Date | null;
 }
 
+type MatchScore = 0 | 1 | 2 | 3;
+
+const scoreField = (
+  fieldValue: string | null | undefined,
+  query: string,
+): MatchScore => {
+  if (!fieldValue) return 0;
+  const value = fieldValue.toLowerCase();
+  if (value === query) return 3;
+  if (value.startsWith(query)) return 2;
+  if (value.includes(query)) return 1;
+  return 0;
+};
+
+const scoreEntry = (entry: LibraryListEntry, query: string): MatchScore => {
+  switch (entry.entryKind) {
+    case "book":
+      return entry.book
+        ? (Math.max(
+            scoreField(entry.book.title, query),
+            scoreField(entry.book.author, query),
+          ) as MatchScore)
+        : 0;
+
+    case "series": {
+      let best = Math.max(
+        scoreField(entry.sortedTitle, query),
+        scoreField(entry.sortedAuthor, query),
+      ) as MatchScore;
+      entry.seriesBooks.forEach((book) => {
+        best = Math.max(
+          best,
+          scoreField(book.title, query),
+          scoreField(book.author, query),
+        ) as MatchScore;
+      });
+      return best;
+    }
+
+    case "collection": {
+      let best = scoreField(entry.collectionTitle, query) as MatchScore;
+      entry.collectionBooks.forEach((book) => {
+        best = Math.max(
+          best,
+          scoreField(book.title, query),
+          scoreField(book.author, query),
+        ) as MatchScore;
+      });
+      return best;
+    }
+  }
+};
+
+// Factory selector: each calling component should memoize its own instance
+// via useMemo(() => selectFilteredLibraryState(searchTerm), [searchTerm]),
+// same as passing sortBy through appSettings feeds selectUnifiedLibraryState.
+export const selectFilteredLibraryState = (searchTerm: string) =>
+  createSelector([selectUnifiedLibraryState], (entries): LibraryListEntry[] => {
+    const query = searchTerm.trim().toLowerCase();
+    if (!query) return entries;
+
+    return entries
+      .map((entry) => ({ entry, score: scoreEntry(entry, query) }))
+      .filter(({ score }) => score > 0)
+      .sort((a, b) => b.score - a.score)
+      .map(({ entry }) => entry);
+  });
+
 const applySort = <T extends SortableEntry>(
   items: T[],
   sortBy: SortByType,
