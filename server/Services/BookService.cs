@@ -265,6 +265,33 @@ public class BookService : IBookService
         return Result<ApiBook>.Success(updated);
     }
 
+    public async Task<Result> RevertCoverToEpub(string userId, int bookId)
+    {
+        if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
+            return Result.Failure("User Id is required", ErrorType.BadRequest);
+
+        var book = await _db.Books.FirstOrDefaultAsync(b => b.Id == bookId);
+        if (book is null)
+            return Result.Failure("Book not found", ErrorType.NotFound);
+
+        Book entry;
+        try
+        {
+            entry = await _epubParser.ParseMetadata(book.EpubPath, userId);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure($"Failed to parse epub: {ex.Message}", ErrorType.BadRequest);
+        }
+
+        var resizedCover = ResizeBookCover(entry.CoverImage);
+        book.CoverImage = resizedCover;
+
+        await _db.SaveChangesAsync();
+
+        return Result.Success();
+    }
+
     public async Task<Result> AddBookEntryFromPath(string filePath, string userId, int libraryId)
     {
         if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))

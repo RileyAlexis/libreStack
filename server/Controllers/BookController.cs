@@ -102,6 +102,20 @@ public class BookController : ControllerBase
         return Ok(result);
     }
 
+    [HttpPost("revertCoverToEpub")]
+    [Authorize]
+    public async Task<IActionResult> RevertCoverToEpub(int bookId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null) return Unauthorized();
+
+        var result = await _bookService.RevertCoverToEpub(userId, bookId);
+        if (result is null)
+            return BadRequest(new { error = result?.Error });
+
+        return Ok(result);
+    }
+
     [HttpGet("downloadBookEntry")]
     [Authorize]
     public async Task<IActionResult> DownloadBookEntry(int id)

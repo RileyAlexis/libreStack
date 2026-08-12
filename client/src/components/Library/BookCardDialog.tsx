@@ -232,6 +232,19 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({
       .finally(() => setIsSyncing(false));
   };
 
+  const handleUseEpubCover = () => {
+    setError(null);
+    api
+      .post(`Book/revertCoverToEpub?bookId=${bookId}`)
+      .then((response) => {
+        console.log(response.data);
+        dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
+      })
+      .catch((error) => {
+        setError(error.response?.data?.error || "Failed to Find Cover");
+      });
+  };
+
   // -- Field renderers -----------------------------------------------------------
 
   const renderTextField = (id: EditableField, label: string) => (
@@ -401,8 +414,13 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({
               )}
             </Button>
             <Button onClick={handleFetchCover} disabled={isSyncing}>
-              {isSyncing ? <CircularProgress size={14} /> : "Fetch Cover"}
+              {isSyncing ? (
+                <CircularProgress size={14} />
+              ) : (
+                "Fetch Cover (Open Library)"
+              )}
             </Button>
+            <Button onClick={handleUseEpubCover}>Use Epub Cover</Button>
           </ButtonGroup>
           {error && (
             <Box sx={{ mt: 2 }}>
