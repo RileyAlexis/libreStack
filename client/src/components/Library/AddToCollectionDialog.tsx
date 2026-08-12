@@ -6,6 +6,10 @@ import type { AppDispatch } from "@/redux/store";
 import type { CollectionsType } from "@/types/BookType";
 import { api } from "@/utils/api";
 
+// Actions
+import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
+import { clearSelectedBooks } from "@/redux/reducers/SelectedReducer";
+
 // UI
 import {
   DialogContent,
@@ -22,7 +26,6 @@ import {
 import { Minus, Plus } from "lucide-react";
 
 import "./AddToCollectionDialog.css";
-import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 
 interface AssignToCollectionDialogProps {
   setIsAddToCollectionOpen: Dispatch<SetStateAction<boolean>>;
@@ -91,6 +94,7 @@ export const AddToCollectionDialog: React.FC<AssignToCollectionDialogProps> = ({
       console.error(error.response.data);
     } finally {
       dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
+      dispatch(clearSelectedBooks());
     }
   };
 

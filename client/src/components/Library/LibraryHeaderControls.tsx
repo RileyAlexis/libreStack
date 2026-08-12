@@ -267,6 +267,7 @@ export const LibraryHeaderControls: React.FC = () => {
     } finally {
       setIsRemoveFromCollectionOpen(false);
       dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
+      dispatch(clearSelectedBooks());
     }
   };
 
