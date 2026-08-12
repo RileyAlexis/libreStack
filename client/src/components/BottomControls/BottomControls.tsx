@@ -59,6 +59,9 @@ export const BottomControls: React.FC = () => {
   const library = useSelector((state: LibreRootState) => state.library);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const libraryList = useSelector((state: LibreRootState) => state.libraryList);
+  const hasSearchTerm = useSelector(
+    (state: LibreRootState) => state.selections.librarySearchTerm.length > 0,
+  );
   const [isSearching, setIsSearching] = useState(false);
 
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -97,6 +100,7 @@ export const BottomControls: React.FC = () => {
   };
 
   const openMenu = (menu: ActiveMenu, e: React.MouseEvent<HTMLElement>) => {
+    setIsSearching(false);
     setAnchorEl(e.currentTarget);
     setActiveMenu(menu);
   };
@@ -104,6 +108,7 @@ export const BottomControls: React.FC = () => {
   const closeMenu = () => {
     setAnchorEl(null);
     setActiveMenu(null);
+    setIsSearching(false);
   };
 
   const handleSelectLibrary = (libraryId: number) => {
@@ -307,7 +312,10 @@ export const BottomControls: React.FC = () => {
           <Typography variant="caption">Layout</Typography>
         </Button>
         <Button
-          sx={menubarButtonSx}
+          sx={[
+            menubarButtonSx,
+            { background: hasSearchTerm ? "lightgreen" : undefined },
+          ]}
           startIcon={<SearchIcon />}
           onClick={() => setIsSearching(!isSearching)}
         >
