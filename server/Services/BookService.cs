@@ -206,6 +206,7 @@ public class BookService : IBookService
         existing.Title = book.Title;
         existing.Author = book.Author;
         existing.Publisher = book.Publisher;
+        existing.PublishDate = book.PublishDate;
         existing.SeriesOrder = book.SeriesOrder;
         existing.ISBN = book.ISBN;
         existing.LCCN = book.LCCN;
@@ -238,6 +239,7 @@ public class BookService : IBookService
             Title = existing.Title,
             Author = existing.Author,
             Publisher = existing.Publisher,
+            PublishDate = existing.PublishDate,
             Description = existing.Description,
             SeriesOrder = existing.SeriesOrder,
             ISBN = existing.ISBN,
