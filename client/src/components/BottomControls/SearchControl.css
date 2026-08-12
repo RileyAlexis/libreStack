@@ -4,4 +4,6 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
+  box-shadow: var(--shadow-elevation-high);
+  /* padding-bottom: 0.15em; */
 }

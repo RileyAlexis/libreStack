@@ -3,7 +3,8 @@ import type { AppDispatch } from "@/redux/store";
 import type { LibreRootState } from "@/types/LibreRootState";
 import { setSearchTerm } from "@/redux/reducers/SelectedReducer";
 
-import { TextField } from "@mui/material";
+import { TextField, IconButton, InputAdornment } from "@mui/material";
+import { XIcon } from "lucide-react";
 
 import "./SearchControl.css";
 
@@ -17,14 +18,29 @@ export const SearchControl: React.FC = () => {
   return (
     <div className="searchControlContainer">
       <TextField
-        type="search"
         variant="filled"
         label="Search"
+        autoFocus
         value={librarySearchTerm}
         onChange={(e) => dispatch(setSearchTerm(e.target.value))}
         sx={{
-          borderRadius: "15px",
           background: "var(--menu-background)",
+        }}
+        slotProps={{
+          input: {
+            endAdornment: librarySearchTerm && (
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="clear search"
+                  onClick={() => dispatch(setSearchTerm(""))}
+                  edge="end"
+                  size="small"
+                >
+                  <XIcon size={18} fontSize="small" />
+                </IconButton>
+              </InputAdornment>
+            ),
+          },
         }}
       />
     </div>
