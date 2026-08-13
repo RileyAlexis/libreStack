@@ -19,7 +19,7 @@ export default defineConfig({
     }),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "apple-touch-icon.png"],
+      includeAssets: ["libreStack.svg", "apple-touch-icon.png"],
       workbox: {
         navigateFallback: "index.html",
         navigateFallbackDenylist: [/^\/swagger/, /^\/api/],
@@ -31,23 +31,43 @@ export default defineConfig({
         name: "Librestack",
         short_name: "Librestack",
         description: "Self-hosted epub library",
-        theme_color: "#ffffff",
-        background_color: "#ffffff",
+        background_color: "#faf1e298",
+        theme_color: "#faf1e298",
         display: "standalone",
         scope: "/",
         start_url: "/",
-        // icons: [
-        //   {
-        //     src: "pwa-192x192.png",
-        //     sizes: "192x192",
-        //     type: "image/png",
-        //   },
-        //   {
-        //     src: "pwa-512x512.png",
-        //     sizes: "512x512",
-        //     type: "image/png",
-        //   },
-        // ],
+        icons: [
+          {
+            src: "/icons/icon-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "/icons/icon-384x384.png",
+            sizes: "384x384",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "/icons/icon-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "/icons/icon-192x192-maskable.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "maskable",
+          },
+          {
+            src: "/icons/icon-512x512-maskable.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
+          },
+        ],
       },
     }),
   ],
