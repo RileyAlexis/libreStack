@@ -21,9 +21,9 @@ export const HeaderBanner: React.FC = () => {
   return (
     <>
       <div className="headerBannerContainer">
-        <h1 onClick={handleNavigateToMain} style={{ cursor: "pointer" }}>
-          LibreStack
-        </h1>
+        <div onClick={handleNavigateToMain} style={{ cursor: "pointer" }}>
+          <img src="/libreStackLogo.png" width="60px" />
+        </div>
 
         <div className="menuContainer">
           {appSettings.isSyncing && <BookSpinner />}
