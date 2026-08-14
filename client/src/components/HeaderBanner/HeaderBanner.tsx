@@ -9,6 +9,7 @@ import { BookSpinner } from "../BookSpinner/BookSpinner";
 export const HeaderBanner: React.FC = () => {
   const navigate = useNavigate();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  const isSmall = window.innerWidth < 320;
 
   const handleNavigateToMain = () => {
     if (appSettings.showLibraryAsHome) {
@@ -22,7 +23,8 @@ export const HeaderBanner: React.FC = () => {
     <>
       <div className="headerBannerContainer">
         <div onClick={handleNavigateToMain} style={{ cursor: "pointer" }}>
-          <img src="/libreStackLogoTitle.svg" height="60px" />
+          {isSmall && <img src="/libreStackLogoBase.svg" height="50px" />}
+          {!isSmall && <img src="/libreStackLogoTitle.svg" height="50px" />}
         </div>
 
         <div className="menuContainer">
