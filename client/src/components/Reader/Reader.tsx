@@ -161,7 +161,6 @@ export const Reader: React.FC = () => {
     };
   }, [id]);
 
-  // Generate the book-wide location map once the book instance exists.
   useEffect(() => {
     if (!bookInstance) return;
 
@@ -256,16 +255,73 @@ export const Reader: React.FC = () => {
     });
 
     rendition.hooks.content.register((contents: any) => {
-      const el = contents.document.documentElement;
-      if (!el) return;
+      const doc = contents.document;
+      if (!doc) return;
 
+      // Avoid adding duplicate handlers when content is re-mounted
+      if ((doc as any).__libreListenersAdded) return;
+      (doc as any).__libreListenersAdded = true;
+
+      // Add stylesheet rules (existing behavior)
       contents.addStylesheetRules({
         body: {
           "line-height": `${appSettingsRef.current.lineHeight} !important`,
         },
       });
-    });
 
+      const clickHandler = (ev: any) => {
+        try {
+          const isTouch = ev.type && String(ev.type).startsWith("touch");
+          const clientX = isTouch
+            ? (ev.changedTouches?.[0]?.clientX ?? ev.touches?.[0]?.clientX ?? 0)
+            : (ev.clientX ?? 0);
+
+          let relativeX: number | null = null;
+          let width = 0;
+
+          if (
+            typeof ev.offsetX === "number" &&
+            ev.offsetX >= 0 &&
+            ev.offsetX < 20000
+          ) {
+            relativeX = ev.offsetX;
+            const target = ev.target as Element | null;
+            const rect =
+              target && typeof target.getBoundingClientRect === "function"
+                ? target.getBoundingClientRect()
+                : doc.documentElement.getBoundingClientRect();
+            width = rect?.width ?? contents.window?.innerWidth ?? 1;
+          } else {
+            const target = ev.target as Element | null;
+            const rect =
+              target && typeof target.getBoundingClientRect === "function"
+                ? target.getBoundingClientRect()
+                : doc.documentElement.getBoundingClientRect();
+            width = rect?.width ?? contents.window?.innerWidth ?? 1;
+            const left = rect?.left ?? 0;
+            relativeX = Math.max(0, clientX - left);
+          }
+
+          const leftBoundary = width * 0.2;
+          const rightBoundary = width * 0.8;
+          const rel = relativeX ?? 0;
+
+          if (rel < leftBoundary) rendition.prev();
+          else if (rel > rightBoundary) rendition.next();
+          else setIsMenuShowing((p) => !p);
+        } catch (e) {
+          // defensive: ignore errors from unexpected event shapes
+        }
+      };
+
+      // Attach listeners to the iframe document so clicks/taps are handled in-content.
+      try {
+        doc.addEventListener("click", clickHandler as EventListener, false);
+        doc.addEventListener("touchend", clickHandler as EventListener, false);
+      } catch (e) {
+        // ignore if attaching fails
+      }
+    });
     renditionRef.current = rendition;
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -275,32 +331,14 @@ export const Reader: React.FC = () => {
 
     window.addEventListener("keydown", handleKeyDown);
 
-    // Intercept browser back/forward buttons to prevent navigation away from the reader view
-    const handlePopState = (e: PopStateEvent) => {
-      // Only intercept if we are in a reading context and not explicitly navigating elsewhere
-      if (bookInstance && !isMenuShowing) {
-        e.preventDefault();
-        console.log(
-          "Browser history navigation intercepted to keep user on the reader page.",
-        );
-      }
-    };
-
-    window.addEventListener("popstate", handlePopState);
-
     return () => {
       destroyed = true;
       window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("popstate", handlePopState); // Clean up popstate listener
       try {
         rendition.destroy();
       } catch (_) {}
     };
   }, [bookInstance]);
-
-  const handleShowMenu = () => {
-    setIsMenuShowing((prev) => !prev);
-  };
 
   return (
     <div
@@ -314,7 +352,7 @@ export const Reader: React.FC = () => {
       )}
 
       <div className="readerTextArea" ref={renderAreaRef}>
-        {bookInstance && (
+        {/* {bookInstance && (
           <>
             <div
               className="readerPrevious"
@@ -326,7 +364,7 @@ export const Reader: React.FC = () => {
               onClick={() => renditionRef.current?.next()}
             />
           </>
-        )}
+        )} */}
       </div>
 
       {isMenuShowing && (
