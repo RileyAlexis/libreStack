@@ -1,4 +1,4 @@
-# <img src="client/public/libreStack.svg" width="100"> Libre Stack
+# <img src="client/public/libreStackLogoTitle.svg" height="100">
 
 Self-hosted server for DRM free epubs with an offline capable Progressive Web App front end. Librestack hosts your ebooks on your hardware with no tracking, ads or stores. Think JellyFin but for books.
 
