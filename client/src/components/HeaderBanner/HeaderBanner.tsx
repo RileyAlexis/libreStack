@@ -22,7 +22,7 @@ export const HeaderBanner: React.FC = () => {
     <>
       <div className="headerBannerContainer">
         <div onClick={handleNavigateToMain} style={{ cursor: "pointer" }}>
-          <img src="/libreStackLogo.png" width="60px" />
+          <img src="/libreStackLogoTitle.svg" height="60px" />
         </div>
 
         <div className="menuContainer">
