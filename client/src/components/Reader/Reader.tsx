@@ -303,15 +303,6 @@ export const Reader: React.FC = () => {
 
           const rect = renderAreaRef.current?.getBoundingClientRect();
           if (!rect) return;
-
-          // epub.js lays out the whole section as one oversized multi-column
-          // iframe and shifts it to reveal a "page" — so clientX/offsetX inside
-          // the iframe reflect the entire flowed section, not the visible page,
-          // and there's no reliable width to modulo them by (column-gap/rounding
-          // makes the page pitch not exactly match any single measurable value).
-          // screenX/screenY are absolute screen coordinates, unaffected by any of
-          // that internal layout, so we compare against renderAreaRef's position
-          // in that same absolute space instead.
           const containerScreenLeft = window.screenX + rect.left;
           const relativeX = screenX - containerScreenLeft;
           const width = rect.width;
@@ -336,9 +327,7 @@ export const Reader: React.FC = () => {
           if (relativeX < leftBoundary) performNav("prev");
           else if (relativeX > rightBoundary) performNav("next");
           else setIsMenuShowing((p) => !p);
-        } catch (e) {
-          // defensive: ignore errors from unexpected event shapes
-        }
+        } catch (e) {}
       };
 
       // Attach listeners to the iframe document so clicks/taps are handled in-content.
