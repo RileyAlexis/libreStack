@@ -272,42 +272,69 @@ export const Reader: React.FC = () => {
       const clickHandler = (ev: any) => {
         try {
           const isTouch = ev.type && String(ev.type).startsWith("touch");
-          const clientX = isTouch
-            ? (ev.changedTouches?.[0]?.clientX ?? ev.touches?.[0]?.clientX ?? 0)
-            : (ev.clientX ?? 0);
+          const screenX = isTouch
+            ? (ev.changedTouches?.[0]?.screenX ?? ev.touches?.[0]?.screenX ?? 0)
+            : (ev.screenX ?? 0);
+          const screenY = isTouch
+            ? (ev.changedTouches?.[0]?.screenY ?? ev.touches?.[0]?.screenY ?? 0)
+            : (ev.screenY ?? 0);
 
-          let relativeX: number | null = null;
-          let width = 0;
-
-          if (
-            typeof ev.offsetX === "number" &&
-            ev.offsetX >= 0 &&
-            ev.offsetX < 20000
-          ) {
-            relativeX = ev.offsetX;
-            const target = ev.target as Element | null;
-            const rect =
-              target && typeof target.getBoundingClientRect === "function"
-                ? target.getBoundingClientRect()
-                : doc.documentElement.getBoundingClientRect();
-            width = rect?.width ?? contents.window?.innerWidth ?? 1;
-          } else {
-            const target = ev.target as Element | null;
-            const rect =
-              target && typeof target.getBoundingClientRect === "function"
-                ? target.getBoundingClientRect()
-                : doc.documentElement.getBoundingClientRect();
-            width = rect?.width ?? contents.window?.innerWidth ?? 1;
-            const left = rect?.left ?? 0;
-            relativeX = Math.max(0, clientX - left);
+          // De-duplicate synthetic events: many browsers fire touch -> mouse/click.
+          try {
+            const last = (doc as any).__libreLastHandledEvent as
+              | { time: number; type: string; x: number; y: number }
+              | undefined;
+            const now = Date.now();
+            const curType = String(ev.type || "");
+            if (last && now - last.time < 700 && last.type !== curType) {
+              const dx = Math.abs((last.x || 0) - screenX);
+              const dy = Math.abs((last.y || 0) - screenY);
+              if (dx < 12 && dy < 12) return; // duplicate — ignore
+            }
+            (doc as any).__libreLastHandledEvent = {
+              time: now,
+              type: curType,
+              x: screenX,
+              y: screenY,
+            };
+          } catch (err) {
+            // ignore de-dupe failures
           }
+
+          const rect = renderAreaRef.current?.getBoundingClientRect();
+          if (!rect) return;
+
+          // epub.js lays out the whole section as one oversized multi-column
+          // iframe and shifts it to reveal a "page" — so clientX/offsetX inside
+          // the iframe reflect the entire flowed section, not the visible page,
+          // and there's no reliable width to modulo them by (column-gap/rounding
+          // makes the page pitch not exactly match any single measurable value).
+          // screenX/screenY are absolute screen coordinates, unaffected by any of
+          // that internal layout, so we compare against renderAreaRef's position
+          // in that same absolute space instead.
+          const containerScreenLeft = window.screenX + rect.left;
+          const relativeX = screenX - containerScreenLeft;
+          const width = rect.width;
 
           const leftBoundary = width * 0.2;
           const rightBoundary = width * 0.8;
-          const rel = relativeX ?? 0;
 
-          if (rel < leftBoundary) rendition.prev();
-          else if (rel > rightBoundary) rendition.next();
+          const now = Date.now();
+          const lastNav = (doc as any).__libreLastNav as
+            | { time: number; dir: "next" | "prev" }
+            | undefined;
+          const performNav = (dir: "next" | "prev") => {
+            if (lastNav && now - lastNav.time < 500 && lastNav.dir === dir)
+              return;
+            try {
+              if (dir === "next") rendition.next();
+              else rendition.prev();
+            } catch (_) {}
+            (doc as any).__libreLastNav = { time: now, dir };
+          };
+
+          if (relativeX < leftBoundary) performNav("prev");
+          else if (relativeX > rightBoundary) performNav("next");
           else setIsMenuShowing((p) => !p);
         } catch (e) {
           // defensive: ignore errors from unexpected event shapes
