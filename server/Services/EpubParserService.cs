@@ -103,6 +103,12 @@ public class EpubParserService : IEpubParseService
             var description = book.Description;
             var metaData = book.Schema.Package.Metadata;
             string filename = Path.GetFileNameWithoutExtension(filePath);
+            DateTime? extractedPublishDate = null;
+
+            foreach (var item in metaData.Dates)
+            {
+                extractedPublishDate = DateTime.Parse(item.Date);
+            }
 
             Series? series = null;
             if (libreStackConfig.AttemptSeriesParsing)
@@ -127,7 +133,7 @@ public class EpubParserService : IEpubParseService
                 Description = StripHtml(description),
                 SeriesId = series?.Id,
                 Publisher = metaData.Publishers.FirstOrDefault()?.Publisher ?? string.Empty,
-                PublishDate = metaData.Dates.ToString(),
+                PublishDate = extractedPublishDate?.Year.ToString(),
                 OCLCWorldCat = metaData.Identifiers
                     .FirstOrDefault(i => i.Scheme?.ToUpper() == "OCLC")?.Identifier
                     ?? string.Empty,
