@@ -6,6 +6,8 @@ Self-hosted server for DRM free epubs with an offline capable Progressive Web Ap
 ![ipad view of an intro page of Pride and Prejudice](/docsSite/static/img/screen_ipad_book01.png)
 ![ipad view of Alice and Wonderland in dark mode](/docsSite/static/img/screen_ipad_darkMode.png)
 ![ipad view of Little Women with Spine showing](/docsSite/static/img/Screenshot%202026-08-03%20at%2010.44.43 AM.png)
+![ipad view of book description dialog](/docsSite/static/img/screen_ipad_description.png)
+![ipad view of book metadata dialog](/docsSite/static/img/screen_ipad_metadata.png)
 
 ## Getting Started
 
