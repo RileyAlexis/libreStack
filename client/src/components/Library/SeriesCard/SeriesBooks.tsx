@@ -1,14 +1,24 @@
-import type { LibreRootState } from "@/types/LibreRootState";
+import { useMemo, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useParams } from "react-router";
-import { BookCard } from "../BookCard/BookCard";
+import { useParams, useNavigate } from "react-router";
 
-import { useMemo } from "react";
-import { LibraryHeaderControls } from "../LibraryHeaderControls";
+// Redux
 import { sortSeriesBooks } from "@/redux/Selectors/LibrarySelector";
+import type { LibreRootState } from "@/types/LibreRootState";
+
+// Components
+import { LibraryHeaderControls } from "../LibraryHeaderControls";
+import { BookCard } from "../BookCard/BookCard";
 
 export const SeriesBooks: React.FC = () => {
   const { seriesId } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (sortedSeriesBooks.length === 0) {
+      navigate("/library");
+    }
+  }, []);
 
   const sortBy = useSelector(
     (state: LibreRootState) => state.appSettings.libraryLayout.sortBy,
