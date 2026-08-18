@@ -26,7 +26,10 @@ public class BookmarkController : ControllerBase
         if (UserId is null) return Unauthorized();
 
         var result = await _iBookmarkService.CreateBookmark(bookId, UserId, apiBookmarkModel);
-        return result ? Ok("Bookmark Created") : BadRequest("Error creating bookmark");
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok(result);
     }
 
     [HttpPost("updateBookmark")]
@@ -37,7 +40,10 @@ public class BookmarkController : ControllerBase
         if (UserId is null) return Unauthorized();
 
         var result = await _iBookmarkService.UpdateBookmark(id, userId, apiBookmarkModel);
-        return result ? Ok("Bookmark updated") : BadRequest("Error updating bookmark");
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok(result);
     }
 
     [HttpDelete]
@@ -48,6 +54,23 @@ public class BookmarkController : ControllerBase
         if (UserId is null) return Unauthorized();
 
         var result = await _iBookmarkService.DeleteBookmark(id, UserId);
-        return result ? Ok("Bookmark deleted") : BadRequest("Error deleting bookmark");
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok(result);
+    }
+
+    [HttpGet("getBookmarks")]
+    [Authorize]
+    public async Task<IActionResult> GetBookmarks(int bookId)
+    {
+        var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (UserId is null) return Unauthorized();
+
+        var result = await _iBookmarkService.GetBookmarksByBookId(UserId, bookId);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok(result.Value);
     }
 }

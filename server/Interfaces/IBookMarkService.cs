@@ -1,9 +1,11 @@
+using Librestack.Models;
 using Librestack.Models.APIModels;
 namespace Librestack.Interfaces;
 
 public interface IBookmarkService
 {
-    Task<bool> CreateBookmark(int bookId, string userId, ApiBookmarkModel ApiBbookmarkModel);
-    Task<bool> DeleteBookmark(int id, string userId);
-    Task<bool> UpdateBookmark(int id, string userId, ApiBookmarkModel apiBookmarkModel);
+    Task<Result> CreateBookmark(int bookId, string userId, ApiBookmarkModel ApiBbookmarkModel);
+    Task<Result> DeleteBookmark(int id, string userId);
+    Task<Result> UpdateBookmark(int id, string userId, ApiBookmarkModel apiBookmarkModel);
+    Task<Result<List<BookmarkModel>>> GetBookmarksByBookId(string userId, int bookId);
 }
