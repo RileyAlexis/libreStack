@@ -395,6 +395,7 @@ export const LibraryHeaderControls: React.FC = () => {
           </div>
         )}
         {appSettings.libraryLayout.showOnlyDownloaded &&
+          !isSeriesView &&
           selections.selectedBooks.length === 0 && (
             <div className="headerInfoContainer">
               <Typography variant="h6">Downloaded Books</Typography>
