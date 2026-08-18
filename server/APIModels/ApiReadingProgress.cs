@@ -6,4 +6,5 @@ public class APIReadingProgress
     public string? CfiLocation { get; set; }
     public bool IsComplete { get; set; }
     public DateTime? LastRead { get; set; }
+    public int PercentComplete { get; set; }
 }

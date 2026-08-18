@@ -4,7 +4,7 @@ import { useParams } from "react-router";
 import { api } from "../../utils/api";
 import Epub, { Book, Rendition, type Location } from "@likecoin/epub-ts";
 import type { LibreRootState } from "@/types/LibreRootState";
-import type { AppSettings } from "@/types/AppSettings"; // adjust path to wherever this lives
+import type { AppSettings } from "@/types/AppSettings";
 
 import "./Reader.css";
 
@@ -38,10 +38,18 @@ export const Reader: React.FC = () => {
   }, [appSettings]);
 
   const updateLocation = (cfiLocation: Location) => {
+    const percentComplete =
+      cfiLocation.start.percentage !== undefined
+        ? (cfiLocation.start.percentage * 100).toFixed(0)
+        : 0;
+
+    console.log("percent complete", percentComplete);
+
     api
       .post("/ReadingProgress/updateProgress", {
         bookId: parseInt(id!),
         cfiLocation: cfiLocation.start.cfi,
+        percentComplete: percentComplete,
       })
       .then((_) => {})
       .catch((error) => {

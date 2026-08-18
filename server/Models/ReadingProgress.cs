@@ -12,4 +12,5 @@ public class ReadingProgress
     public string? CfiLocation { get; set; }
     public DateTime? LastRead { get; set; }
     public bool IsComplete { get; set; }
+    public int PercentComplete { get; set; }
 }

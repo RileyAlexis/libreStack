@@ -34,6 +34,10 @@
   padding: 2%;
 }
 
+.bookControlsPercentComplete {
+  padding: 2%;
+}
+
 .bookIcon {
   color: var(--primary);
 }

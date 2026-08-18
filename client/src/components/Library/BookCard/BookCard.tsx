@@ -11,7 +11,12 @@ import { selectDownloadStatus } from "@/redux/reducers/DownloadReducer";
 import { downloadBook } from "@/redux/reducers/DownloadReducer";
 
 // UI
-import { IconButton, Tooltip, CircularProgress } from "@mui/material";
+import {
+  IconButton,
+  Tooltip,
+  CircularProgress,
+  Typography,
+} from "@mui/material";
 import { CircleCheckBig, CloudDownload, CloudAlert } from "lucide-react";
 
 import "./BookCard.css";
@@ -146,6 +151,13 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
               </Tooltip>
             )}
           </div>
+          {book.readingProgress?.percentComplete > 0 && (
+            <div className="bookControlsPercentComplete">
+              <Typography variant="caption">
+                {book.readingProgress?.percentComplete}%
+              </Typography>
+            </div>
+          )}
           <div>
             {downloadStatus === "not-downloaded" && (
               <IconButton

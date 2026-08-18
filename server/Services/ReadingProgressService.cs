@@ -36,7 +36,6 @@ public class ReadingProgressService : IReadingProgressService
                 BookId = bookId,
                 UserId = userId,
                 IsComplete = true,
-                // LastRead = DateTime.UtcNow
             };
             _db.ReadingProgress.Add(entry);
         }
@@ -86,10 +85,6 @@ public class ReadingProgressService : IReadingProgressService
         return Result.Success();
     }
 
-    // return Result<List<Book>>.Failure("No books found for user", ErrorType.NotFound);
-
-    // return Result<List<Book>>.Success(result);
-
     public async Task<Result> UpdateProgress(string userId, APIReadingProgress readingProgress)
     {
         var existing = await _db.ReadingProgress
@@ -102,12 +97,13 @@ public class ReadingProgressService : IReadingProgressService
 
         if (existing is null)
         {
-            var newProgress = new Models.ReadingProgress
+            var newProgress = new ReadingProgress
             {
                 UserId = userId,
                 BookId = readingProgress.BookId,
                 CfiLocation = location,
-                LastRead = DateTime.UtcNow
+                LastRead = DateTime.UtcNow,
+                PercentComplete = readingProgress.PercentComplete
             };
             await _db.ReadingProgress.AddAsync(newProgress);
             await _db.SaveChangesAsync();
@@ -117,6 +113,7 @@ public class ReadingProgressService : IReadingProgressService
         {
             existing.CfiLocation = location;
             existing.LastRead = DateTime.UtcNow;
+            existing.PercentComplete = readingProgress.PercentComplete;
             _db.Update(existing);
             await _db.SaveChangesAsync();
             return Result.Success();

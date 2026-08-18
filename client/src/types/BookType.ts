@@ -12,6 +12,7 @@ export interface ReadingProgress {
   cfiLocation: string;
   lastRead: Date;
   isComplete: boolean;
+  percentComplete: number;
 }
 
 export interface SeriesType {
