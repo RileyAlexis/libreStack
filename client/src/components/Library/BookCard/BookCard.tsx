@@ -158,7 +158,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
               </Typography>
             </div>
           )}
-          <div>
+          <div className="downloadIconContainer">
             {downloadStatus === "not-downloaded" && (
               <IconButton
                 className="rounded-full"

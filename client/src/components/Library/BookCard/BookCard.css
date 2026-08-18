@@ -19,23 +19,40 @@
 
 .bookControlsBottomRow {
   position: absolute;
-  bottom: -15px;
+  bottom: -8px;
   left: 0;
   z-index: 12;
   width: 100%;
-  padding: 4%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  transition: opacity 0.2s ease-in-out;
+  min-height: 45px;
+  /* border: 1px solid lightgreen; */
+}
+
+.bookControlsIsRead,
+.bookControlsPercentComplete,
+.downloadIconContainer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  transition: opacity 0.2s ease-in-out;
+  height: 100%;
 }
 
 .bookControlsIsRead {
-  padding: 2%;
+  grid-column: 1;
+  justify-self: start;
+  padding-left: 0.25em;
 }
 
 .bookControlsPercentComplete {
-  padding: 2%;
+  grid-column: 2;
+  justify-self: center;
+}
+
+.downloadIconContainer {
+  grid-column: 3;
+  justify-self: end;
 }
 
 .bookIcon {

@@ -42,7 +42,6 @@ public class ReadingProgressService : IReadingProgressService
         else
         {
             entry.IsComplete = true;
-            entry.LastRead = DateTime.UtcNow;
         }
 
         await _db.SaveChangesAsync();
@@ -60,14 +59,12 @@ public class ReadingProgressService : IReadingProgressService
                 BookId = bookId,
                 UserId = userId,
                 IsComplete = true,
-                // LastRead = DateTime.UtcNow
             };
             _db.ReadingProgress.Add(entry);
         }
         else
         {
             entry.IsComplete = false;
-            entry.LastRead = DateTime.UtcNow;
         }
 
         await _db.SaveChangesAsync();
