@@ -4,6 +4,7 @@ export interface TagsType {
 }
 
 export interface BookmarkType {
+  id: number;
   name: string;
   cfiLocation: string;
 }

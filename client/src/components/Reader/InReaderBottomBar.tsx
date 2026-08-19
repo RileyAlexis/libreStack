@@ -22,7 +22,7 @@ export const InReaderBottomBar: React.FC<InReaderBottomBarProps> = ({
   renditionRef,
 }) => {
   const [isSpineOpen, setIsSpineOpen] = useState(false);
-  const isSmallScreen = window.innerWidth <= 400;
+  const isSmallScreen = window.innerWidth <= 450;
 
   const handleOpenSpine = (e: React.MouseEvent) => {
     e.stopPropagation();

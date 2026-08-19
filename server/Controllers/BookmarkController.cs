@@ -29,7 +29,7 @@ public class BookmarkController : ControllerBase
         if (!result.IsSuccess)
             return BadRequest(new { error = result.Error });
 
-        return Ok(result);
+        return Ok(result.Value);
     }
 
     [HttpPost("updateBookmark")]
@@ -57,7 +57,7 @@ public class BookmarkController : ControllerBase
         if (!result.IsSuccess)
             return BadRequest(new { error = result.Error });
 
-        return Ok(result);
+        return Ok(result.Value);
     }
 
     [HttpGet("getBookmarks")]

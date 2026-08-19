@@ -43,8 +43,6 @@ export const Reader: React.FC = () => {
         ? (cfiLocation.start.percentage * 100).toFixed(0)
         : 0;
 
-    console.log("percent complete", percentComplete);
-
     api
       .post("/ReadingProgress/updateProgress", {
         bookId: parseInt(id!),
@@ -351,6 +349,7 @@ export const Reader: React.FC = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") rendition.prev();
       if (e.key === "ArrowRight") rendition.next();
+      if (e.key === " ") setIsMenuShowing(!isMenuShowing);
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -371,7 +370,7 @@ export const Reader: React.FC = () => {
     >
       {isMenuShowing && (
         <div className="inReaderTopBarWrapper">
-          <InReaderTopBar />
+          <InReaderTopBar currentCfiRef={currentCfiRef} />
         </div>
       )}
 

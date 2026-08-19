@@ -16,11 +16,11 @@ public class BookmarkService : IBookmarkService
         _db = db;
     }
 
-    public async Task<Result> CreateBookmark(int BookId, string userId, ApiBookmarkModel apiBookmarkModel)
+    public async Task<Result<BookmarkModel>> CreateBookmark(int BookId, string userId, ApiBookmarkModel apiBookmarkModel)
     {
         var result = await _db.Books.FirstOrDefaultAsync(l => l.Id == BookId && l.UserId == userId);
         if (result is null)
-            return Result.Failure("Book not found", ErrorType.NotFound);
+            return Result<BookmarkModel>.Failure("Book not found", ErrorType.NotFound);
 
         var newBookmark = new BookmarkModel
         {
@@ -32,18 +32,18 @@ public class BookmarkService : IBookmarkService
 
         await _db.Bookmarks.AddAsync(newBookmark);
         await _db.SaveChangesAsync();
-        return Result.Success();
+        return Result<BookmarkModel>.Success(newBookmark);
     }
 
-    public async Task<Result> DeleteBookmark(int id, string userId)
+    public async Task<Result<BookmarkModel>> DeleteBookmark(int id, string userId)
     {
         var result = await _db.Bookmarks.FirstOrDefaultAsync(bookmark => bookmark.Id == id && bookmark.UserId == userId);
         if (result is null)
-            return Result.Failure("Bookmark not found", ErrorType.NotFound);
+            return Result<BookmarkModel>.Failure("Bookmark not found", ErrorType.NotFound);
 
         _db.Bookmarks.Remove(result);
         await _db.SaveChangesAsync();
-        return Result.Success();
+        return Result<BookmarkModel>.Success(result);
     }
 
     public async Task<Result<List<BookmarkModel>>> GetBookmarksByBookId(string userId, int bookId)

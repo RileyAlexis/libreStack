@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import type { AppDispatch } from "@/redux/store";
 import type { LibreRootState } from "@/types/LibreRootState";
 
@@ -30,6 +30,7 @@ import {
   ListChevronsUpDown,
   BookTypeIcon,
   CircleXIcon,
+  BookmarkIcon,
 } from "lucide-react";
 import type { SelectChangeEvent } from "@mui/material";
 import type { ReadingThemeType, SpreadType } from "@/types/AppSettings";
@@ -39,13 +40,32 @@ import { availableReadingFonts } from "./AvailableReadingFonts";
 import { availableReadingThemes } from "./AvailableReadingThemes";
 
 import "./InReaderTopBar.css";
+import { addBookmark, removeBookmark } from "@/redux/reducers/LibraryReducer";
 
-export const InReaderTopBar: React.FC = () => {
+interface InReaderTopBarProps {
+  currentCfiRef: React.RefObject<string | null>;
+}
+
+export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
+  currentCfiRef,
+}) => {
+  const { id } = useParams();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  const bookmarks = useSelector((state: LibreRootState) =>
+    state.library.books.find((b) => b.id === Number(id)),
+  )?.bookmarks;
   const [isFormattingDialogOpen, setIsFormatDialogOpen] = useState(false);
+  const [newBookmarkName, setNewBookmarkName] = useState("Bookmark ");
+  const isCurrentPageBookmarked =
+    bookmarks?.some((mark) => mark.cfiLocation === currentCfiRef.current) ??
+    false;
   const isSmallScreen = window.innerWidth <= 450;
+
+  useEffect(() => {
+    console.log(currentCfiRef.current);
+  }, [currentCfiRef.current]);
 
   const handleReadingFontSelect = (event: SelectChangeEvent<string>) => {
     const selected = availableReadingFonts.findLast(
@@ -56,7 +76,6 @@ export const InReaderTopBar: React.FC = () => {
       console.warn("Selected Font not found", event.target.value);
       return;
     }
-
     dispatch(setReadingFont(selected));
   };
 
@@ -68,95 +87,123 @@ export const InReaderTopBar: React.FC = () => {
     dispatch(setSpread(event.target.value as SpreadType));
   };
 
+  const handleSetBookmark = () => {
+    if (isCurrentPageBookmarked) {
+      const markId = bookmarks?.find(
+        (mark) => mark.cfiLocation === currentCfiRef.current,
+      )?.id;
+      if (markId && id) {
+        dispatch(removeBookmark({ bookId: Number(id), markId: markId }));
+      }
+    } else {
+      dispatch(
+        addBookmark({
+          bookId: Number(id),
+          name: newBookmarkName,
+          cfiLocation: currentCfiRef.current!,
+        }),
+      );
+    }
+  };
+
   return (
     <div className="inReaderTopBar">
       {!isSmallScreen && (
-        <div className="inReaderTopBarControls">
-          {/* Font Size */}
+        <div className="inReaderTopBarControlsOuter">
+          <div className="inReaderTopBarControlsInner">
+            {/* Font Size */}
 
-          <ButtonGroup variant="text" sx={{ marginRight: "0.45em" }}>
-            <Button
-              onClick={() =>
-                dispatch(setReadingFontSize(appSettings.readingFontSize - 1))
-              }
-            >
-              <Typography variant="button">A</Typography>
-            </Button>
-            <Button
-              onClick={() =>
-                dispatch(setReadingFontSize(appSettings.readingFontSize + 1))
-              }
-            >
-              <Typography variant="h5">A</Typography>
-            </Button>
-          </ButtonGroup>
-          {/* Line Height */}
-          <ButtonGroup variant="text" sx={{ marginLeft: "0.45em" }}>
-            <Tooltip title="Decrease Line Height">
-              <Button
-                variant="text"
-                onClick={() =>
-                  dispatch(setLineHeight(appSettings.lineHeight - 0.1))
-                }
-              >
-                <ListChevronsDownUp />
-              </Button>
-            </Tooltip>
-            <Tooltip title="Increase Line Height">
+            <ButtonGroup variant="text" sx={{ marginRight: "0.45em" }}>
               <Button
                 onClick={() =>
-                  dispatch(setLineHeight(appSettings.lineHeight + 0.1))
+                  dispatch(setReadingFontSize(appSettings.readingFontSize - 1))
                 }
               >
-                <ListChevronsUpDown />
+                <Typography variant="button">A</Typography>
               </Button>
-            </Tooltip>
-          </ButtonGroup>
-          <FormControl sx={{ m: 1, minWidth: 80 }} size="small">
-            <Select
-              id="readingFontSelector"
-              variant="standard"
-              value={appSettings.readingFont.value}
-              label="Font"
-              onChange={handleReadingFontSelect}
-              sx={{ color: "var(--lightText)" }}
-            >
-              {availableReadingFonts.map((item) => (
-                <MenuItem key={item.label} value={item.value}>
-                  {item.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl sx={{ m: 1, minWidth: 80 }} size="small">
-            <Select
-              id="readingThemeSelector"
-              variant="standard"
-              value={appSettings.readingTheme}
-              label="Font"
-              onChange={handleChangeTheme}
-              sx={{ color: "var(--lightText)" }}
-            >
-              {availableReadingThemes.map((item) => (
-                <MenuItem key={item} value={item}>
-                  {item}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl>
-            <Select
-              id="readingSpreadSelector"
-              variant="standard"
-              value={appSettings.spread}
-              label="Font"
-              onChange={handleChangeSpread}
-              sx={{ color: "var(--lightText)" }}
-            >
-              <MenuItem value="none">Single Column</MenuItem>
-              <MenuItem value="auto">Auto</MenuItem>
-            </Select>
-          </FormControl>
+              <Button
+                onClick={() =>
+                  dispatch(setReadingFontSize(appSettings.readingFontSize + 1))
+                }
+              >
+                <Typography variant="h5">A</Typography>
+              </Button>
+            </ButtonGroup>
+            {/* Line Height */}
+            <ButtonGroup variant="text" sx={{ marginLeft: "0.45em" }}>
+              <Tooltip title="Decrease Line Height">
+                <Button
+                  variant="text"
+                  onClick={() =>
+                    dispatch(setLineHeight(appSettings.lineHeight - 0.1))
+                  }
+                >
+                  <ListChevronsDownUp />
+                </Button>
+              </Tooltip>
+              <Tooltip title="Increase Line Height">
+                <Button
+                  onClick={() =>
+                    dispatch(setLineHeight(appSettings.lineHeight + 0.1))
+                  }
+                >
+                  <ListChevronsUpDown />
+                </Button>
+              </Tooltip>
+            </ButtonGroup>
+            <FormControl sx={{ m: 1, minWidth: 80 }} size="small">
+              <Select
+                id="readingFontSelector"
+                variant="standard"
+                value={appSettings.readingFont.value}
+                label="Font"
+                onChange={handleReadingFontSelect}
+                sx={{ color: "var(--lightText)" }}
+              >
+                {availableReadingFonts.map((item) => (
+                  <MenuItem key={item.label} value={item.value}>
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl sx={{ m: 1, minWidth: 80 }} size="small">
+              <Select
+                id="readingThemeSelector"
+                variant="standard"
+                value={appSettings.readingTheme}
+                label="Font"
+                onChange={handleChangeTheme}
+                sx={{ color: "var(--lightText)" }}
+              >
+                {availableReadingThemes.map((item) => (
+                  <MenuItem key={item} value={item}>
+                    {item}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl>
+              <Select
+                id="readingSpreadSelector"
+                variant="standard"
+                value={appSettings.spread}
+                label="Font"
+                onChange={handleChangeSpread}
+                sx={{ color: "var(--lightText)" }}
+              >
+                <MenuItem value="none">Single Column</MenuItem>
+                <MenuItem value="auto">Auto</MenuItem>
+              </Select>
+            </FormControl>
+            <IconButton onClick={handleSetBookmark}>
+              {isCurrentPageBookmarked && (
+                <BookmarkIcon fill="var(--primary)" stroke="" />
+              )}
+              {!isCurrentPageBookmarked && <BookmarkIcon />}
+            </IconButton>
+          </div>
+          {/* End inner container */}
           <IconButton onClick={() => navigate("/library")}>
             <CircleXIcon />
           </IconButton>
@@ -166,14 +213,23 @@ export const InReaderTopBar: React.FC = () => {
       {/* Mobile Controls */}
 
       {isSmallScreen && (
-        <div className="inReaderTopBarControlsMobile">
-          <Button
-            variant="text"
-            size="small"
-            onClick={() => setIsFormatDialogOpen(!isFormattingDialogOpen)}
-          >
-            <BookTypeIcon size={28} />
-          </Button>
+        <div className="inReaderTopBarControlsMobileOuter">
+          <div className="inReaderTopBarControlsMobileInner">
+            <Button
+              variant="text"
+              size="small"
+              onClick={() => setIsFormatDialogOpen(!isFormattingDialogOpen)}
+            >
+              <BookTypeIcon size={28} />
+            </Button>
+
+            <IconButton onClick={handleSetBookmark}>
+              {isCurrentPageBookmarked && (
+                <BookmarkIcon fill="var(--primary)" stroke="" />
+              )}
+              {!isCurrentPageBookmarked && <BookmarkIcon />}
+            </IconButton>
+          </div>
           <IconButton onClick={() => navigate("/library")}>
             <CircleXIcon />
           </IconButton>
