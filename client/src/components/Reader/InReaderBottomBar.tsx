@@ -5,6 +5,7 @@ import { Typography, Drawer, Button, IconButton } from "@mui/material";
 import "./InReaderBottomBar.css";
 import type { Book, Rendition } from "@likecoin/epub-ts";
 import { CircleXIcon, PanelLeftOpenIcon } from "lucide-react";
+import { InReaderDrawer } from "./InReaderDrawer";
 
 interface InReaderBottomBarProps {
   title: string | undefined;
@@ -21,17 +22,17 @@ export const InReaderBottomBar: React.FC<InReaderBottomBarProps> = ({
   bookInstance,
   renditionRef,
 }) => {
-  const [isSpineOpen, setIsSpineOpen] = useState(false);
+  const [isReaderDrawerOpen, setIsReaderDrawerOpen] = useState(false);
   const isSmallScreen = window.innerWidth <= 450;
 
-  const handleOpenSpine = (e: React.MouseEvent) => {
+  const handleOpenDrawer = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setIsSpineOpen(true);
+    setIsReaderDrawerOpen(true);
   };
 
   const handleNavigate = (href: string) => {
     renditionRef.current?.display(href);
-    setIsSpineOpen(false);
+    setIsReaderDrawerOpen(false);
   };
 
   return (
@@ -40,7 +41,7 @@ export const InReaderBottomBar: React.FC<InReaderBottomBarProps> = ({
         <Button
           variant="text"
           size="small"
-          onClick={(e) => handleOpenSpine(e)}
+          onClick={(e) => handleOpenDrawer(e)}
           aria-label="Open Spine"
         >
           <PanelLeftOpenIcon size={32} />
@@ -81,41 +82,12 @@ export const InReaderBottomBar: React.FC<InReaderBottomBarProps> = ({
           )}
         </div>
       </div>
-      <Drawer
-        open={isSpineOpen}
-        onClose={() => setIsSpineOpen(false)}
-        anchor="left"
-        sx={{
-          paddingTop: "calc(env(safe-area-inset-top))",
-          paddingRight: "0.5em",
-        }}
-      >
-        <div className="closeButton">
-          <IconButton
-            size="small"
-            onClick={() => setIsSpineOpen(false)}
-            aria-label="close"
-          >
-            <CircleXIcon />
-          </IconButton>
-        </div>
-        <div className="drawerTableOfContents">
-          <ul>
-            {bookInstance?.navigation.toc.map((item) => (
-              <li>
-                <Button
-                  variant="text"
-                  key={item.id}
-                  onClick={() => handleNavigate(item.href)}
-                  aria-label={item.label}
-                >
-                  {item.label}
-                </Button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </Drawer>
+      <InReaderDrawer
+        isReaderDrawerOpen={isReaderDrawerOpen}
+        setIsReaderDrawerOpen={setIsReaderDrawerOpen}
+        renditionRef={renditionRef}
+        bookInstance={bookInstance}
+      />
     </div>
   );
 };

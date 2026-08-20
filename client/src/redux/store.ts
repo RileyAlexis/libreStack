@@ -10,6 +10,7 @@ import authSlice from "./reducers/AuthReducer";
 import snackSlice from "./reducers/SnackReducer";
 import downloadSlice from "./reducers/DownloadReducer";
 import libreDialogs from "./reducers/LibreDialogReducer";
+import locationStackReducer from "./reducers/LocationStackReducer";
 
 const logger: Middleware = (store) => (next) => (action) => {
   if (import.meta.env.DEV) {
@@ -33,6 +34,7 @@ const allReducers = combineReducers({
   snack: snackSlice,
   downloads: downloadSlice,
   libreDialogs: libreDialogs,
+  locationStack: locationStackReducer,
 });
 
 const storeInstance = configureStore({

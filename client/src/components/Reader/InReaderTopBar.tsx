@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import type { AppDispatch } from "@/redux/store";
@@ -57,15 +57,11 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
     state.library.books.find((b) => b.id === Number(id)),
   )?.bookmarks;
   const [isFormattingDialogOpen, setIsFormatDialogOpen] = useState(false);
-  const [newBookmarkName, setNewBookmarkName] = useState("Bookmark ");
+  const [newBookmarkName, _] = useState("Bookmark ");
   const isCurrentPageBookmarked =
     bookmarks?.some((mark) => mark.cfiLocation === currentCfiRef.current) ??
     false;
   const isSmallScreen = window.innerWidth <= 450;
-
-  useEffect(() => {
-    console.log(currentCfiRef.current);
-  }, [currentCfiRef.current]);
 
   const handleReadingFontSelect = (event: SelectChangeEvent<string>) => {
     const selected = availableReadingFonts.findLast(
