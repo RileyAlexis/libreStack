@@ -45,25 +45,6 @@
     justify-content: center;
     align-items: center;
   }
-
-  .drawerTableOfContents {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    overflow-y: scroll;
-    margin-left: 0.5em;
-    margin-top: 1em;
-    margin-right: 1.5em;
-    padding-top: calc(env(safe-area-inset-top));
-  }
-
-  .closeButton {
-    display: flex;
-    justify-content: flex-end;
-    margin-right: 0.25em;
-    padding-top: calc(env(safe-area-inset-top));
-  }
 }
 
 @media only screen and (max-width: 500px) and (orientation: portrait) {

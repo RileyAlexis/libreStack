@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router";
 import { api } from "../../utils/api";
 import Epub, { Book, Rendition, type Location } from "@likecoin/epub-ts";
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { AppSettings } from "@/types/AppSettings";
+import type { AppDispatch } from "@/redux/store";
+import { setReadingLocation } from "@/redux/reducers/LocationStackReducer";
 
 import "./Reader.css";
 
@@ -16,7 +18,11 @@ import { getOfflineEpub } from "@/redux/reducers/DownloadReducer";
 export const Reader: React.FC = () => {
   const { id } = useParams();
 
+  const dispatch = useDispatch<AppDispatch>();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  const locationStack = useSelector(
+    (state: LibreRootState) => state.locationStack,
+  );
   const [isMenuShowing, setIsMenuShowing] = useState(false);
   const [progress, setProgress] = useState<string>("");
   const [bookInstance, setBookInstance] = useState<Book | null>(null);
@@ -31,6 +37,10 @@ export const Reader: React.FC = () => {
   const renderAreaRef = useRef<HTMLDivElement>(null);
   const readerRootRef = useRef<HTMLDivElement>(null);
   const renditionRef = useRef<Rendition | null>(null);
+  const suppressReadingLocationUpdateRef = useRef(false);
+  const suppressResetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
 
   const appSettingsRef = useRef<AppSettings>(appSettings);
   useEffect(() => {
@@ -43,6 +53,7 @@ export const Reader: React.FC = () => {
         ? (cfiLocation.start.percentage * 100).toFixed(0)
         : 0;
 
+    dispatch(setReadingLocation(cfiLocation.start.cfi));
     api
       .post("/ReadingProgress/updateProgress", {
         bookId: parseInt(id!),
@@ -53,6 +64,15 @@ export const Reader: React.FC = () => {
       .catch((error) => {
         console.error(error.response.data);
       });
+  };
+
+  const beginSuppressReadingLocationUpdate = () => {
+    suppressReadingLocationUpdateRef.current = true;
+    if (suppressResetTimeoutRef.current)
+      clearTimeout(suppressResetTimeoutRef.current);
+    suppressResetTimeoutRef.current = setTimeout(() => {
+      suppressReadingLocationUpdateRef.current = false;
+    }, 300);
   };
 
   // Applied and reRenders changes to use settings
@@ -235,8 +255,14 @@ export const Reader: React.FC = () => {
     });
 
     rendition.on("relocated", (location) => {
-      if (suppressNextRelocateRef.current) {
-        suppressNextRelocateRef.current = false;
+      if (suppressReadingLocationUpdateRef.current) {
+        // still within a suppressed navigation — extend the window in case
+        // epub.js fires another relocated event for the same navigation
+        if (suppressResetTimeoutRef.current)
+          clearTimeout(suppressResetTimeoutRef.current);
+        suppressResetTimeoutRef.current = setTimeout(() => {
+          suppressReadingLocationUpdateRef.current = false;
+        }, 300);
       } else {
         currentCfiRef.current = location.start.cfi;
         updateLocation(location);
@@ -397,6 +423,9 @@ export const Reader: React.FC = () => {
           bookProgress={bookProgress}
           bookInstance={bookInstance}
           renditionRef={renditionRef}
+          beginSuppressReadingLocationUpdate={
+            beginSuppressReadingLocationUpdate
+          }
         />
       )}
     </div>

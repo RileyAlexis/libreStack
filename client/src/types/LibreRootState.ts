@@ -5,7 +5,7 @@ import type { SnackType } from "./SnackType";
 import type { DownloadsState } from "@/redux/reducers/DownloadReducer";
 import type { LibraryType, LibraryListType } from "./LibraryType";
 import type { LibreDialogType } from "./LibreDialogType";
-import type { LocationStackType } from "./LocationStackType";
+import type { BookLocationsType } from "./LocationStackType";
 
 export interface LibreRootState {
   library: LibraryType;
@@ -16,5 +16,5 @@ export interface LibreRootState {
   snack: SnackType;
   downloads: DownloadsState;
   libreDialogs: LibreDialogType;
-  locationStack: LocationStackType[];
+  locationStack: BookLocationsType;
 }

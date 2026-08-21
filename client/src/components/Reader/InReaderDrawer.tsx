@@ -1,14 +1,29 @@
-import type { Dispatch, RefObject, SetStateAction } from "react";
+import { useState } from "react";
+import { useParams } from "react-router";
+import { useSelector } from "react-redux";
 import type { Book, Rendition } from "@likecoin/epub-ts";
 
-import { Drawer, IconButton, Button } from "@mui/material";
+// Redux
+import type { Dispatch, RefObject, SetStateAction } from "react";
+import type { LibreRootState } from "@/types/LibreRootState";
+
+// UI
+import { Drawer, IconButton, Button, ButtonGroup } from "@mui/material";
 import { CircleXIcon } from "lucide-react";
+import "./InReaderDrawer.css";
+
+// Components
+import { BookmarkCard } from "./BookmarkCard";
+import { TocCard } from "./TocCard";
+
+type SelectedState = "TOC" | "BOOKMARKS";
 
 interface InReaderDrawerProps {
   isReaderDrawerOpen: boolean;
   setIsReaderDrawerOpen: Dispatch<SetStateAction<boolean>>;
   renditionRef: RefObject<Rendition | null>;
   bookInstance: Book | null;
+  beginSuppressReadingLocationUpdate: () => void;
 }
 
 export const InReaderDrawer: React.FC<InReaderDrawerProps> = ({
@@ -16,8 +31,17 @@ export const InReaderDrawer: React.FC<InReaderDrawerProps> = ({
   setIsReaderDrawerOpen,
   renditionRef,
   bookInstance,
+  beginSuppressReadingLocationUpdate,
 }) => {
+  const { id } = useParams();
+  const [selectedTab, setSelectedTab] = useState<SelectedState>("TOC");
+  const bookmarks = useSelector(
+    (state: LibreRootState) =>
+      state.library.books.find((book) => book.id === Number(id))?.bookmarks,
+  );
+
   const handleNavigate = (href: string) => {
+    beginSuppressReadingLocationUpdate();
     renditionRef.current?.display(href);
     setIsReaderDrawerOpen(false);
   };
@@ -41,21 +65,41 @@ export const InReaderDrawer: React.FC<InReaderDrawerProps> = ({
           <CircleXIcon />
         </IconButton>
       </div>
-      <div className="drawerTableOfContents">
-        <ul>
-          {bookInstance?.navigation.toc.map((item) => (
-            <li>
-              <Button
-                variant="text"
-                key={item.id}
-                onClick={() => handleNavigate(item.href)}
-                aria-label={item.label}
-              >
-                {item.label}
-              </Button>
-            </li>
-          ))}
-        </ul>
+      <div className="drawerContents">
+        {selectedTab === "TOC" && (
+          <div className="drawerTableOfContents">
+            <ul>
+              {bookInstance?.navigation.toc.map((item) => (
+                <TocCard toc={item} handleNavigate={handleNavigate} />
+              ))}
+            </ul>
+          </div>
+        )}
+        {selectedTab === "BOOKMARKS" && (
+          <div className="drawerBookmarksContainer">
+            {bookmarks?.map((mark) => (
+              <BookmarkCard
+                key={mark.cfiLocation}
+                bookmark={mark}
+                bookInstance={bookInstance}
+                handleNavigate={handleNavigate}
+              />
+            ))}
+          </div>
+        )}
+        <div className="drawerButtonGroup">
+          <ButtonGroup>
+            <Button variant="outlined" onClick={() => setSelectedTab("TOC")}>
+              TOC
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => setSelectedTab("BOOKMARKS")}
+            >
+              BookMarks
+            </Button>
+          </ButtonGroup>
+        </div>
       </div>
     </Drawer>
   );
