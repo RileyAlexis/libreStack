@@ -58,9 +58,9 @@ public class BookmarkService : IBookmarkService
         return Result<List<BookmarkModel>>.Success(result);
     }
 
-    public async Task<Result> UpdateBookmark(int id, string userId, ApiBookmarkModel apiBookmarkModel)
+    public async Task<Result> UpdateBookmark(string userId, ApiBookmarkModel apiBookmarkModel)
     {
-        var bookmark = await _db.Bookmarks.FirstOrDefaultAsync(bookmark => bookmark.Id == id && bookmark.UserId == userId);
+        var bookmark = await _db.Bookmarks.FirstOrDefaultAsync(bookmark => bookmark.Id == apiBookmarkModel.Id && bookmark.UserId == userId);
         if (bookmark is null)
             return Result.Failure("Bookmark not found", ErrorType.NotFound);
 

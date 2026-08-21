@@ -68,11 +68,9 @@ export const InReaderDrawer: React.FC<InReaderDrawerProps> = ({
       <div className="drawerContents">
         {selectedTab === "TOC" && (
           <div className="drawerTableOfContents">
-            <ul>
-              {bookInstance?.navigation.toc.map((item) => (
-                <TocCard toc={item} handleNavigate={handleNavigate} />
-              ))}
-            </ul>
+            {bookInstance?.navigation.toc.map((item) => (
+              <TocCard toc={item} handleNavigate={handleNavigate} />
+            ))}
           </div>
         )}
         {selectedTab === "BOOKMARKS" && (

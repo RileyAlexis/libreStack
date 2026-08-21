@@ -1,13 +1,17 @@
-import { useState, type RefObject } from "react";
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import type { AppDispatch } from "@/redux/store";
-import { removeMostRecentStack } from "@/redux/reducers/LocationStackReducer";
+import {
+  clearLocationStack,
+  removeMostRecentStack,
+} from "@/redux/reducers/LocationStackReducer";
 
-import { Typography, Button } from "@mui/material";
+import { Typography, Button, IconButton, Tooltip } from "@mui/material";
 
 import "./InReaderBottomBar.css";
 import type { Book, Rendition } from "@likecoin/epub-ts";
-import { PanelLeftOpenIcon } from "lucide-react";
+import { PanelLeftOpenIcon, EraserIcon, StepBackIcon } from "lucide-react";
+
 import { InReaderDrawer } from "./InReaderDrawer";
 import type { LibreRootState } from "@/types/LibreRootState";
 
@@ -52,6 +56,10 @@ export const InReaderBottomBar: React.FC<InReaderBottomBarProps> = ({
     handleNavigate(href);
   };
 
+  const handleResetStack = () => {
+    dispatch(clearLocationStack());
+  };
+
   return (
     <div className="inReaderBottomBar">
       <div className="inReaderBottomBarContent">
@@ -83,22 +91,6 @@ export const InReaderBottomBar: React.FC<InReaderBottomBarProps> = ({
               <Typography>{title}</Typography>
             </div>
           )}
-          {!isSmallScreen && locationStack.stack.length > 0 && (
-            <Button
-              variant="outlined"
-              onClick={() =>
-                handleNavigateBack(
-                  locationStack.stack.at(-2)?.cfiLocation ??
-                    locationStack.readingCfiLocation,
-                )
-              }
-            >
-              Return to{" "}
-              {locationStack.stack.at(-2)?.cfiLocation ??
-                locationStack.readingCfiLocation}{" "}
-              - {locationStack.stack.at(-2)?.title ?? "Original"}
-            </Button>
-          )}
 
           {isSmallScreen && (
             <div className="inReaderBottomBarProgress">
@@ -112,6 +104,29 @@ export const InReaderBottomBar: React.FC<InReaderBottomBarProps> = ({
                 </Typography>
               )}
             </div>
+          )}
+        </div>
+        <div className="inReaderBottomBarStackButtons">
+          {locationStack.stack.length > 0 && (
+            <>
+              <Button
+                startIcon={<StepBackIcon />}
+                variant="text"
+                onClick={() =>
+                  handleNavigateBack(
+                    locationStack.stack.at(-2)?.cfiLocation ??
+                      locationStack.readingCfiLocation,
+                  )
+                }
+              >
+                {locationStack.stack.at(-2)?.title ?? "Original"}
+              </Button>
+              <Tooltip title="Clear Navigation Stack">
+                <IconButton onClick={handleResetStack}>
+                  <EraserIcon />
+                </IconButton>
+              </Tooltip>
+            </>
           )}
         </div>
       </div>

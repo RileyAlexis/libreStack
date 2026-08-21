@@ -41,6 +41,7 @@ import { availableReadingThemes } from "./AvailableReadingThemes";
 
 import "./InReaderTopBar.css";
 import { addBookmark, removeBookmark } from "@/redux/reducers/LibraryReducer";
+import { clearLocationStack } from "@/redux/reducers/LocationStackReducer";
 
 interface InReaderTopBarProps {
   currentCfiRef: React.RefObject<string | null>;
@@ -100,6 +101,11 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
         }),
       );
     }
+  };
+
+  const handleCloseBook = () => {
+    dispatch(clearLocationStack());
+    navigate("/library");
   };
 
   return (
@@ -200,7 +206,7 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
             </IconButton>
           </div>
           {/* End inner container */}
-          <IconButton onClick={() => navigate("/library")}>
+          <IconButton onClick={handleCloseBook}>
             <CircleXIcon />
           </IconButton>
         </div>

@@ -17,6 +17,7 @@
     justify-content: flex-start;
     align-items: center;
     gap: 0.5em;
+    width: 100%;
     color: var(--lightText);
   }
 
@@ -33,7 +34,7 @@
   .inReaderBottomBarProgress {
     display: flex;
     flex-direction: row;
-    width: 100%;
+    width: 75%;
     justify-content: space-evenly;
     align-items: center;
   }
@@ -41,9 +42,18 @@
   .inReaderBottomBarInfo {
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 75%;
     justify-content: center;
     align-items: center;
+  }
+
+  .inReaderBottomBarStackButtons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    width: 25%;
+    gap: 0.25em;
   }
 }
 

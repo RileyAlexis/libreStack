@@ -2,7 +2,10 @@ import { useDispatch } from "react-redux";
 import type { AppDispatch } from "@/redux/store";
 import { addLocationStack } from "@/redux/reducers/LocationStackReducer";
 
-import type { Book, NavItem } from "@likecoin/epub-ts";
+import type { NavItem } from "@likecoin/epub-ts";
+import { Typography } from "@mui/material";
+
+import "./TocCard.css";
 
 interface TocCardProps {
   toc: NavItem;
@@ -24,7 +27,7 @@ export const TocCard: React.FC<TocCardProps> = ({ toc, handleNavigate }) => {
 
   return (
     <div className="tocCard" onClick={handleSelectToc}>
-      {toc.label}
+      <Typography variant="body1">{toc.label}</Typography>
     </div>
   );
 };

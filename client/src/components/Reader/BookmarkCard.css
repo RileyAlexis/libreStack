@@ -1,0 +1,23 @@
+.bookmarkCardContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  margin-bottom: 0.5em;
+  margin-left: 0.25em;
+  margin-right: 0.25em;
+  cursor: pointer;
+}
+
+.bookmarkCardData {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-left: 1em;
+}
+
+.editButton {
+}

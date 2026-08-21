@@ -15,7 +15,6 @@ export const fetchLibraryData = createAsyncThunk(
         `/Library/getLibrary?libraryId=${libraryId}`,
       );
       const libraries: LibraryType = response.data;
-
       return libraries;
     } catch (error) {
       console.error(error);
@@ -67,6 +66,27 @@ export const removeBookmark = createAsyncThunk(
   },
 );
 
+export const updateBookmark = createAsyncThunk(
+  "library/updateBookmark",
+  async (
+    { bookId, bookmark }: { bookId: number; bookmark: BookmarkType },
+    { rejectWithValue },
+  ) => {
+    try {
+      const response = await api.post("Bookmark/updateBookmark", {
+        id: bookmark.id,
+        name: bookmark.name,
+        cfiLocation: bookmark.cfiLocation,
+      });
+      console.log(response.data);
+      return { bookId, bookmark };
+    } catch (error) {
+      console.error(error);
+      return rejectWithValue((error as Error).message);
+    }
+  },
+);
+
 const initialState: LibraryType = {
   id: 1,
   userId: "",
@@ -102,6 +122,16 @@ const LibrarySlice = createSlice({
         const book = state.books.find((b) => b.id === bookId);
         if (book?.bookmarks) {
           book.bookmarks = book.bookmarks.filter((bm) => bm.id !== markId);
+        }
+      })
+      .addCase(updateBookmark.fulfilled, (state, action) => {
+        const { bookId, bookmark } = action.payload;
+        const book = state.books.find((b) => b.id === bookId);
+        if (book?.bookmarks) {
+          const index = book.bookmarks.findIndex((bm) => bm.id === bookmark.id);
+          if (index !== -1) {
+            book.bookmarks[index] = bookmark;
+          }
         }
       });
   },

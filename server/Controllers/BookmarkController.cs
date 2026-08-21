@@ -34,12 +34,12 @@ public class BookmarkController : ControllerBase
 
     [HttpPost("updateBookmark")]
     [Authorize]
-    public async Task<IActionResult> UpdateBookmark(int id, string userId, ApiBookmarkModel apiBookmarkModel)
+    public async Task<IActionResult> UpdateBookmark(ApiBookmarkModel apiBookmarkModel)
     {
         var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (UserId is null) return Unauthorized();
 
-        var result = await _iBookmarkService.UpdateBookmark(id, userId, apiBookmarkModel);
+        var result = await _iBookmarkService.UpdateBookmark(UserId, apiBookmarkModel);
         if (!result.IsSuccess)
             return BadRequest(new { error = result.Error });
 

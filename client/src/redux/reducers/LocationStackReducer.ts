@@ -13,7 +13,7 @@ const LocationStackSlice = createSlice({
   name: "locationStack",
   initialState,
   reducers: {
-    clearLocationStack(state, _) {
+    clearLocationStack(state) {
       state.stack = [];
     },
     addLocationStack(state, action: PayloadAction<LocationStackType>) {

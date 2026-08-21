@@ -20,9 +20,7 @@ export const Reader: React.FC = () => {
 
   const dispatch = useDispatch<AppDispatch>();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
-  const locationStack = useSelector(
-    (state: LibreRootState) => state.locationStack,
-  );
+
   const [isMenuShowing, setIsMenuShowing] = useState(false);
   const [progress, setProgress] = useState<string>("");
   const [bookInstance, setBookInstance] = useState<Book | null>(null);
