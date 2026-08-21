@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using Librestack.Models;
 using Librestack.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
@@ -25,6 +24,20 @@ public class LibraryScanController : ControllerBase
         if (userId is null) return Unauthorized();
 
         var result = await _libraryScanService.ScanLibraryFiles(userId, libraryId);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok(result);
+    }
+
+    [HttpGet("getEpubParseErrors")]
+    [Authorize]
+    public async Task<IActionResult> GetEpubParseErrors()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null) return Unauthorized();
+
+        var result = await _libraryScanService.GetEpubParseErrors(userId);
         if (!result.IsSuccess)
             return BadRequest(new { error = result.Error });
 

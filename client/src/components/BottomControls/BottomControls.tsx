@@ -130,12 +130,12 @@ export const BottomControls: React.FC = () => {
         );
       })
       .catch((error) => {
-        console.error(error.response.data);
+        console.error(error.response.data.error);
         dispatch(
           runSnack({
             isOpen: true,
             severity: "warning",
-            description: `${library.name} scanned. ${error.response.data}`,
+            description: `Some Epubs could not be parsed`,
           }),
         );
       })

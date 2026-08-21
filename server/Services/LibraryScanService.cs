@@ -19,6 +19,15 @@ public class LibraryScanService : IlibraryScanService
         _bookService = bookService;
     }
 
+    public async Task<Result<List<ParseErrorModel>>> GetEpubParseErrors(string userId)
+    {
+        var result = await _db.ParseErrors.Where(pe => pe.UserId == userId).ToListAsync();
+        if (result is null)
+            return Result<List<ParseErrorModel>>.Failure("No Parsing Errors Found", ErrorType.NotFound);
+
+        return Result<List<ParseErrorModel>>.Success(result);
+    }
+
     public async Task<Result> ScanLibraryFiles(string userId, int libraryId)
     {
         var library = await _db.Libraries
@@ -30,6 +39,8 @@ public class LibraryScanService : IlibraryScanService
         var libraryPath = library.LibraryPath;
         if (!Directory.Exists(libraryPath))
             return Result.Failure("Library Path not found on disk", ErrorType.NotFound);
+
+        await _db.ParseErrors.Where(pe => pe.LibraryId == libraryId && pe.UserId == userId).ExecuteDeleteAsync();
 
         var missingBooks = library.Books
             .Where(b => !File.Exists(b.EpubPath))
@@ -80,6 +91,15 @@ public class LibraryScanService : IlibraryScanService
             catch (Exception ex)
             {
                 errors.Add($"{Path.GetFileName(filePath)}: failed to parse — {ex.Message}");
+
+                _db.ParseErrors.Add(new ParseErrorModel
+                {
+                    UserId = library.UserId,
+                    LibraryId = library.Id,
+                    EpubPath = filePath,
+                    ParseError = ex.Message
+                });
+                await _db.SaveChangesAsync();
                 continue;
             }
 
@@ -93,8 +113,19 @@ public class LibraryScanService : IlibraryScanService
             if (!result.IsSuccess)
             {
                 errors.Add($"{Path.GetFileName(filePath)}: {result.Error}");
+
+                _db.ParseErrors.Add(new ParseErrorModel
+                {
+                    UserId = library.UserId,
+                    LibraryId = library.Id,
+                    EpubPath = filePath,
+                    ParseError = result.Error
+                });
+                await _db.SaveChangesAsync();
                 continue;
             }
+
+            await _db.SaveChangesAsync();
 
             existingPaths.Add(filePath);
             existingTitles.Add(parsed.Title.Trim().ToLowerInvariant());

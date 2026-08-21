@@ -93,7 +93,7 @@ export const MainMenu: React.FC = () => {
                   }}
                 >
                   <Cog size={18} style={{ marginRight: 8 }} />
-                  Settings
+                  Server Settings
                 </MenuItem>
 
                 <Divider />

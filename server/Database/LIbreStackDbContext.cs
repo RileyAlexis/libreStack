@@ -19,6 +19,7 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
     public DbSet<UserSettings> UserSettings { get; set; }
     public DbSet<Series> Series { get; set; }
     public DbSet<Collections> Collections { get; set; }
+    public DbSet<ParseErrorModel> ParseErrors { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

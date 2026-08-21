@@ -5,5 +5,6 @@ namespace Librestack.Interfaces;
 public interface IlibraryScanService
 {
     Task<Result> ScanLibraryFiles(string userId, int libraryId);
+    Task<Result<List<ParseErrorModel>>> GetEpubParseErrors(string userId);
 }
 

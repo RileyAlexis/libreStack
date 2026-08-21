@@ -25,7 +25,6 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
   const VERTICAL_STEP = 2;
 
   useEffect(() => {
-    console.log(coverMultiplier);
     const handler = () => setScreenWidth(window.innerWidth);
     window.addEventListener("resize", handler);
 
