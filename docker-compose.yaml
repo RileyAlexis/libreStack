@@ -6,6 +6,8 @@ services:
       POSTGRES_USER: librestack
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: librestack
+    ports:
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
