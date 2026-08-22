@@ -18,6 +18,8 @@ const selectShowOnlyDownloaded = (state: LibreRootState) =>
   state.appSettings.libraryLayout.showOnlyDownloaded;
 const selectDownloadsByBookId = (state: LibreRootState) =>
   state.downloads.byBookId;
+const selectShowCompleted = (state: LibreRootState) =>
+  state.appSettings.libraryLayout.showCompleted;
 
 const getLastName = (author: string): string => {
   if (author.includes(",")) {
@@ -224,12 +226,14 @@ export const selectCollectionGroupedState = createSelector(
     selectSortBy,
     selectShowOnlyDownloaded,
     selectDownloadsByBookId,
+    selectShowCompleted,
   ],
   (
     books,
     sortBy,
     showOnlyDownloaded,
     downloadsByBookId,
+    showCompleted,
   ): SortedCollectionStateType[] => {
     const collectionsMap: { [id: number]: SortedCollectionStateType } = {};
 
@@ -239,6 +243,10 @@ export const selectCollectionGroupedState = createSelector(
         if (status !== "downloaded") {
           return;
         }
+      }
+
+      if (!showCompleted && book.readingProgress?.isComplete) {
+        return;
       }
 
       book.collections.forEach((collection) => {
@@ -281,6 +289,7 @@ export const selectSortedBookState = createSelector(
     selectSortAscending,
     selectShowOnlyDownloaded,
     selectDownloadsByBookId,
+    selectShowCompleted,
   ],
   (
     books,
@@ -289,6 +298,7 @@ export const selectSortedBookState = createSelector(
     sortAscending,
     showOnlyDownloaded,
     downloadsByBookId,
+    showCompleted,
   ): SortedBookStateType[] => {
     const sortedData: { [id: string]: SortedBookStateType } = {};
 
@@ -298,6 +308,9 @@ export const selectSortedBookState = createSelector(
         if (status !== "downloaded") {
           return;
         }
+      }
+      if (!showCompleted && book.readingProgress?.isComplete) {
+        return;
       }
       const bookAddedDate = book.addedDate ? new Date(book.addedDate) : null;
 
@@ -386,6 +399,7 @@ export const selectUnifiedLibraryState = createSelector(
     selectSortAscending,
     selectShowOnlyDownloaded,
     selectDownloadsByBookId,
+    selectShowCompleted,
   ],
   (
     books,
@@ -395,12 +409,20 @@ export const selectUnifiedLibraryState = createSelector(
     sortAscending,
     showOnlyDownloaded,
     downloadsByBookId,
+    showCompleted,
   ): LibraryListEntry[] => {
-    const visibleBooks = showOnlyDownloaded
-      ? books.filter(
-          (book) => downloadsByBookId[String(book.id)]?.status === "downloaded",
-        )
-      : books;
+    const visibleBooks = books.filter((book) => {
+      if (
+        showOnlyDownloaded &&
+        downloadsByBookId[String(book.id)]?.status !== "downloaded"
+      ) {
+        return false;
+      }
+      if (!showCompleted && book.readingProgress?.isComplete) {
+        return false;
+      }
+      return true;
+    });
 
     // --- Collections: every collection with books renders as a
     // CollectionCard, independent of series membership ("show in both"). ---
