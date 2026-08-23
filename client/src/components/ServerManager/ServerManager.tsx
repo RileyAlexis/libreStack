@@ -1,10 +1,7 @@
 import { useState, useEffect } from "react";
 import { api } from "@/utils/api";
-// import { useSelector, useDispatch } from "react-redux";
-// import type { AppDispatch } from "@/redux/store";
 import type { ServerStatsType } from "@/types/ServerStatsType";
 import type { ServerConfigType } from "@/types/ServerConfigType";
-// import type { LibreRootState } from "@/types/LibreRootState";
 import { formatStorageSize } from "@/utils/formatter";
 
 // UI
@@ -18,8 +15,6 @@ import {
   List,
   ListItem,
   ListItemIcon,
-  ButtonGroup,
-  Button,
 } from "@mui/material";
 
 // Components
@@ -31,7 +26,6 @@ import { DotIcon } from "lucide-react";
 import { ServerMenu } from "./ServerMenu";
 
 export const ServerManager: React.FC = () => {
-  //   const dispatch = useDispatch<AppDispatch>();
   const [serverStats, setServerStats] = useState<ServerStatsType>();
   const [serverSettings, setServerSettings] = useState<ServerConfigType>();
   const [serverHealth, setServerHealth] = useState<any>();
@@ -41,7 +35,6 @@ export const ServerManager: React.FC = () => {
     message: string;
     description?: string;
   }>({ open: false, message: "" });
-  //   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
 
   const showErrorToast = () => {
     setToast({
