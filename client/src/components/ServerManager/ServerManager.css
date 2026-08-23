@@ -1,8 +1,20 @@
+.serverManagerOuterContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.serverMenuContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 0.5em;
+}
+
 .serverManagerContainer {
   position: absolute;
   inset: 0;
   z-index: 1;
-  top: 5em;
+  top: 7em;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -141,6 +153,9 @@
 }
 
 @media (max-width: 480px) {
+  .serverManagerContainer {
+    top: 8em;
+  }
   .serverStatsContainer,
   .serverConfigContainer {
     flex-direction: column;

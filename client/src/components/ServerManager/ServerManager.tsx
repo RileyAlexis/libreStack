@@ -18,6 +18,8 @@ import {
   List,
   ListItem,
   ListItemIcon,
+  ButtonGroup,
+  Button,
 } from "@mui/material";
 
 // Components
@@ -26,6 +28,7 @@ import { ServerLibraryStats } from "./ServerLibraryStats";
 
 import "./ServerManager.css";
 import { DotIcon } from "lucide-react";
+import { ServerMenu } from "./ServerMenu";
 
 export const ServerManager: React.FC = () => {
   //   const dispatch = useDispatch<AppDispatch>();
@@ -119,200 +122,203 @@ export const ServerManager: React.FC = () => {
   }
 
   return (
-    <div className="serverManagerContainer">
-      <div className="serverStatsContainer">
-        <div className="serverStatsCard">
-          <div className="serverStatsBox">
-            {isServerLoading && <SkeletonText />}
-            {!isServerLoading && serverStats && serverHealth && (
-              <div>
-                <div className="serverTitleBar">
-                  <Typography variant="h5">Server Stats</Typography>
-                  <Typography variant="h5">
-                    Status : {serverHealth.status}
-                  </Typography>
+    <div className="serverManagerOuterContainer">
+      <ServerMenu />
+      <div className="serverManagerContainer">
+        <div className="serverStatsContainer">
+          <div className="serverStatsCard">
+            <div className="serverStatsBox">
+              {isServerLoading && <SkeletonText />}
+              {!isServerLoading && serverStats && serverHealth && (
+                <div>
+                  <div className="serverTitleBar">
+                    <Typography variant="h5">Server Stats</Typography>
+                    <Typography variant="h5">
+                      Status : {serverHealth.status}
+                    </Typography>
+                  </div>
+                  <List dense disablePadding>
+                    <ListItem disablePadding>
+                      <ListItemIcon>
+                        <DotIcon />
+                      </ListItemIcon>
+                      Books : {serverStats?.totalBooks}
+                    </ListItem>
+                    <ListItem disablePadding>
+                      <ListItemIcon>
+                        <DotIcon />
+                      </ListItemIcon>
+                      Authors : {serverStats?.totalAuthorCount}
+                    </ListItem>
+                    <ListItem disablePadding>
+                      <ListItemIcon>
+                        <DotIcon />
+                      </ListItemIcon>
+                      Series : {serverStats?.totalSeriesCount}
+                    </ListItem>
+                    <ListItem disablePadding>
+                      <ListItemIcon>
+                        <DotIcon />
+                      </ListItemIcon>
+                      Read : {serverStats?.totalCompletedCount}
+                    </ListItem>
+                    <ListItem disablePadding>
+                      <ListItemIcon>
+                        <DotIcon />
+                      </ListItemIcon>
+                      Storage Used :{" "}
+                      {formatStorageSize(serverStats?.totalStorageSizeKB ?? 0)}
+                    </ListItem>
+                  </List>
                 </div>
-                <List dense disablePadding>
-                  <ListItem disablePadding>
-                    <ListItemIcon>
-                      <DotIcon />
-                    </ListItemIcon>
-                    Books : {serverStats?.totalBooks}
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemIcon>
-                      <DotIcon />
-                    </ListItemIcon>
-                    Authors : {serverStats?.totalAuthorCount}
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemIcon>
-                      <DotIcon />
-                    </ListItemIcon>
-                    Series : {serverStats?.totalSeriesCount}
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemIcon>
-                      <DotIcon />
-                    </ListItemIcon>
-                    Read : {serverStats?.totalCompletedCount}
-                  </ListItem>
-                  <ListItem disablePadding>
-                    <ListItemIcon>
-                      <DotIcon />
-                    </ListItemIcon>
-                    Storage Used :{" "}
-                    {formatStorageSize(serverStats?.totalStorageSizeKB ?? 0)}
-                  </ListItem>
-                </List>
+              )}
+            </div>
+          </div>
+          <div className="serverStatsCard">
+            {isServerLoading && (
+              <div className="libraryStatsBox">
+                <SkeletonText />
+                <SkeletonText />
+                <SkeletonText />
               </div>
             )}
+            {serverStats?.libraryStats &&
+              !isServerLoading &&
+              serverStats.libraryStats.map((item) => (
+                <ServerLibraryStats
+                  item={item}
+                  setServerStats={setServerStats}
+                  key={item.libraryName}
+                />
+              ))}
           </div>
         </div>
-        <div className="serverStatsCard">
-          {isServerLoading && (
-            <div className="libraryStatsBox">
-              <SkeletonText />
-              <SkeletonText />
-              <SkeletonText />
-            </div>
-          )}
-          {serverStats?.libraryStats &&
-            !isServerLoading &&
-            serverStats.libraryStats.map((item) => (
-              <ServerLibraryStats
-                item={item}
-                setServerStats={setServerStats}
-                key={item.libraryName}
-              />
-            ))}
-        </div>
-      </div>
-      <div className="serverConfigContainer">
-        <div className="serverStatsCard">
-          <div className="serverSwitchesContainer">
-            <h4>Server Settings</h4>
-            <Stack spacing={2}>
-              <ServerSwitchBox
-                id="switch-allowNewUsers"
-                fieldKey="allowNewUsers"
-                title="Allow New Users"
-                description="If enabled new users can register accounts, create libraries and add books."
-                checked={serverSettings?.allowNewUsers ?? false}
-                onCheckedChange={handleServerSettingChange}
-              />
-              <ServerSwitchBox
-                id="switch-allowNewLibraries"
-                fieldKey="allowNewLibraries"
-                title="Allow New Libraries"
-                description="If enabled users can create additional libraries and point them to any system available path."
-                checked={serverSettings?.allowNewLibraries ?? false}
-                onCheckedChange={handleServerSettingChange}
-              />
-              <ServerSwitchBox
-                id="switch-allowLibraryUpdates"
-                fieldKey="allowLibraryUpdates"
-                title="Allow Library Updates"
-                description="If enabled library owners can modify the name and path of a library."
-                checked={serverSettings?.allowLibraryUpdates ?? false}
-                onCheckedChange={handleServerSettingChange}
-              />
-              <ServerSwitchBox
-                id="switch-allowRemoveBooksFromLibrary"
-                fieldKey="allowRemoveBooksFromLibrary"
-                title="Allow Removing Books From Libraries"
-                description="If enabled library owners can remove books from a library. 
+        <div className="serverConfigContainer">
+          <div className="serverStatsCard">
+            <div className="serverSwitchesContainer">
+              <h4>Server Settings</h4>
+              <Stack spacing={2}>
+                <ServerSwitchBox
+                  id="switch-allowNewUsers"
+                  fieldKey="allowNewUsers"
+                  title="Allow New Users"
+                  description="If enabled new users can register accounts, create libraries and add books."
+                  checked={serverSettings?.allowNewUsers ?? false}
+                  onCheckedChange={handleServerSettingChange}
+                />
+                <ServerSwitchBox
+                  id="switch-allowNewLibraries"
+                  fieldKey="allowNewLibraries"
+                  title="Allow New Libraries"
+                  description="If enabled users can create additional libraries and point them to any system available path."
+                  checked={serverSettings?.allowNewLibraries ?? false}
+                  onCheckedChange={handleServerSettingChange}
+                />
+                <ServerSwitchBox
+                  id="switch-allowLibraryUpdates"
+                  fieldKey="allowLibraryUpdates"
+                  title="Allow Library Updates"
+                  description="If enabled library owners can modify the name and path of a library."
+                  checked={serverSettings?.allowLibraryUpdates ?? false}
+                  onCheckedChange={handleServerSettingChange}
+                />
+                <ServerSwitchBox
+                  id="switch-allowRemoveBooksFromLibrary"
+                  fieldKey="allowRemoveBooksFromLibrary"
+                  title="Allow Removing Books From Libraries"
+                  description="If enabled library owners can remove books from a library. 
                 Removed books will not be deleted from disk unless the below option is selected. Removed books will be re-added upon the next scheduled library scan if that service is enabled."
-                checked={serverSettings?.allowRemoveBooksFromLibrary ?? false}
-                onCheckedChange={handleServerSettingChange}
-              />
-              <ServerSwitchBox
-                id="switch-allowDeleteFromDisk"
-                fieldKey="allowDeleteFromDisk"
-                title="Allow Delete From Disk"
-                description="If enabled book owners can delete books from disk. Librestack must have write permissions to the referenced folder path."
-                checked={serverSettings?.allowDeleteFromDisk ?? false}
-                onCheckedChange={handleServerSettingChange}
-              />
-              <ServerSwitchBox
-                id="switch-allowUploadToLibrary"
-                fieldKey="allowUploadToLibrary"
-                title="Allow Uploading of Books"
-                description="If enabled library owners can upload new books to their libraries."
-                checked={serverSettings?.allowUploadToLibrary ?? false}
-                onCheckedChange={handleServerSettingChange}
-              />
-              <ServerSwitchBox
-                id="switch-scanLibrariesService"
-                fieldKey="scanLibrariesService"
-                title="Enable Library Scanning Service"
-                description="If enabled libraries will be scanned for added or deleted files per the set interval. Books without files will be removed and new ones will be added. "
-                checked={serverSettings?.scanLibrariesService ?? false}
-                onCheckedChange={handleServerSettingChange}
-              />
-              <Box className="scanIntervalField">
-                <Stack
-                  direction="row"
-                  spacing={2}
-                  sx={{
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    border: "1px solid var(--border)",
-                    borderRadius: "15px",
-                    padding: "0.5em",
-                  }}
-                >
-                  <Box>
-                    <Typography component="label" htmlFor="scanInterval">
-                      Library Scan Interval
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      Interval in minutes in which LibreStack checks for added
-                      or removed files in a library. Default 15 minutes.
-                    </Typography>
-                  </Box>
-                  <input
-                    id="scanInterval"
-                    type="number"
-                    value={serverSettings?.libraryScanInterval ?? 15}
-                    onChange={(e) =>
-                      handleServerSettingChange(
-                        "libraryScanInterval",
-                        Number(e.target.value),
-                      )
-                    }
-                  />
-                </Stack>
-              </Box>
-              <ServerSwitchBox
-                id="switch-attemptSeriesParsing"
-                fieldKey="attemptSeriesParsing"
-                title="Enable Attempted Series Parsing"
-                description="Experimental: If enabled LibreStack will attempt to get a series name and order from the epub title and the file name when a book is added."
-                checked={serverSettings?.attemptSeriesParsing ?? false}
-                onCheckedChange={handleServerSettingChange}
-              />
-            </Stack>
+                  checked={serverSettings?.allowRemoveBooksFromLibrary ?? false}
+                  onCheckedChange={handleServerSettingChange}
+                />
+                <ServerSwitchBox
+                  id="switch-allowDeleteFromDisk"
+                  fieldKey="allowDeleteFromDisk"
+                  title="Allow Delete From Disk"
+                  description="If enabled book owners can delete books from disk. Librestack must have write permissions to the referenced folder path."
+                  checked={serverSettings?.allowDeleteFromDisk ?? false}
+                  onCheckedChange={handleServerSettingChange}
+                />
+                <ServerSwitchBox
+                  id="switch-allowUploadToLibrary"
+                  fieldKey="allowUploadToLibrary"
+                  title="Allow Uploading of Books"
+                  description="If enabled library owners can upload new books to their libraries."
+                  checked={serverSettings?.allowUploadToLibrary ?? false}
+                  onCheckedChange={handleServerSettingChange}
+                />
+                <ServerSwitchBox
+                  id="switch-scanLibrariesService"
+                  fieldKey="scanLibrariesService"
+                  title="Enable Library Scanning Service"
+                  description="If enabled libraries will be scanned for added or deleted files per the set interval. Books without files will be removed and new ones will be added. "
+                  checked={serverSettings?.scanLibrariesService ?? false}
+                  onCheckedChange={handleServerSettingChange}
+                />
+                <Box className="scanIntervalField">
+                  <Stack
+                    direction="row"
+                    spacing={2}
+                    sx={{
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      border: "1px solid var(--border)",
+                      borderRadius: "15px",
+                      padding: "0.5em",
+                    }}
+                  >
+                    <Box>
+                      <Typography component="label" htmlFor="scanInterval">
+                        Library Scan Interval
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Interval in minutes in which LibreStack checks for added
+                        or removed files in a library. Default 15 minutes.
+                      </Typography>
+                    </Box>
+                    <input
+                      id="scanInterval"
+                      type="number"
+                      value={serverSettings?.libraryScanInterval ?? 15}
+                      onChange={(e) =>
+                        handleServerSettingChange(
+                          "libraryScanInterval",
+                          Number(e.target.value),
+                        )
+                      }
+                    />
+                  </Stack>
+                </Box>
+                <ServerSwitchBox
+                  id="switch-attemptSeriesParsing"
+                  fieldKey="attemptSeriesParsing"
+                  title="Enable Attempted Series Parsing"
+                  description="Experimental: If enabled LibreStack will attempt to get a series name and order from the epub title and the file name when a book is added."
+                  checked={serverSettings?.attemptSeriesParsing ?? false}
+                  onCheckedChange={handleServerSettingChange}
+                />
+              </Stack>
+            </div>
           </div>
         </div>
-      </div>
 
-      <Snackbar
-        open={toast.open}
-        autoHideDuration={5000}
-        onClose={handleToastClose}
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      >
-        <Alert
+        <Snackbar
+          open={toast.open}
+          autoHideDuration={5000}
           onClose={handleToastClose}
-          severity="error"
-          variant="filled"
-          sx={{ width: "100%" }}
+          anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         >
-          <strong>{toast.message}</strong>
-          {toast.description ? `: ${toast.description}` : null}
-        </Alert>
-      </Snackbar>
+          <Alert
+            onClose={handleToastClose}
+            severity="error"
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            <strong>{toast.message}</strong>
+            {toast.description ? `: ${toast.description}` : null}
+          </Alert>
+        </Snackbar>
+      </div>
     </div>
   );
 };
