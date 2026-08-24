@@ -33,7 +33,6 @@ export const ParsingErrorsDialog: React.FC<ParsingErrorsDialogProps> = ({
     api
       .get("LibraryScan/getEpubParseErrors")
       .then((response) => {
-        console.log(response.data.value);
         setData(response.data.value);
       })
       .catch((error) => {

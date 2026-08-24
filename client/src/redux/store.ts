@@ -10,8 +10,8 @@ import {
   REGISTER,
 } from "redux-persist";
 import createIdbStorage from "@piotr-cz/redux-persist-idb-storage";
-import { listenerMiddleware } from "./listenerMiddleware";
-import type { Middleware, UnknownAction } from "@reduxjs/toolkit";
+// import { listenerMiddleware } from "./listenerMiddleware";
+// import type { Middleware, UnknownAction } from "@reduxjs/toolkit";
 
 import libraryReducer from "./reducers/LibraryReducer";
 import libraryList from "./reducers/LibraryListReducer";
@@ -23,18 +23,18 @@ import downloadSlice from "./reducers/DownloadReducer";
 import libreDialogs from "./reducers/LibreDialogReducer";
 import locationStackReducer from "./reducers/LocationStackReducer";
 
-const logger: Middleware = (store) => (next) => (action) => {
-  if (import.meta.env.DEV) {
-    const typedAction = action as UnknownAction;
-    console.group(typedAction.type);
-    console.info("dispatching", typedAction);
-    const result = next(action);
-    console.log("next state", store.getState());
-    console.groupEnd();
-    return result;
-  }
-  return next(action);
-};
+// const logger: Middleware = (store) => (next) => (action) => {
+//   if (import.meta.env.DEV) {
+//     const typedAction = action as UnknownAction;
+//     console.group(typedAction.type);
+//     console.info("dispatching", typedAction);
+//     const result = next(action);
+//     console.log("next state", store.getState());
+//     console.groupEnd();
+//     return result;
+//   }
+//   return next(action);
+// };
 
 const idbStorage = createIdbStorage({
   name: "librestack",
@@ -70,9 +70,9 @@ const storeInstance = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    })
-      .prepend(listenerMiddleware.middleware)
-      .concat(logger),
+    }),
+  // .prepend(listenerMiddleware.middleware)
+  // .concat(logger),
 });
 
 export const persistor = persistStore(storeInstance);
