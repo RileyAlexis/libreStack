@@ -11,7 +11,10 @@ Self-hosted server for DRM free epubs with an offline capable Progressive Web Ap
 
 ## Getting Started
 
-Prerequisites: - Web Server with domain name or Dynamic DNS
+Prerequisites:
+
+- Web Server with domain name or Dynamic DNS
+- Certbot[https://certbot.eff.org] to set up SSL certificates for https
 
 Install from Source
 
