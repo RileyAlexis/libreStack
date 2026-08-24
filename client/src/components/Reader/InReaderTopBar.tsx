@@ -51,6 +51,7 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
   currentCfiRef,
 }) => {
   const { id } = useParams();
+  const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
@@ -62,7 +63,6 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
   const isCurrentPageBookmarked =
     bookmarks?.some((mark) => mark.cfiLocation === currentCfiRef.current) ??
     false;
-  const isSmallScreen = window.innerWidth <= 450;
 
   const handleReadingFontSelect = (event: SelectChangeEvent<string>) => {
     const selected = availableReadingFonts.findLast(
@@ -110,7 +110,7 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
 
   return (
     <div className="inReaderTopBar">
-      {!isSmallScreen && (
+      {!isTouchDevice && (
         <div className="inReaderTopBarControlsOuter">
           <div className="inReaderTopBarControlsInner">
             {/* Font Size */}
@@ -214,7 +214,7 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
 
       {/* Mobile Controls */}
 
-      {isSmallScreen && (
+      {isTouchDevice && (
         <div className="inReaderTopBarControlsMobileOuter">
           <div className="inReaderTopBarControlsMobileInner">
             <Button
