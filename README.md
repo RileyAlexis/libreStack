@@ -11,6 +11,8 @@ Self-hosted server for DRM free epubs with an offline capable Progressive Web Ap
 
 ## Getting Started
 
+Prerequisites: - Web Server with domain name or Dynamic DNS
+
 Install from Source
 
 ```
@@ -34,6 +36,46 @@ Start the Application
 
 ```
 docker compose up -d
+```
+
+Nginx
+
+Create LibreStack Nginx config in /etc/nginx/sites-enabled:
+
+```
+server {
+    listen 443 ssl;
+    server_name [domain or IP];
+
+    ssl_certificate /etc/letsencrypt/live/[domain or IP]/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/[domain or IP]/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+    location / {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+
+	proxy_buffering on;
+	proxy_buffer_size 128k;
+	proxy_buffers 4 256k;
+	proxy_busy_buffers_size 256k;
+    }
+}
+
+server {
+    listen 80;
+    server_name [domain or IP];
+    return 301 https://$server_name$request_uri;
+}
+
 ```
 
 First an admin user must be created. The email address is only used to add to the headers of the [Open Library API](https://openlibrary.org/developers/api) requests since adding an email increases the rate
