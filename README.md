@@ -67,9 +67,6 @@ Librestack uses Dotnet 10 on the back end with a Postgres 17 database and a Reac
 
 ## Feature Roadmap
 
-- Implement Bookmarking
-- Implement category tagging
-- Implement collections
-- Implement in reader dictionary or web search lookup
-- Implement ability to share books between libraries
-- Plan to implement ability to share libraries/books between server instances
+- Implement user manager
+- Implement ability to share books between local users
+- Plan to implement ability to share libraries/books between server instances/remote users

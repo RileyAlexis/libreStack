@@ -56,8 +56,7 @@ export const removeBookmark = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      const response = await api.delete(`Bookmark?id=${markId}`);
-      console.log(response.data);
+      await api.delete(`Bookmark?id=${markId}`);
       return { bookId, markId };
     } catch (error) {
       console.error(error);
@@ -73,13 +72,36 @@ export const updateBookmark = createAsyncThunk(
     { rejectWithValue },
   ) => {
     try {
-      const response = await api.post("Bookmark/updateBookmark", {
+      await api.post("Bookmark/updateBookmark", {
         id: bookmark.id,
         name: bookmark.name,
         cfiLocation: bookmark.cfiLocation,
       });
-      console.log(response.data);
       return { bookId, bookmark };
+    } catch (error) {
+      console.error(error);
+      return rejectWithValue((error as Error).message);
+    }
+  },
+);
+
+export const updateReadingProgress = createAsyncThunk(
+  "library/updateReadingProgress",
+  async (
+    {
+      bookId,
+      cfiLocation,
+      percentComplete,
+    }: { bookId: number; cfiLocation: string; percentComplete: number },
+    { rejectWithValue },
+  ) => {
+    try {
+      await api.post("/ReadingProgress/updateProgress", {
+        bookId,
+        cfiLocation,
+        percentComplete,
+      });
+      return { bookId, cfiLocation, percentComplete };
     } catch (error) {
       console.error(error);
       return rejectWithValue((error as Error).message);
@@ -132,6 +154,14 @@ const LibrarySlice = createSlice({
           if (index !== -1) {
             book.bookmarks[index] = bookmark;
           }
+        }
+      })
+      .addCase(updateReadingProgress.fulfilled, (state, action) => {
+        const { bookId, cfiLocation, percentComplete } = action.payload;
+        const book = state.books.find((b) => b.id === bookId);
+        if (book) {
+          book.readingProgress.cfiLocation = cfiLocation;
+          book.readingProgress.percentComplete = percentComplete;
         }
       });
   },

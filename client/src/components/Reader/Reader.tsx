@@ -14,6 +14,7 @@ import "./Reader.css";
 import { InReaderTopBar } from "./InReaderTopBar";
 import { InReaderBottomBar } from "./InReaderBottomBar";
 import { getOfflineEpub } from "@/redux/reducers/DownloadReducer";
+import { updateReadingProgress } from "@/redux/reducers/LibraryReducer";
 
 export const Reader: React.FC = () => {
   const { id } = useParams();
@@ -52,16 +53,13 @@ export const Reader: React.FC = () => {
         : 0;
 
     dispatch(setReadingLocation(cfiLocation.start.cfi));
-    api
-      .post("/ReadingProgress/updateProgress", {
+    dispatch(
+      updateReadingProgress({
         bookId: parseInt(id!),
         cfiLocation: cfiLocation.start.cfi,
-        percentComplete: percentComplete,
-      })
-      .then((_) => {})
-      .catch((error) => {
-        console.error(error.response.data);
-      });
+        percentComplete: Number(percentComplete),
+      }),
+    );
   };
 
   const beginSuppressReadingLocationUpdate = () => {
