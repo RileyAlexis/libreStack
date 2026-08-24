@@ -1,4 +1,15 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import {
+  persistStore,
+  persistReducer,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
+import createIdbStorage from "@piotr-cz/redux-persist-idb-storage";
 import { listenerMiddleware } from "./listenerMiddleware";
 import type { Middleware, UnknownAction } from "@reduxjs/toolkit";
 
@@ -25,6 +36,11 @@ const logger: Middleware = (store) => (next) => (action) => {
   return next(action);
 };
 
+const idbStorage = createIdbStorage({
+  name: "librestack",
+  storeName: "reduxPersist",
+});
+
 const allReducers = combineReducers({
   library: libraryReducer,
   libraryList: libraryList,
@@ -37,15 +53,28 @@ const allReducers = combineReducers({
   locationStack: locationStackReducer,
 });
 
+const persistConfig = {
+  key: "root",
+  storage: idbStorage,
+  whitelist: ["library", "libraryList", "appSettings", "auth"],
+  serialize: false,
+  deserialize: false,
+};
+
+const peristedReducer = persistReducer(persistConfig, allReducers);
+
 const storeInstance = configureStore({
-  reducer: allReducers,
+  reducer: peristedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false,
+      serializableCheck: {
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
     })
       .prepend(listenerMiddleware.middleware)
       .concat(logger),
 });
 
+export const persistor = persistStore(storeInstance);
 export { storeInstance };
 export type AppDispatch = typeof storeInstance.dispatch;

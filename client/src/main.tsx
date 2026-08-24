@@ -1,11 +1,12 @@
 import { StrictMode } from "react";
 import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import { ThemeProvider } from "./components/themeProvider";
 import App from "./App";
 import "./index.css";
-import { storeInstance } from "./redux/store";
+import { storeInstance, persistor } from "./redux/store";
 
 function Root() {
   return (
@@ -23,7 +24,9 @@ if (container) {
   root.render(
     <StrictMode>
       <Provider store={storeInstance}>
-        <Root />
+        <PersistGate loading={null} persistor={persistor}>
+          <Root />
+        </PersistGate>
       </Provider>
     </StrictMode>,
   );
