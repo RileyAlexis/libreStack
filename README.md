@@ -29,6 +29,28 @@ sudo apt-get update
 sudo apt-get install docker-compose-plugin
 ```
 
+Create environment variables and generate JWT Key:
+
+```
+openssl rand -base64 32
+```
+
+Create env file for Docker Compose in root project folder
+
+```
+sudo nano .env
+```
+
+```
+DB_PASSWORD=<database password>
+JWT_KEY=<open ssl generated key>
+JWT_ISSUER=librestack
+JWT_AUDIENCE=librestack-users
+JWT_EXPIRY_MINUTES=60
+```
+
+Note: If running in development these must be added to server/appSettings.Development.json along with the default connection string
+
 Build image from source
 
 ```
@@ -81,8 +103,8 @@ server {
 
 ```
 
-First an admin user must be created. The email address is only used to add to the headers of the [Open Library API](https://openlibrary.org/developers/api) requests since adding an email increases the rate
-limit from 1 to 3 requests per second.
+Point a browser to the server address and complete the on screen setup. First an admin user must be created. The email address is only used to add to the headers of the [Open Library API](https://openlibrary.org/developers/api)
+requests since adding an email increases the rate limit from 1 to 3 requests per second.
 
 ## Create your first library.
 
