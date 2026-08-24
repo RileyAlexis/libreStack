@@ -2,4 +2,9 @@
   margin-left: 0.25em;
   margin-top: 0.25em;
   cursor: pointer;
+  width: 90%;
+  padding: 2%;
+  cursor: pointer;
+  border: 1px solid var(--primary);
+  border-radius: 8px;
 }
