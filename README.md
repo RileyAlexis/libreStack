@@ -13,7 +13,7 @@ Self-hosted server for DRM free epubs with an offline capable Progressive Web Ap
 
 Prerequisites:
 
-- Web Server with domain name or Dynamic DNS
+- Web Server with domain name or Dynamic DNS and ssh access (instructions are for Debian/Ubuntu with Nginx)
 - Certbot[https://certbot.eff.org] to set up SSL certificates for https
 
 Install from Source
@@ -91,7 +91,7 @@ access LibreStack will be unable to add or delete books from your library (books
 
 ## Add Books to Library
 
-Books can be uploaded through the app: Manage -> Upload Book. Currently LibreStack only recognizes epub files and cannot parse .cbz files. If LibreStack does not have write access to the library folder upload will fail. Books can be manually added to the folder or subfolders within the library and the scan will pick them up: Library -> Scan Library. Malformed ebooks may not be picked up by the scan. For specifics on which books fail check the server logs `docker compose logs app -f`.
+Books can be uploaded through the app: Manage -> Upload Book. Currently LibreStack only recognizes epub files and cannot parse .cbz files. If LibreStack does not have write access to the library folder upload will fail. Books can be manually added to the folder or subfolders within the library and the scan will pick them up: Library -> Scan Library. Malformed ebooks may not be picked up by the scan. For specifics on which books fail check the server logs `docker compose logs app -f` or the Parsing Errors dialog in the Server Settings screen in the app.
 
 ## Mobile App
 
@@ -100,7 +100,8 @@ LibreStack is a Progressive Web App and can be installed directly from the web b
 - Android - Press Install App button and follow prompts
 - iOS - Click Share icon -> More -> Add to Home Screen. Ensure Open as Web App is checked. Click Add
 
-Librestack is offline capable but books are not automatically downloaded. Click the download icon at the bottom right of each book in order to save for offline reading.
+Librestack is offline capable but books are not automatically downloaded. Click the download icon at the bottom right of each book in order to save for offline reading. The app uses IndexDB to store books for offline reading and some devices (Apple)
+may agressively limit the space available for use. Recommend only storing a small number of books in the offline storage and clearing books that are completed (click the book menu -> Remove Download).
 
 ## Book Metadata
 
@@ -109,6 +110,15 @@ LibreStack connects to both Open Library and Wikidata in order to download metad
 ## Tech
 
 Librestack uses Dotnet 10 on the back end with a Postgres 17 database and a React 19 front end. Simple API documentation is available via Swagger at http://localhost:[server_port]/swagger/.
+
+## Limitations
+
+Librestack currently is only compatible with DRM free epub formats and depends on epub-ts[https://likecoin.github.io/epub.ts/] for front end rendering and VersOne[https://os.vers.one/EpubReader/] for parsing Epubs on the server. Librestack
+does not have the capability to read .CBZ, .MOBI or any formats utilizing DRM. It does not support audio books. In case of parsing errors Librestack will attempt minimal repair of the offending file but its capabilities are limited. For more extensive repair or conversion of ebooks Calibre[https://calibre-ebook.com/download] is recommended.
+
+## License
+
+This project is open source under the MIT License. The logo and name are copyrighted by RileyAlexis and may not be reused or distributed.
 
 ## Feature Roadmap
 
