@@ -241,7 +241,7 @@ export const Reader: React.FC = () => {
     const rendition = bookInstance.renderTo(renderAreaRef.current, {
       width: "100%",
       height: "100%",
-      allowScriptedContent: false,
+      allowScriptedContent: true,
       spread: appSettings.spread,
     });
 
@@ -275,16 +275,6 @@ export const Reader: React.FC = () => {
     });
 
     rendition.on("relocated", (location) => {
-      // ! Testing
-      console.log("relocated →", {
-        cfi: location.start.cfi,
-        displayedPage: location.start.displayed.page,
-        displayedTotal: location.start.displayed.total,
-        href: location.start.href,
-        atEnd: location.atEnd,
-      });
-      // ! Testing
-
       if (suppressReadingLocationUpdateRef.current) {
         if (suppressResetTimeoutRef.current)
           clearTimeout(suppressResetTimeoutRef.current);
@@ -362,12 +352,6 @@ export const Reader: React.FC = () => {
           }
 
           const rect = renderAreaRef.current?.getBoundingClientRect();
-
-          // !Testing
-          // console.log("Rect", rect);
-          // console.log("Device Pixel Ratio", window.devicePixelRatio);
-          // console.log("Redntiion Manager Layout", rendition.manager.layout);
-          // !Testing
 
           if (!rect) return;
           const containerScreenLeft = window.screenX + rect.left;
