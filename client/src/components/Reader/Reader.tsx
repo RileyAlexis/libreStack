@@ -241,7 +241,7 @@ export const Reader: React.FC = () => {
     const rendition = bookInstance.renderTo(renderAreaRef.current, {
       width: "100%",
       height: "100%",
-      allowScriptedContent: true,
+      allowScriptedContent: false,
       spread: appSettings.spread,
     });
 
@@ -275,9 +275,17 @@ export const Reader: React.FC = () => {
     });
 
     rendition.on("relocated", (location) => {
+      // ! Testing
+      console.log("relocated →", {
+        cfi: location.start.cfi,
+        displayedPage: location.start.displayed.page,
+        displayedTotal: location.start.displayed.total,
+        href: location.start.href,
+        atEnd: location.atEnd,
+      });
+      // ! Testing
+
       if (suppressReadingLocationUpdateRef.current) {
-        // still within a suppressed navigation — extend the window in case
-        // epub.js fires another relocated event for the same navigation
         if (suppressResetTimeoutRef.current)
           clearTimeout(suppressResetTimeoutRef.current);
         suppressResetTimeoutRef.current = setTimeout(() => {
@@ -354,6 +362,13 @@ export const Reader: React.FC = () => {
           }
 
           const rect = renderAreaRef.current?.getBoundingClientRect();
+
+          // !Testing
+          // console.log("Rect", rect);
+          // console.log("Device Pixel Ratio", window.devicePixelRatio);
+          // console.log("Redntiion Manager Layout", rendition.manager.layout);
+          // !Testing
+
           if (!rect) return;
           const containerScreenLeft = window.screenX + rect.left;
           const relativeX = screenX - containerScreenLeft;
@@ -393,7 +408,7 @@ export const Reader: React.FC = () => {
     renditionRef.current = rendition;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") rendition.prev();
+      if (e.key === "ArrowLeft") animatedNav("prev");
       if (e.key === "ArrowRight") animatedNav("next");
       if (e.key === " ") setIsMenuShowing(!isMenuShowing);
     };
