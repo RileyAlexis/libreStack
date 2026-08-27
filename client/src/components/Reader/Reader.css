@@ -50,6 +50,57 @@
     cursor: pointer;
     z-index: 12;
   }
+
+  .readerTextArea {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .readerTextArea.turn-next-out {
+    animation: turnNextOut 200ms ease forwards;
+  }
+  .readerTextArea.turn-prev-out {
+    animation: turnPrevOut 200ms ease forwards;
+  }
+  .readerTextArea.turn-next-in {
+    animation: turnNextIn 200ms ease forwards;
+  }
+  .readerTextArea.turn-prev-in {
+    animation: turnPrevIn 200ms ease forwards;
+  }
+
+  @keyframes turnNextOut {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-100%);
+    }
+  }
+  @keyframes turnPrevOut {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes turnNextIn {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes turnPrevIn {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
 }
 
 @media only screen and (max-width: 500px) and (orientation: portrait) {

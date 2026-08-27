@@ -46,6 +46,30 @@ export const Reader: React.FC = () => {
     appSettingsRef.current = appSettings;
   }, [appSettings]);
 
+  const ANIMATION_MS = 200;
+  const isAnimatingRef = useRef(false);
+
+  const animatedNav = (dir: "next" | "prev") => {
+    const el = renderAreaRef.current;
+    const rendition = renditionRef.current;
+    if (!el || !rendition || isAnimatingRef.current) return;
+
+    isAnimatingRef.current = true;
+    el.classList.add(dir === "next" ? "turn-next-out" : "turn-prev-out");
+
+    setTimeout(() => {
+      dir === "next" ? rendition.next() : rendition.prev();
+
+      el.classList.remove("turn-next-out", "turn-prev-out");
+      el.classList.add(dir === "next" ? "turn-next-in" : "turn-prev-in");
+
+      setTimeout(() => {
+        el.classList.remove("turn-next-in", "turn-prev-in");
+        isAnimatingRef.current = false;
+      }, ANIMATION_MS);
+    }, ANIMATION_MS);
+  };
+
   const updateLocation = (cfiLocation: Location) => {
     const percentComplete =
       cfiLocation.start.percentage !== undefined
@@ -346,8 +370,8 @@ export const Reader: React.FC = () => {
             if (lastNav && now - lastNav.time < 500 && lastNav.dir === dir)
               return;
             try {
-              if (dir === "next") rendition.next();
-              else rendition.prev();
+              if (dir === "next") animatedNav("next");
+              else animatedNav("prev");
             } catch (_) {}
             (doc as any).__libreLastNav = { time: now, dir };
           };
@@ -370,7 +394,7 @@ export const Reader: React.FC = () => {
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") rendition.prev();
-      if (e.key === "ArrowRight") rendition.next();
+      if (e.key === "ArrowRight") animatedNav("next");
       if (e.key === " ") setIsMenuShowing(!isMenuShowing);
     };
 
