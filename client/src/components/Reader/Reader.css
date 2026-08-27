@@ -103,7 +103,7 @@
   }
 }
 
-/* @media only screen and (max-width: 500px) and (orientation: portrait) {
+@media only screen and (max-width: 500px) and (orientation: portrait) {
   .readerOuterWrapper {
     position: relative;
     width: 100%;
@@ -121,4 +121,4 @@
     padding-top: calc(1em + env(safe-area-inset-top));
     padding-bottom: calc(1em + env(safe-area-inset-bottom));
   }
-} */
+}
