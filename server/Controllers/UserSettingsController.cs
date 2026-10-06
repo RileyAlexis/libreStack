@@ -17,7 +17,7 @@ public class UserSettingsController : ControllerBase
         _userSettingsService = userSettingsService;
     }
 
-    [HttpGet]
+    [HttpGet("GetUserSettings")]
     [Authorize]
     public async Task<ActionResult<ApiUserSettings>> GetUserSettings()
     {
@@ -52,5 +52,18 @@ public class UserSettingsController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet("GetLocalUsers")]
+    [Authorize]
+    public async Task<ActionResult> GetLocalUsers()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
+            return Unauthorized();
 
+        var result = await _userSettingsService.GetLocalUsers(userId);
+
+        if (result is null)
+            return BadRequest(new { error = result?.Error });
+        return Ok(result);
+    }
 }

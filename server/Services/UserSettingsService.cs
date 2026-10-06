@@ -3,6 +3,7 @@ using Librestack.Database;
 using Librestack.Interfaces;
 
 using Microsoft.EntityFrameworkCore;
+using Librestack.Models.APIModels;
 
 namespace Librestack.Services;
 
@@ -13,6 +14,21 @@ public class UserSettingsService : IUserSettingsService
     public UserSettingsService(LibrestackDbContext db)
     {
         _db = db;
+    }
+
+    public async Task<Result<List<ApiUserModel>>> GetLocalUsers(string UserId)
+    {
+        if (string.IsNullOrEmpty(UserId))
+            return Result<List<ApiUserModel>>.Failure("User Id is required", ErrorType.BadRequest);
+
+        var users = await _db.Users.Where(u => u.Id != UserId)
+        .Select(u => new ApiUserModel
+        {
+            UserId = u.Id,
+            UserName = u.UserName
+        }).ToListAsync();
+
+        return Result<List<ApiUserModel>>.Success(users);
     }
 
     public async Task<Result<UserSettings>> GetUserSettings(string UserId)

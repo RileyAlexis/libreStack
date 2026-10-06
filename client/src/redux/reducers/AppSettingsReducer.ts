@@ -49,7 +49,7 @@ export const fetchUserSettings = createAsyncThunk(
   "userSettings/fetchUserSettings",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get("userSettings");
+      const response = await api.get("UserSettings/GetUserSettings");
       return response.data;
     } catch (error) {
       return rejectWithValue((error as Error).message);

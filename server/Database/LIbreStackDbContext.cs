@@ -20,6 +20,7 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
     public DbSet<Series> Series { get; set; }
     public DbSet<Collections> Collections { get; set; }
     public DbSet<ParseErrorModel> ParseErrors { get; set; }
+    public DbSet<BookShare> BookShares { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -106,6 +107,24 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
             .HasOne(s => s.User)
             .WithOne()
             .HasForeignKey<UserSettings>(s => s.UserId);
+
+        modelBuilder.Entity<BookShare>()
+            .HasOne<IdentityUser>()
+            .WithMany()
+            .HasForeignKey(s => s.UserIdFrom)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<BookShare>()
+            .HasOne<IdentityUser>()
+            .WithMany()
+            .HasForeignKey(s => s.UserIdTo)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<BookShare>()
+            .HasOne(s => s.Book)
+            .WithMany()
+            .HasForeignKey(s => s.BookId)
+            .OnDelete(DeleteBehavior.Cascade);
 
     }
 }

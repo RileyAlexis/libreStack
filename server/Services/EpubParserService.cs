@@ -107,7 +107,14 @@ public class EpubParserService : IEpubParseService
 
             foreach (var item in metaData.Dates)
             {
-                extractedPublishDate = DateTime.Parse(item.Date);
+                if (DateTime.TryParse(item.Date, out var parsedDate))
+                {
+                    extractedPublishDate = parsedDate;
+                }
+                else
+                {
+                    _logger.LogWarning("Failed to parse date string: {Date}", item.Date);
+                }
             }
 
             Series? series = null;
