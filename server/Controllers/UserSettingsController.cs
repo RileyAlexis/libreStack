@@ -3,6 +3,7 @@ using Librestack.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Librestack.Models.APIModels;
+using Librestack.Mappers;
 
 namespace Librestack.Controllers;
 

@@ -236,6 +236,7 @@ public class BookService : IBookService
         var updated = new ApiBook
         {
             Id = existing.Id,
+            UserId = existing.UserId,
             Title = existing.Title,
             Author = existing.Author,
             Publisher = existing.Publisher,
@@ -245,6 +246,7 @@ public class BookService : IBookService
             ISBN = existing.ISBN,
             ISBN13 = existing.ISBN13,
             LCCN = existing.LCCN,
+            EpubPath = existing.EpubPath,
             OCLCWorldCat = existing.OCLCWorldCat,
             OpenLibraryWorkId = existing.OpenLibraryWorkId,
             OpenLibraryEditionId = existing.OpenLibraryEditionId,
@@ -258,7 +260,7 @@ public class BookService : IBookService
                 {
                     Id = existing.Series.Id,
                     SeriesTitle = existing.Series.SeriesTitle!,
-                    SeriesTotal = existing.Series.SeriesTotal
+                    SeriesTotal = existing.Series.SeriesTotal,
                 }
         };
 

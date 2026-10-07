@@ -5,16 +5,15 @@ namespace Librestack.Models.APIModels;
 public class ApiBook
 {
     public int Id { get; set; }
+    public required string UserId { get; set; }
     public string Title { get; set; } = "";
     public string Author { get; set; } = "";
     public string Publisher { get; set; } = "";
-    public string? PublishDate { get; set; }
     public string? Description { get; set; }
+    public string? PublishDate { get; set; }
     public byte[]? CoverImage { get; set; } = null;
     public string? CoverContentType { get; set; } = null;
-    // public string? SeriesTitle { get; set; } = null;
     public int? SeriesOrder { get; set; }
-    // public int? SeriesTotal { get; set; }
     public string? ISBN { get; set; } = "";
     public string? ISBN13 { get; set; } = "";
     public string? LCCN { get; set; } = null;
@@ -24,14 +23,24 @@ public class ApiBook
     public string? OpenLibraryAuthorId { get; set; } = null;
     public string? OpenLibraryCoverId { get; set; } = null;
     public string? WikidataId { get; set; } = null;
+    public string? WikidataAuthorId { get; set; } = null;
+    public string? wikiAuthorURL { get; set; } = null;
     public string? Language { get; set; } = null;
-    public int? CollectionId { get; set; }
-    public ApiSeries? Series { get; set; }
-    public DateTime AddedDate { get; set; }
+    public required string EpubPath { get; set; }
+    public DateTime? OpenLibraryMetadataLastUpdated { get; set; }
+    public DateTime? WikidataMetaLastUpdated { get; set; }
+    public DateTime? AddedDate { get; set; }
 
     [JsonIgnore]
+    public ICollection<Library> Libraries { get; set; } = new List<Library>();
     public ICollection<BookTag> BookTags { get; set; } = new List<BookTag>();
-    [JsonIgnore]
-    public ICollection<ReadingProgress> ReadingProgress { get; set; } = new List<ReadingProgress>();
+    public ReadingProgress? ReadingProgress { get; set; }
+    public ICollection<BookmarkModel> Bookmarks { get; set; } = new List<BookmarkModel>();
+    public ICollection<Collections> Collections { get; set; } = new List<Collections>();
+
+    public int? SeriesId { get; set; }
+    public ApiSeries? Series { get; set; }
+
+    public bool IsShared { get; set; }
 
 }

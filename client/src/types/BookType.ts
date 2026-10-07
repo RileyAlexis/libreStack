@@ -58,4 +58,5 @@ export interface BookType {
   readingProgress: ReadingProgress;
   contentType: string;
   addedDate: Date;
+  isShared: boolean;
 }

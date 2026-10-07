@@ -4,6 +4,8 @@ using Librestack.Interfaces;
 
 using Microsoft.EntityFrameworkCore;
 using Librestack.Models.APIModels;
+using Librestack.Mappers;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace Librestack.Services;
 
@@ -80,6 +82,8 @@ public class LibraryService : ILibraryService
         return Result.Success();
     }
 
+
+    // ! Do not use - does not inclulde shared books and loads unncessary data anyway
     public async Task<Result<List<Library>>> GetAllLibraries(string userId)
     {
         if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
@@ -104,10 +108,11 @@ public class LibraryService : ILibraryService
         return Result<List<Library>>.Success(libraries);
     }
 
-    public async Task<Result<Library>> GetLibrary(string userId, int id)
+    // * Primary Service to feed library and book data to front end
+    public async Task<Result<ApiSharedLibraryModel>> GetLibrary(string userId, int id)
     {
         if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
-            return Result<Library>.Failure("User Id is required", ErrorType.BadRequest);
+            return Result<ApiSharedLibraryModel>.Failure("User Id is required", ErrorType.BadRequest);
 
         var result = await _db.Libraries
             .Include(l => l.Books)
@@ -122,9 +127,49 @@ public class LibraryService : ILibraryService
                 .ThenInclude(b => b.Collections)
             .FirstOrDefaultAsync(l => l.UserId == userId && l.Id == id);
 
-        return result is null
-            ? Result<Library>.Failure("Library not found", ErrorType.NotFound)
-            : Result<Library>.Success(result);
+        if (result is null)
+            return Result<ApiSharedLibraryModel>.Failure("Library Not Found", ErrorType.NotFound);
+
+        // Get Books shared with this user
+        var sharedBooksIds = await _db.BookShares
+            .Where(s => s.UserIdTo == userId)
+            .Select(s => s.BookId)
+            .ToListAsync();
+
+        Console.WriteLine($"Shared Book Ids {sharedBooksIds.Count()}");
+        foreach (int shareId in sharedBooksIds)
+        {
+            Console.WriteLine(shareId);
+        }
+
+        var ownedBooks = result.Books.Select(b => b.Id).ToList();
+
+        Console.WriteLine($"Owned Book id Counds {ownedBooks.Count()}");
+
+        var allBookIds = ownedBooks.Union(sharedBooksIds).ToList();
+
+        Console.WriteLine($"All Book Ids {allBookIds.Count()}");
+
+        var allBooks = await _db.Books.Where(b => allBookIds.Contains(b.Id))
+        .Include(l => l.ReadingProgress)
+        .Include(l => l.Series)
+        .Include(l => l.Collections)
+        .ToListAsync();
+
+        Console.WriteLine($"All Books query count {allBooks.Count()}");
+
+        var apiBooks = allBooks.Select(b => BookModelMapper.ToDto(b, sharedBooksIds.Contains(b.Id) && !ownedBooks.Contains(b.Id)))
+            .ToList();
+
+        var apiLibrary = new ApiSharedLibraryModel
+        {
+            Id = result.Id,
+            Name = result.Name,
+            LibraryPath = result.LibraryPath,
+            Books = apiBooks
+        };
+
+        return Result<ApiSharedLibraryModel>.Success(apiLibrary);
 
     }
 

@@ -1,6 +1,8 @@
 using Librestack.Models;
 using Librestack.Models.APIModels;
 
+namespace Librestack.Mappers;
+
 public static class UserSettingsMapper
 {
     public static UserSettings FromDto(ApiUserSettings dto, string userId) => new()

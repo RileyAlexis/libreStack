@@ -48,7 +48,7 @@ public class LibraryMonitorService : BackgroundService
         {
             _logger.LogInformation("Scanning library {id}", library.Id);
 
-            var result = await scanService.ScanLibraryFiles(library.UserId, library.Id);
+            var result = await scanService.ScanLibraryFiles(library.UserId!, library.Id);
 
             if (result.IsSuccess)
                 _logger.LogInformation("Scan complete for library {id}", library.Id);
