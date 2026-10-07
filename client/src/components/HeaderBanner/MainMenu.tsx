@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { AppDispatch } from "@/redux/store";
+import { persistor, resetApp } from "@/redux/store";
 import { useNavigate } from "react-router";
 
 // Actions
@@ -52,6 +53,8 @@ export const MainMenu: React.FC = () => {
 
   const handleLogout = async () => {
     await logout();
+    dispatch(resetApp());
+    await persistor.purge();
     window.location.href = "/";
   };
 

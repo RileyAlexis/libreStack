@@ -53,6 +53,17 @@ const allReducers = combineReducers({
   locationStack: locationStackReducer,
 });
 
+export const resetApp = () => ({
+  type: "app/reset",
+});
+
+const rootReducer: typeof allReducers = (state, action) => {
+  if (action.type === "app/reset") {
+    state = undefined;
+  }
+  return allReducers(state, action);
+};
+
 const persistConfig = {
   key: "root",
   storage: idbStorage,
@@ -61,7 +72,7 @@ const persistConfig = {
   deserialize: false,
 };
 
-const peristedReducer = persistReducer(persistConfig, allReducers);
+const peristedReducer = persistReducer(persistConfig, rootReducer);
 
 const storeInstance = configureStore({
   reducer: peristedReducer,
