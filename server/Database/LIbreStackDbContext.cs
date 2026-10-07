@@ -108,23 +108,16 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
             .WithOne()
             .HasForeignKey<UserSettings>(s => s.UserId);
 
-        modelBuilder.Entity<BookShare>()
-            .HasOne<IdentityUser>()
-            .WithMany()
-            .HasForeignKey(s => s.UserIdFrom)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<BookShare>()
-            .HasOne<IdentityUser>()
-            .WithMany()
-            .HasForeignKey(s => s.UserIdTo)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        modelBuilder.Entity<BookShare>()
-            .HasOne(s => s.Book)
-            .WithMany()
-            .HasForeignKey(s => s.BookId)
-            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<BookShare>(e =>
+        {
+            e.HasOne(s => s.Book).WithMany(b => b.Shared)
+                .HasForeignKey(s => s.BookId).OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(s => s.UserFrom).WithMany()
+                .HasForeignKey(s => s.UserIdFrom).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(s => s.UserTo).WithMany()
+                .HasForeignKey(s => s.UserIdTo).OnDelete(DeleteBehavior.Restrict);
+            e.HasIndex(s => new { s.BookId, s.UserIdTo }).IsUnique();
+        });
 
     }
 }

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Librestack.Models.APIModels;
 using Librestack.Mappers;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.AspNetCore.Http.Features;
 
 namespace Librestack.Services;
 
@@ -116,15 +117,6 @@ public class LibraryService : ILibraryService
 
         var result = await _db.Libraries
             .Include(l => l.Books)
-                .ThenInclude(b => b.BookTags)
-            .Include(l => l.Books)
-            .ThenInclude(b => b.ReadingProgress)
-            .Include(l => l.Books)
-                .ThenInclude(b => b.Bookmarks)
-            .Include(l => l.Books)
-                .ThenInclude(b => b.Series)
-            .Include(l => l.Books)
-                .ThenInclude(b => b.Collections)
             .FirstOrDefaultAsync(l => l.UserId == userId && l.Id == id);
 
         if (result is null)
@@ -150,13 +142,21 @@ public class LibraryService : ILibraryService
 
         Console.WriteLine($"All Book Ids {allBookIds.Count()}");
 
-        var allBooks = await _db.Books.Where(b => allBookIds.Contains(b.Id))
-        .Include(l => l.ReadingProgress)
-        .Include(l => l.Series)
-        .Include(l => l.Collections)
-        .ToListAsync();
+        var allBooks = await _db.Books
+            .Where(b => allBookIds.Contains(b.Id))
+            .Include(b => b.BookTags)
+            .Include(b => b.Series)
+            .Include(b => b.ReadingProgress.Where(p => p.UserId == userId))
+            .Include(b => b.Bookmarks.Where(m => m.UserId == userId))
+            .Include(b => b.Collections.Where(c => c.UserId == userId))
+            .ToListAsync();
 
         Console.WriteLine($"All Books query count {allBooks.Count()}");
+
+        foreach (Book item in allBooks)
+        {
+            Console.WriteLine($"Reading Progress {item.Title} - {item.ReadingProgress.FirstOrDefault()?.CfiLocation ?? ""}");
+        }
 
         var apiBooks = allBooks.Select(b => BookModelMapper.ToDto(b, sharedBooksIds.Contains(b.Id) && !ownedBooks.Contains(b.Id)))
             .ToList();
@@ -170,7 +170,6 @@ public class LibraryService : ILibraryService
         };
 
         return Result<ApiSharedLibraryModel>.Success(apiLibrary);
-
     }
 
     public async Task<Result<List<ApiLibrary>>> GetListOfLibraries(string UserId)

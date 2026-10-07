@@ -101,7 +101,7 @@ public class ServerStatsService : IServerStatsService
             BookCount = l.Books.Count(),
             AuthorCount = l.Books.Where(b => b.Author != null).Select(b => b.Author).Distinct().Count(),
             SeriesCount = l.Books.Where(b => b.SeriesId != null).Select(b => b.SeriesId).Distinct().Count(),
-            CompletedBookCount = l.Books.Count(b => b.ReadingProgress != null && b.ReadingProgress.IsComplete),
+            CompletedBookCount = l.Books.Sum(b => b.ReadingProgress.Count(p => p.IsComplete)),
             StorageSizeKb = CalculateDirectorySize(l.LibraryPath) / 1024,
             LibraryPath = l.LibraryPath,
             DriveFreeSpace = CalculateDiskFreeSpace(l.LibraryPath) / 1024

@@ -54,6 +54,7 @@ export const MainMenu: React.FC = () => {
   const handleLogout = async () => {
     await logout();
     dispatch(resetApp());
+    persistor.pause();
     await persistor.purge();
     window.location.href = "/";
   };

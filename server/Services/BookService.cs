@@ -140,7 +140,9 @@ public class BookService : IBookService
         if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
             return Result<(Stream, string)>.Failure("User Id is required", ErrorType.BadRequest);
 
-        var bookEntry = await _db.Books.FirstOrDefaultAsync(b => b.Id == id && b.UserId == userId);
+        var bookEntry = await _db.Books.FirstOrDefaultAsync(b =>
+            b.Id == id && (b.UserId == userId || b.Shared.Any(s => s.UserIdTo == userId)));
+
         if (bookEntry is null)
             return Result<(Stream, string)>.Failure("Book not found", ErrorType.NotFound);
 

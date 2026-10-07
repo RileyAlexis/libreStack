@@ -51,7 +51,7 @@ public static class BookModelMapper
             IsShared = isShared,
             Libraries = model.Libraries,
             BookTags = model.BookTags,
-            ReadingProgress = model.ReadingProgress,
+            ReadingProgress = model.ReadingProgress.FirstOrDefault(),
             Bookmarks = model.Bookmarks,
             Collections = model.Collections,
             SeriesId = model.SeriesId,
