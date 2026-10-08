@@ -72,6 +72,7 @@ public class UserSettingsService : IUserSettingsService
             existing.LastSelectedLibrary = settings.LastSelectedLibrary;
             existing.GroupBySeries = settings.GroupBySeries;
             existing.GroupByCollections = settings.GroupByCollections;
+            existing.ShowSharedBooks = settings.ShowSharedBooks;
         }
 
         await _db.SaveChangesAsync();

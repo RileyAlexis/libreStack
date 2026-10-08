@@ -42,6 +42,7 @@ const initialState: AppSettings = {
       width: 200,
       height: 300,
     },
+    showSharedBooks: true,
   },
 };
 
@@ -112,6 +113,9 @@ const AppSettingsSlice = createSlice({
     },
     setIsSyncing(state, action: PayloadAction<boolean>) {
       state.isSyncing = action.payload;
+    },
+    setShowSharedBooks(state, action: PayloadAction<boolean>) {
+      state.libraryLayout.showSharedBooks = action.payload;
     },
   },
   extraReducers: (builder) => {

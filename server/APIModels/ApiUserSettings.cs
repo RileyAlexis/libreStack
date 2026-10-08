@@ -26,6 +26,7 @@ public class LibraryLayoutDto
     public bool SortAscending { get; set; }
     public bool GroupBySeries { get; set; }
     public bool GroupByCollections { get; set; }
+    public bool ShowSharedBooks { get; set; }
 }
 
 public class LibraryCoverSizeDto

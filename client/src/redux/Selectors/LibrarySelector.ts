@@ -20,6 +20,8 @@ const selectDownloadsByBookId = (state: LibreRootState) =>
   state.downloads.byBookId;
 const selectShowCompleted = (state: LibreRootState) =>
   state.appSettings.libraryLayout.showCompleted;
+const selectShowSharedBooks = (state: LibreRootState) =>
+  state.appSettings.libraryLayout.showSharedBooks;
 
 const getLastName = (author: string): string => {
   if (author.includes(",")) {
@@ -400,6 +402,7 @@ export const selectUnifiedLibraryState = createSelector(
     selectShowOnlyDownloaded,
     selectDownloadsByBookId,
     selectShowCompleted,
+    selectShowSharedBooks,
   ],
   (
     books,
@@ -410,6 +413,7 @@ export const selectUnifiedLibraryState = createSelector(
     showOnlyDownloaded,
     downloadsByBookId,
     showCompleted,
+    showSharedBooks,
   ): LibraryListEntry[] => {
     const visibleBooks = books.filter((book) => {
       if (
@@ -419,6 +423,9 @@ export const selectUnifiedLibraryState = createSelector(
         return false;
       }
       if (!showCompleted && book.readingProgress?.isComplete) {
+        return false;
+      }
+      if (!showSharedBooks && book.isShared) {
         return false;
       }
       return true;

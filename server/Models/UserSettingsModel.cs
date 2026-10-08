@@ -32,4 +32,5 @@ public class UserSettings
     public bool SortAscending { get; set; } = true;
     public bool GroupBySeries { get; set; }
     public bool GroupByCollections { get; set; }
+    public bool ShowSharedBooks { get; set; } = true;
 }

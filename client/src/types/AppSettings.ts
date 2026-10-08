@@ -26,6 +26,7 @@ export interface LibraryLayout {
   showDescriptionOnHover: boolean;
   groupBySeries: boolean;
   groupByCollections: boolean;
+  showSharedBooks: boolean;
 }
 
 export type ReadingThemeType =

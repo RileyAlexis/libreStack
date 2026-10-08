@@ -29,6 +29,7 @@ public static class UserSettingsMapper
         SortBy = dto.LibraryLayout.SortBy,
         SortAscending = dto.LibraryLayout.SortAscending,
         LastSelectedLibrary = dto.LastSelectedLibrary,
+        ShowSharedBooks = dto.LibraryLayout.ShowSharedBooks,
     };
 
     public static ApiUserSettings ToDto(UserSettings s) => new()
@@ -54,6 +55,7 @@ public static class UserSettingsMapper
             SortAscending = s.SortAscending,
             GroupByCollections = s.GroupByCollections,
             GroupBySeries = s.GroupBySeries,
+            ShowSharedBooks = s.ShowSharedBooks,
         },
     };
 }
