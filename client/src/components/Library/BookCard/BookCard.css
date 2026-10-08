@@ -11,6 +11,11 @@
   user-select: none;
 }
 
+.bookCardContainer.shared {
+  outline: 2px solid var(--share-color);
+  outline-offset: -2px;
+}
+
 .bookCardContainer.selected {
   outline: 3px solid var(--primary);
   outline-offset: -3px;

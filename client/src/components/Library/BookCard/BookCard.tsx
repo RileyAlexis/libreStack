@@ -105,7 +105,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
 
   return (
     <div
-      className={`bookCardContainer ${isSelected ? "selected" : ""}`}
+      className={`bookCardContainer ${isSelected ? "selected" : ""} ${book.isShared ? "shared" : ""}`}
       style={{
         width:
           appSettings.libraryLayout.libraryCoverSize.width * coverMultiplier,

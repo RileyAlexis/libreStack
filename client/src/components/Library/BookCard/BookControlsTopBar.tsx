@@ -147,7 +147,7 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
           pointerEvents: isTouchDevice || isHovering ? "auto" : "none",
         }}
       >
-        {!isSelected && (
+        {!isSelected && !book.isShared && (
           <IconButton
             className="rounded-full"
             onClick={(e) => {
@@ -160,7 +160,7 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
           </IconButton>
         )}
 
-        {isSelected && (
+        {isSelected && !book.isShared && (
           <IconButton
             className="rounded-full"
             onClick={(e) => {
@@ -214,17 +214,20 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
             onClose={handleMenuClose}
             onClick={(e) => e.stopPropagation()}
           >
-            <MenuItem
-              onClick={() => {
-                dispatch(
-                  setIsBookDialogOpen({ dialog: true, bookId: book.id }),
-                );
-                handleMenuClose();
-              }}
-              aria-label="View Description"
-            >
-              Edit Metadata
-            </MenuItem>
+            {!book.isShared && (
+              <MenuItem
+                onClick={() => {
+                  dispatch(
+                    setIsBookDialogOpen({ dialog: true, bookId: book.id }),
+                  );
+                  handleMenuClose();
+                }}
+                aria-label="View Description"
+              >
+                Edit Metadata
+              </MenuItem>
+            )}
+
             {book.readingProgress?.isComplete ? (
               <MenuItem
                 onClick={() => {
@@ -255,17 +258,22 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
             >
               Reset Reading Progress
             </MenuItem>
-            <MenuItem
-              onClick={() => {
-                dispatch(
-                  setIsFixMismatchDialogOpen({ dialog: true, bookId: book.id }),
-                );
-                handleMenuClose();
-              }}
-              aria-label="Fix Mismatch"
-            >
-              Fix Mismatch
-            </MenuItem>
+            {!book.isShared && (
+              <MenuItem
+                onClick={() => {
+                  dispatch(
+                    setIsFixMismatchDialogOpen({
+                      dialog: true,
+                      bookId: book.id,
+                    }),
+                  );
+                  handleMenuClose();
+                }}
+                aria-label="Fix Mismatch"
+              >
+                Fix Mismatch
+              </MenuItem>
+            )}
 
             {downloadStatus === "downloaded" && (
               <MenuItem
@@ -276,7 +284,7 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
                 Remove Download - {formatBytes(totalSize)}
               </MenuItem>
             )}
-            {book.seriesId !== null && (
+            {book.seriesId !== null && !book.isShared && (
               <MenuItem onClick={handleRemoveSeries}>
                 Remove From Series
               </MenuItem>

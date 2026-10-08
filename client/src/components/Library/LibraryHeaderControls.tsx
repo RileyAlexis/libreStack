@@ -314,6 +314,7 @@ export const LibraryHeaderControls: React.FC = () => {
                     <CircleMinus />
                   </IconButton>
                 </Tooltip>
+
                 <Tooltip title="Delete">
                   <IconButton onClick={() => setIsDeleteOpen(true)}>
                     <BookXIcon color="var(--destructive" />
