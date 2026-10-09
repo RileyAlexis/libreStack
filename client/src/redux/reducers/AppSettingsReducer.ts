@@ -22,6 +22,7 @@ const initialState: AppSettings = {
     value: "Georgia, serif",
   },
   isSyncing: false,
+  isLibraryLoading: false,
   lastSelectedLibrary: 0,
   readingFontSize: 18,
   lineHeight: 1.5,
@@ -114,6 +115,9 @@ const AppSettingsSlice = createSlice({
     setIsSyncing(state, action: PayloadAction<boolean>) {
       state.isSyncing = action.payload;
     },
+    setIsLibraryLoading(state, action: PayloadAction<boolean>) {
+      state.isLibraryLoading = action.payload;
+    },
     setShowSharedBooks(state, action: PayloadAction<boolean>) {
       state.libraryLayout.showSharedBooks = action.payload;
     },
@@ -147,5 +151,7 @@ export const {
   setAscending,
   setLastSelectedLibrary,
   setIsSyncing,
+  setIsLibraryLoading,
+  setShowSharedBooks,
 } = AppSettingsSlice.actions;
 export default AppSettingsSlice.reducer;

@@ -8,6 +8,7 @@ import type { AppDispatch } from "@/redux/store";
 // Actions
 import {
   setCoverSize,
+  setIsLibraryLoading,
   setIsSyncing,
   setLastSelectedLibrary,
   setLayout,
@@ -112,7 +113,9 @@ export const BottomControls: React.FC = () => {
   };
 
   const handleSelectLibrary = (libraryId: number) => {
+    dispatch(setIsLibraryLoading(true));
     dispatch(setLastSelectedLibrary(libraryId));
+    dispatch(setIsLibraryLoading(false));
     closeMenu();
   };
 

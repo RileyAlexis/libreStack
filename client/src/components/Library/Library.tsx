@@ -11,6 +11,7 @@ import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 import { fetchLibraryList } from "@/redux/reducers/LibraryListReducer";
 import { selectFilteredLibraryState } from "@/redux/Selectors/LibrarySelector";
 import { BookCard } from "./BookCard/BookCard";
+import { setIsLibraryLoading } from "@/redux/reducers/AppSettingsReducer";
 
 // Components
 import { BottomControls } from "../BottomControls/BottomControls";
@@ -47,11 +48,11 @@ export const Library: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    setIsLoading(true);
+    dispatch(setIsLibraryLoading(true));
     dispatch(fetchLibraryList())
       .unwrap()
       .catch((err) => console.error(err))
-      .finally(() => setIsLoading(false));
+      .finally(() => dispatch(setIsLibraryLoading(false)));
   }, [location.pathname]);
 
   useEffect(() => {
@@ -75,7 +76,7 @@ export const Library: React.FC = () => {
   return (
     <div className="libraryContainer">
       <LibraryHeaderControls />
-      {isLoading && (
+      {appSettings.isLibraryLoading && (
         <div className="libraryLoader">
           <CircularProgress size={48} sx={{ mr: 1 }} />
         </div>

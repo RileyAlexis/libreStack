@@ -8,6 +8,7 @@ export interface AppSettings {
   libraryLayout: LibraryLayout;
   lastSelectedLibrary: number;
   isSyncing: boolean;
+  isLibraryLoading: boolean;
 }
 
 export type SpreadType = "none" | "auto";
