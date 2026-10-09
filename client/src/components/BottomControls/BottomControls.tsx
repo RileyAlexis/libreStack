@@ -266,14 +266,14 @@ export const BottomControls: React.FC = () => {
     );
   };
 
-  const handleSetShowSharedBooks = () => {
-    dispatch(
-      setLayout({
-        ...appSettings.libraryLayout,
-        showSharedBooks: !appSettings.libraryLayout.showSharedBooks,
-      }),
-    );
-  };
+  // const handleSetShowSharedBooks = () => {
+  //   dispatch(
+  //     setLayout({
+  //       ...appSettings.libraryLayout,
+  //       showSharedBooks: !appSettings.libraryLayout.showSharedBooks,
+  //     }),
+  //   );
+  // };
 
   const menubarButtonSx = {
     display: "flex",
@@ -480,7 +480,7 @@ export const BottomControls: React.FC = () => {
             label="Show Only Downloaded"
           />
         </MenuItem>
-        <MenuItem className="menubarSwitch" disableRipple>
+        {/* <MenuItem className="menubarSwitch" disableRipple>
           <FormControlLabel
             control={
               <Switch
@@ -490,7 +490,7 @@ export const BottomControls: React.FC = () => {
             }
             label="Show Shared Books"
           />
-        </MenuItem>
+        </MenuItem> */}
 
         <Divider />
         <Box className="menubarSubContent" sx={{ px: 2, py: 1 }}>
