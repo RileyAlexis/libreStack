@@ -26,7 +26,6 @@ import "./Library.css";
 export const Library: React.FC = () => {
   const location = useLocation();
   const dispatch = useDispatch<AppDispatch>();
-  const [isLoading, setIsLoading] = useState(false);
 
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const librarySearchTerm = useSelector(
