@@ -13,9 +13,8 @@ export default defineConfig({
     babel({ presets: [reactCompilerPreset()] }),
     visualizer({ open: false }),
     legacy({
-      targets: ["safari >= 14"],
+      targets: ["defaults", "not IE 11", "safari >= 12"],
       modernPolyfills: ["es.object.from-entries"],
-      additionalLegacyPolyfills: ["regenerator-runtime/runtime"],
     }),
     VitePWA({
       registerType: "autoUpdate",
@@ -26,6 +25,8 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
+        // ! Remove for production!!!!
+        maximumFileSizeToCacheInBytes: 15 * 1024 * 1024,
       },
       manifest: {
         name: "Librestack",
@@ -77,5 +78,10 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
+  },
+  build: {
+    // ! Remove for production!!!
+    minify: false,
+    sourcemap: true,
   },
 });

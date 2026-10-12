@@ -5,7 +5,11 @@ import type { SortedBookStateType } from "@/types/SortedStateBookType";
 import type { SortedCollectionStateType } from "@/types/SortedCollectionStateType";
 import type { BookType } from "@/types/BookType";
 
-const selectBooks = (state: LibreRootState) => state.library.books;
+const EMPTY_BOOKS: BookType[] = [];
+const selectBooks = (state: LibreRootState) => {
+  console.log("library state", JSON.stringify(state.library));
+  return state.library.books ?? EMPTY_BOOKS;
+};
 const selectGroupBySeries = (state: LibreRootState) =>
   state.appSettings.libraryLayout.groupBySeries;
 const selectGroupByCollection = (state: LibreRootState) =>
