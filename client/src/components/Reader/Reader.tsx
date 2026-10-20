@@ -351,6 +351,15 @@ export const Reader: React.FC = () => {
             // ignore de-dupe failures
           }
 
+          // Swipe handling (touch only): forward swipe advances, anything else that moved is not a tap
+          if (ev.type === "touchend") {
+            const s = (doc as any).__libreTouch as
+              | { x: number; y: number; moved: boolean }
+              | undefined;
+            (doc as any).__libreTouch = undefined;
+            if (s?.moved) return; // was a swipe/drag, not a tap
+          }
+
           const rect = renderAreaRef.current?.getBoundingClientRect();
 
           if (!rect) return;
@@ -381,14 +390,50 @@ export const Reader: React.FC = () => {
         } catch (e) {}
       };
 
-      // Attach listeners to the iframe document so clicks/taps are handled in-content.
+      const touchStartHandler = (ev: TouchEvent) => {
+        const t = ev.touches[0];
+        if (t)
+          (doc as any).__libreTouch = {
+            x: t.clientX,
+            y: t.clientY,
+            moved: false,
+          };
+      };
+
+      const touchMoveHandler = (ev: TouchEvent) => {
+        const s = (doc as any).__libreTouch as
+          | { x: number; y: number; moved: boolean }
+          | undefined;
+        const t = ev.touches[0];
+        if (!s || !t) return;
+
+        const dx = t.clientX - s.x;
+        const dy = t.clientY - s.y;
+
+        if (Math.abs(dx) > 10 || Math.abs(dy) > 10) s.moved = true;
+
+        // Horizontal gesture: keep the browser from scrolling the container
+        if (Math.abs(dx) > Math.abs(dy) && ev.cancelable) ev.preventDefault();
+
+        // Forward swipe = right-to-left, fire once per gesture
+        if (dx < -50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+          (doc as any).__libreTouch = { ...s, x: Infinity, moved: true }; // prevents re-firing
+          animatedNav("next");
+        }
+      };
+
       try {
         doc.addEventListener("click", clickHandler as EventListener, false);
         doc.addEventListener("touchend", clickHandler as EventListener, false);
+        doc.addEventListener("touchstart", touchStartHandler, {
+          passive: true,
+        });
+        doc.addEventListener("touchmove", touchMoveHandler, { passive: false });
       } catch (e) {
         // ignore if attaching fails
       }
     });
+
     renditionRef.current = rendition;
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -419,21 +464,7 @@ export const Reader: React.FC = () => {
         </div>
       )}
 
-      <div className="readerTextArea" ref={renderAreaRef}>
-        {/* {bookInstance && (
-          <>
-            <div
-              className="readerPrevious"
-              onClick={() => renditionRef.current?.prev()}
-            />
-            <div className="readerCenter" onClick={handleShowMenu} />
-            <div
-              className="readerNext"
-              onClick={() => renditionRef.current?.next()}
-            />
-          </>
-        )} */}
-      </div>
+      <div className="readerTextArea" ref={renderAreaRef}></div>
 
       {isMenuShowing && (
         <InReaderBottomBar
