@@ -152,6 +152,7 @@ function useNavigationGate(
 function App() {
   const dispatch = useDispatch<AppDispatch>();
   const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
+  const isIosDevice = /iPhone|iPad|iPod/i.test(navigator.userAgent);
   const isStandAlone = useStandaloneMode();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const snackData = useSelector((state: LibreRootState) => state.snack);
@@ -196,7 +197,7 @@ function App() {
 
   return (
     <div
-      className={`primaryContainer ${isStandAlone ? "standAloneBuffer" : ""}`}
+      className={`primaryContainer ${isStandAlone && isIosDevice ? "standAloneBuffer" : ""}`}
     >
       <Routes>
         <Route path="/" element={<HeaderBanner />} />
