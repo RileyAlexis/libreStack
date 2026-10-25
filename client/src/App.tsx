@@ -44,6 +44,7 @@ import { Tester } from "./components/Testers/Tester";
 import "./App.css";
 import { CollectionBooks } from "./components/Library/CollectionCard/CollectionBooks";
 import { CollectionManager } from "./components/CollectionManager/CollectionManager";
+import { useStandaloneMode } from "./utils/IsStandAlone";
 
 type AuthStatus = "checking" | "authenticated" | "unauthenticated";
 
@@ -151,6 +152,7 @@ function useNavigationGate(
 function App() {
   const dispatch = useDispatch<AppDispatch>();
   const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
+  const isStandAlone = useStandaloneMode();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const snackData = useSelector((state: LibreRootState) => state.snack);
   const libreDialogs = useSelector(
@@ -173,6 +175,10 @@ function App() {
     if (authStatus === "authenticated") dispatch(hydrateDownloads());
   }, [authStatus, dispatch]);
 
+  useEffect(() => {
+    console.log(`Standalone ${isStandAlone}`);
+  }, [isStandAlone]);
+
   const handleCloseSnack = (
     _: React.SyntheticEvent | Event,
     reason?: SnackbarCloseReason,
@@ -189,7 +195,9 @@ function App() {
   };
 
   return (
-    <div className="primaryContainer">
+    <div
+      className={`primaryContainer ${isStandAlone ? "standAloneBuffer" : ""}`}
+    >
       <Routes>
         <Route path="/" element={<HeaderBanner />} />
         <Route

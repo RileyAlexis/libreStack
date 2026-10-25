@@ -150,6 +150,10 @@
     overflow: hidden;
   }
 
+  .standAloneBuffer {
+    margin-top: 0.25em;
+  }
+
   .pageContent {
     position: relative;
     height: 100vh;
