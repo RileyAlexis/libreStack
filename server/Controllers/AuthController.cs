@@ -2,6 +2,8 @@ using Librestack.Models;
 using Librestack.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+
 using Librestack.Models.APIModels;
 
 namespace Librestack.Controllers;
@@ -156,5 +158,28 @@ public class AuthController : ControllerBase
             return BadRequest(result.Error);
 
         return Ok(new { message = $"Password reset" });
+    }
+
+    public record PasswordChangeData(string OldPassword, string NewPassword);
+
+    [HttpPost("changePassword")]
+    [Authorize]
+    public async Task<IActionResult> ChangePassword([FromBody] PasswordChangeData request)
+    {
+        Console.WriteLine("change password called");
+
+        var UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (UserId is null) return Unauthorized();
+
+        var result = await _authService.ChangePassword(UserId, request.OldPassword, request.NewPassword);
+
+        Console.WriteLine("change password result");
+        Console.WriteLine(result);
+
+
+        if (!result.IsSuccess)
+            return BadRequest(result.Error);
+
+        return Ok(result);
     }
 }

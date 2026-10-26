@@ -19,4 +19,5 @@ public interface IAuthService
     Task<(IdentityResult Result, string? UserId)> CreateNewUser(RegisterRequest request);
     Task<Result> RequestPasswordReset(string? UserName, string? UserEmail);
     Task<Result> ResetPassword(string? UserName, string? UserEmail, string ResetCode, string Password);
+    Task<Result> ChangePassword(string UserId, string OldPassword, string NewPassword);
 }

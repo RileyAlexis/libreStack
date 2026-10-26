@@ -373,4 +373,23 @@ public class AuthService : IAuthService
         await _dbContext.SaveChangesAsync();
         return Result.Success();
     }
+
+    public async Task<Result> ChangePassword(string UserId, string OldPassword, string NewPassword)
+    {
+        var User = await _userManager.FindByIdAsync(UserId);
+
+        if (User is null)
+            return Result.Failure("User not found", ErrorType.NotFound);
+
+        var result = await _userManager.ChangePasswordAsync(User, OldPassword, NewPassword);
+
+        if (!result.Succeeded)
+        {
+            return Result.Failure($"Failed to reset password: {string.Join(", ", result.Errors.Select(e => e.Description))}", ErrorType.Unexpected);
+        }
+
+        await _dbContext.SaveChangesAsync();
+        return Result.Success();
+
+    }
 }

@@ -21,6 +21,8 @@ import {
   // Tooltip,
   Switch,
   FormControlLabel,
+  Dialog,
+  DialogContent,
   // Typography,
   // Box,
 } from "@mui/material";
@@ -30,7 +32,10 @@ import {
   LogOut,
   Landmark,
   Cog,
+  ShieldIcon,
+  XIcon,
 } from "lucide-react";
+import { ChangePasswordScreen } from "../LoginScreen/ChangePasswordScreen";
 
 export const MainMenu: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -38,6 +43,8 @@ export const MainMenu: React.FC = () => {
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const auth = useSelector((state: LibreRootState) => state.auth);
   const isLoggedIn = Boolean(auth.accessToken);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] =
+    useState<boolean>(false);
   // const { setTheme, theme } = useTheme();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -57,6 +64,11 @@ export const MainMenu: React.FC = () => {
     persistor.pause();
     await persistor.purge();
     window.location.href = "/";
+  };
+
+  const handleChangePassword = () => {
+    setIsChangePasswordOpen(true);
+    handleClose();
   };
 
   return (
@@ -114,6 +126,10 @@ export const MainMenu: React.FC = () => {
                     label="Library as Home Page"
                   />
                 </MenuItem>
+                <MenuItem onClick={handleChangePassword}>
+                  <ShieldIcon size={18} style={{ marginRight: 8 }} />
+                  Change Password
+                </MenuItem>
               </>
             )}
             <MenuItem onClick={handleLogout}>
@@ -130,6 +146,17 @@ export const MainMenu: React.FC = () => {
           </Avatar>
         </IconButton>
       )}
+      <Dialog open={isChangePasswordOpen} onClose={setIsChangePasswordOpen}>
+        <DialogContent sx={{ position: "relative" }}>
+          <IconButton
+            onClick={() => setIsChangePasswordOpen(false)}
+            sx={{ position: "absolute", top: 8, right: 8 }}
+          >
+            <XIcon size={18} />
+          </IconButton>
+          <ChangePasswordScreen setIsOpen={setIsChangePasswordOpen} />
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
