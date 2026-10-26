@@ -413,6 +413,46 @@ namespace libreStack.Migrations
                     b.ToTable("parse_errors", (string)null);
                 });
 
+            modelBuilder.Entity("Librestack.Models.PasswordResetCode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("code");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
+
+                    b.Property<bool>("Used")
+                        .HasColumnType("boolean")
+                        .HasColumnName("used");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_password_reset_codes");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_password_reset_codes_user_id");
+
+                    b.ToTable("password_reset_codes", (string)null);
+                });
+
             modelBuilder.Entity("Librestack.Models.ReadingProgress", b =>
                 {
                     b.Property<int>("Id")
@@ -1005,6 +1045,18 @@ namespace libreStack.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_bookmarks_books_book_id");
+                });
+
+            modelBuilder.Entity("Librestack.Models.PasswordResetCode", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_password_reset_codes_users_user_id");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Librestack.Models.ReadingProgress", b =>

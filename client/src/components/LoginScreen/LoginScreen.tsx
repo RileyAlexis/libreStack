@@ -2,12 +2,21 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { setTokens, setUser } from "@/redux/reducers/AuthReducer";
-import { Button, TextField, Alert, Stack } from "@mui/material";
-import { AlertCircle } from "lucide-react";
+import {
+  Button,
+  TextField,
+  Alert,
+  Stack,
+  Dialog,
+  IconButton,
+  DialogContent,
+} from "@mui/material";
+import { AlertCircle, XIcon } from "lucide-react";
 import "./LoginScreen.css";
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
 import type { AppDispatch } from "@/redux/store";
 import { api } from "@/utils/api";
+import { PasswordResetScreen } from "./PasswordResetScreen";
 
 interface LoginScreenProps {
   setIsLoginOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -22,8 +31,9 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ setIsLoginOpen }) => {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [errMessage, setErrMessage] = useState("");
   const [registerNew, setRegisterNew] = useState(false);
+  const [isResetOpen, setIsResetOpen] = useState(false);
 
-  const completeLogin = () => {
+  const completeLogin = async () => {
     return api
       .post("/Auth/login", { username, password })
       .then((response) => {
@@ -77,6 +87,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ setIsLoginOpen }) => {
         });
       }
     }
+  };
+
+  const handlePasswordReset = () => {
+    setIsResetOpen(true);
   };
 
   return (
@@ -142,9 +156,27 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ setIsLoginOpen }) => {
             >
               {!registerNew ? "Register New User" : "Log In Existing User"}
             </Button>
+            <Button variant="outlined" onClick={handlePasswordReset}>
+              Forgot Password
+            </Button>
           </div>
         </Stack>
       </div>
+      <Dialog open={isResetOpen} onClose={setIsResetOpen}>
+        <DialogContent>
+          <IconButton
+            onClick={() => setIsResetOpen(false)}
+            sx={{ position: "absolute", top: 8, right: 8 }}
+          >
+            <XIcon size={18} />
+          </IconButton>
+          <PasswordResetScreen
+            setIsOpen={setIsResetOpen}
+            userName={username}
+            setUserName={setUsername}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

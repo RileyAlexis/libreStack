@@ -131,4 +131,30 @@ public class AuthController : ControllerBase
 
         return Ok(new { message = $"Role 'Admin' assigned to user {request.UserId} successfully." });
     }
+
+    public record PasswordResetRequest(string? UserName, string? UserEmail);
+
+    [HttpPost("resetPasswordRequest")]
+    public async Task<IActionResult> ResetPasswordRequest([FromBody] PasswordResetRequest request)
+    {
+        var result = await _authService.RequestPasswordReset(request.UserName, request.UserEmail);
+
+        if (!result.IsSuccess)
+            return BadRequest(result.Error);
+
+        return Ok(new { message = $"Password Reset Code generated. Check with admin to receive the code to reset password" });
+    }
+
+    public record PasswordResetData(string? UserName, string? UserEmail, string ResetCode, string NewPassword);
+
+    [HttpPost("resetPassword")]
+    public async Task<IActionResult> ResetPassword([FromBody] PasswordResetData request)
+    {
+        var result = await _authService.ResetPassword(request.UserName, request.UserEmail, request.ResetCode, request.NewPassword);
+
+        if (!result.IsSuccess)
+            return BadRequest(result.Error);
+
+        return Ok(new { message = $"Password reset" });
+    }
 }

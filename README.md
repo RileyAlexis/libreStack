@@ -147,3 +147,8 @@ This project is open source under the MIT License. The logo and name are copyrig
 - Implement user manager
 - Implement ability to share books between local users
 - Plan to implement ability to share libraries/books between server instances/remote users
+
+### FAQ
+
+Password Resets: Requesting a reset password code on an admin account will create a text file in server/adminResetCode.txt on the server. Use this code to reset an
+admin password.

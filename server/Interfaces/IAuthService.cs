@@ -17,4 +17,6 @@ public interface IAuthService
     Task<bool> AssignRoleToUserAsync(string userId, string roleName);
     Task<bool> AdminUserExists();
     Task<(IdentityResult Result, string? UserId)> CreateNewUser(RegisterRequest request);
+    Task<Result> RequestPasswordReset(string? UserName, string? UserEmail);
+    Task<Result> ResetPassword(string? UserName, string? UserEmail, string ResetCode, string Password);
 }

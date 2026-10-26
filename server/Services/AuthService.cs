@@ -269,5 +269,108 @@ public class AuthService : IAuthService
         return true;
     }
 
+    public async Task<Result> RequestPasswordReset(string? UserName, string? UserEmail)
+    {
+        IdentityUser? User = null;
 
+        if (!string.IsNullOrEmpty(UserName))
+        {
+            User = await _userManager.FindByNameAsync(UserName);
+            if (User is null && string.IsNullOrEmpty(UserEmail))
+            {
+                return Result.Failure("User Not Found", ErrorType.NotFound);
+            }
+        }
+        if (!string.IsNullOrEmpty(UserEmail) && User == null)
+        {
+            User = await _userManager.FindByEmailAsync(UserEmail);
+            if (User is null)
+            {
+                return Result.Failure("User Not Found", ErrorType.NotFound);
+            }
+        }
+
+        var codeCheck = await _dbContext.PasswordResetCodes.FirstOrDefaultAsync(c => c.UserId == User!.Id && c.ExpiresAt > DateTime.UtcNow && !c.Used);
+        if (codeCheck != null)
+        {
+            codeCheck.Used = true;
+            await _dbContext.SaveChangesAsync();
+        }
+
+        var code = $"{Random.Shared.Next(100_000, 999_999)}";
+        var expiresAt = DateTime.UtcNow.AddHours(1);
+
+        var resetCode = new PasswordResetCode
+        {
+            UserId = User!.Id,
+            Code = code,
+            ExpiresAt = expiresAt,
+            Used = false,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        if (await _userManager.IsInRoleAsync(User, "Admin"))
+        {
+            var path = _configuration["./"] ?? "adminResetCode.txt";
+            await File.WriteAllTextAsync(path,
+                  $"User: {User.UserName}{Environment.NewLine}Code: {code}{Environment.NewLine}Expires (UTC): {expiresAt:O}{Environment.NewLine}");
+        }
+
+        _dbContext.PasswordResetCodes.Add(resetCode);
+        await _dbContext.SaveChangesAsync();
+
+        return Result.Success();
+    }
+
+    public async Task<Result> ResetPassword(string? UserName, string? UserEmail, string ResetCode, string Password)
+    {
+        IdentityUser? User = null;
+
+        if (!string.IsNullOrEmpty(UserName))
+        {
+            User = await _userManager.FindByNameAsync(UserName);
+        }
+
+        if (User == null && !string.IsNullOrEmpty(UserEmail))
+        {
+            User = await _userManager.FindByEmailAsync(UserEmail);
+        }
+
+        if (User is null) return Result.Failure("User Not Found", ErrorType.NotFound);
+
+        var resetCodeEntry = await _dbContext.PasswordResetCodes
+            .FirstOrDefaultAsync(c => c.UserId == User.Id && c.Code == ResetCode);
+
+        if (resetCodeEntry is null)
+            return Result.Failure("Invalid Reset Code", ErrorType.BadRequest);
+
+        if (resetCodeEntry.Used)
+            return Result.Failure("Reset Code has already been used.", ErrorType.BadRequest);
+
+        if (DateTime.UtcNow > resetCodeEntry.ExpiresAt)
+            return Result.Failure("Reset Code has expired", ErrorType.BadRequest);
+
+        var passwordHasher = new PasswordHasher<IdentityUser>();
+        User.PasswordHash = passwordHasher.HashPassword(User, Password);
+        var updateResult = await _userManager.UpdateAsync(User);
+
+        if (!updateResult.Succeeded)
+        {
+            return Result
+                .Failure($"Failed to reset password: {string.Join(", ",
+                    updateResult.Errors.Select(e => e.Description))}", ErrorType.Unexpected);
+        }
+
+        resetCodeEntry.Used = true;
+
+        var userTokens = await _dbContext.RefreshTokens
+            .Where(t => t.UserId == User.Id && t.Revoked == null)
+            .ToListAsync();
+
+        foreach (var token in userTokens)
+            token.Revoked = DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+        return Result.Success();
+    }
 }

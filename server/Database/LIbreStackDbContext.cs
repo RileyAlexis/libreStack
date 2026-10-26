@@ -21,6 +21,7 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
     public DbSet<Collections> Collections { get; set; }
     public DbSet<ParseErrorModel> ParseErrors { get; set; }
     public DbSet<BookShare> BookShares { get; set; }
+    public DbSet<PasswordResetCode> PasswordResetCodes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
