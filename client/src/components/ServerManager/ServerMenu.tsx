@@ -1,12 +1,13 @@
 import { useState } from "react";
 
 import { ButtonGroup, Button, Dialog } from "@mui/material";
-
+import { useNavigate } from "react-router";
 import "./ServerMenu.css";
 import { CreateUserDialog } from "./CreateUserDialog";
 import { ParsingErrorsDialog } from "./ParsingErrorsDialog";
 
 export const ServerMenu: React.FC = () => {
+  const navigate = useNavigate();
   const [isNewUserDialogOpen, setIsNewUserDialogOpen] = useState(false);
   const [isParsingErrorsOpen, setIsParsingErrorsOpen] = useState(false);
 
@@ -24,6 +25,9 @@ export const ServerMenu: React.FC = () => {
           onClick={() => setIsParsingErrorsOpen(true)}
         >
           Parsing Errors
+        </Button>
+        <Button variant="contained" onClick={() => navigate("/userManager")}>
+          User Manager
         </Button>
       </ButtonGroup>
 

@@ -45,6 +45,7 @@ import "./App.css";
 import { CollectionBooks } from "./components/Library/CollectionCard/CollectionBooks";
 import { CollectionManager } from "./components/CollectionManager/CollectionManager";
 import { useStandaloneMode } from "./utils/IsStandAlone";
+import { UserManager } from "./components/UserManager/UserManager";
 
 type AuthStatus = "checking" | "authenticated" | "unauthenticated";
 
@@ -243,6 +244,15 @@ function App() {
             <div className="pageContent">
               <HeaderBanner />
               <SeriesManager />
+            </div>
+          }
+        />
+        <Route
+          path="/userManager"
+          element={
+            <div className="pageContent">
+              <HeaderBanner />
+              <UserManager />
             </div>
           }
         />
