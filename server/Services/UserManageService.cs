@@ -114,8 +114,8 @@ public class UserManagerService : IUserManageService
 
         foreach (var user in users)
         {
-            var resetCode = await _db.PasswordResetCodes.Where(c => c.UserId == user.Id && !c.Used).FirstOrDefaultAsync();
-            var libraries = await _db.Libraries.Select(l => new LibraryDTOForUserList
+            var resetCode = await _db.PasswordResetCodes.Where(c => c.UserId == user.Id && !c.Used && DateTime.UtcNow < c.ExpiresAt).FirstOrDefaultAsync();
+            var libraries = await _db.Libraries.Where(l => l.UserId == user.Id).Select(l => new LibraryDTOForUserList
             {
                 Id = l.Id,
                 Name = l.Name,

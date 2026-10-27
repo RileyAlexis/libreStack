@@ -3,15 +3,11 @@ namespace Librestack.Models.APIModels;
 public class LibraryDTOForUserList
 {
     public int Id { get; set; }
-    public string? UserId { get; set; }
     public required string Name { get; set; }
     public required string LibraryPath { get; set; }
     public int BookCount { get; set; }
     public double StorageSizeKb { get; set; }
-
-
 }
-
 
 public class UserListDTO
 {

@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 
 namespace Librestack.Models;
@@ -10,6 +11,6 @@ public class PasswordResetCode
     public DateTime ExpiresAt { get; set; }
     public bool Used { get; set; }
     public DateTime CreatedAt { get; set; }
-
+    [JsonIgnore]
     public IdentityUser? User { get; set; } = null;
 }
