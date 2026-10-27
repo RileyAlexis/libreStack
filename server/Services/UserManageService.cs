@@ -129,7 +129,7 @@ public class UserManagerService : IUserManageService
                 Name = l.Name,
                 BookCount = l.BookCount,
                 LibraryPath = l.LibraryPath,
-                StorageSizeKb = CalculateDirectorySize(l.LibraryPath)
+                StorageSizeKb = CalculateDirectorySize(l.LibraryPath) / 1024
             }).ToList();
 
             userList.Add(new UserListDTO
