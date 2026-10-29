@@ -49,4 +49,21 @@ public class UserManagerController : ControllerBase
 
         return Ok();
     }
+
+    [HttpDelete("DeleteUser")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteUser(string UserId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null)
+            return Unauthorized();
+        if (UserId == userId)
+            return BadRequest("Cannot Delete Current User account");
+
+        var result = await _iUserManagerService.DeleteUser(UserId);
+        if (!result.IsSuccess)
+            return BadRequest(result.Error);
+
+        return Ok();
+    }
 }

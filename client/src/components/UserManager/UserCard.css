@@ -36,3 +36,10 @@
 .userCardCurrent {
   border: 1px solid var(--destructive);
 }
+
+.userCardDeleteDialogContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1em;
+}

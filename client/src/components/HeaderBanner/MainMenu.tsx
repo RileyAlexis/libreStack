@@ -126,12 +126,12 @@ export const MainMenu: React.FC = () => {
                     label="Library as Home Page"
                   />
                 </MenuItem>
-                <MenuItem onClick={handleChangePassword}>
-                  <ShieldIcon size={18} style={{ marginRight: 8 }} />
-                  Change Password
-                </MenuItem>
               </>
             )}
+            <MenuItem onClick={handleChangePassword}>
+              <ShieldIcon size={18} style={{ marginRight: 8 }} />
+              Change Password
+            </MenuItem>
             <MenuItem onClick={handleLogout}>
               <LogOut size={18} style={{ marginRight: 8 }} />
               Log Out

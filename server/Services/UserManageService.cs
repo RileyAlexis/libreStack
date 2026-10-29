@@ -44,9 +44,34 @@ public class UserManagerService : IUserManageService
         return totalSize;
     }
 
-    public Task<Result> DeleteUser(string UserId)
+    public async Task<Result> DeleteUser(string UserId)
     {
-        throw new NotImplementedException();
+        var user = await _userManager.FindByIdAsync(UserId);
+        if (user is null)
+            return Result.Failure("User Not Found", ErrorType.NotFound);
+
+        await using var transaction = await _db.Database.BeginTransactionAsync();
+
+        await _db.BookShares.Where(s => s.UserIdFrom == UserId || s.UserIdTo == UserId).ExecuteDeleteAsync();
+        await _db.Books.Where(b => b.UserId == UserId).ExecuteDeleteAsync();
+        await _db.Series.Where(s => s.UserId == UserId).ExecuteDeleteAsync();
+        await _db.Collections.Where(c => c.UserId == UserId).ExecuteDeleteAsync();
+        await _db.Libraries.Where(s => s.UserId == UserId).ExecuteDeleteAsync();
+        await _db.ReadingProgress.Where(s => s.UserId == UserId).ExecuteDeleteAsync();
+        await _db.Bookmarks.Where(s => s.UserId == UserId).ExecuteDeleteAsync();
+        await _db.RefreshTokens.Where(s => s.UserId == UserId).ExecuteDeleteAsync();
+        await _db.ParseErrors.Where(s => s.UserId == UserId).ExecuteDeleteAsync();
+        await _db.UserSettings.Where(s => s.UserId == UserId).ExecuteDeleteAsync();
+
+        var result = await _userManager.DeleteAsync(user);
+
+        if (!result.Succeeded)
+            return Result.Failure(
+                string.Join("; ", result.Errors.Select(e => e.Description)),
+                ErrorType.Unexpected);
+
+        await transaction.CommitAsync();
+        return Result.Success();
     }
 
     public async Task<Result> DisableUser(string userId)

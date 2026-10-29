@@ -62,8 +62,6 @@ public class AuthService : IAuthService
 
     public async Task<(IdentityResult Result, string? UserId)> CreateNewUser(RegisterRequest request)
     {
-        Console.WriteLine(request.ToString());
-
         var user = new ApplicationUserModel { UserName = request.Username, Email = request.Email };
         var createResult = await _userManager.CreateAsync(user, request.Password);
 

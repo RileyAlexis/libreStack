@@ -13,6 +13,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -39,14 +40,13 @@ export const UserCard: React.FC<UserCardProps> = ({ user, setUsers }) => {
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
   const [isDisableUserDialogOpen, setIsDisableUserDialogOpen] = useState(false);
   const [isDeleteUserDialogOpen, setIsDeleteUserDialogOpen] = useState(false);
+  const [_, setDeleteConfirmation] = useState<string>("");
+  const [isDeleteValidated, setIsDeleteValidated] = useState<boolean>(false);
+
   const currentUserId = useSelector(
     (state: LibreRootState) => state.auth.user?.id,
   );
   const isCurrentUser = currentUserId === user.id;
-
-  useEffect(() => {
-    console.log("IsCurrentUser", isCurrentUser, " ", user.userName);
-  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -181,6 +181,55 @@ export const UserCard: React.FC<UserCardProps> = ({ user, setUsers }) => {
       });
   };
 
+  const handleDeleteConfirmationChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setDeleteConfirmation(e.target.value);
+
+    if (e.target.value === `DELETE USER ${user.userName}`) {
+      setIsDeleteValidated(true);
+    } else {
+      setIsDeleteValidated(false);
+    }
+  };
+
+  const handleDeleteUser = () => {
+    if (!isDeleteValidated) {
+      dispatch(
+        runSnack({
+          isOpen: true,
+          severity: "error",
+          description: "Delete not validated properly",
+        }),
+      );
+      return;
+    } else if (isDeleteValidated) {
+      api
+        .delete(`/UserManager/DeleteUser?UserId=${user.id}`)
+        .then(() => {
+          setIsDeleteUserDialogOpen(false);
+          dispatch(
+            runSnack({
+              isOpen: true,
+              severity: "success",
+              description: `User ${user.userName} has been permamently deleted`,
+            }),
+          );
+          setUsers((prev) => prev?.filter((u) => u.id !== user.id));
+        })
+        .catch((error) => {
+          setIsDeleteUserDialogOpen(false);
+          dispatch(
+            runSnack({
+              isOpen: true,
+              severity: "error",
+              description: `Error deleting user: ${error.response.data}`,
+            }),
+          );
+        });
+    }
+  };
+
   return (
     <div
       className={`userCardContainer ${isCurrentUser ? "userCardCurrent" : ""}`}
@@ -246,7 +295,7 @@ export const UserCard: React.FC<UserCardProps> = ({ user, setUsers }) => {
               </Tooltip>
             )}
             <Tooltip title="Delete User Account">
-              <IconButton>
+              <IconButton onClick={() => setIsDeleteUserDialogOpen(true)}>
                 <TrashIcon color="red" />
               </IconButton>
             </Tooltip>
@@ -311,6 +360,54 @@ export const UserCard: React.FC<UserCardProps> = ({ user, setUsers }) => {
             Cancel
           </Button>
           <Button color="warning" onClick={handleDisableUser}>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={isDeleteUserDialogOpen} onClose={setIsDeleteUserDialogOpen}>
+        <DialogTitle color="warning" style={{ margin: "1em" }}>
+          Delete User Account?
+        </DialogTitle>
+        <DialogContent>
+          <IconButton
+            onClick={() => setIsDeleteUserDialogOpen(false)}
+            sx={{ position: "absolute", top: 8, right: 8 }}
+          >
+            <XIcon size={18} />
+          </IconButton>
+          <div className="userCardDeleteDialogContent">
+            <Typography variant="body1">
+              Warning: This will delete user account {user.userName}{" "}
+              permanently. Data will be unrecoverable! All Books, bookmarks,
+              reading progress, etc will be deleted! Epub files will remain on
+              disk.
+            </Typography>
+            <Typography variant="body1">
+              To Delete the user account type in "DELETE USER {user.userName}
+            </Typography>
+            <TextField
+              error={!isDeleteValidated}
+              required
+              id="deleteUser"
+              placeholder="Confirm Delete User"
+              fullWidth
+              variant="outlined"
+              color={!isDeleteValidated ? "warning" : "success"}
+              helperText={
+                !isDeleteValidated
+                  ? "Incorrect Entry"
+                  : "Press Confirm to Permamently Delete"
+              }
+              onChange={handleDeleteConfirmationChange}
+            />
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={() => setIsDeleteUserDialogOpen(false)}>
+            Cancel
+          </Button>
+          <Button color="warning" onClick={handleDeleteUser}>
             Confirm
           </Button>
         </DialogActions>

@@ -45,8 +45,8 @@ export const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
       username: newUserName,
       email: newUserEmail,
       password: newUserPassword,
-      libraryName: newLibraryName,
-      libraryPath: newLibraryPath,
+      libraryName: newLibraryName.trim(),
+      libraryPath: newLibraryPath.trim(),
     };
     api
       .post("Auth/createNewUser", body)
