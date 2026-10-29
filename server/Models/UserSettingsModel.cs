@@ -6,7 +6,7 @@ public class UserSettings
 {
     public int Id { get; set; }
     public string UserId { get; set; } = null!;
-    public IdentityUser? User { get; set; } = null!;
+    public ApplicationUserModel? User { get; set; } = null!;
 
     // Top-level
     public bool ShowLibraryAsHome { get; set; }

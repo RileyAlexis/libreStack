@@ -13,7 +13,7 @@ public class OpenLibraryService : IOpenLibraryService
     private readonly LibrestackDbContext _db;
     private readonly IEpubParseService _epubParser;
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUserModel> _userManager;
     private readonly IBookParsingService _bookParsing;
     private readonly ISeriesService _seriesService;
     private readonly ILogger<OpenLibraryService> _logger;
@@ -24,7 +24,7 @@ public class OpenLibraryService : IOpenLibraryService
         LibrestackDbContext db,
         IEpubParseService epubParser,
         IHttpClientFactory httpClientFactory,
-        UserManager<IdentityUser> userManager,
+        UserManager<ApplicationUserModel> userManager,
         IBookParsingService bookParsing,
         ISeriesService seriesService,
         ILogger<OpenLibraryService> logger

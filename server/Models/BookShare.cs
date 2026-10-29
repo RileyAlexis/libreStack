@@ -11,6 +11,6 @@ public class BookShare
     public int BookId { get; set; }
 
     [JsonIgnore] public Book? Book { get; set; }
-    [JsonIgnore] public IdentityUser? UserFrom { get; set; }
-    [JsonIgnore] public IdentityUser? UserTo { get; set; }
+    [JsonIgnore] public ApplicationUserModel? UserFrom { get; set; }
+    [JsonIgnore] public ApplicationUserModel? UserTo { get; set; }
 }

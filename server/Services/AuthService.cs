@@ -13,15 +13,15 @@ namespace Librestack.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly UserManager<IdentityUser> _userManager;
-    private readonly SignInManager<IdentityUser> _signInManager;
+    private readonly UserManager<ApplicationUserModel> _userManager;
+    private readonly SignInManager<ApplicationUserModel> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IConfiguration _configuration;
     private readonly LibrestackDbContext _dbContext;
 
     public AuthService(
-        UserManager<IdentityUser> userManager,
-        SignInManager<IdentityUser> signInManager,
+        UserManager<ApplicationUserModel> userManager,
+        SignInManager<ApplicationUserModel> signInManager,
         RoleManager<IdentityRole> roleManager,
         IConfiguration configuration,
         LibrestackDbContext dbContext)
@@ -45,7 +45,7 @@ public class AuthService : IAuthService
             });
         }
 
-        var user = new IdentityUser { UserName = request.Username, Email = request.Email };
+        var user = new ApplicationUserModel { UserName = request.Username, Email = request.Email };
         var createResult = await _userManager.CreateAsync(user, request.Password);
 
         if (!createResult.Succeeded)
@@ -64,7 +64,7 @@ public class AuthService : IAuthService
     {
         Console.WriteLine(request.ToString());
 
-        var user = new IdentityUser { UserName = request.Username, Email = request.Email };
+        var user = new ApplicationUserModel { UserName = request.Username, Email = request.Email };
         var createResult = await _userManager.CreateAsync(user, request.Password);
 
         if (!createResult.Succeeded)
@@ -113,7 +113,7 @@ public class AuthService : IAuthService
                 Description = "An admin user already exists."
             });
 
-        var user = new IdentityUser { UserName = request.Username, Email = request.Email };
+        var user = new ApplicationUserModel { UserName = request.Username, Email = request.Email };
         var result = await _userManager.CreateAsync(user, request.Password);
         if (!result.Succeeded)
             return result;
@@ -139,7 +139,7 @@ public class AuthService : IAuthService
         return result.Succeeded;
     }
 
-    private async Task<string> GenerateJwtToken(IdentityUser user)
+    private async Task<string> GenerateJwtToken(ApplicationUserModel user)
     {
         var jwtKey = _configuration["JWT_KEY"] ?? throw new InvalidOperationException("JWT_KEY is not configured");
         var jwtIssuer = _configuration["JWT_ISSUER"] ?? throw new InvalidOperationException("JWT_ISSUER is not configured");
@@ -199,6 +199,9 @@ public class AuthService : IAuthService
         if (user is null)
             return null;
 
+        if (!user.IsActive)
+            return null;
+
         var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
         if (!result.Succeeded)
             return null;
@@ -232,6 +235,9 @@ public class AuthService : IAuthService
 
         var user = await _userManager.FindByIdAsync(tokenEntity.UserId);
         if (user == null)
+            return null;
+
+        if (!user.IsActive)
             return null;
 
         // Revoke current and rotate
@@ -271,7 +277,7 @@ public class AuthService : IAuthService
 
     public async Task<Result> RequestPasswordReset(string? UserName, string? UserEmail)
     {
-        IdentityUser? User = null;
+        ApplicationUserModel? User = null;
 
         if (!string.IsNullOrEmpty(UserName))
         {
@@ -289,6 +295,10 @@ public class AuthService : IAuthService
                 return Result.Failure("User Not Found", ErrorType.NotFound);
             }
         }
+
+        if (!User!.IsActive)
+            return Result.Failure("Account is disabled. Contact Admin.", ErrorType.Forbidden);
+
 
         var codeCheck = await _dbContext.PasswordResetCodes.FirstOrDefaultAsync(c => c.UserId == User!.Id && c.ExpiresAt > DateTime.UtcNow && !c.Used);
         if (codeCheck != null)
@@ -324,7 +334,7 @@ public class AuthService : IAuthService
 
     public async Task<Result> ResetPassword(string? UserName, string? UserEmail, string ResetCode, string Password)
     {
-        IdentityUser? User = null;
+        ApplicationUserModel? User = null;
 
         if (!string.IsNullOrEmpty(UserName))
         {
@@ -338,6 +348,9 @@ public class AuthService : IAuthService
 
         if (User is null) return Result.Failure("User Not Found", ErrorType.NotFound);
 
+        if (!User.IsActive)
+            return Result.Failure("Account is disabled. Contact Admin.", ErrorType.Forbidden);
+
         var resetCodeEntry = await _dbContext.PasswordResetCodes
             .FirstOrDefaultAsync(c => c.UserId == User.Id && c.Code == ResetCode);
 
@@ -350,7 +363,7 @@ public class AuthService : IAuthService
         if (DateTime.UtcNow > resetCodeEntry.ExpiresAt)
             return Result.Failure("Reset Code has expired", ErrorType.BadRequest);
 
-        var passwordHasher = new PasswordHasher<IdentityUser>();
+        var passwordHasher = new PasswordHasher<ApplicationUserModel>();
         User.PasswordHash = passwordHasher.HashPassword(User, Password);
         var updateResult = await _userManager.UpdateAsync(User);
 
@@ -380,6 +393,9 @@ public class AuthService : IAuthService
 
         if (User is null)
             return Result.Failure("User not found", ErrorType.NotFound);
+
+        if (!User.IsActive)
+            return Result.Failure("Account is disabled. Contact Admin.", ErrorType.Forbidden);
 
         var result = await _userManager.ChangePasswordAsync(User, OldPassword, NewPassword);
 

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Librestack.Database;
 
-public class LibrestackDbContext : IdentityDbContext<IdentityUser>
+public class LibrestackDbContext : IdentityDbContext<ApplicationUserModel>
 {
     public LibrestackDbContext(DbContextOptions<LibrestackDbContext> options) : base(options) { }
 
@@ -26,6 +26,10 @@ public class LibrestackDbContext : IdentityDbContext<IdentityUser>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<ApplicationUserModel>()
+            .Property(u => u.IsActive)
+            .HasDefaultValue(true);
 
         modelBuilder.Entity<Book>()
             .HasMany(lib => lib.BookTags)

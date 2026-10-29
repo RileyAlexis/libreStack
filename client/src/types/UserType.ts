@@ -9,6 +9,7 @@ export interface UserManagerType {
   id: string;
   userName: string;
   email: string;
+  isActive: boolean;
   resetCode: UserManagerResetCode;
   libraries: UserManagerLibraryType[];
 }

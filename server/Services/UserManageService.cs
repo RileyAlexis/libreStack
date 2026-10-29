@@ -3,7 +3,6 @@ using Librestack.Database;
 using Librestack.Interfaces;
 
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Librestack.Models.APIModels;
 
@@ -13,9 +12,9 @@ public class UserManagerService : IUserManageService
 {
     private readonly LibrestackDbContext _db;
     private readonly ILogger<UserManagerService> _logger;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUserModel> _userManager;
 
-    public UserManagerService(LibrestackDbContext db, ILogger<UserManagerService> logger, UserManager<IdentityUser> userManager)
+    public UserManagerService(LibrestackDbContext db, ILogger<UserManagerService> logger, UserManager<ApplicationUserModel> userManager)
     {
         _db = db;
         _logger = logger;
@@ -61,7 +60,7 @@ public class UserManagerService : IUserManageService
             return Result.Failure("User not found.", ErrorType.NotFound);
         }
 
-        user.LockoutEnabled = true;
+        user.IsActive = false;
         var result = await _userManager.UpdateAsync(user);
 
         if (!result.Succeeded)
@@ -86,7 +85,7 @@ public class UserManagerService : IUserManageService
             return Result.Failure("User not found.", ErrorType.NotFound);
         }
 
-        user.LockoutEnabled = false;
+        user.IsActive = true;
         var result = await _userManager.UpdateAsync(user);
 
         if (!result.Succeeded)
@@ -98,11 +97,6 @@ public class UserManagerService : IUserManageService
 
         _logger.LogInformation("Successfully enabled user account: {UserId}", userId);
         return Result.Success();
-    }
-
-    public Task<Result<List<PasswordResetCode>>> GetActiveResetCodes()
-    {
-        throw new NotImplementedException();
     }
 
     public async Task<Result<List<UserListDTO>>> GetAllUsers()
@@ -136,6 +130,7 @@ public class UserManagerService : IUserManageService
             {
                 Id = user.Id,
                 UserName = user.UserName!,
+                IsActive = user.IsActive,
                 Email = user.Email ?? string.Empty,
                 AccessFailedCount = user.AccessFailedCount,
                 EmailConfirmed = user.EmailConfirmed,

@@ -12,6 +12,7 @@ public class LibraryDTOForUserList
 public class UserListDTO
 {
     public string Id { get; set; } = "";
+    public bool IsActive { get; set; }
     public int AccessFailedCount { get; set; }
     public string? Email { get; set; }
     public bool EmailConfirmed { get; set; }

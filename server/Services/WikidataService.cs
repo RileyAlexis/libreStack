@@ -18,7 +18,7 @@ public class WikidataService : IWikidataService
 {
     private readonly LibrestackDbContext _db;
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly UserManager<IdentityUser> _userManager;
+    private readonly UserManager<ApplicationUserModel> _userManager;
     private readonly ILogger<LibraryMonitorService> _logger;
     private readonly IBookParsingService _bookParsing;
     private readonly ISeriesService _seriesService;
@@ -26,7 +26,7 @@ public class WikidataService : IWikidataService
     public WikidataService(
             LibrestackDbContext db,
             IHttpClientFactory httpClientFactory,
-            UserManager<IdentityUser> userManager,
+            UserManager<ApplicationUserModel> userManager,
             ILogger<LibraryMonitorService> logger,
             IBookParsingService bookParsing,
             ISeriesService seriesService

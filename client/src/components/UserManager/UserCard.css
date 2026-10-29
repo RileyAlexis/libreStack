@@ -1,0 +1,38 @@
+.userCardContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  margin-left: 1em;
+  margin-right: 1em;
+  padding: 0.5em;
+}
+
+.userCardTextBox {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.userCardButtonContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.userCardControls {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.userCardCurrent {
+  border: 1px solid var(--destructive);
+}

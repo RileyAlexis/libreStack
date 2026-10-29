@@ -12,5 +12,5 @@ public class PasswordResetCode
     public bool Used { get; set; }
     public DateTime CreatedAt { get; set; }
     [JsonIgnore]
-    public IdentityUser? User { get; set; } = null;
+    public ApplicationUserModel? User { get; set; } = null;
 }

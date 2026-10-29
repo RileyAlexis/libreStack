@@ -27,4 +27,26 @@ public class UserManagerController : ControllerBase
 
         return Ok(result.Value);
     }
+
+    [HttpPost("DisableUser")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DisableUser(string UserId)
+    {
+        var result = await _iUserManagerService.DisableUser(UserId);
+        if (!result.IsSuccess)
+            return BadRequest(result.Error);
+
+        return Ok();
+    }
+
+    [HttpPost("EnableUser")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> EnableUser(string UserId)
+    {
+        var result = await _iUserManagerService.EnableUser(UserId);
+        if (!result.IsSuccess)
+            return BadRequest(result.Error);
+
+        return Ok();
+    }
 }
