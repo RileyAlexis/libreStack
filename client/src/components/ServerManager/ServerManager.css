@@ -20,6 +20,7 @@
   justify-content: space-between;
   align-items: flex-start;
   overflow-y: auto;
+  margin-top: 0.5em;
 }
 
 .serverStatsContainer {

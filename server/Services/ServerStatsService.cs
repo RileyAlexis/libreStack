@@ -22,21 +22,61 @@ public class ServerStatsService : IServerStatsService
         if (!Directory.Exists(path)) return 0;
 
         long totalSize = 0;
-        var files = Directory.GetFiles(path, "*", SearchOption.AllDirectories);
+        int filesProcessed = 0;
+        const int MaxFilesToCount = 100_000; // Limit to prevent hanging on massive folders
+        TimeSpan maxDuration = TimeSpan.FromSeconds(30); // Hard timeout
+        var watch = Stopwatch.StartNew();
 
-        foreach (var file in files)
+        // Use a stack for an iterative approach (safer than recursion)
+        var stack = new Stack<string>();
+        stack.Push(path);
+
+        while (stack.Count > 0)
         {
+            var currentPath = stack.Pop();
+
+            // Check timeout periodically
+            if (watch.Elapsed > maxDuration)
+            {
+                _logger.LogWarning("Directory size calculation timed out for path: {Path}", path);
+                return -1; // Return sentinel value indicating timeout
+            }
+
             try
             {
-                FileInfo fi = new FileInfo(file);
-                totalSize += fi.Length;
+                var dirInfo = new DirectoryInfo(currentPath);
+
+                // Process files in the current directory
+                foreach (var file in dirInfo.GetFiles())
+                {
+                    totalSize += file.Length;
+                    filesProcessed++;
+
+                    if (filesProcessed > MaxFilesToCount)
+                    {
+                        _logger.LogWarning("Directory size reached limit of {Max} files for path: {Path}", MaxFilesToCount, path);
+                        return totalSize; // Return what we have so far
+                    }
+                }
+
+                // Add subdirectories to the stack for processing
+                foreach (var dir in dirInfo.GetDirectories())
+                {
+                    stack.Push(dir.FullName);
+                }
             }
-            catch (UnauthorizedAccessException ex)
+            catch (UnauthorizedAccessException)
             {
-                _logger.LogWarning($"Access denied when reading file {file}: {ex.Message}");
+                // Skip folders we don't have permission to read and continue
+                continue;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error accessing directory {Path}", currentPath);
             }
         }
 
+        watch.Stop();
         return totalSize;
     }
 
