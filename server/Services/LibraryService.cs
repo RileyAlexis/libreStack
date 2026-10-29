@@ -7,6 +7,7 @@ using Librestack.Models.APIModels;
 using Librestack.Mappers;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.AspNetCore.Http.Features;
+using System.Security.AccessControl;
 
 namespace Librestack.Services;
 
@@ -50,12 +51,57 @@ public class LibraryService : ILibraryService
 
         if (config is not null && !config!.AllowNewLibraries)
         {
-            return Result<Library>.Failure("Server settings does not allow new libraries", ErrorType.Forbidden);
+            return Result<Library>.Failure("Server settings do not allow new libraries", ErrorType.Forbidden);
         }
 
         library.UserId = userId;
         library.LibraryPath = library.LibraryPath.Trim();
         library.Name = library.Name.Trim();
+
+        try
+        {
+            if (!Directory.Exists(library.LibraryPath))
+            {
+                return Result<Library>.Failure($"The path '{library.LibraryPath}' does not exist.", ErrorType.BadRequest);
+            }
+
+            int checkedCount = 0;
+            const int maxCheckDepth = 2; // Check root and first two levels of subfolders
+
+            bool IsPathReadable(string path, int currentDepth)
+            {
+                if (currentDepth > maxCheckDepth || checkedCount > 100) return true;
+
+                var di = new DirectoryInfo(path);
+                di.Refresh();
+
+                foreach (var subDir in di.GetDirectories())
+                {
+                    checkedCount++;
+                    if (!IsPathReadable(subDir.FullName, currentDepth + 1)) return false;
+                }
+                return true;
+            }
+
+            if (!IsPathReadable(library.LibraryPath, 0))
+            {
+                return Result<Library>.Failure("The server does not have permission to read all subdirectories in this path.", ErrorType.Forbidden);
+            }
+
+            // Sanity check: prevent system roots
+            if (library.LibraryPath == "/" || library.LibraryPath.EndsWith(":"))
+            {
+                return Result<Library>.Failure("System root paths are not allowed.", ErrorType.BadRequest);
+            }
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Result<Library>.Failure("Permission denied: The server cannot read this directory tree.", ErrorType.Forbidden);
+        }
+        catch (Exception ex)
+        {
+            return Result<Library>.Failure($"Access error: {ex.Message}", ErrorType.BadRequest);
+        }
 
         await _db.Libraries.AddAsync(library);
         await _db.SaveChangesAsync();
@@ -139,19 +185,8 @@ public class LibraryService : ILibraryService
             .Select(s => s.BookId)
             .ToListAsync();
 
-        Console.WriteLine($"Shared Book Ids {sharedBooksIds.Count()}");
-        foreach (int shareId in sharedBooksIds)
-        {
-            Console.WriteLine(shareId);
-        }
-
         var ownedBooks = result.Books.Select(b => b.Id).ToList();
-
-        Console.WriteLine($"Owned Book id Counds {ownedBooks.Count()}");
-
         var allBookIds = ownedBooks.Union(sharedBooksIds).ToList();
-
-        Console.WriteLine($"All Book Ids {allBookIds.Count()}");
 
         var allBooks = await _db.Books
             .Where(b => allBookIds.Contains(b.Id))
@@ -161,13 +196,6 @@ public class LibraryService : ILibraryService
             .Include(b => b.Bookmarks.Where(m => m.UserId == userId))
             .Include(b => b.Collections.Where(c => c.UserId == userId))
             .ToListAsync();
-
-        Console.WriteLine($"All Books query count {allBooks.Count()}");
-
-        foreach (Book item in allBooks)
-        {
-            Console.WriteLine($"Reading Progress {item.Title} - {item.ReadingProgress.FirstOrDefault()?.CfiLocation ?? ""}");
-        }
 
         var apiBooks = allBooks.Select(b => BookModelMapper.ToDto(b, sharedBooksIds.Contains(b.Id) && !ownedBooks.Contains(b.Id)))
             .ToList();

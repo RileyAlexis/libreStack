@@ -4,7 +4,7 @@ import type { AppDispatch } from "@/redux/store";
 import { runSnack } from "@/redux/reducers/SnackReducer";
 import { api } from "@/utils/api";
 
-import { IconButton } from "@mui/material";
+import { Alert, IconButton } from "@mui/material";
 import { XIcon } from "lucide-react";
 
 // Actions
@@ -19,6 +19,7 @@ import {
   Typography,
   Box,
   Stack,
+  CircularProgress,
 } from "@mui/material";
 
 interface NewLibraryDialogProps {
@@ -32,6 +33,8 @@ export const NewLibraryDialog: React.FC<NewLibraryDialogProps> = ({
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const [libraryName, setLibraryName] = useState<string>("");
   const [libraryPath, setLibraryPath] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleReset = () => {
     setLibraryName("");
@@ -40,7 +43,15 @@ export const NewLibraryDialog: React.FC<NewLibraryDialogProps> = ({
   };
 
   const handleSubmit = () => {
-    console.log("submitting");
+    if (libraryName === "") {
+      setErrorMessage("Library Name is Required");
+      return;
+    }
+    if (libraryPath === "") {
+      setErrorMessage("Library Path is Required");
+      return;
+    }
+    setIsLoading(true);
     api
       .post("Library/createLibrary", {
         name: libraryName,
@@ -56,16 +67,18 @@ export const NewLibraryDialog: React.FC<NewLibraryDialogProps> = ({
           }),
         );
         dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
+        setIsLoading(false);
       })
       .catch((error) => {
-        console.error(error.response.data);
+        console.error(error.response.data.error);
         dispatch(
           runSnack({
             isOpen: true,
             severity: "error",
-            description: `Error: ${error.response.data}`,
+            description: `Error: ${error.response.data.error}`,
           }),
         );
+        setIsLoading(false);
       });
   };
 
@@ -79,33 +92,59 @@ export const NewLibraryDialog: React.FC<NewLibraryDialogProps> = ({
         </Typography>
       </DialogTitle>
       <DialogContent>
+        {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
         <IconButton
           onClick={() => setIsCreateLibraryOpen(false)}
           sx={{ position: "absolute", top: 8, right: 8 }}
+          disabled={isLoading}
         >
           <XIcon size={18} />
         </IconButton>
+        {isLoading && (
+          <CircularProgress
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+            }}
+          />
+        )}
         <Box className="createLibraryDialogContainer" sx={{ margin: "1em" }}>
           <Stack spacing={2}>
             <TextField
               id="libraryName"
+              required
               label="Library Name"
               fullWidth
               onChange={(e) => setLibraryName(e.target.value)}
               value={libraryName}
+              disabled={isLoading}
             />
             <TextField
+              required
               id="libraryFolder"
               label="Full Path to Folder"
               fullWidth
               onChange={(e) => setLibraryPath(e.target.value)}
               value={libraryPath}
+              disabled={isLoading}
             />
             <Stack direction="row" spacing={1}>
-              <Button type="reset" variant="outlined" onClick={handleReset}>
+              <Button
+                type="reset"
+                variant="outlined"
+                onClick={handleReset}
+                disabled={isLoading}
+              >
                 Cancel
               </Button>
-              <Button type="submit" variant="contained" onClick={handleSubmit}>
+              <Button
+                type="submit"
+                variant="contained"
+                onClick={handleSubmit}
+                disabled={isLoading}
+              >
                 Submit
               </Button>
             </Stack>
