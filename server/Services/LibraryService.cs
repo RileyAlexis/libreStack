@@ -54,8 +54,19 @@ public class LibraryService : ILibraryService
         }
 
         library.UserId = userId;
+        library.LibraryPath = library.LibraryPath.Trim();
+        library.Name = library.Name.Trim();
+
         await _db.Libraries.AddAsync(library);
         await _db.SaveChangesAsync();
+        _db.Entry(library).Reload();
+
+        Console.WriteLine($"Library created successfully with ID: {library.Id}");
+
+        var settings = await _db.UserSettings.FirstOrDefaultAsync(l => l.UserId == userId);
+        settings?.LastSelectedLibrary = library.Id;
+        await _db.SaveChangesAsync();
+
         return Result<Library>.Success(library);
     }
 
