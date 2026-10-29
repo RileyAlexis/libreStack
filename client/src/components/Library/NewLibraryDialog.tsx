@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "@/redux/store";
+import { runSnack } from "@/redux/reducers/SnackReducer";
 import { api } from "@/utils/api";
+
+import { IconButton } from "@mui/material";
+import { XIcon } from "lucide-react";
 
 // Actions
 import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
@@ -32,6 +36,7 @@ export const NewLibraryDialog: React.FC<NewLibraryDialogProps> = ({
   const handleReset = () => {
     setLibraryName("");
     setLibraryPath("");
+    setIsCreateLibraryOpen(false);
   };
 
   const handleSubmit = () => {
@@ -43,10 +48,24 @@ export const NewLibraryDialog: React.FC<NewLibraryDialogProps> = ({
       })
       .then(() => {
         setIsCreateLibraryOpen(false);
+        dispatch(
+          runSnack({
+            isOpen: true,
+            severity: "success",
+            description: "Library Successfully Created",
+          }),
+        );
         dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
       })
       .catch((error) => {
-        console.error(error);
+        console.error(error.response.data);
+        dispatch(
+          runSnack({
+            isOpen: true,
+            severity: "error",
+            description: `Error: ${error.response.data}`,
+          }),
+        );
       });
   };
 
@@ -60,7 +79,13 @@ export const NewLibraryDialog: React.FC<NewLibraryDialogProps> = ({
         </Typography>
       </DialogTitle>
       <DialogContent>
-        <Box className="createLibraryDialogContainer">
+        <IconButton
+          onClick={() => setIsCreateLibraryOpen(false)}
+          sx={{ position: "absolute", top: 8, right: 8 }}
+        >
+          <XIcon size={18} />
+        </IconButton>
+        <Box className="createLibraryDialogContainer" sx={{ margin: "1em" }}>
           <Stack spacing={2}>
             <TextField
               id="libraryName"
@@ -78,7 +103,7 @@ export const NewLibraryDialog: React.FC<NewLibraryDialogProps> = ({
             />
             <Stack direction="row" spacing={1}>
               <Button type="reset" variant="outlined" onClick={handleReset}>
-                Reset
+                Cancel
               </Button>
               <Button type="submit" variant="contained" onClick={handleSubmit}>
                 Submit

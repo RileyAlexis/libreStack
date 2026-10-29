@@ -177,10 +177,6 @@ function App() {
     if (authStatus === "authenticated") dispatch(hydrateDownloads());
   }, [authStatus, dispatch]);
 
-  useEffect(() => {
-    console.log(`Standalone ${isStandAlone}`);
-  }, [isStandAlone]);
-
   const handleCloseSnack = (
     _: React.SyntheticEvent | Event,
     reason?: SnackbarCloseReason,
