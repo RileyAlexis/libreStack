@@ -106,6 +106,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({
     api
       .get(`Book/getBookEntry?id=${bookId}`)
       .then((response) => {
+        console.log(response);
         const newBook = response.data.value;
         setBook(newBook);
         // Sync series input state immediately after fetching the book
@@ -124,9 +125,12 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({
   };
 
   const handleBlur = (field: EditableField, value: string) => {
+    const { readingProgress: _readingProgress, ...bookWithoutProgress } =
+      book as any;
+
     api
       .patch(`book/updateBookEntry`, {
-        ...book,
+        ...bookWithoutProgress,
         [field]: value === "" ? null : value,
       })
       .then((response) => {
@@ -143,9 +147,12 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({
     const trimmed = rawValue.trim();
     if (trimmed === (book?.series?.seriesTitle ?? "")) return;
 
+    const { readingProgress: _readingProgress, ...bookWithoutProgress } =
+      book as any;
+
     api
       .patch(`book/updateBookEntry`, {
-        ...book,
+        ...bookWithoutProgress,
         series: trimmed ? { seriesTitle: trimmed } : null,
       })
       .then((response) => {

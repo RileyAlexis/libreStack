@@ -13,7 +13,7 @@ public class ApiBook
     public string? PublishDate { get; set; }
     public byte[]? CoverImage { get; set; } = null;
     public string? CoverContentType { get; set; } = null;
-    public int? SeriesOrder { get; set; }
+    public double? SeriesOrder { get; set; }
     public string? ISBN { get; set; } = "";
     public string? ISBN13 { get; set; } = "";
     public string? LCCN { get; set; } = null;

@@ -16,14 +16,14 @@ import {
   ListItem,
   ListItemIcon,
 } from "@mui/material";
+import { DotIcon } from "lucide-react";
 
 // Components
 import { ServerSwitchBox } from "./ServerSwitchBox";
 import { ServerLibraryStats } from "./ServerLibraryStats";
+import { ServerMenu } from "./ServerMenu";
 
 import "./ServerManager.css";
-import { DotIcon } from "lucide-react";
-import { ServerMenu } from "./ServerMenu";
 
 export const ServerManager: React.FC = () => {
   const [serverStats, setServerStats] = useState<ServerStatsType>();

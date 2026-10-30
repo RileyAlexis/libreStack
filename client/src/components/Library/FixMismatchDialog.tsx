@@ -175,6 +175,7 @@ export const FixMismatchDialog: React.FC<FixMismatchDialogProps> = ({
                 size="small"
                 placeholder="use search term"
                 value={searchTerm ?? ""}
+                fullWidth
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <Button variant="outlined" onClick={handleNewSearch}>

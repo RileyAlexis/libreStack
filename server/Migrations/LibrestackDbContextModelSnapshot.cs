@@ -215,8 +215,8 @@ namespace libreStack.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("series_id");
 
-                    b.Property<int?>("SeriesOrder")
-                        .HasColumnType("integer")
+                    b.Property<double?>("SeriesOrder")
+                        .HasColumnType("double precision")
                         .HasColumnName("series_order");
 
                     b.Property<string>("Title")
