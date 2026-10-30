@@ -154,26 +154,6 @@ public class BookService : IBookService
         return Result<(Stream, string)>.Success((stream, Path.GetFileName(filePath)));
     }
 
-
-    // ! Broken and redundant remove
-    public async Task<Result<List<Book>>> GetBooksByLibrary(string userId, int libraryId)
-    {
-        if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
-            return Result<List<Book>>.Failure("User Id is required", ErrorType.BadRequest);
-
-        var result = await _db.Books.Where(l => l.UserId == userId && l.Id == libraryId)
-            .Include(l => l.BookTags)
-            .Include(l => l.ReadingProgress)
-            .Include(l => l.Bookmarks)
-            .Include(l => l.Series)
-            .ToListAsync();
-
-        if (result is null)
-            return Result<List<Book>>.Failure("No books found for user", ErrorType.NotFound);
-
-        return Result<List<Book>>.Success(result);
-    }
-
     public async Task<Result<Book>> GetBookEntry(int id, string userId)
     {
         if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
@@ -238,7 +218,6 @@ public class BookService : IBookService
         var updated = new ApiBook
         {
             Id = existing.Id,
-            // UserId = existing.UserId,
             Title = existing.Title,
             Author = existing.Author,
             Publisher = existing.Publisher,
@@ -248,7 +227,6 @@ public class BookService : IBookService
             ISBN = existing.ISBN,
             ISBN13 = existing.ISBN13,
             LCCN = existing.LCCN,
-            // EpubPath = existing.EpubPath,
             OCLCWorldCat = existing.OCLCWorldCat,
             OpenLibraryWorkId = existing.OpenLibraryWorkId,
             OpenLibraryEditionId = existing.OpenLibraryEditionId,

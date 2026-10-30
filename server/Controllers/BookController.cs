@@ -18,22 +18,6 @@ public class BookController : ControllerBase
         _bookService = bookService;
     }
 
-    [HttpGet("getBooksByLibrary")]
-    [Authorize]
-    public async Task<ActionResult<List<Book>>> GetBooksByLibrary(int libraryId)
-    {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId is null)
-            return Unauthorized();
-
-        var result = await _bookService.GetBooksByLibrary(userId, libraryId);
-
-        if (result is null)
-            return BadRequest(new { error = result?.Error });
-
-        return Ok(result);
-    }
-
     [HttpGet("getBookEntry")]
     [Authorize]
     public async Task<ActionResult<Book>> GetBookEntry(int id)
