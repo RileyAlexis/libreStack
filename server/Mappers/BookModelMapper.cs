@@ -23,7 +23,7 @@ public static class BookModelMapper
         return new ApiBook
         {
             Id = model.Id,
-            UserId = model.UserId,
+            // UserId = model.UserId,
             Title = model.Title ?? "",
             Author = model.Author ?? "",
             Publisher = model.Publisher ?? "",
@@ -44,7 +44,7 @@ public static class BookModelMapper
             WikidataAuthorId = model.WikidataAuthorId,
             wikiAuthorURL = model.wikiAuthorURL,
             Language = model.Language,
-            EpubPath = model.EpubPath,
+            // EpubPath = model.EpubPath,
             OpenLibraryMetadataLastUpdated = model.OpenLibraryMetadataLastUpdated,
             WikidataMetaLastUpdated = model.WikidataMetaLastUpdated,
             AddedDate = model.AddedDate,

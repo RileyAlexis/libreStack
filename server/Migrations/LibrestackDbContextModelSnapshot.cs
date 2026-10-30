@@ -141,7 +141,6 @@ namespace libreStack.Migrations
                         .HasColumnName("added_date");
 
                     b.Property<string>("Author")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("author");
 
@@ -207,7 +206,6 @@ namespace libreStack.Migrations
                         .HasColumnName("publish_date");
 
                     b.Property<string>("Publisher")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("publisher");
 

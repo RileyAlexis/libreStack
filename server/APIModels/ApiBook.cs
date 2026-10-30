@@ -5,10 +5,10 @@ namespace Librestack.Models.APIModels;
 public class ApiBook
 {
     public int Id { get; set; }
-    public required string UserId { get; set; }
+    // public required string UserId { get; set; }
     public string Title { get; set; } = "";
-    public string Author { get; set; } = "";
-    public string Publisher { get; set; } = "";
+    public string? Author { get; set; } = "";
+    public string? Publisher { get; set; } = "";
     public string? Description { get; set; }
     public string? PublishDate { get; set; }
     public byte[]? CoverImage { get; set; } = null;
@@ -26,7 +26,7 @@ public class ApiBook
     public string? WikidataAuthorId { get; set; } = null;
     public string? wikiAuthorURL { get; set; } = null;
     public string? Language { get; set; } = null;
-    public required string EpubPath { get; set; }
+    // public required string EpubPath { get; set; }
     public DateTime? OpenLibraryMetadataLastUpdated { get; set; }
     public DateTime? WikidataMetaLastUpdated { get; set; }
     public DateTime? AddedDate { get; set; }
@@ -41,6 +41,6 @@ public class ApiBook
     public int? SeriesId { get; set; }
     public ApiSeries? Series { get; set; }
 
-    public bool IsShared { get; set; }
+    public bool? IsShared { get; set; }
 
 }
