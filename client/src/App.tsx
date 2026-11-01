@@ -4,6 +4,7 @@ import { useNavigate, useLocation, Route, Routes } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "./redux/store";
 import type { LibreRootState } from "./types/LibreRootState";
+import type { ServerSetupType } from "./types/ServerConfigType";
 import { api } from "./utils/api";
 
 // Redux Actions
@@ -27,7 +28,6 @@ import { useTheme } from "@mui/material/styles";
 import { XIcon } from "lucide-react";
 
 // Components
-import { Setup } from "./components/Setup/ Setup";
 import { HeaderBanner } from "./components/HeaderBanner/HeaderBanner";
 import { Reader } from "./components/Reader/Reader";
 import { Library } from "./components/Library/Library";
@@ -46,32 +46,9 @@ import { CollectionBooks } from "./components/Library/CollectionCard/CollectionB
 import { CollectionManager } from "./components/CollectionManager/CollectionManager";
 import { useStandaloneMode } from "./utils/IsStandAlone";
 import { UserManager } from "./components/UserManager/UserManager";
+import { LibreStackInitialSetup } from "./components/Setup/LibreStackInitialSetup";
 
 type AuthStatus = "checking" | "authenticated" | "unauthenticated";
-
-function useSetupCheck() {
-  const [setupComplete, setSetupComplete] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    api
-      .get("Config/checkIfSetupComplete")
-      .then((res) => {
-        if (!cancelled) setSetupComplete(res.data.isSetupComplete);
-      })
-      .catch((err) => {
-        console.error(err);
-        if (!cancelled) setSetupComplete(true);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  return setupComplete;
-}
 
 function useAuthBootstrap(): AuthStatus {
   const dispatch = useDispatch<AppDispatch>();
@@ -130,28 +107,10 @@ function useSettingsSync(authStatus: AuthStatus) {
   }, [authStatus, dispatch]);
 }
 
-function useNavigationGate(
-  setupComplete: boolean | null,
-  showLibraryAsHome: boolean,
-) {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    if (setupComplete === null) return;
-    if (setupComplete === false) {
-      if (location.pathname !== "/setup") navigate("/setup");
-      return;
-    }
-
-    if (location.pathname === "/") {
-      navigate(showLibraryAsHome ? "/library" : "/serverManager");
-    }
-  }, [setupComplete, location.pathname, showLibraryAsHome, navigate]);
-}
-
 function App() {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const location = useLocation();
   const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
   const isIosDevice = /iPhone|iPad|iPod/i.test(navigator.userAgent);
   const isStandAlone = useStandaloneMode();
@@ -162,13 +121,29 @@ function App() {
   );
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
 
-  const setupComplete = useSetupCheck();
   const authStatus = useAuthBootstrap();
   useSettingsSync(authStatus);
-  useNavigationGate(setupComplete, appSettings.showLibraryAsHome);
 
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  useEffect(() => {
+    api
+      .get("/Config/checkIfSetupComplete")
+      .then((response) => {
+        const { isSetupComplete, isBasePathSet }: ServerSetupType =
+          response.data.value;
+        if (!isSetupComplete) navigate("/setup");
+        else if (!isBasePathSet) navigate("/setup");
+        else if (location.pathname === "/")
+          navigate(
+            appSettings.showLibraryAsHome ? "/library" : "/serverManager",
+          );
+      })
+      .catch(() => {
+        navigate("/setup");
+      });
+  }, []);
+
   useEffect(() => {
     setIsLoginOpen(authStatus === "unauthenticated");
   }, [authStatus]);
@@ -203,7 +178,7 @@ function App() {
           element={
             <div className="pageContent">
               <HeaderBanner />
-              <Setup />
+              <LibreStackInitialSetup />
               {isTouchDevice && <BottomControls />}
             </div>
           }

@@ -9,4 +9,11 @@ export interface ServerConfigType {
   isSetupComplete: boolean;
   libraryScanInterval: number;
   scanLibrariesService: boolean;
+  libreStackBasePath: string;
+}
+
+export interface ServerSetupType {
+  isSetupComplete: boolean;
+  isBasePathSet: boolean;
+  doesAdminExist: boolean;
 }

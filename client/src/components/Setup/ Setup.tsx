@@ -19,6 +19,7 @@ import {
 
 import "./ Setup.css";
 import { api } from "../../utils/api";
+// import { SetBasePath } from "./SetBasePath";
 
 export const Setup: React.FC = () => {
   const dispatch = useDispatch();
@@ -107,7 +108,7 @@ export const Setup: React.FC = () => {
   return (
     <div className="setupContainer">
       <div className="setupTitle">
-        <Typography variant="h1">Initial Setup</Typography>
+        <Typography variant="h3">Initial Setup</Typography>
       </div>
       <div className="setupArea">
         <div className="setupEntry">
@@ -187,6 +188,7 @@ export const Setup: React.FC = () => {
             </CardContent>
           </Card>
         </div>
+        {/* <SetBasePath /> */}
         <div className="setupEntry">
           <Card>
             <CardHeader

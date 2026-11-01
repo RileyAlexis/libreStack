@@ -21,7 +21,6 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  /* border: 1px solid green; */
 }
 
 .setupEntry {
@@ -30,6 +29,11 @@
   justify-content: space-between;
   align-items: center;
   margin-top: 1.5em;
+}
 
-  /* border: 1px solid lightgreen; */
+.setupForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+  padding: 0.5em;
 }

@@ -456,6 +456,11 @@ namespace libreStack.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("library_scan_interval");
 
+                    b.Property<string>("LibreStackBasePath")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("libre_stack_base_path");
+
                     b.Property<bool>("ScanLibrariesService")
                         .HasColumnType("boolean")
                         .HasColumnName("scan_libraries_service");

@@ -16,4 +16,5 @@ public class LibreStackConfig
     public bool AllowRemoveBooksFromLibrary { get; set; } = true;
     public bool AllowUploadToLibrary { get; set; } = true;
     public bool AllowLibraryUpdates { get; set; } = true;
+    public string LibreStackBasePath { get; set; } = "";
 }
