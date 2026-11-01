@@ -89,7 +89,7 @@ public class LibraryController : ControllerBase
     }
 
     [HttpPost("createLibrary")]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateLibrary([FromBody] ApiLibrary library)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
