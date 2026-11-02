@@ -30,8 +30,6 @@ export const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
   const [newUserPassword, setNewUserPassword] = useState("");
   const [newUserPasswordConfirm, setNewUserPasswordConfirm] = useState("");
   const [newUserEmail, setNewUserEmail] = useState("");
-  const [newLibraryName, setNewLibraryName] = useState("");
-  const [newLibraryPath, setNewLibraryPath] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmitNewUser = (e: React.SubmitEvent<HTMLFormElement>) => {
@@ -45,8 +43,6 @@ export const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
       username: newUserName,
       email: newUserEmail,
       password: newUserPassword,
-      libraryName: newLibraryName.trim(),
-      libraryPath: newLibraryPath.trim(),
     };
     api
       .post("Auth/createNewUser", body)
@@ -77,8 +73,6 @@ export const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
     setNewUserEmail("");
     setNewUserPassword("");
     setNewUserPasswordConfirm("");
-    setNewLibraryName("");
-    setNewLibraryPath("");
   };
 
   return (
@@ -125,32 +119,7 @@ export const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
                 onChange={(e) => setNewUserEmail(e.target.value)}
               />
             </Stack>
-            <Stack
-              direction="row"
-              spacing={2}
-              sx={{ justifyContent: "center", alignItems: "center" }}
-            >
-              <FormLabel htmlFor="newLibrary">Library Name: </FormLabel>
-              <TextField
-                label="Library Name"
-                id="newLibrary"
-                value={newLibraryName}
-                onChange={(e) => setNewLibraryName(e.target.value)}
-              />
-            </Stack>
-            <Stack
-              direction="row"
-              spacing={2}
-              sx={{ justifyContent: "center", alignItems: "center" }}
-            >
-              <FormLabel htmlFor="libraryPath">Library Path: </FormLabel>
-              <TextField
-                label="Library Path"
-                id="libraryPath"
-                value={newLibraryPath}
-                onChange={(e) => setNewLibraryPath(e.target.value)}
-              />
-            </Stack>
+
             <Stack
               direction="row"
               spacing={2}

@@ -174,22 +174,14 @@ public class LibraryService : ILibraryService
             return Result.Failure("User Id is required", ErrorType.BadRequest);
 
         var library = await _db.Libraries
-                .Include(l => l.Books)
                 .FirstOrDefaultAsync(l => l.UserId == userId && l.Id == libraryId);
 
         if (library is null)
             return Result.Failure("Library Not Found", ErrorType.NotFound);
 
-        if (library.Books.Any())
-            return Result.Failure("Library that contains any books cannot be deleted", ErrorType.BadRequest);
-
-        var allLibs = await _db.Libraries.Where(l => l.UserId == userId).ToListAsync();
-        if (allLibs.Count < 2)
-            return Result.Failure("Cannot delete only library for user", ErrorType.BadRequest);
-
         _db.Libraries.Remove(library);
         await _db.SaveChangesAsync();
-        return Result.Success();
+        return DeleteFolder(library.LibraryPath);
     }
 
     public async Task<Result> DeleteUserLibrary(string userId, int libraryId)

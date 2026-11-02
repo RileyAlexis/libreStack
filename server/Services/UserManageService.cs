@@ -14,12 +14,19 @@ public class UserManagerService : IUserManageService
     private readonly LibrestackDbContext _db;
     private readonly ILogger<UserManagerService> _logger;
     private readonly UserManager<ApplicationUserModel> _userManager;
+    private readonly ILibraryService _libraryService;
 
-    public UserManagerService(LibrestackDbContext db, ILogger<UserManagerService> logger, UserManager<ApplicationUserModel> userManager)
+    public UserManagerService(
+        LibrestackDbContext db,
+        ILogger<UserManagerService> logger,
+        UserManager<ApplicationUserModel> userManager,
+        ILibraryService libraryService
+        )
     {
         _db = db;
         _logger = logger;
         _userManager = userManager;
+        _libraryService = libraryService;
     }
 
     private long CalculateDirectorySize(string path)
@@ -91,18 +98,27 @@ public class UserManagerService : IUserManageService
         if (user is null)
             return Result.Failure("User Not Found", ErrorType.NotFound);
 
-        await using var transaction = await _db.Database.BeginTransactionAsync();
+        var libraries = await _db.Libraries.Where(l => l.UserId == UserId).ToListAsync();
+        var parentPath = libraries.Count > 0
+            ? Path.GetDirectoryName(Path.TrimEndingDirectorySeparator(libraries[0].LibraryPath))
+            : null;
 
-        await _db.BookShares.Where(s => s.UserIdFrom == UserId || s.UserIdTo == UserId).ExecuteDeleteAsync();
+        if (libraries is not null)
+        {
+            foreach (Library library in libraries)
+            {
+                var deleteResult = await _libraryService.DeleteLibrary(UserId, library.Id);
+                _logger.LogInformation($"Library Deleted: {user.UserName} - {library.Name} at {library.LibraryPath}");
+            }
+        }
+
+        if (parentPath != null)
+            Directory.Delete(parentPath);
+
         await _db.Books.Where(b => b.UserId == UserId).ExecuteDeleteAsync();
-        await _db.Series.Where(s => s.UserId == UserId).ExecuteDeleteAsync();
-        await _db.Collections.Where(c => c.UserId == UserId).ExecuteDeleteAsync();
-        await _db.Libraries.Where(s => s.UserId == UserId).ExecuteDeleteAsync();
-        await _db.ReadingProgress.Where(s => s.UserId == UserId).ExecuteDeleteAsync();
-        await _db.Bookmarks.Where(s => s.UserId == UserId).ExecuteDeleteAsync();
-        await _db.RefreshTokens.Where(s => s.UserId == UserId).ExecuteDeleteAsync();
-        await _db.ParseErrors.Where(s => s.UserId == UserId).ExecuteDeleteAsync();
-        await _db.UserSettings.Where(s => s.UserId == UserId).ExecuteDeleteAsync();
+        var collections = await _db.Collections.Where(l => l.UserId == UserId).ExecuteDeleteAsync();
+        var series = await _db.Series.Where(l => l.UserId == UserId).ExecuteDeleteAsync();
+        await _db.SaveChangesAsync();
 
         var result = await _userManager.DeleteAsync(user);
 
@@ -111,7 +127,7 @@ public class UserManagerService : IUserManageService
                 string.Join("; ", result.Errors.Select(e => e.Description)),
                 ErrorType.Unexpected);
 
-        await transaction.CommitAsync();
+        // await transaction.CommitAsync();
         return Result.Success();
     }
 

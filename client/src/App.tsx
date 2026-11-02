@@ -134,10 +134,11 @@ function App() {
           response.data.value;
         if (!isSetupComplete) navigate("/setup");
         else if (!isBasePathSet) navigate("/setup");
-        else if (location.pathname === "/")
+        else if (location.pathname === "/") {
           navigate(
             appSettings.showLibraryAsHome ? "/library" : "/serverManager",
           );
+        } else navigate("/library");
       })
       .catch(() => {
         navigate("/setup");
