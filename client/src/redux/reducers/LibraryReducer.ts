@@ -112,8 +112,8 @@ export const updateReadingProgress = createAsyncThunk(
 const initialState: LibraryType = {
   id: 1,
   userId: "",
-  libraryPath: "",
   name: "",
+  isUserLibrary: false,
   books: [],
 };
 

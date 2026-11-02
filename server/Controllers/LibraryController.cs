@@ -88,21 +88,34 @@ public class LibraryController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPost("createLibrary")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> CreateLibrary([FromBody] ApiLibrary library)
+    [HttpPost("CreateUserLibrary")]
+    [Authorize]
+    public async Task<IActionResult> CreateUserLibrary(string libraryName)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null) return Unauthorized();
 
+        var result = await _iLibraryService.CreateUserLibrary(userId, libraryName);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok(result);
+    }
+
+    public record CreateLibraryData(string UserId, ApiLibraryAdmin Library);
+
+    [HttpPost("createLibrary")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> CreateLibrary([FromBody] CreateLibraryData data)
+    {
         var newLib = new Library
         {
-            Name = library.Name,
-            LibraryPath = library.LibraryPath,
-            UserId = userId
+            Name = data.Library.Name,
+            LibraryPath = data.Library.LibraryPath,
+            UserId = data.UserId
         };
 
-        var result = await _iLibraryService.CreateLibrary(userId: userId, library: newLib);
+        var result = await _iLibraryService.CreateLibrary(userId: data.UserId, library: newLib);
         if (!result.IsSuccess)
             return BadRequest(new { error = result.Error });
 
@@ -110,13 +123,27 @@ public class LibraryController : ControllerBase
     }
 
     [HttpDelete("deleteLibrary")]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteLibrary(int libraryId)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null) return Unauthorized();
 
         var result = await _iLibraryService.DeleteLibrary(userId, libraryId);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
+        return Ok(result);
+    }
+
+    [HttpDelete("deleteUserLibrary")]
+    [Authorize]
+    public async Task<IActionResult> DeleteUserLibrary(int libraryId)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (userId is null) return Unauthorized();
+
+        var result = await _iLibraryService.DeleteUserLibrary(userId, libraryId);
         if (!result.IsSuccess)
             return BadRequest(new { error = result.Error });
 

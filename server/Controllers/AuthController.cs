@@ -35,10 +35,10 @@ public class AuthController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateNewUser(ApiCreateNewUserModel newUserModel)
     {
-        if (string.IsNullOrWhiteSpace(newUserModel.LibraryName) || string.IsNullOrWhiteSpace(newUserModel.LibraryPath))
-        {
-            return BadRequest("User must have a library name and path");
-        }
+        // if (string.IsNullOrWhiteSpace(newUserModel.LibraryName) || string.IsNullOrWhiteSpace(newUserModel.LibraryPath))
+        // {
+        //     return BadRequest("User must have a library name and path");
+        // }
 
         var newUser = new RegisterRequest(
             Username: newUserModel.Username,
@@ -50,23 +50,25 @@ public class AuthController : ControllerBase
             return BadRequest(response.Result.Errors);
 
         var userId = response.UserId;
+        return Ok(new { message = "New User Created" });
 
-        var libraryData = new Library
-        {
-            Name = newUserModel.LibraryName,
-            LibraryPath = newUserModel.LibraryPath
-        };
+        // ! Replace with CreateUserLibrary
+        // var libraryData = new Library
+        // {
+        //     Name = newUserModel.LibraryName,
+        //     LibraryPath = newUserModel.LibraryPath
+        // };
 
-        var libraryResponse = await _libraryService.CreateLibrary(userId!, libraryData);
+        // var libraryResponse = await _libraryService.CreateLibrary(userId!, libraryData);
 
-        if (libraryResponse.IsSuccess)
-        {
-            return Ok(new { message = "User and Library successfully created" });
-        }
-        else
-        {
-            return BadRequest("Unexpected Error");
-        }
+        // if (libraryResponse.IsSuccess)
+        // {
+        //     return Ok(new { message = "User and Library successfully created" });
+        // }
+        // else
+        // {
+        //     return BadRequest("Unexpected Error");
+        // }
     }
 
     [HttpPost("login")]

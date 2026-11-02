@@ -6,6 +6,6 @@ public class Library
     public string? UserId { get; set; }
     public required string Name { get; set; }
     public required string LibraryPath { get; set; }
-
+    public bool IsUserLibrary { get; set; } = false;
     public ICollection<Book> Books { get; set; } = new List<Book>();
 }

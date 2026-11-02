@@ -4,6 +4,9 @@ import { useNavigate } from "react-router";
 import { api } from "@/utils/api";
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { AppDispatch } from "@/redux/store";
+import { runSnack } from "@/redux/reducers/SnackReducer";
+import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
+import type { LibraryListType } from "@/types/LibraryType";
 
 // Actions
 import {
@@ -26,12 +29,15 @@ import {
   Typography,
   Box,
   Button,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
 
 import InstallMobileIcon from "@mui/icons-material/InstallMobile";
 
 import {
   BoxesIcon,
+  DeleteIcon,
   LandmarkIcon,
   LayoutDashboard,
   LibraryBig,
@@ -42,12 +48,13 @@ import {
   SquareLibrary,
   UploadIcon,
 } from "lucide-react";
+
+// Components
 import { NewLibraryDialog } from "../Library/NewLibraryDialog";
+import { SearchControl } from "./SearchControl";
 
 import "./BottomControls.css";
-import { runSnack } from "@/redux/reducers/SnackReducer";
-import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
-import { SearchControl } from "./SearchControl";
+import { DeleteLibraryDialog } from "../Library/DeleteLibraryDialog";
 
 type ActiveMenu = "library" | "manage" | "layout" | null;
 
@@ -64,6 +71,7 @@ export const BottomControls: React.FC = () => {
     (state: LibreRootState) => state.selections.librarySearchTerm.length > 0,
   );
   const [isSearching, setIsSearching] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const [deferredPrompt, setDeferredPrompt] = useState<any | null>(null);
@@ -225,6 +233,15 @@ export const BottomControls: React.FC = () => {
       });
   };
 
+  const handleDeleteUserLibrary = (item: LibraryListType) => {
+    if (item) {
+      dispatch(setLastSelectedLibrary(item.id));
+      dispatch(fetchLibraryData(item.id));
+      setIsDeleteOpen(true);
+      console.log(item);
+    }
+  };
+
   const handleChangeCoverSize = (_: Event, value: number | number[]) => {
     const num = Array.isArray(value) ? value[0] : value;
     dispatch(setCoverSize(num));
@@ -357,8 +374,16 @@ export const BottomControls: React.FC = () => {
             key={item.id}
             selected={item.id === appSettings.lastSelectedLibrary}
             onClick={() => handleSelectLibrary(item.id)}
+            sx={{ justifyContent: "space-between" }}
           >
             {item.name}
+            {item.isUserLibrary && (
+              <Tooltip title="Delete Library">
+                <IconButton onClick={() => handleDeleteUserLibrary(item)}>
+                  <DeleteIcon color="red" />
+                </IconButton>
+              </Tooltip>
+            )}
           </MenuItem>
         ))}
         <Divider />
@@ -508,11 +533,12 @@ export const BottomControls: React.FC = () => {
       </Menu>
       {isSearching && <SearchControl />}
 
-      <Dialog
-        open={isCreateLibraryOpen}
-        onClose={() => setIsCreateLibraryOpen(false)}
-      >
+      <Dialog open={isCreateLibraryOpen} onClose={setIsCreateLibraryOpen}>
         <NewLibraryDialog setIsCreateLibraryOpen={setIsCreateLibraryOpen} />
+      </Dialog>
+
+      <Dialog open={isDeleteOpen} onClose={setIsDeleteOpen}>
+        <DeleteLibraryDialog setIsDeleteOpen={setIsDeleteOpen} />
       </Dialog>
     </div>
   );

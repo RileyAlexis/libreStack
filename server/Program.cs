@@ -63,6 +63,7 @@ builder.Services.AddScoped<IServerStatsService, ServerStatsService>();
 builder.Services.AddScoped<ICollectionsService, CollectionsService>();
 builder.Services.AddScoped<IBookShareService, BookShareService>();
 builder.Services.AddScoped<IUserManageService, UserManagerService>();
+builder.Services.AddScoped<IPathService, PathService>();
 
 builder.Services.AddHostedService<LibraryMonitorService>();
 

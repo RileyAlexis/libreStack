@@ -2,21 +2,21 @@ import type { BookType } from "./BookType";
 
 export interface LibraryType {
   id: number;
-  libraryPath: string;
   name: string;
   userId: string;
+  isUserLibrary: boolean;
   books: BookType[];
 }
 
 export interface LibraryListType {
   id: number;
   name: string;
-  libraryPath: string;
+
+  isUserLibrary: boolean;
 }
 
 export interface LibraryBaseType {
   id: number;
-  libraryPath: string;
   name: string;
   userId: string;
 }

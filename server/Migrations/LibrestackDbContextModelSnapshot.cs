@@ -391,6 +391,10 @@ namespace libreStack.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("IsUserLibrary")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_user_library");
+
                     b.Property<string>("LibraryPath")
                         .IsRequired()
                         .HasColumnType("text")

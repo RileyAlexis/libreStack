@@ -5,6 +5,7 @@ namespace Librestack.Interfaces;
 public interface ILibraryService
 {
     Task<Result<Library>> CreateLibrary(string userId, Library library);
+    Task<Result> CreateUserLibrary(string userId, string libraryName);
     Task<Result<List<Library>>> GetAllLibraries(string userId);
     Task<Result<List<ApiLibrary>>> GetListOfLibraries(string UserId);
     Task<Result<ApiSharedLibraryModel>> GetLibrary(string userId, int id);
@@ -12,4 +13,5 @@ public interface ILibraryService
     Task<Result> AddBookToLibrary(string userId, int libraryId, int bookId);
     Task<Result> RemoveBookFromLibrary(string userId, int libraryId, int bookId);
     Task<Result> DeleteLibrary(string userId, int libraryId);
+    Task<Result> DeleteUserLibrary(string userId, int libraryId);
 }

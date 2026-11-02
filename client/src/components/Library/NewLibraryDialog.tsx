@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import type { AppDispatch } from "@/redux/store";
 import { runSnack } from "@/redux/reducers/SnackReducer";
 import { api } from "@/utils/api";
@@ -8,15 +8,13 @@ import { Alert, IconButton } from "@mui/material";
 import { XIcon } from "lucide-react";
 
 // Actions
-import { fetchLibraryData } from "@/redux/reducers/LibraryReducer";
-import type { LibreRootState } from "@/types/LibreRootState";
+import { fetchLibraryList } from "@/redux/reducers/LibraryListReducer";
 
 import {
   DialogContent,
   DialogTitle,
   TextField,
   Button,
-  Typography,
   Box,
   Stack,
   CircularProgress,
@@ -30,15 +28,13 @@ export const NewLibraryDialog: React.FC<NewLibraryDialogProps> = ({
   setIsCreateLibraryOpen,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const [libraryName, setLibraryName] = useState<string>("");
-  const [libraryPath, setLibraryPath] = useState<string>("");
+  // const [libraryPath, setLibraryPath] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleReset = () => {
     setLibraryName("");
-    setLibraryPath("");
     setIsCreateLibraryOpen(false);
   };
 
@@ -47,18 +43,12 @@ export const NewLibraryDialog: React.FC<NewLibraryDialogProps> = ({
       setErrorMessage("Library Name is Required");
       return;
     }
-    if (libraryPath === "") {
-      setErrorMessage("Library Path is Required");
-      return;
-    }
+
     setIsLoading(true);
     api
-      .post("Library/createLibrary", {
-        name: libraryName,
-        libraryPath: libraryPath,
-      })
+      .post(`Library/createUserLibrary?libraryName=${libraryName}`)
       .then(() => {
-        setIsCreateLibraryOpen(false);
+        dispatch(fetchLibraryList());
         dispatch(
           runSnack({
             isOpen: true,
@@ -66,8 +56,8 @@ export const NewLibraryDialog: React.FC<NewLibraryDialogProps> = ({
             description: "Library Successfully Created",
           }),
         );
-        dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
         setIsLoading(false);
+        setIsCreateLibraryOpen(false);
       })
       .catch((error) => {
         console.error(error.response.data.error);
@@ -84,13 +74,7 @@ export const NewLibraryDialog: React.FC<NewLibraryDialogProps> = ({
 
   return (
     <>
-      <DialogTitle>
-        Create New Library
-        <Typography variant="body2" color="text.secondary">
-          Each library requires a folder where it will store the epub files on
-          disk
-        </Typography>
-      </DialogTitle>
+      <DialogTitle>Create New Library</DialogTitle>
       <DialogContent>
         {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
         <IconButton
@@ -119,15 +103,6 @@ export const NewLibraryDialog: React.FC<NewLibraryDialogProps> = ({
               fullWidth
               onChange={(e) => setLibraryName(e.target.value)}
               value={libraryName}
-              disabled={isLoading}
-            />
-            <TextField
-              required
-              id="libraryFolder"
-              label="Full Path to Folder"
-              fullWidth
-              onChange={(e) => setLibraryPath(e.target.value)}
-              value={libraryPath}
               disabled={isLoading}
             />
             <Stack direction="row" spacing={1}>

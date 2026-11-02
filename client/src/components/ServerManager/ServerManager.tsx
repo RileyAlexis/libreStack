@@ -203,7 +203,7 @@ export const ServerManager: React.FC = () => {
                   id="switch-allowNewLibraries"
                   fieldKey="allowNewLibraries"
                   title="Allow New Libraries"
-                  description="If enabled users can create additional libraries and point them to any system available path."
+                  description="If enabled users can create libraries. User created libraries will use the base path + user name + library name."
                   checked={serverSettings?.allowNewLibraries ?? false}
                   onCheckedChange={handleServerSettingChange}
                 />
@@ -211,7 +211,7 @@ export const ServerManager: React.FC = () => {
                   id="switch-allowLibraryUpdates"
                   fieldKey="allowLibraryUpdates"
                   title="Allow Library Updates"
-                  description="If enabled library owners can modify the name and path of a library."
+                  description="If enabled library owners can modify the name of a library."
                   checked={serverSettings?.allowLibraryUpdates ?? false}
                   onCheckedChange={handleServerSettingChange}
                 />

@@ -10,11 +10,13 @@ public class LibreStackConfigService : ILibreStackConfigService
 {
     private readonly LibrestackDbContext _db;
     private readonly IAuthService _authService;
+    private readonly IPathService _pathService;
 
-    public LibreStackConfigService(LibrestackDbContext db, IAuthService authService)
+    public LibreStackConfigService(LibrestackDbContext db, IAuthService authService, IPathService pathService)
     {
         _db = db;
         _authService = authService;
+        _pathService = pathService;
     }
 
     public async Task<Result<LibreStackSetup>> CheckIfSetupComplete()
@@ -63,26 +65,12 @@ public class LibreStackConfigService : ILibreStackConfigService
 
     public async Task<Result> SetBasePath(string basePath)
     {
-        if (string.IsNullOrEmpty(basePath))
-            return Result.Failure("Invalid Path", ErrorType.BadRequest);
+        var pathCheck = await _pathService.CheckPath(basePath);
+        if (!pathCheck.IsSuccess)
+            return Result.Failure(pathCheck.Error!, pathCheck.ErrorType ?? ErrorType.BadRequest);
 
         try
         {
-            var dir = new DirectoryInfo(basePath);
-            if (!dir.Exists)
-                return Result.Failure("The Provided Path does not Exist", ErrorType.NotFound);
-
-            string testFilePath = Path.Combine(basePath, Guid.NewGuid().ToString() + ".text");
-            try
-            {
-                using (var fs = File.Create(testFilePath)) { }
-            }
-
-            finally
-            {
-                if (File.Exists(testFilePath)) File.Delete(testFilePath);
-            }
-
             var existingConfig = await _db.LibreStackConfig.FirstOrDefaultAsync();
 
             if (existingConfig is null)
@@ -104,15 +92,10 @@ public class LibreStackConfigService : ILibreStackConfigService
             await _db.SaveChangesAsync();
             return Result.Success();
         }
-        catch (UnauthorizedAccessException)
-        {
-            return Result.Failure("LibreStack does not have Read and Write access to the provided path", ErrorType.Forbidden);
-        }
         catch (Exception ex)
         {
-            return Result.Failure($"An error occurred while verifying the path: {ex.Message}", ErrorType.Unexpected);
+            return Result.Failure($"An error occurred while saving the path: {ex.Message}", ErrorType.Unexpected);
         }
-
     }
 
     public async Task<Result> MarkSetupAsComplete(bool isComplete)

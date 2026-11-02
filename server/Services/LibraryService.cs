@@ -5,19 +5,28 @@ using Librestack.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Librestack.Models.APIModels;
 using Librestack.Mappers;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.AspNetCore.Http.Features;
-using System.Security.AccessControl;
+using Microsoft.AspNetCore.Identity;
 
 namespace Librestack.Services;
 
 public class LibraryService : ILibraryService
 {
     private readonly LibrestackDbContext _db;
+    private readonly UserManager<ApplicationUserModel> _userManager;
+    private readonly IPathService _pathService;
+    private readonly ILogger<LibraryService> _logger;
 
-    public LibraryService(LibrestackDbContext db)
+
+    public LibraryService(
+        LibrestackDbContext db,
+        UserManager<ApplicationUserModel> userManager,
+        IPathService pathService,
+        ILogger<LibraryService> logger)
     {
         _db = db;
+        _userManager = userManager;
+        _pathService = pathService;
+        _logger = logger;
     }
 
     public async Task<Result> AddBookToLibrary(string userId, int libraryId, int bookId)
@@ -41,67 +50,80 @@ public class LibraryService : ILibraryService
         return Result.Success();
     }
 
+    public async Task<Result> CreateUserLibrary(string userId, string libraryName)
+    {
+        if (string.IsNullOrEmpty(libraryName))
+            return Result.Failure("Library Name is invalid", ErrorType.BadRequest);
 
+        var config = await _db.LibreStackConfig.FirstOrDefaultAsync();
+        if (!config!.AllowNewLibraries)
+            return Result.Failure("Server Settings Disallow Library Creation. Contact Admin", ErrorType.Forbidden);
+
+        var user = await _userManager.FindByIdAsync(userId);
+
+        var existingLibraries = _db.Libraries.Where(l => l.UserId == userId && l.Name == libraryName).FirstOrDefault();
+        if (existingLibraries != null)
+            return Result.Failure("Library must have a unique name for each user", ErrorType.BadRequest);
+
+        if (user is null)
+            return Result.Failure("User not found", ErrorType.NotFound);
+
+        var sanitizedLibraryName = _pathService.CleanStringForPath(libraryName);
+        var sanitizedUserName = _pathService.CleanStringForPath(user.UserName!);
+        var root = config!.LibreStackBasePath;
+        var newLibraryPath = Path.GetFullPath(Path.Combine(root, user.UserName!, sanitizedLibraryName));
+        _logger.LogInformation($"Creating New Library for user {user.UserName} at {newLibraryPath}");
+
+        try
+        {
+            Directory.CreateDirectory(newLibraryPath);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Result.Failure("Access denied: You do not have permission to create this folder.", ErrorType.Forbidden);
+        }
+        catch (IOException ex)
+        {
+            return Result.Failure($"A storage error occurred: {ex.Message}", ErrorType.Unexpected);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure($"An unexpected error occurred: {ex.Message}", ErrorType.Unexpected);
+        }
+
+        var newLibrary = new Library
+        {
+            Name = sanitizedLibraryName,
+            UserId = user.Id,
+            LibraryPath = newLibraryPath,
+            IsUserLibrary = true,
+        };
+
+        _db.Libraries.Add(newLibrary);
+        await _db.SaveChangesAsync();
+
+        return Result.Success();
+    }
+
+
+    // * Admin Level library creation
     public async Task<Result<Library>> CreateLibrary(string userId, Library library)
     {
         if (string.IsNullOrWhiteSpace(userId) || library is null)
             return Result<Library>.Failure("User Id and library are required", ErrorType.BadRequest);
 
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+            return Result<Library>.Failure("User Not Found", ErrorType.NotFound);
+
         var config = await _db.LibreStackConfig.FirstOrDefaultAsync();
 
-        if (config is not null && !config!.AllowNewLibraries)
-        {
-            return Result<Library>.Failure("Server settings do not allow new libraries", ErrorType.Forbidden);
-        }
-
         library.UserId = userId;
-        library.LibraryPath = library.LibraryPath.Trim();
         library.Name = library.Name.Trim();
 
-        try
-        {
-            if (!Directory.Exists(library.LibraryPath))
-            {
-                return Result<Library>.Failure($"The path '{library.LibraryPath}' does not exist.", ErrorType.BadRequest);
-            }
-
-            int checkedCount = 0;
-            const int maxCheckDepth = 2; // Check root and first two levels of subfolders
-
-            bool IsPathReadable(string path, int currentDepth)
-            {
-                if (currentDepth > maxCheckDepth || checkedCount > 100) return true;
-
-                var di = new DirectoryInfo(path);
-                di.Refresh();
-
-                foreach (var subDir in di.GetDirectories())
-                {
-                    checkedCount++;
-                    if (!IsPathReadable(subDir.FullName, currentDepth + 1)) return false;
-                }
-                return true;
-            }
-
-            if (!IsPathReadable(library.LibraryPath, 0))
-            {
-                return Result<Library>.Failure("The server does not have permission to read all subdirectories in this path.", ErrorType.Forbidden);
-            }
-
-            // Sanity check: prevent system roots
-            if (library.LibraryPath == "/" || library.LibraryPath.EndsWith(":"))
-            {
-                return Result<Library>.Failure("System root paths are not allowed.", ErrorType.BadRequest);
-            }
-        }
-        catch (UnauthorizedAccessException)
-        {
-            return Result<Library>.Failure("Permission denied: The server cannot read this directory tree.", ErrorType.Forbidden);
-        }
-        catch (Exception ex)
-        {
-            return Result<Library>.Failure($"Access error: {ex.Message}", ErrorType.BadRequest);
-        }
+        var pathCheck = await _pathService.CheckPath(library.LibraryPath);
+        if (!pathCheck.IsSuccess)
+            return Result<Library>.Failure(pathCheck.Error!, pathCheck.ErrorType!.Value);
 
         await _db.Libraries.AddAsync(library);
         await _db.SaveChangesAsync();
@@ -114,6 +136,36 @@ public class LibraryService : ILibraryService
         await _db.SaveChangesAsync();
 
         return Result<Library>.Success(library);
+    }
+
+    private Result DeleteFolder(string folderPath)
+    {
+        try
+        {
+            if (!Directory.Exists(folderPath))
+                return Result.Success();
+
+            foreach (var file in Directory.GetFiles(folderPath))
+            {
+                File.SetAttributes(file, FileAttributes.Normal);
+                File.Delete(file);
+            }
+
+            Directory.Delete(folderPath);
+            return Result.Success();
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return Result.Failure("Access denied: You do not have permission to delete this folder.", ErrorType.Forbidden);
+        }
+        catch (IOException ex)
+        {
+            return Result.Failure($"A storage error occurred: {ex.Message}", ErrorType.Unexpected);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure($"An unexpected error occurred: {ex.Message}", ErrorType.Unexpected);
+        }
     }
 
     public async Task<Result> DeleteLibrary(string userId, int libraryId)
@@ -138,6 +190,20 @@ public class LibraryService : ILibraryService
         _db.Libraries.Remove(library);
         await _db.SaveChangesAsync();
         return Result.Success();
+    }
+
+    public async Task<Result> DeleteUserLibrary(string userId, int libraryId)
+    {
+        var library = await _db.Libraries.Include(l => l.Books)
+            .FirstOrDefaultAsync(l => l.UserId == userId && l.Id == libraryId && l.IsUserLibrary);
+
+        if (library is null)
+            return Result.Failure("Library Not Found", ErrorType.NotFound);
+
+        _db.Libraries.Remove(library);
+        await _db.SaveChangesAsync();
+
+        return DeleteFolder(library.LibraryPath);
     }
 
 
@@ -225,7 +291,7 @@ public class LibraryService : ILibraryService
         {
             Id = item.Id,
             Name = item.Name,
-            LibraryPath = item.LibraryPath
+            IsUserLibrary = item.IsUserLibrary
         }).ToList();
 
         return Result<List<ApiLibrary>>.Success(responseData);
