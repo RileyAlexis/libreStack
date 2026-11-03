@@ -132,18 +132,18 @@ function App() {
       .then((response) => {
         const { isSetupComplete, isBasePathSet }: ServerSetupType =
           response.data.value;
-        if (!isSetupComplete) navigate("/setup");
-        else if (!isBasePathSet) navigate("/setup");
-        else if (location.pathname === "/") {
+        if (!isSetupComplete || !isBasePathSet) {
+          navigate("/setup");
+        } else if (location.pathname === "/") {
           navigate(
             appSettings.showLibraryAsHome ? "/library" : "/serverManager",
           );
-        } else navigate("/library");
+        }
       })
       .catch(() => {
-        navigate("/setup");
+        navigate("/library");
       });
-  }, []);
+  }, [location.pathname]);
 
   useEffect(() => {
     setIsLoginOpen(authStatus === "unauthenticated");
