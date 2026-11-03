@@ -334,6 +334,28 @@ public class LibraryService : ILibraryService
 
     public async Task<Result> UpdateLibrary(string userId, int libraryId, string libraryName, string libraryPath)
     {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+            return Result.Failure("User not found", ErrorType.NotFound);
+
+        var existing = await _db.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId && l.UserId == userId);
+        if (existing is null)
+            return Result.Failure("Library not found", ErrorType.NotFound);
+
+        var pathCheck = await _pathService.CheckPath(libraryPath);
+        if (!pathCheck.IsSuccess)
+            return Result.Failure(pathCheck.Error!, pathCheck.ErrorType!.Value);
+
+        existing.LibraryPath = libraryPath;
+        existing.Name = _pathService.CleanStringForPath(libraryName);
+
+        _db.Libraries.Update(existing);
+        await _db.SaveChangesAsync();
+        return Result.Success();
+    }
+
+    public async Task<Result> UpdateUserLibrary(string userId, int libraryId, string libraryName, string libraryPath)
+    {
         var existing = await _db.Libraries.FirstOrDefaultAsync(l => l.Id == libraryId && l.UserId == userId);
         if (existing is null)
             return Result.Failure("Library not found", ErrorType.NotFound);
@@ -348,7 +370,7 @@ public class LibraryService : ILibraryService
             return Result.Failure(pathCheck.Error!, pathCheck.ErrorType!.Value);
 
         existing.LibraryPath = libraryPath;
-        existing.Name = libraryName;
+        existing.Name = _pathService.CleanStringForPath(libraryName);
 
         _db.Libraries.Update(existing);
         await _db.SaveChangesAsync();

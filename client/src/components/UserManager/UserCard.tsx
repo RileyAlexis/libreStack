@@ -305,8 +305,10 @@ export const UserCard: React.FC<UserCardProps> = ({ user, setUsers }) => {
             <LibraryManager
               key={library.id}
               library={library}
+              user={user}
               setIsDeleteOpen={setIsDeleteLibraryOpen}
               setLibraryToDelete={setLibraryToDelete}
+              setUsers={setUsers}
             />
           ))}
         </Table>

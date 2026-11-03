@@ -14,32 +14,51 @@ import {
   Tooltip,
   Stack,
 } from "@mui/material";
-import { FolderPen, SaveIcon, TrashIcon, XIcon } from "lucide-react";
+import {
+  FolderPen,
+  SaveIcon,
+  TrashIcon,
+  XIcon,
+  PencilLine,
+} from "lucide-react";
 
 interface LibraryManagerProps {
   library: UserManagerLibraryType;
+  user: UserManagerType;
   setIsDeleteOpen: React.Dispatch<SetStateAction<boolean>>;
   setLibraryToDelete: React.Dispatch<
     SetStateAction<UserManagerLibraryType | undefined>
   >;
+  setUsers: React.Dispatch<React.SetStateAction<UserManagerType[] | undefined>>;
 }
 
 export const LibraryManager: React.FC<LibraryManagerProps> = ({
   library,
+  user,
   setIsDeleteOpen,
   setLibraryToDelete,
+  setUsers,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const [newPath, setNewPath] = useState<string>("");
+  const [newPath, setNewPath] = useState<string>(library.libraryPath);
+  const [newName, setNewName] = useState<string>(library.name);
   const [isEditingPath, setIsEditingPath] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
 
   const handlePathEditing = () => {
     setNewPath(library.libraryPath);
     setIsEditingPath(true);
   };
 
+  const handleNameEditing = () => {
+    setNewName(library.name);
+    setIsEditingName(true);
+  };
+
   const handleCancelEditing = () => {
     setNewPath(library.libraryPath);
+    setNewName(library.name);
+    setIsEditingName(false);
     setIsEditingPath(false);
   };
 
@@ -48,22 +67,38 @@ export const LibraryManager: React.FC<LibraryManagerProps> = ({
     setIsDeleteOpen(true);
   };
 
-  const handleSavePath = () => {
+  const handleSaveLibrary = () => {
     api
       .post("Library/UpdateLibrary", {
+        userId: user.id,
         libraryId: library.id,
-        libraryName: library.name,
+        libraryName: newName,
         libraryPath: newPath,
       })
-      .then((response) => {
-        console.log(response.data);
+      .then(() => {
         dispatch(
           runSnack({
             isOpen: true,
             severity: "success",
-            description: `Library ${library.name} updated`,
+            description: `Library ${newName} updated`,
           }),
         );
+        setUsers((prev) =>
+          prev?.map((item) =>
+            item.id === user.id
+              ? {
+                  ...item,
+                  libraries: item.libraries.map((lib) =>
+                    lib.id === library.id
+                      ? { ...lib, name: newName, libraryPath: newPath }
+                      : lib,
+                  ),
+                }
+              : item,
+          ),
+        );
+        setIsEditingName(false);
+        setIsEditingPath(false);
       })
       .catch((error) => {
         console.error(error.response.data.error);
@@ -71,7 +106,7 @@ export const LibraryManager: React.FC<LibraryManagerProps> = ({
           runSnack({
             isOpen: true,
             severity: "error",
-            description: `Error deleting library: ${error.response.data.error}`,
+            description: `Error modifying library: ${error.response.data.error}`,
           }),
         );
       });
@@ -80,7 +115,28 @@ export const LibraryManager: React.FC<LibraryManagerProps> = ({
   return (
     <TableBody>
       <TableRow>
-        <TableCell>{library.name}</TableCell>
+        <TableCell>
+          {!isEditingName && <>{library.name}</>}
+          {isEditingName && (
+            <Stack spacing={2} direction="row">
+              <TextField
+                size="small"
+                fullWidth
+                label="New Name"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+              />
+              <IconButton onClick={handleSaveLibrary}>
+                <SaveIcon size={18} />
+              </IconButton>
+              <Tooltip title="Cancel">
+                <IconButton onClick={handleCancelEditing}>
+                  <XIcon size={18} />
+                </IconButton>
+              </Tooltip>
+            </Stack>
+          )}
+        </TableCell>
         <TableCell>{library.bookCount}</TableCell>
         <TableCell>
           {!isEditingPath && <>{library.libraryPath}</>}
@@ -93,7 +149,7 @@ export const LibraryManager: React.FC<LibraryManagerProps> = ({
                 value={newPath}
                 onChange={(e) => setNewPath(e.target.value)}
               />
-              <IconButton onClick={handleSavePath}>
+              <IconButton onClick={handleSaveLibrary}>
                 <SaveIcon size={18} />
               </IconButton>
               <Tooltip title="Cancel">
@@ -106,6 +162,11 @@ export const LibraryManager: React.FC<LibraryManagerProps> = ({
         </TableCell>
         <TableCell>{formatStorageSize(library.storageSizeKb)}</TableCell>
         <TableCell>
+          <Tooltip title="Rename Library">
+            <IconButton onClick={handleNameEditing}>
+              <PencilLine size={18} />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Modify Library Path">
             <IconButton onClick={handlePathEditing}>
               <FolderPen size={18} />

@@ -152,16 +152,29 @@ public class LibraryController : ControllerBase
 
     public record LibraryUpdate(int LibraryId, string LibraryName, string LibraryPath);
 
-    [HttpPost("updateLibrary")]
+    [HttpPost("updateUserLibrary")]
     [Authorize]
-    public async Task<IActionResult> UpdateLibrary([FromBody] LibraryUpdate lib)
+    public async Task<IActionResult> UpdateUserLibrary([FromBody] LibraryUpdate lib)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId is null) return Unauthorized();
 
-        var result = await _iLibraryService.UpdateLibrary(userId, lib.LibraryId, lib.LibraryName, lib.LibraryPath);
+        var result = await _iLibraryService.UpdateUserLibrary(userId, lib.LibraryId, lib.LibraryName, lib.LibraryPath);
         if (!result.IsSuccess)
             return BadRequest(new { error = result.Error });
+        return Ok(result);
+    }
+
+    public record LibraryUpdateAdmin(string userId, int libraryId, string libraryName, string libraryPath);
+
+    [HttpPost("updateLibrary")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UpdateLibrary([FromBody] LibraryUpdateAdmin data)
+    {
+        var result = await _iLibraryService.UpdateLibrary(data.userId, data.libraryId, data.libraryName, data.libraryPath);
+        if (!result.IsSuccess)
+            return BadRequest(new { error = result.Error });
+
         return Ok(result);
     }
 }
