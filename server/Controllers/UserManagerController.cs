@@ -28,6 +28,18 @@ public class UserManagerController : ControllerBase
         return Ok(result.Value);
     }
 
+    [HttpGet("GetSimpleUserList")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetSimpleUserList()
+    {
+        var result = await _iUserManagerService.GetSimpleUserList();
+        if (!result.IsSuccess)
+            return BadRequest(result.Error);
+
+        return Ok(result.Value);
+    }
+
+
     [HttpPost("DisableUser")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DisableUser(string UserId)

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using Librestack.Models.APIModels;
+using Microsoft.Extensions.Configuration.UserSecrets;
 
 namespace Librestack.Services;
 
@@ -98,7 +99,7 @@ public class UserManagerService : IUserManageService
         if (user is null)
             return Result.Failure("User Not Found", ErrorType.NotFound);
 
-        var libraries = await _db.Libraries.Where(l => l.UserId == UserId).ToListAsync();
+        var libraries = await _db.Libraries.Where(l => l.UserId == UserId && l.IsUserLibrary).ToListAsync();
         var parentPath = libraries.Count > 0
             ? Path.GetDirectoryName(Path.TrimEndingDirectorySeparator(libraries[0].LibraryPath))
             : null;
@@ -181,6 +182,34 @@ public class UserManagerService : IUserManageService
         return Result.Success();
     }
 
+    public async Task<Result<List<UserListDTOSimple>>> GetSimpleUserList()
+    {
+        var users = await _userManager.Users.Where(u => u.IsActive).ToListAsync();
+        var usersList = new List<UserListDTOSimple>();
+
+        foreach (var user in users)
+        {
+            var libraries = await _db.Libraries.Where(l => l.UserId == user.Id &&).Select(l => new LibraryDTOForUserList
+            {
+                Id = l.Id,
+                Name = l.Name,
+                LibraryPath = l.LibraryPath,
+                BookCount = l.Books.Count(),
+            }).ToListAsync();
+
+            usersList.Add(new UserListDTOSimple
+            {
+                Id = user.Id,
+                UserName = user.UserName!,
+                IsActive = user.IsActive,
+                Email = user.Email,
+            });
+        }
+
+        return Result<List<UserListDTOSimple>>.Success(usersList);
+
+    }
+
     public async Task<Result<List<UserListDTO>>> GetAllUsers()
     {
         var users = await _userManager.Users.ToListAsync();
@@ -225,4 +254,6 @@ public class UserManagerService : IUserManageService
 
         return Result<List<UserListDTO>>.Success(userList);
     }
+
+
 }

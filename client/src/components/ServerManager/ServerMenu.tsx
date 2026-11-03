@@ -5,11 +5,13 @@ import { useNavigate } from "react-router";
 import "./ServerMenu.css";
 import { CreateUserDialog } from "./CreateUserDialog";
 import { ParsingErrorsDialog } from "./ParsingErrorsDialog";
+import { CreateLibraryAdminDialog } from "./CreateLibraryAdminDialog";
 
 export const ServerMenu: React.FC = () => {
   const navigate = useNavigate();
   const [isNewUserDialogOpen, setIsNewUserDialogOpen] = useState(false);
   const [isParsingErrorsOpen, setIsParsingErrorsOpen] = useState(false);
+  const [isCreateLibraryOpen, setIsCreateLibraryOpen] = useState(false);
 
   return (
     <div className="serverMenuContainer">
@@ -19,6 +21,12 @@ export const ServerMenu: React.FC = () => {
           onClick={() => setIsNewUserDialogOpen(true)}
         >
           Create User
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => setIsCreateLibraryOpen(true)}
+        >
+          Create Library
         </Button>
         <Button
           variant="contained"
@@ -41,6 +49,12 @@ export const ServerMenu: React.FC = () => {
         fullScreen
       >
         <ParsingErrorsDialog setIsParsingErrorsOpen={setIsParsingErrorsOpen} />
+      </Dialog>
+
+      <Dialog open={isCreateLibraryOpen} onClose={setIsCreateLibraryOpen}>
+        <CreateLibraryAdminDialog
+          setIsCreateLibraryOpen={setIsCreateLibraryOpen}
+        />
       </Dialog>
     </div>
   );

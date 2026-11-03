@@ -9,9 +9,6 @@ public class ApiLibrary
 
 public class ApiLibraryAdmin
 {
-    public int Id { get; set; }
     public string Name { get; set; }
     public string LibraryPath { get; set; }
-    public bool IsUserLibrary { get; set; }
-
 }

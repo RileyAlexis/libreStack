@@ -22,3 +22,12 @@ public class UserListDTO
     public PasswordResetCode? ResetCode { get; set; }
     public List<LibraryDTOForUserList>? Libraries { get; set; }
 }
+
+public class UserListDTOSimple
+{
+    public string Id { get; set; } = "";
+    public bool IsActive { get; set; }
+    public string UserName { get; set; }
+    public string? Email { get; set; }
+    public List<LibraryDTOForUserList>? Libraries { get; set; }
+}
