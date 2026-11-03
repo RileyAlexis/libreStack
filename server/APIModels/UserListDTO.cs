@@ -7,6 +7,7 @@ public class LibraryDTOForUserList
     public required string LibraryPath { get; set; }
     public int BookCount { get; set; }
     public double StorageSizeKb { get; set; }
+    public bool IsUserLibrary { get; set; }
 }
 
 public class UserListDTO

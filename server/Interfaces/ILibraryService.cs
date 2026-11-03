@@ -12,6 +12,6 @@ public interface ILibraryService
     Task<Result> UpdateLibrary(string userId, int libraryId, string libraryName, string libraryPath);
     Task<Result> AddBookToLibrary(string userId, int libraryId, int bookId);
     Task<Result> RemoveBookFromLibrary(string userId, int libraryId, int bookId);
-    Task<Result> DeleteLibrary(string userId, int libraryId);
+    Task<Result> DeleteLibrary(string userId, int libraryId, bool deleteFromDisk);
     Task<Result> DeleteUserLibrary(string userId, int libraryId);
 }

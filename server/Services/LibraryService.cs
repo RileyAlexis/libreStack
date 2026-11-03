@@ -168,10 +168,14 @@ public class LibraryService : ILibraryService
         }
     }
 
-    public async Task<Result> DeleteLibrary(string userId, int libraryId)
+    public async Task<Result> DeleteLibrary(string userId, int libraryId, bool deleteFromDisk)
     {
         if (string.IsNullOrEmpty(userId) || string.IsNullOrWhiteSpace(userId))
             return Result.Failure("User Id is required", ErrorType.BadRequest);
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user is null)
+            return Result.Failure("User Not Found", ErrorType.NotFound);
 
         var library = await _db.Libraries
                 .FirstOrDefaultAsync(l => l.UserId == userId && l.Id == libraryId);
@@ -181,7 +185,11 @@ public class LibraryService : ILibraryService
 
         _db.Libraries.Remove(library);
         await _db.SaveChangesAsync();
-        return DeleteFolder(library.LibraryPath);
+        _logger.LogInformation($"Library {library.Name} deleted for user {user.UserName}");
+        if (deleteFromDisk)
+            return DeleteFolder(library.LibraryPath);
+        else
+            return Result.Success();
     }
 
     public async Task<Result> DeleteUserLibrary(string userId, int libraryId)
@@ -334,6 +342,10 @@ public class LibraryService : ILibraryService
 
         if (!config!.AllowLibraryUpdates)
             return Result.Failure("Server settings do not allow updating library information", ErrorType.Forbidden);
+
+        var pathCheck = await _pathService.CheckPath(libraryPath);
+        if (!pathCheck.IsSuccess)
+            return Result.Failure(pathCheck.Error!, pathCheck.ErrorType!.Value);
 
         existing.LibraryPath = libraryPath;
         existing.Name = libraryName;

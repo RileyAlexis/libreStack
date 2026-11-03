@@ -36,10 +36,6 @@ export const DeleteLibraryDialog: React.FC<DeleteLibraryDialogProps> = ({
   const [isMatching, setIsMatching] = useState<boolean>(false);
   const [_, setConfirm] = useState<string>("");
 
-  useEffect(() => {
-    console.log(libraryData);
-  }, [libraryData]);
-
   const deleteLibrary = () => {
     if (!isMatching) return;
 

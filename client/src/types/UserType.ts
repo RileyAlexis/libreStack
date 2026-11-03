@@ -20,6 +20,7 @@ export interface UserManagerLibraryType {
   libraryPath: string;
   storageSizeKb: number;
   bookCount: number;
+  isUserLibrary: boolean;
 }
 
 export interface UserManagerResetCode {

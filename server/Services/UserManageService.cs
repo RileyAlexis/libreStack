@@ -108,7 +108,7 @@ public class UserManagerService : IUserManageService
         {
             foreach (Library library in libraries)
             {
-                var deleteResult = await _libraryService.DeleteLibrary(UserId, library.Id);
+                var deleteResult = await _libraryService.DeleteLibrary(UserId, library.Id, true);
                 _logger.LogInformation($"Library Deleted: {user.UserName} - {library.Name} at {library.LibraryPath}");
             }
         }
@@ -189,7 +189,7 @@ public class UserManagerService : IUserManageService
 
         foreach (var user in users)
         {
-            var libraries = await _db.Libraries.Where(l => l.UserId == user.Id &&).Select(l => new LibraryDTOForUserList
+            var libraries = await _db.Libraries.Where(l => l.UserId == user.Id).Select(l => new LibraryDTOForUserList
             {
                 Id = l.Id,
                 Name = l.Name,
@@ -226,6 +226,7 @@ public class UserManagerService : IUserManageService
                 Name = l.Name,
                 LibraryPath = l.LibraryPath,
                 BookCount = l.Books.Count(),
+                IsUserLibrary = l.IsUserLibrary,
             }).ToListAsync();
 
             var libraryData = libraries.Select(l => new LibraryDTOForUserList
@@ -234,7 +235,8 @@ public class UserManagerService : IUserManageService
                 Name = l.Name,
                 BookCount = l.BookCount,
                 LibraryPath = l.LibraryPath,
-                StorageSizeKb = CalculateDirectorySize(l.LibraryPath) / 1024
+                StorageSizeKb = CalculateDirectorySize(l.LibraryPath) / 1024,
+                IsUserLibrary = l.IsUserLibrary,
             }).ToList();
 
             userList.Add(new UserListDTO

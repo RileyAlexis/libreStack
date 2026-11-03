@@ -80,6 +80,7 @@ export const CreateLibraryAdminDialog: React.FC<
             description: `Library ${libraryName} created for user ${selectedUser.userName}`,
           }),
         );
+        setIsCreateLibraryOpen(false);
       })
       .catch((error) => {
         dispatch(

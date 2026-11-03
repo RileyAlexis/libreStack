@@ -122,14 +122,14 @@ public class LibraryController : ControllerBase
         return Ok(result);
     }
 
+    public record DeleteLibraryData(string userId, int libraryId, bool deleteFromDisk);
+
     [HttpDelete("deleteLibrary")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> DeleteLibrary(int libraryId)
+    public async Task<IActionResult> DeleteLibrary([FromBody] DeleteLibraryData data)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (userId is null) return Unauthorized();
 
-        var result = await _iLibraryService.DeleteLibrary(userId, libraryId);
+        var result = await _iLibraryService.DeleteLibrary(data.userId, data.libraryId, data.deleteFromDisk);
         if (!result.IsSuccess)
             return BadRequest(new { error = result.Error });
 

@@ -1,13 +1,19 @@
 import { api } from "@/utils/api";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import type { LibreRootState } from "@/types/LibreRootState";
 import type { AppDispatch } from "@/redux/store";
 import { runSnack } from "@/redux/reducers/SnackReducer";
 import type { UserManagerType, UserManagerLibraryType } from "@/types/UserType";
 import { formatStorageSize } from "@/utils/formatter";
 
+// Components
+import { LibraryManager } from "./LibraryManager";
+import { DeleteLibraryAdminDialog } from "../ServerManager/DeleteLibraryAdminDialog";
+
 import {
   Button,
+  Collapse,
   Dialog,
   DialogActions,
   DialogContent,
@@ -16,6 +22,10 @@ import {
   TextField,
   Tooltip,
   Typography,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
 } from "@mui/material";
 import {
   CircleCheck,
@@ -24,10 +34,11 @@ import {
   KeyIcon,
   TrashIcon,
   XIcon,
+  ChevronRight,
+  ChevronDown,
 } from "lucide-react";
 
 import "./UserCard.css";
-import type { LibreRootState } from "@/types/LibreRootState";
 
 interface UserCardProps {
   user: UserManagerType;
@@ -42,6 +53,12 @@ export const UserCard: React.FC<UserCardProps> = ({ user, setUsers }) => {
   const [isDeleteUserDialogOpen, setIsDeleteUserDialogOpen] = useState(false);
   const [_, setDeleteConfirmation] = useState<string>("");
   const [isDeleteValidated, setIsDeleteValidated] = useState<boolean>(false);
+  const [isLibraryCollapseOpen, setIsLibraryCollapseOpen] =
+    useState<boolean>(false);
+  const [isDeleteLibraryOpen, setIsDeleteLibraryOpen] =
+    useState<boolean>(false);
+  const [libraryToDelete, setLibraryToDelete] =
+    useState<UserManagerLibraryType>();
 
   const currentUserId = useSelector(
     (state: LibreRootState) => state.auth.user?.id,
@@ -252,12 +269,49 @@ export const UserCard: React.FC<UserCardProps> = ({ user, setUsers }) => {
         </Typography>
         <Typography variant="body1">{formatStorageSize(totalSize)}</Typography>
       </div>
+
+      {/* Library Collaps Listing */}
       <div className="userCardTextBox">
-        <Typography variant="h6" style={{ fontWeight: 800 }}>
-          Libraries:
-        </Typography>
+        <Button
+          variant="text"
+          onClick={() => setIsLibraryCollapseOpen(!isLibraryCollapseOpen)}
+        >
+          {isLibraryCollapseOpen ? (
+            <ChevronDown size={18} />
+          ) : (
+            <ChevronRight size={18} />
+          )}
+          <Typography variant="h6" style={{ fontWeight: 800 }}>
+            Libraries:
+          </Typography>
+        </Button>
         <Typography variant="body1">{user.libraries.length}</Typography>
       </div>
+      <Collapse in={isLibraryCollapseOpen}>
+        <Table
+          size="small"
+          sx={{ margin: "1em", marginBottom: "2.0em", width: "100%" }}
+        >
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 800 }}>Library Name</TableCell>
+              <TableCell sx={{ fontWeight: 800 }}>Book Count</TableCell>
+              <TableCell sx={{ fontWeight: 800 }}>Path</TableCell>
+              <TableCell sx={{ fontWeight: 800 }}>Size</TableCell>
+              <TableCell />
+            </TableRow>
+          </TableHead>
+          {user.libraries.map((library) => (
+            <LibraryManager
+              key={library.id}
+              library={library}
+              setIsDeleteOpen={setIsDeleteLibraryOpen}
+              setLibraryToDelete={setLibraryToDelete}
+            />
+          ))}
+        </Table>
+      </Collapse>
+
       <div className="userCardTextBox">
         <Typography variant="h6" style={{ fontWeight: 800 }}>
           Active Reset Code:
@@ -411,6 +465,15 @@ export const UserCard: React.FC<UserCardProps> = ({ user, setUsers }) => {
             Confirm
           </Button>
         </DialogActions>
+      </Dialog>
+
+      <Dialog open={isDeleteLibraryOpen} onClose={setIsDeleteLibraryOpen}>
+        <DeleteLibraryAdminDialog
+          user={user}
+          setUsers={setUsers}
+          libraryToDelete={libraryToDelete}
+          setIsDeleteOpen={setIsDeleteLibraryOpen}
+        />
       </Dialog>
     </div>
   );
