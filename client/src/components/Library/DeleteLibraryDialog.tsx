@@ -1,4 +1,4 @@
-import { useEffect, useState, type SetStateAction } from "react";
+import { useState, type SetStateAction } from "react";
 import { api } from "@/utils/api";
 
 // Redux

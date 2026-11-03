@@ -1,6 +1,5 @@
 import { useState, type SetStateAction } from "react";
 import { api } from "@/utils/api";
-import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { runSnack } from "@/redux/reducers/SnackReducer";
 import type { AppDispatch } from "@/redux/store";
@@ -28,23 +27,15 @@ interface DeleteLibraryAdminDialogProps {
   setIsDeleteOpen: React.Dispatch<SetStateAction<boolean>>;
 }
 
-type AlertSeverity = "error" | "success" | "warning" | "info";
-
 export const DeleteLibraryAdminDialog: React.FC<
   DeleteLibraryAdminDialogProps
 > = ({ libraryToDelete, user, setUsers, setIsDeleteOpen }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const naigate = useNavigate();
-  const [error, setError] = useState<string>("");
-  const [isCollapseOpen, setIsCollapseOpen] = useState<boolean>(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertSeverity>("info");
   const [confirmDelete, setConfirmDelete] = useState<string>("");
   const [isMatching, setIsMatching] = useState<boolean>(false);
   const [deleteFromDisk, setDeleteFromDisk] = useState<boolean>(false);
 
   const handleDeleteLibrary = () => {
-    console.log(libraryToDelete);
-    console.log(user);
     if (!isMatching) return;
 
     api
@@ -55,8 +46,7 @@ export const DeleteLibraryAdminDialog: React.FC<
           deleteFromDisk: deleteFromDisk,
         },
       })
-      .then((response) => {
-        console.log(response.data);
+      .then(() => {
         dispatch(
           runSnack({
             isOpen: true,
@@ -110,9 +100,6 @@ export const DeleteLibraryAdminDialog: React.FC<
         >
           <XIcon size={18} />
         </IconButton>
-        <Collapse in={isCollapseOpen}>
-          <Alert severity={alertSeverity}>{error}</Alert>
-        </Collapse>
         <Stack spacing={2} direction="row" sx={{ alignItems: "center" }}>
           <Typography variant="body1">Delete Books From Disk?</Typography>
           <Switch

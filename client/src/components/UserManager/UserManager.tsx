@@ -17,7 +17,6 @@ export const UserManager: React.FC = () => {
     api
       .get("UserManager/GetAllUsers")
       .then((response) => {
-        console.log(response.data);
         setUsers(response.data);
         setIsLoading(false);
       })
