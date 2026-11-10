@@ -127,6 +127,12 @@ function App() {
   useSettingsSync(authStatus);
 
   useEffect(() => {
+    console.log("isIosDevice", isIosDevice);
+    console.log("isTouchDevice", isTouchDevice);
+    console.log("isStandAlone", isStandAlone);
+  }, [isIosDevice, isTouchDevice, isStandAlone]);
+
+  useEffect(() => {
     api
       .get("/Config/checkIfSetupComplete")
       .then((response) => {
@@ -187,9 +193,9 @@ function App() {
         <Route
           path="/reader/:id"
           element={
-            <div>
-              <Reader />
-            </div>
+            // <div>
+            <Reader />
+            // </div>
           }
         />
         <Route

@@ -35,6 +35,7 @@ export const Reader: React.FC = () => {
   );
   const renderAreaRef = useRef<HTMLDivElement>(null);
   const readerRootRef = useRef<HTMLDivElement>(null);
+  const handleKeyDownRef = useRef<((e: KeyboardEvent) => void) | null>(null);
   const renditionRef = useRef<Rendition | null>(null);
   const suppressReadingLocationUpdateRef = useRef(false);
   const suppressResetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
@@ -428,6 +429,7 @@ export const Reader: React.FC = () => {
         doc.addEventListener("touchstart", touchStartHandler, {
           passive: true,
         });
+        doc.addEventListener("keydown", handleKeyDown);
         doc.addEventListener("touchmove", touchMoveHandler, { passive: false });
       } catch (e) {
         // ignore if attaching fails
@@ -437,19 +439,19 @@ export const Reader: React.FC = () => {
     renditionRef.current = rendition;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") animatedNav("prev");
-      if (e.key === "ArrowRight") animatedNav("next");
-      if (e.key === " ") setIsMenuShowing(!isMenuShowing);
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      destroyed = true;
-      window.removeEventListener("keydown", handleKeyDown);
-      try {
-        rendition.destroy();
-      } catch (_) {}
+      console.log(e);
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        animatedNav("prev");
+      }
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        animatedNav("next");
+      }
+      if (e.key === " ") {
+        e.preventDefault();
+        setIsMenuShowing((prev) => !prev);
+      }
     };
   }, [bookInstance]);
 
