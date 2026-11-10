@@ -41,7 +41,6 @@ public class LibraryService : ILibraryService
             .FirstOrDefaultAsync(l => l.Id == libraryId);
         if (library is null) return Result.Failure("Library Id not found", ErrorType.NotFound);
 
-
         if (library.Books.Any(b => b.Id == bookId))
             return Result.Failure("Book is already in this library", ErrorType.Conflict);
 
