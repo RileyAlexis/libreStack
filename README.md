@@ -140,7 +140,7 @@ does not have the capability to read .CBZ, .MOBI or any formats utilizing DRM. I
 
 ## License
 
-This project is open source under the MIT License. The logo and name are copyrighted by RileyAlexis and may not be reused or distributed.
+This project is open source under the GPL v3 license. The logo and name are copyrighted by RileyAlexis and may not be reused or distributed.
 
 ## Feature Roadmap
 
