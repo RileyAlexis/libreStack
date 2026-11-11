@@ -73,3 +73,41 @@
   align-items: center;
   padding: 2em;
 }
+
+.mobileSettingsCard:active {
+  background-image: linear-gradient(
+    rgba(190, 190, 190, 0.3),
+    rgba(214, 214, 214, 0.3)
+  );
+  /* background-blend-mode: multiply; */
+}
+
+.collapseCardOuter {
+  display: flex;
+  flex-direction: column;
+}
+
+.collapseCardInner {
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.collapseCardOpen {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.marginBox {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5em;
+  width: "100%";
+}

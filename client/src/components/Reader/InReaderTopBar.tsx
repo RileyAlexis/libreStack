@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import type { AppDispatch } from "@/redux/store";
 import type { LibreRootState } from "@/types/LibreRootState";
+import type { ReadingMarginsType } from "@/types/ LocalSettingsType";
+import type { NumberField } from "@base-ui/react/number-field";
 
 // Actions
 import {
@@ -13,6 +15,11 @@ import {
   setLineHeight,
   setSpread,
 } from "@/redux/reducers/AppSettingsReducer";
+import {
+  setReadingMargins,
+  toggleSideMarginLink,
+  toggleTopMarginLink,
+} from "@/redux/reducers/LocalSettingsReducer";
 
 // UI
 import {
@@ -22,15 +29,21 @@ import {
   FormControl,
   Select,
   Typography,
-  Tooltip,
   IconButton,
+  Collapse,
 } from "@mui/material";
+import { NumberSpinner } from "../UI/NumberSpinner";
+
 import {
   ListChevronsDownUp,
   ListChevronsUpDown,
   BookTypeIcon,
   CircleXIcon,
   BookmarkIcon,
+  ChevronDown,
+  ChevronRight,
+  LinkIcon,
+  UnlinkIcon,
 } from "lucide-react";
 import type { SelectChangeEvent } from "@mui/material";
 import type { ReadingThemeType, SpreadType } from "@/types/AppSettings";
@@ -51,15 +64,28 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
   currentCfiRef,
 }) => {
   const { id } = useParams();
-  const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
+  // const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  const localSettings = useSelector(
+    (state: LibreRootState) => state.localSettings,
+  );
+  const [margins, setMargins] = useState<ReadingMarginsType>(
+    localSettings.readingMargins,
+  );
   const bookmarks = useSelector((state: LibreRootState) =>
     state.library.books.find((b) => b.id === Number(id)),
   )?.bookmarks;
   const [isFormattingDialogOpen, setIsFormatDialogOpen] = useState(false);
   const [newBookmarkName, _] = useState("Bookmark ");
+  const [isMarginsOpen, setIsMarginsOpen] = useState<boolean>(false);
+  const isSideMarginLinked = useSelector(
+    (state: LibreRootState) => state.localSettings.isSideMarginsLinked,
+  );
+  const isTopMarginLinked = useSelector(
+    (state: LibreRootState) => state.localSettings.isTopMarginsLinked,
+  );
   const isCurrentPageBookmarked =
     bookmarks?.some((mark) => mark.cfiLocation === currentCfiRef.current) ??
     false;
@@ -108,135 +134,150 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
     navigate("/library");
   };
 
+  const handleOpenMargins = () => {
+    if (isMarginsOpen) return;
+
+    setIsMarginsOpen(true);
+  };
+
+  const handleLinkSideMargins = () => {
+    dispatch(toggleSideMarginLink());
+    setMargins((prev) => ({ ...prev, right: prev.left }));
+  };
+
+  const handleLinkTopMargins = () => {
+    dispatch(toggleTopMarginLink());
+    setMargins((prev) => ({ ...prev, bottom: prev.top }));
+  };
+
+  const handleSetMargins = (
+    margin: string,
+    value: number,
+    e: NumberField.Root.ChangeEventDetails,
+  ) => {
+    console.log(margin);
+    console.log(value);
+    console.log(e.reason);
+
+    if (margin === "top") {
+      switch (e.reason) {
+        case "increment-press":
+          setMargins((prev) => ({ ...prev, top: prev.top + 0.1 }));
+          if (isTopMarginLinked)
+            setMargins((prev) => ({ ...prev, bottom: prev.bottom + 0.1 }));
+          break;
+        case "decrement-press":
+          setMargins((prev) => ({ ...prev, top: prev.top - 0.1 }));
+          if (isTopMarginLinked)
+            setMargins((prev) => ({ ...prev, bottom: prev.bottom - 0.1 }));
+          break;
+        case "input-change":
+          setMargins((prev) => ({ ...prev, top: Number(value) }));
+          if (isTopMarginLinked)
+            setMargins((prev) => ({ ...prev, bottom: Number(value) }));
+          break;
+        default:
+          break;
+      }
+    }
+    if (margin === "bottom") {
+      switch (e.reason) {
+        case "increment-press":
+          setMargins((prev) => ({ ...prev, bottom: prev.bottom + 0.1 }));
+          if (isTopMarginLinked)
+            setMargins((prev) => ({ ...prev, top: prev.top + 0.1 }));
+          break;
+        case "decrement-press":
+          setMargins((prev) => ({ ...prev, bottom: prev.bottom - 0.1 }));
+          if (isTopMarginLinked)
+            setMargins((prev) => ({ ...prev, top: prev.top - 0.1 }));
+          break;
+        case "input-change":
+          setMargins((prev) => ({ ...prev, bottom: Number(value) }));
+          if (isTopMarginLinked)
+            setMargins((prev) => ({ ...prev, top: Number(value) }));
+          break;
+        default:
+          break;
+      }
+    }
+
+    if (margin === "left") {
+      switch (e.reason) {
+        case "increment-press":
+          setMargins((prev) => ({ ...prev, left: prev.left + 0.1 }));
+          if (isSideMarginLinked)
+            setMargins((prev) => ({ ...prev, right: prev.right + 0.1 }));
+          break;
+        case "decrement-press":
+          setMargins((prev) => ({ ...prev, left: prev.left - 0.1 }));
+          if (isSideMarginLinked)
+            setMargins((prev) => ({ ...prev, right: prev.right - 0.1 }));
+          break;
+        case "input-change":
+          setMargins((prev) => ({ ...prev, left: Number(value) }));
+          if (isSideMarginLinked)
+            setMargins((prev) => ({ ...prev, right: Number(value) }));
+          break;
+        default:
+          break;
+      }
+    }
+
+    if (margin === "right") {
+      switch (e.reason) {
+        case "increment-press":
+          setMargins((prev) => ({ ...prev, right: prev.right + 0.1 }));
+          if (isSideMarginLinked)
+            setMargins((prev) => ({ ...prev, left: prev.left + 0.1 }));
+          break;
+        case "decrement-press":
+          setMargins((prev) => ({ ...prev, right: prev.right - 0.1 }));
+          if (isSideMarginLinked)
+            setMargins((prev) => ({ ...prev, left: prev.left - 0.1 }));
+          break;
+        case "input-change":
+          setMargins((prev) => ({ ...prev, right: Number(value) }));
+          if (isSideMarginLinked)
+            setMargins((prev) => ({ ...prev, left: Number(value) }));
+          break;
+        default:
+          break;
+      }
+    }
+  };
+
+  const handleSaveMargins = () => {
+    console.log("Saving margins", margins);
+    dispatch(setReadingMargins(margins));
+  };
+
   return (
     <div className="inReaderTopBar">
-      {!isTouchDevice && (
-        <div className="inReaderTopBarControlsOuter">
-          <div className="inReaderTopBarControlsInner">
-            {/* Font Size */}
-
-            <ButtonGroup variant="text" sx={{ marginRight: "0.45em" }}>
-              <Button
-                onClick={() =>
-                  dispatch(setReadingFontSize(appSettings.readingFontSize - 1))
-                }
-              >
-                <Typography variant="button">A</Typography>
-              </Button>
-              <Button
-                onClick={() =>
-                  dispatch(setReadingFontSize(appSettings.readingFontSize + 1))
-                }
-              >
-                <Typography variant="h5">A</Typography>
-              </Button>
-            </ButtonGroup>
-            {/* Line Height */}
-            <ButtonGroup variant="text" sx={{ marginLeft: "0.45em" }}>
-              <Tooltip title="Decrease Line Height">
-                <Button
-                  variant="text"
-                  onClick={() =>
-                    dispatch(setLineHeight(appSettings.lineHeight - 0.1))
-                  }
-                >
-                  <ListChevronsDownUp />
-                </Button>
-              </Tooltip>
-              <Tooltip title="Increase Line Height">
-                <Button
-                  onClick={() =>
-                    dispatch(setLineHeight(appSettings.lineHeight + 0.1))
-                  }
-                >
-                  <ListChevronsUpDown />
-                </Button>
-              </Tooltip>
-            </ButtonGroup>
-            <FormControl sx={{ m: 1, minWidth: 80 }} size="small">
-              <Select
-                id="readingFontSelector"
-                variant="standard"
-                value={appSettings.readingFont.value}
-                label="Font"
-                onChange={handleReadingFontSelect}
-                sx={{ color: "var(--lightText)" }}
-              >
-                {availableReadingFonts.map((item) => (
-                  <MenuItem key={item.label} value={item.value}>
-                    {item.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl sx={{ m: 1, minWidth: 80 }} size="small">
-              <Select
-                id="readingThemeSelector"
-                variant="standard"
-                value={appSettings.readingTheme}
-                label="Font"
-                onChange={handleChangeTheme}
-                sx={{ color: "var(--lightText)" }}
-              >
-                {availableReadingThemes.map((item) => (
-                  <MenuItem key={item} value={item}>
-                    {item}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl>
-              <Select
-                id="readingSpreadSelector"
-                variant="standard"
-                value={appSettings.spread}
-                label="Font"
-                onChange={handleChangeSpread}
-                sx={{ color: "var(--lightText)" }}
-              >
-                <MenuItem value="none">Single Column</MenuItem>
-                <MenuItem value="auto">Auto</MenuItem>
-              </Select>
-            </FormControl>
-            <IconButton onClick={handleSetBookmark}>
-              {isCurrentPageBookmarked && (
-                <BookmarkIcon fill="var(--primary)" stroke="" />
-              )}
-              {!isCurrentPageBookmarked && <BookmarkIcon />}
-            </IconButton>
-          </div>
-          {/* End inner container */}
-          <IconButton onClick={handleCloseBook}>
-            <CircleXIcon />
-          </IconButton>
-        </div>
-      )}
-
       {/* Mobile Controls */}
 
-      {isTouchDevice && (
-        <div className="inReaderTopBarControlsMobileOuter">
-          <div className="inReaderTopBarControlsMobileInner">
-            <Button
-              variant="text"
-              size="small"
-              onClick={() => setIsFormatDialogOpen(!isFormattingDialogOpen)}
-            >
-              <BookTypeIcon size={28} />
-            </Button>
+      <div className="inReaderTopBarControlsMobileOuter">
+        <div className="inReaderTopBarControlsMobileInner">
+          <Button
+            variant="text"
+            size="small"
+            onClick={() => setIsFormatDialogOpen(!isFormattingDialogOpen)}
+          >
+            <BookTypeIcon size={28} />
+          </Button>
 
-            <IconButton onClick={handleSetBookmark}>
-              {isCurrentPageBookmarked && (
-                <BookmarkIcon fill="var(--primary)" stroke="" />
-              )}
-              {!isCurrentPageBookmarked && <BookmarkIcon />}
-            </IconButton>
-          </div>
-          <IconButton onClick={() => navigate("/library")}>
-            <CircleXIcon />
+          <IconButton onClick={handleSetBookmark}>
+            {isCurrentPageBookmarked && (
+              <BookmarkIcon fill="var(--primary)" stroke="" />
+            )}
+            {!isCurrentPageBookmarked && <BookmarkIcon />}
           </IconButton>
         </div>
-      )}
+        <IconButton onClick={handleCloseBook}>
+          <CircleXIcon />
+        </IconButton>
+      </div>
+
       <dialog
         className={`mobileSettingsDialog`}
         open={isFormattingDialogOpen}
@@ -362,6 +403,116 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
                 </MenuItem>
               </Select>
             </FormControl>
+          </div>
+          <div
+            className={`mobileSettingsCard readerTheme-${appSettings.readingTheme}`}
+            onClick={handleOpenMargins}
+          >
+            <Typography variant="h6">Margins</Typography>
+            <div className="collapseCardOuter">
+              <div className="collapseCardInner">
+                <Button onClick={() => setIsMarginsOpen(!isMarginsOpen)}>
+                  {isMarginsOpen ? (
+                    <ChevronDown size={24} />
+                  ) : (
+                    <ChevronRight size={24} />
+                  )}
+                </Button>
+                <Typography variant="body1">
+                  Top: {localSettings.readingMargins.top.toFixed(1)} | Bottom:{" "}
+                  {localSettings.readingMargins.bottom.toFixed(1)} | Left:{" "}
+                  {localSettings.readingMargins.left.toFixed(1)} | Right:{" "}
+                  {localSettings.readingMargins.right.toFixed(1)}
+                </Typography>
+              </div>
+              {isMarginsOpen && (
+                <Collapse in={isMarginsOpen}>
+                  <div className="collapseCardOpen">
+                    <div className="marginBox">
+                      <NumberSpinner
+                        label="Top"
+                        min={0.5}
+                        max={5}
+                        size="small"
+                        defaultValue={localSettings.readingMargins.top}
+                        value={margins?.top}
+                        onValueChange={(
+                          value,
+                          e: NumberField.Root.ChangeEventDetails,
+                        ) => {
+                          handleSetMargins("top", Number(value), e);
+                        }}
+                        onValueCommitted={handleSaveMargins}
+                      />
+                      <IconButton
+                        style={{ marginTop: "1em" }}
+                        onClick={handleLinkTopMargins}
+                      >
+                        {isTopMarginLinked && <LinkIcon size={18} />}
+                        {!isTopMarginLinked && <UnlinkIcon size={18} />}
+                      </IconButton>
+
+                      <NumberSpinner
+                        label="Bottom"
+                        min={0.5}
+                        max={5}
+                        size="small"
+                        defaultValue={localSettings.readingMargins.bottom}
+                        value={margins?.bottom}
+                        onValueChange={(
+                          value,
+                          e: NumberField.Root.ChangeEventDetails,
+                        ) => {
+                          handleSetMargins("bottom", Number(value), e);
+                        }}
+                        onValueCommitted={handleSaveMargins}
+                      />
+                    </div>
+                    <div className="marginBox">
+                      <NumberSpinner
+                        label="Left"
+                        min={0.5}
+                        max={5}
+                        size="small"
+                        defaultValue={localSettings.readingMargins.left}
+                        value={margins?.left}
+                        onValueChange={(
+                          value,
+                          e: NumberField.Root.ChangeEventDetails,
+                        ) => {
+                          handleSetMargins("left", Number(value), e);
+                        }}
+                        onValueCommitted={handleSaveMargins}
+                      />
+
+                      <IconButton
+                        style={{ marginTop: "1em" }}
+                        onClick={handleLinkSideMargins}
+                      >
+                        {isSideMarginLinked && <LinkIcon size={18} />}
+                        {!isSideMarginLinked && <UnlinkIcon size={18} />}
+                      </IconButton>
+
+                      <NumberSpinner
+                        label="Right"
+                        min={0.5}
+                        max={5}
+                        size="small"
+                        defaultValue={localSettings.readingMargins.right}
+                        value={margins?.right}
+                        onValueChange={(
+                          value,
+                          e: NumberField.Root.ChangeEventDetails,
+                        ) => {
+                          handleSetMargins("right", Number(value), e);
+                        }}
+                        onValueCommitted={handleSaveMargins}
+                      />
+                    </div>
+                  </div>
+                </Collapse>
+              )}
+            </div>
           </div>
         </div>
       </dialog>

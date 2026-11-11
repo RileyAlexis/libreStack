@@ -21,7 +21,9 @@ export const Reader: React.FC = () => {
 
   const dispatch = useDispatch<AppDispatch>();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
-
+  const localSettings = useSelector(
+    (state: LibreRootState) => state.localSettings,
+  );
   const [isMenuShowing, setIsMenuShowing] = useState(false);
   const [progress, setProgress] = useState<string>("");
   const [bookInstance, setBookInstance] = useState<Book | null>(null);
@@ -35,7 +37,6 @@ export const Reader: React.FC = () => {
   );
   const renderAreaRef = useRef<HTMLDivElement>(null);
   const readerRootRef = useRef<HTMLDivElement>(null);
-  const handleKeyDownRef = useRef<((e: KeyboardEvent) => void) | null>(null);
   const renditionRef = useRef<Rendition | null>(null);
   const suppressReadingLocationUpdateRef = useRef(false);
   const suppressResetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
@@ -129,6 +130,7 @@ export const Reader: React.FC = () => {
     appSettings.readingTheme,
     appSettings.lineHeight,
     appSettings.spread,
+    localSettings.readingMargins,
   ]);
 
   function getReaderBgColor(): string {
@@ -466,7 +468,16 @@ export const Reader: React.FC = () => {
         </div>
       )}
 
-      <div className="readerTextArea" ref={renderAreaRef}></div>
+      <div
+        className="readerTextArea"
+        style={{
+          paddingTop: `${localSettings.readingMargins.top}em`,
+          paddingLeft: `${localSettings.readingMargins.left}em`,
+          paddingRight: `${localSettings.readingMargins.right}em`,
+          paddingBottom: `${localSettings.readingMargins.bottom}em`,
+        }}
+        ref={renderAreaRef}
+      ></div>
 
       {isMenuShowing && (
         <InReaderBottomBar

@@ -6,7 +6,9 @@ export function useStandaloneMode(): boolean {
   useEffect(() => {
     // Method 1: Check navigator.standalone (limited support)
     if ("standalone" in navigator) {
-      setIsStandalone(navigator.standalone === true);
+      setIsStandalone(
+        (navigator as Navigator & { standalone?: boolean }).standalone === true,
+      );
     }
 
     // Method 2: Check window.matchMedia for standalone mode

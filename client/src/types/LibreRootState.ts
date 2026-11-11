@@ -6,6 +6,7 @@ import type { DownloadsState } from "@/redux/reducers/DownloadReducer";
 import type { LibraryType, LibraryListType } from "./LibraryType";
 import type { LibreDialogType } from "./LibreDialogType";
 import type { BookLocationsType } from "./LocationStackType";
+import type { LocalSettingsType } from "./ LocalSettingsType";
 
 export interface LibreRootState {
   library: LibraryType;
@@ -17,4 +18,5 @@ export interface LibreRootState {
   downloads: DownloadsState;
   libreDialogs: LibreDialogType;
   locationStack: BookLocationsType;
+  localSettings: LocalSettingsType;
 }
