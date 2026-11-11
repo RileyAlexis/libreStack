@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import type { AppDispatch } from "@/redux/store";
@@ -44,6 +44,7 @@ import {
   ChevronRight,
   LinkIcon,
   UnlinkIcon,
+  RefreshCcwIcon,
 } from "lucide-react";
 import type { SelectChangeEvent } from "@mui/material";
 import type { ReadingThemeType, SpreadType } from "@/types/AppSettings";
@@ -64,6 +65,8 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
   currentCfiRef,
 }) => {
   const { id } = useParams();
+  const minMargin = 0.3;
+  const maxMargin = 6;
   // const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -77,6 +80,7 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
   const bookmarks = useSelector((state: LibreRootState) =>
     state.library.books.find((b) => b.id === Number(id)),
   )?.bookmarks;
+  const [haveMarginsChanged, setHaveMarginsChanged] = useState(false);
   const [isFormattingDialogOpen, setIsFormatDialogOpen] = useState(false);
   const [newBookmarkName, _] = useState("Bookmark ");
   const [isMarginsOpen, setIsMarginsOpen] = useState<boolean>(false);
@@ -135,17 +139,17 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
   };
 
   const handleOpenMargins = () => {
-    if (isMarginsOpen) return;
-
-    setIsMarginsOpen(true);
+    setIsMarginsOpen(!isMarginsOpen);
   };
 
-  const handleLinkSideMargins = () => {
+  const handleLinkSideMargins = (e: React.PointerEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     dispatch(toggleSideMarginLink());
     setMargins((prev) => ({ ...prev, right: prev.left }));
   };
 
-  const handleLinkTopMargins = () => {
+  const handleLinkTopMargins = (e: React.PointerEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     dispatch(toggleTopMarginLink());
     setMargins((prev) => ({ ...prev, bottom: prev.top }));
   };
@@ -155,10 +159,6 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
     value: number,
     e: NumberField.Root.ChangeEventDetails,
   ) => {
-    console.log(margin);
-    console.log(value);
-    console.log(e.reason);
-
     if (margin === "top") {
       switch (e.reason) {
         case "increment-press":
@@ -248,9 +248,15 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
   };
 
   const handleSaveMargins = () => {
-    console.log("Saving margins", margins);
     dispatch(setReadingMargins(margins));
+    setHaveMarginsChanged(true);
   };
+
+  useEffect(() => {
+    return () => {
+      if (haveMarginsChanged) window.location.reload();
+    };
+  }, [haveMarginsChanged]);
 
   return (
     <div className="inReaderTopBar">
@@ -431,8 +437,8 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
                     <div className="marginBox">
                       <NumberSpinner
                         label="Top"
-                        min={0.5}
-                        max={5}
+                        min={minMargin}
+                        max={maxMargin}
                         size="small"
                         defaultValue={localSettings.readingMargins.top}
                         value={margins?.top}
@@ -454,8 +460,8 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
 
                       <NumberSpinner
                         label="Bottom"
-                        min={0.5}
-                        max={5}
+                        min={minMargin}
+                        max={maxMargin}
                         size="small"
                         defaultValue={localSettings.readingMargins.bottom}
                         value={margins?.bottom}
@@ -471,8 +477,8 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
                     <div className="marginBox">
                       <NumberSpinner
                         label="Left"
-                        min={0.5}
-                        max={5}
+                        min={minMargin}
+                        max={maxMargin}
                         size="small"
                         defaultValue={localSettings.readingMargins.left}
                         value={margins?.left}
@@ -495,8 +501,8 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
 
                       <NumberSpinner
                         label="Right"
-                        min={0.5}
-                        max={5}
+                        min={minMargin}
+                        max={maxMargin}
                         size="small"
                         defaultValue={localSettings.readingMargins.right}
                         value={margins?.right}

@@ -35,6 +35,7 @@ export function NumberSpinner({
           required={state.required}
           error={error}
           variant="outlined"
+          onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
           sx={{
             "& .MuiButton-root": {
               borderColor: "divider",
