@@ -318,17 +318,19 @@ export const Reader: React.FC = () => {
       if ((doc as any).__libreListenersAdded) return;
       (doc as any).__libreListenersAdded = true;
 
-      // strip the book's own font-size declarations ---
-      const stripFontSize = (rules: CSSRuleList) => {
+      const STRIP_PROPS = ["font-size", "font-family"];
+
+      const stripFontProps = (rules: CSSRuleList) => {
         Array.from(rules).forEach((rule: any) => {
-          if (rule.style) rule.style.removeProperty("font-size");
-          if (rule.cssRules) stripFontSize(rule.cssRules); // @media, @supports, etc.
+          if (rule.style)
+            STRIP_PROPS.forEach((p) => rule.style.removeProperty(p));
+          if (rule.cssRules) stripFontProps(rule.cssRules);
         });
       };
 
       Array.from(doc.styleSheets).forEach((sheet: any) => {
         try {
-          stripFontSize(sheet.cssRules);
+          stripFontProps(sheet.cssRules);
         } catch {
           // unreadable sheet; ignore
         }
@@ -336,7 +338,13 @@ export const Reader: React.FC = () => {
 
       doc.querySelectorAll("[style]").forEach((el: HTMLElement) => {
         if (el === doc.body || el === doc.documentElement) return;
-        el.style.removeProperty("font-size");
+        STRIP_PROPS.forEach((p) => el.style.removeProperty(p));
+      });
+
+      // legacy <font face="..." size="..."> tags
+      doc.querySelectorAll("font").forEach((el: HTMLElement) => {
+        el.removeAttribute("face");
+        el.removeAttribute("size");
       });
 
       // Add stylesheet rules (existing behavior)
