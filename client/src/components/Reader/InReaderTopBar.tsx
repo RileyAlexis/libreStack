@@ -104,6 +104,7 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
       return;
     }
     dispatch(setReadingFont(selected));
+    setHaveMarginsChanged(true);
   };
 
   const handleChangeTheme = (event: SelectChangeEvent<string>) => {
