@@ -318,6 +318,27 @@ export const Reader: React.FC = () => {
       if ((doc as any).__libreListenersAdded) return;
       (doc as any).__libreListenersAdded = true;
 
+      // strip the book's own font-size declarations ---
+      const stripFontSize = (rules: CSSRuleList) => {
+        Array.from(rules).forEach((rule: any) => {
+          if (rule.style) rule.style.removeProperty("font-size");
+          if (rule.cssRules) stripFontSize(rule.cssRules); // @media, @supports, etc.
+        });
+      };
+
+      Array.from(doc.styleSheets).forEach((sheet: any) => {
+        try {
+          stripFontSize(sheet.cssRules);
+        } catch {
+          // unreadable sheet; ignore
+        }
+      });
+
+      doc.querySelectorAll("[style]").forEach((el: HTMLElement) => {
+        if (el === doc.body || el === doc.documentElement) return;
+        el.style.removeProperty("font-size");
+      });
+
       // Add stylesheet rules (existing behavior)
       contents.addStylesheetRules({
         body: {
