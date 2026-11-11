@@ -21,7 +21,9 @@ const LocalSettings = createSlice({
   initialState: initialState,
   reducers: {
     setKeepAwakeTimer(state, action: PayloadAction<number>) {
-      state.keepAwake = action.payload;
+      if (state.keepAwake === undefined || state.keepAwake === null) {
+        state.keepAwake = 3;
+      } else state.keepAwake = action.payload;
     },
     setReadingMargins(state, action: PayloadAction<ReadingMarginsType>) {
       state.readingMargins = action.payload;

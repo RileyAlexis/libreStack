@@ -529,11 +529,10 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
           >
             <Typography variant="h6">Keep Awake</Typography>
             <div className="marginBox">
-              {/* <Typography variant="body1">Minutes:</Typography> */}
               <TextField
                 size="small"
                 label="Minutes"
-                value={localSettings.keepAwake}
+                value={Number(localSettings.keepAwake)}
                 onChange={(e) =>
                   handleSetKeepAwakeTimer(Number(e.target.value))
                 }
