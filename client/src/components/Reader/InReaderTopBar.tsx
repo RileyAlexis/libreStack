@@ -10,7 +10,6 @@ import type { NumberField } from "@base-ui/react/number-field";
 import {
   setReadingFont,
   setReadingFontSize,
-  //   setSpread,
   setReadingTheme,
   setLineHeight,
   setSpread,
@@ -19,6 +18,7 @@ import {
   setReadingMargins,
   toggleSideMarginLink,
   toggleTopMarginLink,
+  setKeepAwakeTimer,
 } from "@/redux/reducers/LocalSettingsReducer";
 
 // UI
@@ -31,6 +31,7 @@ import {
   Typography,
   IconButton,
   Collapse,
+  TextField,
 } from "@mui/material";
 import { NumberSpinner } from "../UI/NumberSpinner";
 
@@ -44,7 +45,6 @@ import {
   ChevronRight,
   LinkIcon,
   UnlinkIcon,
-  RefreshCcwIcon,
 } from "lucide-react";
 import type { SelectChangeEvent } from "@mui/material";
 import type { ReadingThemeType, SpreadType } from "@/types/AppSettings";
@@ -245,6 +245,10 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
           break;
       }
     }
+  };
+
+  const handleSetKeepAwakeTimer = (value: number) => {
+    dispatch(setKeepAwakeTimer(value));
   };
 
   const handleSaveMargins = () => {
@@ -518,6 +522,22 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
                   </div>
                 </Collapse>
               )}
+            </div>
+          </div>
+          <div
+            className={`mobileSettingsCard readerTheme-${appSettings.readingTheme}`}
+          >
+            <Typography variant="h6">Keep Awake</Typography>
+            <div className="marginBox">
+              {/* <Typography variant="body1">Minutes:</Typography> */}
+              <TextField
+                size="small"
+                label="Minutes"
+                value={localSettings.keepAwake}
+                onChange={(e) =>
+                  handleSetKeepAwakeTimer(Number(e.target.value))
+                }
+              />
             </div>
           </div>
         </div>

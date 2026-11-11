@@ -5,7 +5,7 @@ import type {
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: LocalSettingsType = {
-  keepAwake: 30000,
+  keepAwake: 3,
   readingMargins: {
     top: 1.2,
     left: 1.2,

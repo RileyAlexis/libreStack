@@ -46,9 +46,10 @@
 }
 
 .mobileSettingsDialog {
-  height: 100vh;
-  width: 100vw;
-  overflow-x: scroll;
+  height: 90dvh;
+  width: 100dvw;
+  overflow-y: auto;
+  overscroll-behavior: contain;
   z-index: 21;
   border: none;
   background: transparent;

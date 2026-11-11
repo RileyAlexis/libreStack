@@ -15,6 +15,7 @@ import { InReaderTopBar } from "./InReaderTopBar";
 import { InReaderBottomBar } from "./InReaderBottomBar";
 import { getOfflineEpub } from "@/redux/reducers/DownloadReducer";
 import { updateReadingProgress } from "@/redux/reducers/LibraryReducer";
+import { useKeepAwake } from "./useKeepAwake";
 
 export const Reader: React.FC = () => {
   const { id } = useParams();
@@ -42,8 +43,10 @@ export const Reader: React.FC = () => {
   const suppressResetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
-
   const appSettingsRef = useRef<AppSettings>(appSettings);
+
+  useKeepAwake(localSettings.keepAwake);
+
   useEffect(() => {
     appSettingsRef.current = appSettings;
   }, [appSettings]);
