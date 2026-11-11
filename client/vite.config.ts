@@ -21,6 +21,7 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["libreStack.svg", "apple-touch-icon.png"],
       workbox: {
+        globPatterns: ["**/*.{js,css,html,woff2}"],
         navigateFallback: "index.html",
         navigateFallbackDenylist: [/^\/swagger/, /^\/api/],
         cleanupOutdatedCaches: true,
