@@ -54,7 +54,7 @@ export const ParsingErrorsDialog: React.FC<ParsingErrorsDialogProps> = ({
       </IconButton>
       <DialogContent>
         <TableContainer component={Paper}>
-          <Table sx={{ minWidth: 650 }}>
+          <Table sx={{ minWidth: 650 }} size="small">
             <TableHead>
               <TableRow>
                 <TableCell>Library Id</TableCell>
