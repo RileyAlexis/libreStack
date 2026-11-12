@@ -16,6 +16,7 @@ import { InReaderBottomBar } from "./InReaderBottomBar";
 import { getOfflineEpub } from "@/redux/reducers/DownloadReducer";
 import { updateReadingProgress } from "@/redux/reducers/LibraryReducer";
 import { useKeepAwake } from "./useKeepAwake";
+import type { LocalSettingsType } from "@/types/ LocalSettingsType";
 
 export const Reader: React.FC = () => {
   const { id } = useParams();
@@ -44,12 +45,17 @@ export const Reader: React.FC = () => {
     null,
   );
   const appSettingsRef = useRef<AppSettings>(appSettings);
+  const localSettingsRef = useRef<LocalSettingsType>(localSettings);
 
   useKeepAwake(localSettings.keepAwake);
 
   useEffect(() => {
     appSettingsRef.current = appSettings;
   }, [appSettings]);
+
+  useEffect(() => {
+    localSettingsRef.current = localSettings;
+  }, [localSettings]);
 
   const ANIMATION_MS = 200;
   const isAnimatingRef = useRef(false);
@@ -102,10 +108,14 @@ export const Reader: React.FC = () => {
 
   // Applied and reRenders changes to use settings
   const applyReaderSettings = (rendition: Rendition, settings: AppSettings) => {
-    rendition.themes.fontSize(`${settings.readingFontSize}pt`);
+    rendition.themes.fontSize(`${localSettings.readingFontSize}pt`);
     rendition.themes.font(settings.readingFont.value);
     rendition.themes.select(`readerTheme-${settings.readingTheme}`);
-    rendition.themes.override("line-height", `${settings.lineHeight}`, true);
+    rendition.themes.override(
+      "line-height",
+      `${localSettings.lineHeight}`,
+      true,
+    );
     rendition.spread(settings.spread);
   };
 
@@ -128,10 +138,10 @@ export const Reader: React.FC = () => {
         clearTimeout(settingsDebounceRef.current);
     };
   }, [
-    appSettings.readingFontSize,
+    localSettings.readingFontSize,
     appSettings.readingFont,
     appSettings.readingTheme,
-    appSettings.lineHeight,
+    localSettings.lineHeight,
     appSettings.spread,
     localSettings.readingMargins,
   ]);
@@ -356,7 +366,7 @@ export const Reader: React.FC = () => {
       // Add stylesheet rules (existing behavior)
       contents.addStylesheetRules({
         body: {
-          "line-height": `${appSettingsRef.current.lineHeight} !important`,
+          "line-height": `${localSettingsRef.current.lineHeight} !important`,
         },
       });
 

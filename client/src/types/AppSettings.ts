@@ -44,7 +44,7 @@ export type SortByType =
   | "Recently Added"
   | null;
 
-interface LibraryCoverSize {
+export interface LibraryCoverSize {
   width: number;
   height: number;
 }

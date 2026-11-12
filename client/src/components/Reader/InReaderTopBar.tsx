@@ -9,9 +9,7 @@ import type { NumberField } from "@base-ui/react/number-field";
 // Actions
 import {
   setReadingFont,
-  setReadingFontSize,
   setReadingTheme,
-  setLineHeight,
   setSpread,
 } from "@/redux/reducers/AppSettingsReducer";
 import {
@@ -19,6 +17,8 @@ import {
   toggleSideMarginLink,
   toggleTopMarginLink,
   setKeepAwakeTimer,
+  setLineHeight,
+  setReadingFontSize,
 } from "@/redux/reducers/LocalSettingsReducer";
 
 // UI
@@ -302,7 +302,9 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
             <ButtonGroup variant="text" sx={{ marginRight: "0.45em" }}>
               <Button
                 onClick={() =>
-                  dispatch(setReadingFontSize(appSettings.readingFontSize - 1))
+                  dispatch(
+                    setReadingFontSize(localSettings.readingFontSize - 1),
+                  )
                 }
                 aria-label="Decrease Font Size"
               >
@@ -310,7 +312,9 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
               </Button>
               <Button
                 onClick={() =>
-                  dispatch(setReadingFontSize(appSettings.readingFontSize + 1))
+                  dispatch(
+                    setReadingFontSize(localSettings.readingFontSize + 1),
+                  )
                 }
                 aria-label="Increase Font Size"
               >
@@ -327,7 +331,7 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
               <Button
                 variant="text"
                 onClick={() =>
-                  dispatch(setLineHeight(appSettings.lineHeight - 0.1))
+                  dispatch(setLineHeight(localSettings.lineHeight - 0.1))
                 }
                 aria-label="Decrease Line Spacing"
               >
@@ -336,7 +340,7 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
 
               <Button
                 onClick={() =>
-                  dispatch(setLineHeight(appSettings.lineHeight + 0.1))
+                  dispatch(setLineHeight(localSettings.lineHeight + 0.1))
                 }
                 aria-label="Increase Line Spacing"
               >

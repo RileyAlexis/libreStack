@@ -11,6 +11,8 @@ import {
 } from "redux-persist";
 import createIdbStorage from "@piotr-cz/redux-persist-idb-storage";
 import { listenerMiddleware } from "./listenerMiddleware";
+import autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
+import type { PersistConfig } from "redux-persist";
 // import type { Middleware, UnknownAction } from "@reduxjs/toolkit";
 
 import libraryReducer from "./reducers/LibraryReducer";
@@ -36,6 +38,34 @@ import localSettings from "./reducers/LocalSettingsReducer";
 //   }
 //   return next(action);
 // };
+
+type RootState = ReturnType<typeof allReducers>;
+
+// Replace non-finite numbers (NaN, null, undefined) with the slice's default
+const repairNumbers = (saved: any, defaults: any) => {
+  if (!saved || !defaults) return saved;
+  const repaired = { ...saved };
+  for (const key of Object.keys(defaults)) {
+    if (typeof defaults[key] === "number" && !Number.isFinite(repaired[key])) {
+      repaired[key] = defaults[key];
+    }
+  }
+  return repaired;
+};
+
+const stateReconciler = (
+  inbound: any,
+  original: RootState,
+  reduced: RootState,
+  config: PersistConfig<RootState>,
+): RootState => {
+  const merged = autoMergeLevel2(inbound, original, reduced, config);
+  return {
+    ...merged,
+    localSettings: repairNumbers(merged.localSettings, original.localSettings),
+    appSettings: repairNumbers(merged.appSettings, original.appSettings),
+  };
+};
 
 const idbStorage = createIdbStorage({
   name: "librestack",
@@ -66,12 +96,12 @@ const rootReducer: typeof allReducers = (state, action) => {
   return allReducers(state, action);
 };
 
-const persistConfig = {
+const persistConfig: PersistConfig<RootState> = {
   key: "root",
   storage: idbStorage,
   whitelist: ["library", "libraryList", "appSettings", "auth", "localSettings"],
   serialize: false,
-  deserialize: false,
+  stateReconciler,
 };
 
 const peristedReducer = persistReducer(persistConfig, rootReducer);
