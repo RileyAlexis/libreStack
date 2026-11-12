@@ -151,7 +151,7 @@
   }
 
   .standAloneBuffer {
-    margin-top: 1.2em;
+    margin-top: env(safe-area-inset-top);
   }
 
   .pageContent {
