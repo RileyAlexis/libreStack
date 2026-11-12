@@ -14,8 +14,6 @@ public class UserSettings
     public string Spread { get; set; } = "auto";
     public string ReadingFontLabel { get; set; } = "Default";
     public string ReadingFontValue { get; set; } = "inherit";
-    public int ReadingFontSize { get; set; } = 16;
-    public double LineHeight { get; set; } = 1.5;
     public int LastSelectedLibrary { get; set; }
 
     // LibraryLayout
@@ -26,8 +24,6 @@ public class UserSettings
     public bool ShowCollections { get; set; } = false;
     public bool ShowCompleted { get; set; } = true;
     public bool ShowDescriptionOnHover { get; set; } = false;
-    public int CoverWidth { get; set; } = 150;
-    public int CoverHeight { get; set; } = 220;
     public string? SortBy { get; set; } = null;
     public bool SortAscending { get; set; } = true;
     public bool GroupBySeries { get; set; }

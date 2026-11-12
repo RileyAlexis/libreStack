@@ -56,8 +56,6 @@ public class UserSettingsService : IUserSettingsService
             existing.Spread = settings.Spread;
             existing.ReadingFontLabel = settings.ReadingFontLabel;
             existing.ReadingFontValue = settings.ReadingFontValue;
-            existing.ReadingFontSize = settings.ReadingFontSize;
-            existing.LineHeight = settings.LineHeight;
             existing.LibraryBase = settings.LibraryBase;
             existing.ShowTitles = settings.ShowTitles;
             existing.ShowAuthors = settings.ShowAuthors;
@@ -65,8 +63,6 @@ public class UserSettingsService : IUserSettingsService
             existing.ShowCollections = settings.ShowCollections;
             existing.ShowCompleted = settings.ShowCompleted;
             existing.ShowDescriptionOnHover = settings.ShowDescriptionOnHover;
-            existing.CoverWidth = settings.CoverWidth;
-            existing.CoverHeight = settings.CoverHeight;
             existing.SortBy = settings.SortBy;
             existing.SortAscending = settings.SortAscending;
             existing.LastSelectedLibrary = settings.LastSelectedLibrary;

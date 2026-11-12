@@ -674,14 +674,6 @@ namespace libreStack.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CoverHeight")
-                        .HasColumnType("integer")
-                        .HasColumnName("cover_height");
-
-                    b.Property<int>("CoverWidth")
-                        .HasColumnType("integer")
-                        .HasColumnName("cover_width");
-
                     b.Property<bool>("GroupByCollections")
                         .HasColumnType("boolean")
                         .HasColumnName("group_by_collections");
@@ -699,18 +691,10 @@ namespace libreStack.Migrations
                         .HasColumnType("text")
                         .HasColumnName("library_base");
 
-                    b.Property<double>("LineHeight")
-                        .HasColumnType("double precision")
-                        .HasColumnName("line_height");
-
                     b.Property<string>("ReadingFontLabel")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("reading_font_label");
-
-                    b.Property<int>("ReadingFontSize")
-                        .HasColumnType("integer")
-                        .HasColumnName("reading_font_size");
 
                     b.Property<string>("ReadingFontValue")
                         .IsRequired()
