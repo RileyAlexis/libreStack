@@ -7,6 +7,8 @@ import type { UserManagerType } from "@/types/UserType";
 import { UserCard } from "./UserCard";
 import { CircularProgress } from "@mui/material";
 
+import "./UserManager.css";
+
 export const UserManager: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [users, setUsers] = useState<UserManagerType[]>();

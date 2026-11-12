@@ -145,8 +145,8 @@
   }
 
   .primaryContainer {
-    height: 100dvh;
-    width: 100dvw;
+    /* height: 100dvh; */
+    /* width: 100dvw; */
     overflow: hidden;
   }
 
@@ -166,5 +166,11 @@
 @media only screen and (max-width: 500px) and (orientation: portrait) {
   .pageContent {
     padding-top: 1.5em;
+  }
+
+  @media only screen and (max-width: 420px) and (orientation: portrait) {
+    .pageContent {
+      padding-top: 0em;
+    }
   }
 }
