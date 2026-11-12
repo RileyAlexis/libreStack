@@ -28,6 +28,7 @@ export default defineConfig({
         clientsClaim: true,
         skipWaiting: true,
       },
+      devOptions: { enabled: true },
       manifest: {
         name: "Librestack",
         short_name: "Librestack",

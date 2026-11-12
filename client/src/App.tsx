@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "./redux/store";
 import type { LibreRootState } from "./types/LibreRootState";
 import type { ServerSetupType } from "./types/ServerConfigType";
+import type { AuthStatus } from "./types/AuthType";
 import { api } from "./utils/api";
 
 // Redux Actions
@@ -13,6 +14,7 @@ import { clearSnack } from "./redux/reducers/SnackReducer";
 import { setUser } from "./redux/reducers/AuthReducer";
 import { hydrateDownloads } from "./redux/reducers/DownloadReducer";
 import { closeLibreDialogs } from "@/redux/reducers/LibreDialogReducer";
+import { setAuthStatus } from "./redux/reducers/AuthReducer";
 
 // UI
 import {
@@ -48,15 +50,12 @@ import { useStandaloneMode } from "./utils/IsStandAlone";
 import { UserManager } from "./components/UserManager/UserManager";
 import { LibreStackInitialSetup } from "./components/Setup/LibreStackInitialSetup";
 
-type AuthStatus = "checking" | "authenticated" | "unauthenticated";
-
 function useAuthBootstrap(): AuthStatus {
   const dispatch = useDispatch<AppDispatch>();
   const accessToken = useSelector((s: LibreRootState) => s.auth.accessToken);
   const hasToken = !!accessToken;
-
-  const [authStatus, setAuthStatus] = useState<AuthStatus>(
-    hasToken ? "checking" : "unauthenticated",
+  const authStatus = useSelector(
+    (state: LibreRootState) => state.auth.authStatus,
   );
 
   const prevHasTokenRef = useRef(hasToken);
@@ -68,30 +67,57 @@ function useAuthBootstrap(): AuthStatus {
     prevHasTokenRef.current = hasToken;
 
     if (!hasToken) {
-      setAuthStatus("unauthenticated");
+      dispatch(setAuthStatus("unauthenticated"));
       return;
     }
 
     if (wasLoggedIn && statusRef.current === "authenticated") return;
 
-    let cancelled = false;
-    setAuthStatus("checking");
+    dispatch(setAuthStatus("checking"));
 
     api
       .get("/Auth/user")
       .then((res) => {
-        if (cancelled) return;
         dispatch(setUser(res.data));
-        setAuthStatus("authenticated");
+        dispatch(setAuthStatus("authenticated"));
       })
-      .catch(() => {
-        if (!cancelled) setAuthStatus("unauthenticated");
+      .catch((err) => {
+        console.log(err);
+        console.log(err.response);
+        dispatch(
+          setAuthStatus(
+            err.response.status === 502 ? "offline" : "unauthenticated",
+          ),
+        );
       });
 
-    return () => {
-      cancelled = true;
-    };
+    return () => {};
   }, [hasToken]);
+
+  // Poll for the server coming back while offline
+  useEffect(() => {
+    if (authStatus !== "offline") return;
+
+    const id = setInterval(() => {
+      api
+        .get("/Auth/user")
+        .then((res) => {
+          dispatch(setUser(res.data));
+          dispatch(setAuthStatus("authenticated"));
+        })
+        .catch((err) => {
+          dispatch(
+            setAuthStatus(
+              err.response.status === 502 ? "offline" : "unauthenticated",
+            ),
+          );
+        });
+    }, 15000);
+
+    return () => {
+      clearInterval(id);
+    };
+  }, [authStatus]);
 
   return authStatus;
 }
@@ -141,16 +167,20 @@ function App() {
         }
       })
       .catch(() => {
-        navigate("/library");
+        if (location.pathname === "/") {
+          navigate("/library");
+        }
       });
   }, [location.pathname]);
 
   useEffect(() => {
+    console.log(authStatus);
     setIsLoginOpen(authStatus === "unauthenticated");
   }, [authStatus]);
 
   useEffect(() => {
-    if (authStatus === "authenticated") dispatch(hydrateDownloads());
+    if (authStatus === "authenticated" || authStatus === "offline")
+      dispatch(hydrateDownloads());
   }, [authStatus, dispatch]);
 
   const handleCloseSnack = (

@@ -5,10 +5,14 @@ import type { LibreRootState } from "../../types/LibreRootState";
 import { MainMenu } from "./MainMenu";
 import "./HeaderBanner.css";
 import { BookSpinner } from "../BookSpinner/BookSpinner";
+import { Typography } from "@mui/material";
 
 export const HeaderBanner: React.FC = () => {
   const navigate = useNavigate();
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  const authStatus = useSelector(
+    (state: LibreRootState) => state.auth.authStatus,
+  );
   const isSmall = window.innerWidth < 320;
 
   const handleNavigateToMain = () => {
@@ -28,6 +32,9 @@ export const HeaderBanner: React.FC = () => {
         </div>
 
         <div className="menuContainer">
+          {authStatus === "offline" && (
+            <Typography variant="h6">Offline</Typography>
+          )}
           {appSettings.isSyncing && <BookSpinner />}
           <MainMenu />
         </div>

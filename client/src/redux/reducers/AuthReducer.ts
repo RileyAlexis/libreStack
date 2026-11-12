@@ -1,11 +1,12 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import type { AuthType } from "@/types/AuthType";
+import type { AuthStatus, AuthType } from "@/types/AuthType";
 import type { UserType } from "@/types/UserType";
 
 const initialState: AuthType = {
   accessToken: localStorage.getItem("accessToken"),
   refreshToken: localStorage.getItem("refreshToken"),
   user: null,
+  authStatus: "unauthenticated",
 };
 
 const authSlice = createSlice({
@@ -34,8 +35,12 @@ const authSlice = createSlice({
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
     },
+    setAuthStatus(state, action: PayloadAction<AuthStatus>) {
+      state.authStatus = action.payload;
+    },
   },
 });
 
-export const { setTokens, setUser, loggedOut } = authSlice.actions;
+export const { setTokens, setUser, loggedOut, setAuthStatus } =
+  authSlice.actions;
 export default authSlice.reducer;

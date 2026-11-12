@@ -9,6 +9,7 @@ import type { BookType } from "@/types/BookType";
 import type { LibreRootState } from "@/types/LibreRootState";
 import { selectDownloadStatus } from "@/redux/reducers/DownloadReducer";
 import { downloadBook } from "@/redux/reducers/DownloadReducer";
+import { runSnack } from "@/redux/reducers/SnackReducer";
 
 // UI
 import {
@@ -34,27 +35,28 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
   );
   const selections = useSelector((state: LibreRootState) => state.selections);
   const isSelected = selections.selectedBooks.includes(book.id);
+  const authStatus = useSelector(
+    (state: LibreRootState) => state.auth.authStatus,
+  );
   const [isHovering, setIsHovering] = useState(false);
-  // const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-  // const [coverMultiplier, setCoverMultiplier] = useState<number>(1);
 
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const didLongPress = useRef(false);
 
   const downloadStatus = useSelector(selectDownloadStatus(String(book.id)));
 
-  // useEffect(() => {
-  //   const handler = () => setScreenWidth(window.innerWidth);
-  //   window.addEventListener("resize", handler);
-
-  //   setCoverMultiplier(() =>
-  //     screenWidth < 480 ? 0.65 : screenWidth < 768 ? 0.75 : 1,
-  //   );
-
-  //   return () => window.removeEventListener("resize", handler);
-  // }, []);
-
   const handleReadBook = (book: BookType) => {
+    if (authStatus === "offline" && downloadStatus !== "downloaded") {
+      dispatch(
+        runSnack({
+          isOpen: true,
+          severity: "error",
+          description:
+            "LibreStack is in offline mode and this book has not been downloaded",
+        }),
+      );
+      return;
+    }
     navigate(`/reader/${book.id}`);
   };
 
@@ -130,7 +132,6 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
     >
       <BookControlsTopBar
         isHovering={isHovering}
-        // coverMultiplier={coverMultiplier}
         handleSelectBook={handleSelectBook}
         handleUnselectBook={handleUnselectBook}
         book={book}
