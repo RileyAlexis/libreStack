@@ -47,7 +47,6 @@ function formatBytes(bytes: number): string {
 
 interface BookControlsTopBarProps {
   isHovering: boolean;
-  coverMultiplier: number;
   handleSelectBook: (bookId: number) => void;
   handleUnselectBook: (bookId: number) => void;
   book: BookType;
@@ -55,7 +54,6 @@ interface BookControlsTopBarProps {
 
 export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
   isHovering,
-  coverMultiplier,
   handleSelectBook,
   handleUnselectBook,
   book,
@@ -66,6 +64,9 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
   const totalSize = useSelector(selectTotalDownloadedSize);
   const selections = useSelector((state: LibreRootState) => state.selections);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  const localSettings = useSelector(
+    (state: LibreRootState) => state.localSettings,
+  );
   const isSelected = selections.selectedBooks.includes(book.id);
   const [isResetProgressDialogOpen, setIsResetProgressDialogOpen] =
     useState(false);
@@ -126,12 +127,8 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
   };
 
   const iconSize = {
-    width:
-      appSettings.libraryLayout.libraryCoverSize.width * coverMultiplier * 0.14,
-    height:
-      appSettings.libraryLayout.libraryCoverSize.height *
-      coverMultiplier *
-      0.14,
+    width: localSettings.libraryCoverSize.width * 0.14,
+    height: localSettings.libraryCoverSize.height * 0.14,
   };
 
   const handleMenuClose = () => {

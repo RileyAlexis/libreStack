@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 
@@ -14,26 +14,28 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
   collection,
 }) => {
   const navigate = useNavigate();
-  const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  const localSettings = useSelector(
+    (state: LibreRootState) => state.localSettings,
+  );
   const [_, setIsHovering] = useState(false);
-  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-  const [coverMultiplier, setCoverMultiplier] = useState<number>(1);
+  // const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  // const [coverMultiplier, setCoverMultiplier] = useState<number>(1);
   const middleIndex = Math.floor(
     (collection.collectionBooks.slice(0, 5).length - 1) / 2,
   );
   const STRIP_WIDTH = 18;
   const VERTICAL_STEP = 2;
 
-  useEffect(() => {
-    const handler = () => setScreenWidth(window.innerWidth);
-    window.addEventListener("resize", handler);
+  // useEffect(() => {
+  //   const handler = () => setScreenWidth(window.innerWidth);
+  //   window.addEventListener("resize", handler);
 
-    setCoverMultiplier(() =>
-      screenWidth < 480 ? 0.65 : screenWidth < 768 ? 0.75 : 1,
-    );
+  //   setCoverMultiplier(() =>
+  //     screenWidth < 480 ? 0.65 : screenWidth < 768 ? 0.75 : 1,
+  //   );
 
-    return () => window.removeEventListener("resize", handler);
-  }, []);
+  //   return () => window.removeEventListener("resize", handler);
+  // }, []);
 
   const handleOpenCollection = () => {
     navigate(`/collection/${collection.collectionId}`);
@@ -44,10 +46,8 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
       onClick={handleOpenCollection}
       className="seriesCardContainer"
       style={{
-        width:
-          appSettings.libraryLayout.libraryCoverSize.width * coverMultiplier,
-        height:
-          appSettings.libraryLayout.libraryCoverSize.height * coverMultiplier,
+        width: localSettings.libraryCoverSize.width,
+        height: localSettings.libraryCoverSize.height,
       }}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => {
@@ -62,12 +62,12 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
               textAlign: "center",
               fontWeight: "600",
             }}
-            style={{ fontSize: `${1 * coverMultiplier}rem` }}
+            // style={{ fontSize: `${1 * coverMultiplier}rem` }}
           >
             {collection.collectionTitle}
           </Typography>
         </div>
-        {appSettings.libraryLayout.libraryCoverSize.height >= 210 && (
+        {localSettings.libraryCoverSize.height >= 210 && (
           <div className="seriesCoverContainer">
             {collection.collectionBooks.slice(0, 5).map((book, index) => {
               const distance = index - middleIndex;
@@ -115,11 +115,11 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
           </div>
         )}
 
-        {appSettings.libraryLayout.libraryCoverSize.height >= 210 && (
+        {localSettings.libraryCoverSize.height >= 210 && (
           <div className="seriesText">
             <Typography
               sx={{ textAlign: "center" }}
-              style={{ fontSize: `${1 * coverMultiplier}rem` }}
+              // style={{ fontSize: `${1 * coverMultiplier}rem` }}
             >
               {collection.collectionBooks.length} Books
             </Typography>

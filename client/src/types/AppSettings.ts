@@ -3,8 +3,6 @@ export interface AppSettings {
   readingTheme: ReadingThemeType;
   spread: SpreadType;
   readingFont: ReadingFontType;
-  readingFontSize: number;
-  lineHeight: number;
   libraryLayout: LibraryLayout;
   lastSelectedLibrary: number;
   isSyncing: boolean;
@@ -17,7 +15,6 @@ export interface LibraryLayout {
   base: "Grid" | "List";
   showTitles: boolean;
   showAuthors: boolean;
-  libraryCoverSize: LibraryCoverSize;
   showSeries: boolean;
   showOnlyDownloaded: boolean;
   sortBy: SortByType;

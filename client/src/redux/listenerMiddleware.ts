@@ -2,12 +2,9 @@ import { createListenerMiddleware, isAnyOf } from "@reduxjs/toolkit";
 import type { LibreRootState } from "@/types/LibreRootState";
 import {
   setAppSettings,
-  setCoverSize,
   switchLibraryAsHome,
-  setReadingFontSize,
   setReadingFont,
   setSpread,
-  setLineHeight,
   setReadingTheme,
   setLayout,
   setSortBy,
@@ -21,12 +18,9 @@ export const listenerMiddleware = createListenerMiddleware();
 listenerMiddleware.startListening({
   matcher: isAnyOf(
     setAppSettings,
-    setCoverSize,
     switchLibraryAsHome,
-    setReadingFontSize,
     setReadingFont,
     setSpread,
-    setLineHeight,
     setReadingTheme,
     setLayout,
     setSortBy,

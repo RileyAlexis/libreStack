@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router";
 import type { AppDispatch } from "@/redux/store";
 
@@ -29,28 +29,30 @@ interface BookCardProps {
 export const BookCard: React.FC<BookCardProps> = ({ book }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  const localSettings = useSelector(
+    (state: LibreRootState) => state.localSettings,
+  );
   const selections = useSelector((state: LibreRootState) => state.selections);
   const isSelected = selections.selectedBooks.includes(book.id);
   const [isHovering, setIsHovering] = useState(false);
-  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
-  const [coverMultiplier, setCoverMultiplier] = useState<number>(1);
+  // const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  // const [coverMultiplier, setCoverMultiplier] = useState<number>(1);
 
   const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const didLongPress = useRef(false);
 
   const downloadStatus = useSelector(selectDownloadStatus(String(book.id)));
 
-  useEffect(() => {
-    const handler = () => setScreenWidth(window.innerWidth);
-    window.addEventListener("resize", handler);
+  // useEffect(() => {
+  //   const handler = () => setScreenWidth(window.innerWidth);
+  //   window.addEventListener("resize", handler);
 
-    setCoverMultiplier(() =>
-      screenWidth < 480 ? 0.65 : screenWidth < 768 ? 0.75 : 1,
-    );
+  //   setCoverMultiplier(() =>
+  //     screenWidth < 480 ? 0.65 : screenWidth < 768 ? 0.75 : 1,
+  //   );
 
-    return () => window.removeEventListener("resize", handler);
-  }, []);
+  //   return () => window.removeEventListener("resize", handler);
+  // }, []);
 
   const handleReadBook = (book: BookType) => {
     navigate(`/reader/${book.id}`);
@@ -73,7 +75,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
     const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
-    const zoneSize = appSettings.libraryLayout.libraryCoverSize.width * 0.25;
+    const zoneSize = localSettings.libraryCoverSize.width * 0.25;
     return clientX - rect.left < zoneSize && clientY - rect.top < zoneSize;
   };
 
@@ -107,10 +109,8 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
     <div
       className={`bookCardContainer ${isSelected ? "selected" : ""} ${book.isShared ? "shared" : ""}`}
       style={{
-        width:
-          appSettings.libraryLayout.libraryCoverSize.width * coverMultiplier,
-        height:
-          appSettings.libraryLayout.libraryCoverSize.height * coverMultiplier,
+        width: localSettings.libraryCoverSize.width,
+        height: localSettings.libraryCoverSize.height,
       }}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => {
@@ -130,7 +130,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
     >
       <BookControlsTopBar
         isHovering={isHovering}
-        coverMultiplier={coverMultiplier}
+        // coverMultiplier={coverMultiplier}
         handleSelectBook={handleSelectBook}
         handleUnselectBook={handleUnselectBook}
         book={book}

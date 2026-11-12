@@ -10,12 +10,13 @@ import type { LibraryListType } from "@/types/LibraryType";
 
 // Actions
 import {
-  setCoverSize,
   setIsLibraryLoading,
   setIsSyncing,
   setLastSelectedLibrary,
   setLayout,
 } from "@/redux/reducers/AppSettingsReducer";
+
+import { setCoverSize } from "@/redux/reducers/LocalSettingsReducer";
 
 // UI
 import {
@@ -66,6 +67,9 @@ export const BottomControls: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const library = useSelector((state: LibreRootState) => state.library);
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
+  const localSettings = useSelector(
+    (state: LibreRootState) => state.localSettings,
+  );
   const libraryList = useSelector((state: LibreRootState) => state.libraryList);
   const hasSearchTerm = useSelector(
     (state: LibreRootState) => state.selections.librarySearchTerm.length > 0,
@@ -523,7 +527,7 @@ export const BottomControls: React.FC = () => {
             Cover Size
           </Typography>
           <Slider
-            value={appSettings.libraryLayout.libraryCoverSize.width}
+            value={localSettings.libraryCoverSize.width}
             onChange={handleChangeCoverSize}
             // step={10}
             min={80}

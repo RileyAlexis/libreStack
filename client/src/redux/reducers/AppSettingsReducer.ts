@@ -24,8 +24,6 @@ const initialState: AppSettings = {
   isSyncing: false,
   isLibraryLoading: false,
   lastSelectedLibrary: 0,
-  readingFontSize: 18,
-  lineHeight: 1.5,
   libraryLayout: {
     base: "Grid",
     showTitles: false,
@@ -39,10 +37,6 @@ const initialState: AppSettings = {
     showDescriptionOnHover: true,
     groupByCollections: false,
     groupBySeries: false,
-    libraryCoverSize: {
-      width: 200,
-      height: 300,
-    },
     showSharedBooks: true,
   },
 };
@@ -78,24 +72,14 @@ const AppSettingsSlice = createSlice({
     setAppSettings(_, action: PayloadAction<AppSettings>) {
       return action.payload;
     },
-    setCoverSize(state, action: PayloadAction<number>) {
-      state.libraryLayout.libraryCoverSize.width = action.payload;
-      state.libraryLayout.libraryCoverSize.height = (action.payload / 2) * 3;
-    },
     switchLibraryAsHome(state) {
       state.showLibraryAsHome = !state.showLibraryAsHome;
-    },
-    setReadingFontSize(state, action: PayloadAction<number>) {
-      state.readingFontSize = action.payload;
     },
     setReadingFont(state, action: PayloadAction<ReadingFontType>) {
       state.readingFont = action.payload;
     },
     setSpread(state, action: PayloadAction<SpreadType>) {
       state.spread = action.payload;
-    },
-    setLineHeight(state, action: PayloadAction<number>) {
-      state.lineHeight = action.payload;
     },
     setReadingTheme(state, action: PayloadAction<ReadingThemeType>) {
       state.readingTheme = action.payload;
@@ -139,12 +123,9 @@ const AppSettingsSlice = createSlice({
 
 export const {
   setAppSettings,
-  setCoverSize,
   switchLibraryAsHome,
-  setReadingFontSize,
   setReadingFont,
   setSpread,
-  setLineHeight,
   setReadingTheme,
   setLayout,
   setSortBy,
