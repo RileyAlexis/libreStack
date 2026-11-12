@@ -318,7 +318,13 @@ export const Reader: React.FC = () => {
       if ((doc as any).__libreListenersAdded) return;
       (doc as any).__libreListenersAdded = true;
 
-      const STRIP_PROPS = ["font-size", "font-family"];
+      const STRIP_PROPS = [
+        "font-size",
+        "font-family",
+        "line-height",
+        "letter-spacing",
+        "word-spacing",
+      ];
 
       const stripFontProps = (rules: CSSRuleList) => {
         Array.from(rules).forEach((rule: any) => {
