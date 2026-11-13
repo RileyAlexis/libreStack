@@ -51,7 +51,6 @@ export const InReaderBottomBar: React.FC<InReaderBottomBarProps> = ({
   };
 
   const handleNavigateBack = (href: string) => {
-    console.log("handleNavigateBack", href);
     dispatch(removeMostRecentStack());
     handleNavigate(href);
   };

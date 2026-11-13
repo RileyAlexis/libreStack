@@ -97,12 +97,11 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
   const handleResetReadingProgress = () => {
     api
       .post(`ReadingProgress/resetProgress?bookId=${book.id}`)
-      .then((response) => {
-        console.log(response.data);
+      .then((_) => {
         dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       })
       .finally(() => {
         setIsResetProgressDialogOpen(false);
@@ -115,9 +114,7 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
         bookId: book.id,
         seriesId: 0,
       })
-      .then((response) => {
-        console.log(response.data);
-      })
+      .then((_) => {})
       .catch((error) => {
         console.error(error.response.data);
       })

@@ -212,7 +212,7 @@ export const Reader: React.FC = () => {
         createdBook = Epub(arrayBuffer);
         setBookInstance(createdBook);
       } catch (error) {
-        if (!cancelled) console.log(error);
+        if (!cancelled) console.error(error);
       }
     }
 
@@ -490,7 +490,6 @@ export const Reader: React.FC = () => {
     renditionRef.current = rendition;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      console.log(e);
       if (e.key === "ArrowLeft") {
         e.preventDefault();
         animatedNav("prev");

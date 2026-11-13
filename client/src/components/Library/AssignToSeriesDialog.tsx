@@ -60,7 +60,6 @@ export const AssignToSeriesDialog: React.FC<AssignToSeriesDialogProps> = ({
         const sortedSeries = seriesResponse.data.sort((a: any, b: any) =>
           a.seriesTitle.localeCompare(b.seriesTitle),
         );
-        console.log(seriesResponse);
         setSeriesList(sortedSeries);
       } catch (error) {
         console.error("Failed to fetch global library data:", error);
@@ -74,7 +73,6 @@ export const AssignToSeriesDialog: React.FC<AssignToSeriesDialogProps> = ({
     const found =
       seriesList?.find((s) => s.seriesTitle === e.target.value) ?? null;
     setSelectedSeries(found);
-    console.log(e.target.value);
   };
 
   const handleSubmit = async () => {

@@ -67,7 +67,6 @@ export const FixMismatchDialog: React.FC<FixMismatchDialogProps> = ({
       api
         .get(`metadata/searchOpenLibrary?bookId=${book!.id}`)
         .then((response) => {
-          console.log(response.data.value);
           setSearchResults(response.data.value);
         })
         .catch((error) => {

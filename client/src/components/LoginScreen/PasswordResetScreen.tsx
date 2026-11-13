@@ -54,7 +54,6 @@ export const PasswordResetScreen: React.FC<PasswordResetScreenProps> = ({
   };
 
   const handlePasswordReset = () => {
-    console.log("handle password reset");
     if (newPassword !== confirmNewPassword) {
       setErrMessage("Passwords do not Match");
       return;

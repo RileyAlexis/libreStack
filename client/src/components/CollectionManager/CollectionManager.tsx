@@ -49,7 +49,6 @@ export const CollectionManager: React.FC = () => {
     api
       .get("Collections/getAllUserCollections")
       .then((response) => {
-        console.log(response.data);
         setCollections(response.data.value);
       })
       .catch((error) => {
@@ -76,7 +75,7 @@ export const CollectionManager: React.FC = () => {
         setSelectedCollection(null);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   };
 

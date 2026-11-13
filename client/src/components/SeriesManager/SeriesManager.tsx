@@ -78,7 +78,7 @@ export const SeriesManager: React.FC = () => {
         setSelectedSeries(null);
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
       });
   };
 

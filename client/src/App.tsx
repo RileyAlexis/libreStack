@@ -82,8 +82,7 @@ function useAuthBootstrap(): AuthStatus {
         dispatch(setAuthStatus("authenticated"));
       })
       .catch((err) => {
-        console.log(err);
-        console.log(err.response);
+        console.error(err);
         dispatch(
           setAuthStatus(
             err.response.status === 502 ? "offline" : "unauthenticated",
@@ -174,7 +173,6 @@ function App() {
   }, [location.pathname]);
 
   useEffect(() => {
-    console.log(authStatus);
     setIsLoginOpen(authStatus === "unauthenticated");
   }, [authStatus]);
 

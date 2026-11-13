@@ -23,7 +23,6 @@ export const LibreStackInitialSetup: React.FC = () => {
     api
       .get("/Config/checkIfSetupComplete")
       .then((response) => {
-        console.log(response.data.value);
         setIsBasePathSet(response.data.value.isBasePathSet);
         setIsAdminRegistered(response.data.value.isAdminRegistered);
       })

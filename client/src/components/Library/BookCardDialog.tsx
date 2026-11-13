@@ -106,7 +106,6 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({
     api
       .get(`Book/getBookEntry?id=${bookId}`)
       .then((response) => {
-        console.log(response);
         const newBook = response.data.value;
         setBook(newBook);
         // Sync series input state immediately after fetching the book
@@ -243,8 +242,7 @@ export const BookCardDialog: React.FC<BookCardDialogProps> = ({
     setError(null);
     api
       .post(`Book/revertCoverToEpub?bookId=${bookId}`)
-      .then((response) => {
-        console.log(response.data);
+      .then((_) => {
         dispatch(fetchLibraryData(appSettings.lastSelectedLibrary));
       })
       .catch((error) => {

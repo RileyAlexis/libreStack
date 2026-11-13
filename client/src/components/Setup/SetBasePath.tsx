@@ -40,15 +40,14 @@ export const SetBasePath: React.FC<SetBasePathProps> = ({
       .post("/Config/setBasePath", {
         path: basePath.trim(),
       })
-      .then((response) => {
-        console.log(response.data);
+      .then((_) => {
         setIsBasePathSet(true);
         setIsAlertOpen(true);
         setAlertText("Base Path Is Configured");
         setAlertSeverity("success");
       })
       .catch((error) => {
-        console.log(error.response.data);
+        console.error(error.response.data);
         setAlertSeverity("error");
         setAlertText(error.response.data.error);
         setIsBasePathSet(false);

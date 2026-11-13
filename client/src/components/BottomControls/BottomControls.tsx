@@ -229,7 +229,7 @@ export const BottomControls: React.FC = () => {
         headers: { "Content-Type": "multipart/form-data" },
         params: { libraryId: library.id },
       })
-      .then((response) => console.log(response.data))
+      .then((_) => {})
       .catch((error) => console.error(error.response.data))
       .finally(() => {
         if (fileInputRef.current) fileInputRef.current.value = "";

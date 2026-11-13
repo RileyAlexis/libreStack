@@ -111,7 +111,7 @@ export const ServerLibraryStats: React.FC<ServerLibraryStatsProps> = ({
         );
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
         dispatch(
           runSnack({
             isOpen: true,
