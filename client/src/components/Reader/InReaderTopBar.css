@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   z-index: 20;
-  padding-top: calc(env(safe-area-inset-top));
+  /* padding-top: calc(env(safe-area-inset-top)); */
   background: var(--menu-background);
   box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.15);
 }
@@ -108,5 +108,25 @@
   }
   .marginBox {
     flex-direction: row;
+  }
+}
+
+/* iPad */
+@media only screen and (min-width: 552px) and (orientation: portrait) {
+  .inReaderTopBar {
+    padding-top: calc(0em + env(safe-area-inset-top));
+  }
+  .mobileSettingsControlsContainer {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* iPhone */
+@media only screen and (max-width: 551px) and (orientation: portrait) {
+  .inReaderTopBar {
+    padding-top: calc(-2em + env(safe-area-inset-top));
+  }
+  .mobileSettingsControlsContainer {
+    padding-bottom: calc(4.5em + env(safe-area-inset-bottom));
   }
 }

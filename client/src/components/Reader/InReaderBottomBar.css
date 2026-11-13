@@ -4,7 +4,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    padding-bottom: calc(0em + env(safe-area-inset-bottom));
+    /* padding-bottom: env(safe-area-inset-bottom); */
     z-index: 20;
     background: var(--menu-background);
     backdrop-filter: blur(5px);
@@ -58,8 +58,16 @@
   }
 }
 
-@media only screen and (max-width: 500px) and (orientation: portrait) {
+/* iPad */
+@media only screen and (min-width: 552px) and (orientation: portrait) {
   .inReaderBottomBar {
-    padding-bottom: 0.5em;
+    padding-bottom: calc(1.5em + env(safe-area-inset-bottom));
+  }
+}
+
+/* iPhone */
+@media only screen and (max-width: 551px) and (orientation: portrait) {
+  .inReaderBottomBar {
+    padding-bottom: calc(1em + env(safe-area-inset-bottom));
   }
 }
