@@ -26,6 +26,11 @@ export const Reader: React.FC = () => {
   const localSettings = useSelector(
     (state: LibreRootState) => state.localSettings,
   );
+  const storedCfiLocation = useSelector(
+    (state: LibreRootState) =>
+      state.library.books.find((book) => book.id === Number(id))
+        ?.readingProgress.cfiLocation,
+  );
   const [isMenuShowing, setIsMenuShowing] = useState(false);
   const [progress, setProgress] = useState<string>("");
   const [bookInstance, setBookInstance] = useState<Book | null>(null);
@@ -207,7 +212,9 @@ export const Reader: React.FC = () => {
         if (!arrayBuffer)
           throw new Error(`No book data available for id ${id}`);
         if (cancelled) return;
-        setProgress(progressResponse?.data?.value?.cfiLocation ?? null);
+        setProgress(
+          progressResponse?.data?.value?.cfiLocation ?? storedCfiLocation,
+        );
 
         createdBook = Epub(arrayBuffer);
         setBookInstance(createdBook);
