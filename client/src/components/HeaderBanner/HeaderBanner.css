@@ -1,8 +1,8 @@
 .headerBannerContainer {
   position: relative;
-  z-index: 2;
+  /* z-index: 2; */
   display: flex;
-  width: 100%;
+  width: 98%;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;

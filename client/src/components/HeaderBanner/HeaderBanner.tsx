@@ -32,7 +32,7 @@ export const HeaderBanner: React.FC = () => {
         </div>
 
         <div className="menuContainer">
-          {authStatus === "offline" && (
+          {authStatus === "offline" && !isSmall && (
             <Typography variant="h6">Offline</Typography>
           )}
           {appSettings.isSyncing && <BookSpinner />}

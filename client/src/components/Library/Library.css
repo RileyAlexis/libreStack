@@ -1,7 +1,7 @@
 .libraryContainer {
   position: relative;
-  overflow: hidden;
-  height: 100vh;
+  /* overflow: hidden; */
+  height: 100%;
 }
 
 .libraryLoader {
@@ -13,6 +13,7 @@
 
 .booksContainer {
   position: absolute;
+  height: 100%;
   inset: 0;
   overflow-y: auto;
   display: flex;
