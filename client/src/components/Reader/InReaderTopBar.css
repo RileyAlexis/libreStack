@@ -7,6 +7,7 @@
   /* padding-top: calc(env(safe-area-inset-top)); */
   background: var(--menu-background);
   box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(5px);
 }
 
 .inReaderTopBarControlsMobileOuter {
@@ -25,7 +26,6 @@
   padding-left: 1.5em;
   padding-right: 1.5em;
   width: 100%;
-  backdrop-filter: blur(5px);
 }
 
 .mobileSettingsDialog {
