@@ -41,7 +41,6 @@ import { DescriptionDialog } from "./components/Library/DescriptionDialog";
 import { FixMismatchDialog } from "./components/Library/FixMismatchDialog";
 import { SeriesManager } from "./components/SeriesManager/SeriesManager";
 import { ServerManager } from "./components/ServerManager/ServerManager";
-import { Tester } from "./components/Testers/Tester";
 
 // import "./App.css";
 import { CollectionBooks } from "./components/Library/CollectionCard/CollectionBooks";
@@ -289,15 +288,6 @@ function App() {
             <div>
               <HeaderBanner />
               {/* <LogIn /> */}
-            </div>
-          }
-        />
-        <Route
-          path="/tester"
-          element={
-            <div>
-              <HeaderBanner />
-              <Tester />
             </div>
           }
         />
