@@ -7,6 +7,14 @@
   /* padding-top: calc(env(safe-area-inset-top)); */
   background: var(--menu-background);
   box-shadow: 0 -1px 8px rgba(0, 0, 0, 0.15);
+  /* backdrop-filter: blur(5px); */
+}
+
+.inReaderTopBar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
   backdrop-filter: blur(5px);
 }
 
@@ -32,11 +40,11 @@
   height: 90dvh;
   width: 100dvw;
   overflow-y: auto;
+  border: none;
   overscroll-behavior: contain;
   z-index: 21;
-  border: none;
-  background: transparent;
   backdrop-filter: blur(5px);
+  background: rgba(0, 0, 0, 0.15);
 }
 
 .mobileSettingsControlsContainer {
@@ -48,7 +56,7 @@
 }
 
 .mobileSettingsCard {
-  border: 1px solid darkgray;
+  border: 2px solid var(--sidebar-ring);
   border-radius: 25px;
   width: 100%;
   display: flex;
