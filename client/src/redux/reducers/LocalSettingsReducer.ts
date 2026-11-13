@@ -1,16 +1,16 @@
 import type {
   LocalSettingsType,
   ReadingMarginsType,
-} from "@/types/ LocalSettingsType";
+} from "@/types/LocalSettingsType";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: LocalSettingsType = {
   keepAwake: 3,
   readingMargins: {
-    top: 1.2,
-    left: 1.2,
-    right: 1.2,
-    bottom: 1.2,
+    top: 0.5,
+    left: 0.5,
+    right: 0.5,
+    bottom: 0.5,
   },
   readingFontSize: 18,
   lineHeight: 1.5,

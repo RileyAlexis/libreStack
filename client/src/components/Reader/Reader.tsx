@@ -16,7 +16,7 @@ import { InReaderBottomBar } from "./InReaderBottomBar";
 import { getOfflineEpub } from "@/redux/reducers/DownloadReducer";
 import { updateReadingProgress } from "@/redux/reducers/LibraryReducer";
 import { useKeepAwake } from "./useKeepAwake";
-import type { LocalSettingsType } from "@/types/ LocalSettingsType";
+import type { LocalSettingsType } from "@/types/LocalSettingsType";
 
 export const Reader: React.FC = () => {
   const { id } = useParams();

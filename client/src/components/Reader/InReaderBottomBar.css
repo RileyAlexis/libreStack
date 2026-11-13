@@ -19,6 +19,7 @@
     gap: 0.5em;
     width: 100%;
     color: var(--lightText);
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   .inReaderBottomBarText {

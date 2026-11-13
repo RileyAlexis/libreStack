@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import type { AppDispatch } from "@/redux/store";
 import type { LibreRootState } from "@/types/LibreRootState";
-import type { ReadingMarginsType } from "@/types/ LocalSettingsType";
+import type { ReadingMarginsType } from "@/types/LocalSettingsType";
 import type { NumberField } from "@base-ui/react/number-field";
 
 // Actions
@@ -65,7 +65,7 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
   currentCfiRef,
 }) => {
   const { id } = useParams();
-  const minMargin = 0.3;
+  const minMargin = 0.1;
   const maxMargin = 6;
   // const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
   const dispatch = useDispatch<AppDispatch>();
