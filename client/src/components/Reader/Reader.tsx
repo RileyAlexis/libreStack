@@ -127,6 +127,7 @@ export const Reader: React.FC = () => {
     settingsDebounceRef.current = setTimeout(() => {
       const cfi = currentCfiRef.current;
       applyReaderSettings(renditionRef.current!, appSettings);
+      renditionRef.current!.resize();
       if (cfi) {
         suppressNextRelocateRef.current = true;
         renditionRef.current!.display(cfi);

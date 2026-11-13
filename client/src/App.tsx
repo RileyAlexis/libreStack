@@ -43,7 +43,7 @@ import { SeriesManager } from "./components/SeriesManager/SeriesManager";
 import { ServerManager } from "./components/ServerManager/ServerManager";
 import { Tester } from "./components/Testers/Tester";
 
-import "./App.css";
+// import "./App.css";
 import { CollectionBooks } from "./components/Library/CollectionCard/CollectionBooks";
 import { CollectionManager } from "./components/CollectionManager/CollectionManager";
 import { useStandaloneMode } from "./utils/IsStandAlone";

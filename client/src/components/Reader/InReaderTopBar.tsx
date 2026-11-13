@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router";
 import type { AppDispatch } from "@/redux/store";
@@ -80,7 +80,6 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
   const bookmarks = useSelector((state: LibreRootState) =>
     state.library.books.find((b) => b.id === Number(id)),
   )?.bookmarks;
-  const [haveMarginsChanged, setHaveMarginsChanged] = useState(false);
   const [isFormattingDialogOpen, setIsFormatDialogOpen] = useState(false);
   const [newBookmarkName, _] = useState("Bookmark ");
   const [isMarginsOpen, setIsMarginsOpen] = useState<boolean>(false);
@@ -104,7 +103,6 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
       return;
     }
     dispatch(setReadingFont(selected));
-    setHaveMarginsChanged(true);
   };
 
   const handleChangeTheme = (event: SelectChangeEvent<string>) => {
@@ -254,14 +252,7 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
 
   const handleSaveMargins = () => {
     dispatch(setReadingMargins(margins));
-    setHaveMarginsChanged(true);
   };
-
-  useEffect(() => {
-    return () => {
-      if (haveMarginsChanged) window.location.reload();
-    };
-  }, [haveMarginsChanged]);
 
   return (
     <div className="inReaderTopBar">
