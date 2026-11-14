@@ -16,6 +16,7 @@ const initialState: LocalSettingsType = {
   lineHeight: 1.5,
   letterSpacing: "normal",
   wordSpacing: "normal",
+  justification: "full",
   isSideMarginsLinked: true,
   isTopMarginsLinked: true,
   libraryCoverSize: {
@@ -58,6 +59,9 @@ const LocalSettings = createSlice({
     setWordSpacing(state, action: PayloadAction<number | "normal">) {
       state.wordSpacing = action.payload;
     },
+    setJustification(state, action: PayloadAction<"left" | "full" | "right">) {
+      state.justification = action.payload;
+    },
   },
 });
 
@@ -71,5 +75,6 @@ export const {
   setLetterSpacing,
   setWordSpacing,
   setReadingFontSize,
+  setJustification,
 } = LocalSettings.actions;
 export default LocalSettings.reducer;

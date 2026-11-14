@@ -19,6 +19,9 @@ import {
   setKeepAwakeTimer,
   setLineHeight,
   setReadingFontSize,
+  setLetterSpacing,
+  setWordSpacing,
+  setJustification,
 } from "@/redux/reducers/LocalSettingsReducer";
 
 // UI
@@ -45,6 +48,9 @@ import {
   ChevronRight,
   LinkIcon,
   UnlinkIcon,
+  TextAlignStart,
+  TextAlignJustify,
+  TextAlignEnd,
 } from "lucide-react";
 import type { SelectChangeEvent } from "@mui/material";
 import type { ReadingThemeType, SpreadType } from "@/types/AppSettings";
@@ -252,6 +258,10 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
 
   const handleSaveMargins = () => {
     dispatch(setReadingMargins(margins));
+  };
+
+  const handleSetJustification = (justification: "left" | "full" | "right") => {
+    dispatch(setJustification(justification));
   };
 
   return (
@@ -534,6 +544,22 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
                 }
               />
             </div>
+          </div>
+          <div
+            className={`mobileSettingsCard readerTheme-${appSettings.readingTheme}`}
+          >
+            <Typography variant="h6">Justification</Typography>
+            <ButtonGroup variant="text" sx={{ marginRight: "0.45em" }}>
+              <Button onClick={() => handleSetJustification("left")}>
+                <TextAlignStart />
+              </Button>
+              <Button onClick={() => handleSetJustification("full")}>
+                <TextAlignJustify />
+              </Button>
+              <Button onClick={() => handleSetJustification("right")}>
+                <TextAlignEnd />
+              </Button>
+            </ButtonGroup>
           </div>
         </div>
       </dialog>

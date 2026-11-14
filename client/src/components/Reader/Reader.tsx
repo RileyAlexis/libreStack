@@ -112,8 +112,17 @@ export const Reader: React.FC = () => {
   };
 
   // Applied and reRenders changes to use settings
-  const applyReaderSettings = (rendition: Rendition, settings: AppSettings) => {
-    rendition.themes.fontSize(`${localSettings.readingFontSize}pt`);
+  const applyReaderSettings = (
+    rendition: Rendition,
+    settings: AppSettings,
+    localSettings: LocalSettingsType,
+  ) => {
+    // !
+    console.log("localSettingsRef.current", localSettingsRef.current);
+    console.trace("applyReaderSettings", { settings, localSettings });
+    // !
+
+    rendition.themes.fontSize(`${localSettings?.readingFontSize}pt`);
     rendition.themes.font(settings.readingFont.value);
     rendition.themes.select(`readerTheme-${settings.readingTheme}`);
     rendition.themes.override(
@@ -121,6 +130,18 @@ export const Reader: React.FC = () => {
       `${localSettings.lineHeight}`,
       true,
     );
+
+    if (localSettings.justification === "full") {
+      rendition.themes.override("text-align", "justify", true);
+      rendition.themes.override("hyphens", "auto");
+    } else if (localSettings.justification === "left") {
+      rendition.themes.override("text-align", "left", true);
+    } else if (localSettings.justification === "right") {
+      rendition.themes.override("text-align", "right", true);
+    }
+
+    rendition.themes.override("text-justify", "auto");
+
     rendition.spread(settings.spread);
   };
 
@@ -131,7 +152,11 @@ export const Reader: React.FC = () => {
 
     settingsDebounceRef.current = setTimeout(() => {
       const cfi = currentCfiRef.current;
-      applyReaderSettings(renditionRef.current!, appSettings);
+      applyReaderSettings(
+        renditionRef.current!,
+        appSettingsRef.current,
+        localSettingsRef.current,
+      );
       renditionRef.current!.resize();
       if (cfi) {
         suppressNextRelocateRef.current = true;
@@ -150,6 +175,9 @@ export const Reader: React.FC = () => {
     localSettings.lineHeight,
     appSettings.spread,
     localSettings.readingMargins,
+    localSettings.justification,
+    localSettings.letterSpacing,
+    localSettings.wordSpacing,
   ]);
 
   function getReaderBgColor(): string {
@@ -290,7 +318,11 @@ export const Reader: React.FC = () => {
       "/EpubThemes/ReaderThemes.css",
     );
 
-    applyReaderSettings(rendition, appSettingsRef.current);
+    applyReaderSettings(
+      rendition,
+      appSettingsRef.current,
+      localSettingsRef.current,
+    );
 
     rendition.display(progress ?? undefined).then(() => {
       if (destroyed) {
@@ -342,12 +374,25 @@ export const Reader: React.FC = () => {
         "line-height",
         "letter-spacing",
         "word-spacing",
+        "text-justify",
       ];
+
+      // Only removes text-align when it's justify, so centered/right-aligned text is kept
+      const stripJustify = (style: CSSStyleDeclaration) => {
+        if (
+          style.getPropertyValue("text-align").trim().toLowerCase() ===
+          "justify"
+        ) {
+          style.removeProperty("text-align");
+        }
+      };
 
       const stripFontProps = (rules: CSSRuleList) => {
         Array.from(rules).forEach((rule: any) => {
-          if (rule.style)
+          if (rule.style) {
             STRIP_PROPS.forEach((p) => rule.style.removeProperty(p));
+            stripJustify(rule.style);
+          }
           if (rule.cssRules) stripFontProps(rule.cssRules);
         });
       };
@@ -363,12 +408,18 @@ export const Reader: React.FC = () => {
       doc.querySelectorAll("[style]").forEach((el: HTMLElement) => {
         if (el === doc.body || el === doc.documentElement) return;
         STRIP_PROPS.forEach((p) => el.style.removeProperty(p));
+        stripJustify(el.style);
       });
 
       // legacy <font face="..." size="..."> tags
       doc.querySelectorAll("font").forEach((el: HTMLElement) => {
         el.removeAttribute("face");
         el.removeAttribute("size");
+      });
+
+      // legacy align="justify" attribute
+      doc.querySelectorAll('[align="justify" i]').forEach((el: HTMLElement) => {
+        el.removeAttribute("align");
       });
 
       // Add stylesheet rules (existing behavior)

@@ -10,6 +10,7 @@ export interface LocalSettingsType {
   readingFontSize: number;
   wordSpacing: number | "normal";
   letterSpacing: number | "normal";
+  justification: "left" | "full" | "right";
 }
 
 export interface ReadingMarginsType {
