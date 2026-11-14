@@ -117,7 +117,7 @@ public class AuthService : IAuthService
             return result;
 
         var roleResult = await _userManager.AddToRoleAsync(user, "Admin");
-        var userSettings = new UserSettings { UserId = user.Id };
+        var userSettings = new UserSettings { UserId = user.Id, ReadingTheme = "paper", Spread = "auto", ReadingFontLabel = "Georgia", ReadingFontValue = "Georgia, serif" };
         _dbContext.UserSettings.Add(userSettings);
         await _dbContext.SaveChangesAsync();
         return roleResult;

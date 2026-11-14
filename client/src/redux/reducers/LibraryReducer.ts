@@ -160,8 +160,11 @@ const LibrarySlice = createSlice({
         const { bookId, cfiLocation, percentComplete } = action.payload;
         const book = state.books.find((b) => b.id === bookId);
         if (book) {
-          book.readingProgress.cfiLocation = cfiLocation;
-          book.readingProgress.percentComplete = percentComplete;
+          book.readingProgress = {
+            ...book.readingProgress,
+            cfiLocation,
+            percentComplete,
+          };
         }
       });
   },

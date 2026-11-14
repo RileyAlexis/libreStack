@@ -1,13 +1,14 @@
 # <img src="client/public/libreStackLogoTitle.svg" height="100">
 
-Self-hosted server for DRM free epubs with an offline capable Progressive Web App front end. Librestack hosts your ebooks on your hardware with no tracking, ads or stores. Think JellyFin but for books.
+Self-hosted server for DRM free epubs with an offline capable Progressive Web App front end. Librestack hosts your ebooks on your hardware with no tracking, ads or stores. Think JellyFin but for books. LibreStack includes the Open Dyslexic font for accessibility.
 
 ![ipad image showing book covers](/docsSite/static/img/screen_ipad_01.png)
-![ipad view of an intro page of Pride and Prejudice](/docsSite/static/img/screen_ipad_book01.png)
-![ipad view of Alice and Wonderland in dark mode](/docsSite/static/img/screen_ipad_darkMode.png)
-![ipad view of Little Women with Spine showing](/docsSite/static/img/Screenshot%202026-08-03%20at%2010.44.43 AM.png)
-![ipad view of book description dialog](/docsSite/static/img/screen_ipad_description.png)
-![ipad view of book metadata dialog](/docsSite/static/img/screen_ipad_metadata.png)
+![ipad view of an intro page of Pride and Prejudice in the Open Dyslexic font](/docsSite/static/img/screen_ipad_book01.png)
+![ipad view of reading controls](/docsSite/static/img/screen_ipad_reader_controls.png)
+![ipad view of table of contents controls](/docsSite/static/img/screen_ipad_toc.png)
+![ipad view of medium dark reading theme](/docsSite/static/img/screen_ipad_medium_dark_theme.png)
+![ipad view of book meta data](/docsSite/static/img/screen_ipad_metadata.png)
+![ipad view of book meta data](/docsSite/static/img/screen_ipad_collections.png)
 
 ## Getting Started
 
@@ -111,6 +112,10 @@ requests since adding an email increases the rate limit from 1 to 3 requests per
 The path must be the full disk path and LibreStack must have read permissions for that folder. The folder can be mounted from a NAS or other external storage. Write access is optional but without write
 access LibreStack will be unable to add or delete books from your library (books can still be added manually to the folder and the library scan will pick them up).
 
+## Libraries
+
+Non-admin users can create libraries which will be created in a folder {libreStack_BasePath/{user_name}/library_name}. Admin users can add any accessible path as a library. LibreStack does not rearrange files or folders into its own structure. There is currently no limit to the number of libraries but reccomend keeping it to 5 or fewer per user.
+
 ## Add Books to Library
 
 Books can be uploaded through the app: Manage -> Upload Book. Currently LibreStack only recognizes epub files and cannot parse .cbz files. If LibreStack does not have write access to the library folder upload will fail. Books can be manually added to the folder or subfolders within the library and the scan will pick them up: Library -> Scan Library. Malformed ebooks may not be picked up by the scan. For specifics on which books fail check the server logs `docker compose logs app -f` or the Parsing Errors dialog in the Server Settings screen in the app.
@@ -141,12 +146,6 @@ does not have the capability to read .CBZ, .MOBI or any formats utilizing DRM. I
 ## License
 
 This project is open source under the AGPL v3 license. The logo and name are copyrighted by RileyAlexis and may not be reused or distributed.
-
-## Feature Roadmap
-
-- Implement user manager
-- Implement ability to share books between local users
-- Plan to implement ability to share libraries/books between server instances/remote users
 
 ### FAQ
 

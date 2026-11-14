@@ -29,7 +29,7 @@ export const Reader: React.FC = () => {
   const storedCfiLocation = useSelector(
     (state: LibreRootState) =>
       state.library.books.find((book) => book.id === Number(id))
-        ?.readingProgress.cfiLocation,
+        ?.readingProgress?.cfiLocation ?? "",
   );
   const [isMenuShowing, setIsMenuShowing] = useState(false);
   const [progress, setProgress] = useState<string>("");
