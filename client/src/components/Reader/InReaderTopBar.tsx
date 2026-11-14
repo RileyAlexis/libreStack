@@ -51,6 +51,8 @@ import {
   TextAlignStart,
   TextAlignJustify,
   TextAlignEnd,
+  MinusIcon,
+  PlusIcon,
 } from "lucide-react";
 import type { SelectChangeEvent } from "@mui/material";
 import type { ReadingThemeType, SpreadType } from "@/types/AppSettings";
@@ -262,6 +264,48 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
 
   const handleSetJustification = (justification: "left" | "full" | "right") => {
     dispatch(setJustification(justification));
+  };
+
+  const handleIncreaseWordSpacing = () => {
+    if (localSettings.wordSpacing === "normal") dispatch(setWordSpacing(0.05));
+    else if (localSettings.wordSpacing === -0.05)
+      dispatch(setWordSpacing("normal"));
+    else dispatch(setWordSpacing(localSettings.wordSpacing + 0.05));
+  };
+
+  const handleDecreaseWordSpacing = () => {
+    if (localSettings.wordSpacing === "normal") dispatch(setWordSpacing(-0.05));
+    else if (localSettings.wordSpacing === 0.05)
+      dispatch(setWordSpacing("normal"));
+    else dispatch(setWordSpacing(localSettings.wordSpacing - 0.05));
+  };
+
+  const handleSetWordSpacing = (value: string) => {
+    if (Number(value) === 0) {
+      dispatch(setWordSpacing("normal"));
+    } else dispatch(setWordSpacing(Number(value)));
+  };
+
+  const handleIncreaseLetterSpacing = () => {
+    if (localSettings.letterSpacing === "normal")
+      dispatch(setLetterSpacing(0.01));
+    else if (localSettings.letterSpacing === -0.01)
+      dispatch(setLetterSpacing("normal"));
+    else dispatch(setLetterSpacing(localSettings.letterSpacing + 0.01));
+  };
+
+  const handleDecreaseLetterSpacing = () => {
+    if (localSettings.letterSpacing === "normal")
+      dispatch(setLetterSpacing(-0.01));
+    else if (localSettings.letterSpacing === 0.01)
+      dispatch(setLetterSpacing("normal"));
+    else dispatch(setLetterSpacing(localSettings.letterSpacing - 0.01));
+  };
+
+  const handleSetLetterSpacing = (value: string) => {
+    if (Number(value) === 0) {
+      dispatch(setLetterSpacing("normal"));
+    } else dispatch(setLetterSpacing(Number(value)));
   };
 
   return (
@@ -560,6 +604,68 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
                 <TextAlignEnd />
               </Button>
             </ButtonGroup>
+          </div>
+          <div
+            className={`mobileSettingsCard readerTheme-${appSettings.readingTheme}`}
+          >
+            <Typography variant="h6">Word Spacing</Typography>
+
+            <div className="marginBox">
+              <IconButton
+                onClick={handleDecreaseWordSpacing}
+                disabled={Number(localSettings.wordSpacing) <= -0.2}
+              >
+                <MinusIcon size={24} />
+              </IconButton>
+              {localSettings.wordSpacing === "normal" && (
+                <Button variant="text">Normal</Button>
+              )}
+              {localSettings.wordSpacing !== "normal" && (
+                <TextField
+                  size="small"
+                  label="Word Spacing"
+                  value={Number(localSettings.wordSpacing)}
+                  onChange={(e) => handleSetWordSpacing(e.target.value)}
+                />
+              )}
+              <IconButton
+                onClick={handleIncreaseWordSpacing}
+                disabled={Number(localSettings.wordSpacing) >= 1}
+              >
+                <PlusIcon size={24} />
+              </IconButton>
+            </div>
+          </div>
+          <div
+            className={`mobileSettingsCard readerTheme-${appSettings.readingTheme}`}
+          >
+            <Typography variant="h6">Letter Spacing</Typography>
+
+            <div className="marginBox">
+              <IconButton
+                onClick={handleDecreaseLetterSpacing}
+                disabled={Number(localSettings.letterSpacing) <= -0.1}
+              >
+                <MinusIcon size={24} />
+              </IconButton>
+              {localSettings.letterSpacing === "normal" && (
+                <Button variant="text">Normal</Button>
+              )}
+              {localSettings.letterSpacing !== "normal" && (
+                <TextField
+                  size="small"
+                  label="Letter Spacing"
+                  value={Number(localSettings.letterSpacing)}
+                  onChange={(e) => handleSetLetterSpacing(e.target.value)}
+                />
+              )}
+              <IconButton
+                onClick={handleIncreaseLetterSpacing}
+                disabled={Number(localSettings.letterSpacing) >= 0.5}
+              >
+                <PlusIcon size={24} />
+              </IconButton>
+            </div>
           </div>
         </div>
       </dialog>

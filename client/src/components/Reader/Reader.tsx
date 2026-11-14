@@ -117,11 +117,6 @@ export const Reader: React.FC = () => {
     settings: AppSettings,
     localSettings: LocalSettingsType,
   ) => {
-    // !
-    console.log("localSettingsRef.current", localSettingsRef.current);
-    console.trace("applyReaderSettings", { settings, localSettings });
-    // !
-
     rendition.themes.fontSize(`${localSettings?.readingFontSize}pt`);
     rendition.themes.font(settings.readingFont.value);
     rendition.themes.select(`readerTheme-${settings.readingTheme}`);
@@ -140,7 +135,20 @@ export const Reader: React.FC = () => {
       rendition.themes.override("text-align", "right", true);
     }
 
+    rendition.themes.override(
+      "word-spacing",
+      localSettings.wordSpacing === "normal"
+        ? localSettings.wordSpacing
+        : `${localSettings.wordSpacing}em`,
+    );
     rendition.themes.override("text-justify", "auto");
+
+    rendition.themes.override(
+      "letter-spacing",
+      localSettings.letterSpacing === "normal"
+        ? localSettings.letterSpacing
+        : `${localSettings.letterSpacing}em`,
+    );
 
     rendition.spread(settings.spread);
   };

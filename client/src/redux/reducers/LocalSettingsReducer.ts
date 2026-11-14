@@ -54,10 +54,12 @@ const LocalSettings = createSlice({
       state.libraryCoverSize.height = (action.payload / 2) * 3;
     },
     setLetterSpacing(state, action: PayloadAction<number | "normal">) {
-      state.letterSpacing = action.payload;
+      if (action.payload === "normal") state.letterSpacing = action.payload;
+      else state.letterSpacing = Number(action.payload.toFixed(2));
     },
     setWordSpacing(state, action: PayloadAction<number | "normal">) {
-      state.wordSpacing = action.payload;
+      if (action.payload === "normal") state.wordSpacing = action.payload;
+      else state.wordSpacing = Number(action.payload.toFixed(2));
     },
     setJustification(state, action: PayloadAction<"left" | "full" | "right">) {
       state.justification = action.payload;
