@@ -24,6 +24,7 @@ import {
   Dialog,
   DialogContent,
   Tooltip,
+  Typography,
   // Typography,
   // Box,
 } from "@mui/material";
@@ -36,8 +37,10 @@ import {
   ShieldIcon,
   XIcon,
   GlobeOffIcon,
+  InfoIcon,
 } from "lucide-react";
 import { ChangePasswordScreen } from "../LoginScreen/ChangePasswordScreen";
+import { AboutDialog } from "./AboutDialog";
 
 export const MainMenu: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -45,6 +48,7 @@ export const MainMenu: React.FC = () => {
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const auth = useSelector((state: LibreRootState) => state.auth);
   const isLoggedIn = Boolean(auth.accessToken);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isChangePasswordOpen, setIsChangePasswordOpen] =
     useState<boolean>(false);
   // const { setTheme, theme } = useTheme();
@@ -71,6 +75,11 @@ export const MainMenu: React.FC = () => {
   const handleChangePassword = () => {
     setIsChangePasswordOpen(true);
     handleClose();
+  };
+
+  const handleShowAbout = () => {
+    setAnchorEl(null);
+    setIsAboutOpen(true);
   };
 
   return (
@@ -143,6 +152,10 @@ export const MainMenu: React.FC = () => {
               <ShieldIcon size={18} style={{ marginRight: 8 }} />
               Change Password
             </MenuItem>
+            <MenuItem onClick={handleShowAbout}>
+              <InfoIcon size={18} style={{ marginRight: 8 }} />
+              About Librestack
+            </MenuItem>
             <MenuItem onClick={handleLogout}>
               <LogOut size={18} style={{ marginRight: 8 }} />
               Log Out
@@ -167,6 +180,10 @@ export const MainMenu: React.FC = () => {
           </IconButton>
           <ChangePasswordScreen setIsOpen={setIsChangePasswordOpen} />
         </DialogContent>
+      </Dialog>
+
+      <Dialog open={isAboutOpen} onClose={setIsAboutOpen}>
+        <AboutDialog setIsAboutOpen={setIsAboutOpen} />
       </Dialog>
     </>
   );
