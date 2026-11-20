@@ -70,6 +70,9 @@ export const BottomControls: React.FC = () => {
   const localSettings = useSelector(
     (state: LibreRootState) => state.localSettings,
   );
+  const authStatus = useSelector(
+    (state: LibreRootState) => state.auth.authStatus,
+  );
   const libraryList = useSelector((state: LibreRootState) => state.libraryList);
   const hasSearchTerm = useSelector(
     (state: LibreRootState) => state.selections.librarySearchTerm.length > 0,
@@ -383,7 +386,10 @@ export const BottomControls: React.FC = () => {
             {item.name}
             {item.isUserLibrary && (
               <Tooltip title="Delete Library">
-                <IconButton onClick={() => handleDeleteUserLibrary(item)}>
+                <IconButton
+                  onClick={() => handleDeleteUserLibrary(item)}
+                  disabled={authStatus !== "authenticated"}
+                >
                   <DeleteIcon color="red" />
                 </IconButton>
               </Tooltip>
@@ -396,11 +402,15 @@ export const BottomControls: React.FC = () => {
             setIsCreateLibraryOpen(true);
             closeMenu();
           }}
+          disabled={authStatus !== "authenticated"}
         >
           <PlusIcon size={18} style={{ marginRight: 8 }} />
           Create New Library
         </MenuItem>
-        <MenuItem onClick={handleScanLibrary}>
+        <MenuItem
+          onClick={handleScanLibrary}
+          disabled={authStatus !== "authenticated"}
+        >
           <ScanSearch size={18} style={{ marginRight: 8 }} />
           Scan Library
         </MenuItem>
@@ -419,6 +429,7 @@ export const BottomControls: React.FC = () => {
             e.stopPropagation();
             navigate("/seriesManager");
           }}
+          disabled={authStatus !== "authenticated"}
         >
           <SquareLibrary size={18} style={{ marginRight: 8 }} />
           Series
@@ -428,20 +439,21 @@ export const BottomControls: React.FC = () => {
             e.stopPropagation();
             navigate("/collectionManager");
           }}
+          disabled={authStatus !== "authenticated"}
         >
           <BoxesIcon size={18} style={{ marginRight: 8 }} />
           Collections Manager
         </MenuItem>
         <MenuItem
           onClick={handleMetadataRefresh}
-          disabled={appSettings.isSyncing}
+          disabled={appSettings.isSyncing || authStatus !== "authenticated"}
         >
           <ScanText size={18} style={{ marginRight: 8 }} />
           Refresh Open Library Metadata
         </MenuItem>
         <MenuItem
           onClick={handleWikidataRefresh}
-          disabled={appSettings.isSyncing}
+          disabled={appSettings.isSyncing || authStatus !== "authenticated"}
         >
           <ScanText size={18} style={{ marginRight: 8 }} />
           Refresh Wikidata Metadata
@@ -451,6 +463,7 @@ export const BottomControls: React.FC = () => {
             fileInputRef.current?.click();
             closeMenu();
           }}
+          disabled={authStatus !== "authenticated"}
         >
           <UploadIcon size={18} style={{ marginRight: 8 }} />
           Upload Book

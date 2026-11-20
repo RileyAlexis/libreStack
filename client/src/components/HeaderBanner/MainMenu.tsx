@@ -109,6 +109,7 @@ export const MainMenu: React.FC = () => {
                     navigate("/serverManager");
                     handleClose();
                   }}
+                  disabled={auth.authStatus !== "authenticated"}
                 >
                   <Cog size={18} style={{ marginRight: 8 }} />
                   Server Settings
@@ -135,7 +136,10 @@ export const MainMenu: React.FC = () => {
                 </MenuItem>
               </>
             )}
-            <MenuItem onClick={handleChangePassword}>
+            <MenuItem
+              onClick={handleChangePassword}
+              disabled={auth.authStatus !== "authenticated"}
+            >
               <ShieldIcon size={18} style={{ marginRight: 8 }} />
               Change Password
             </MenuItem>
