@@ -61,6 +61,17 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
   };
 
   const handleSelectBook = (bookId: number) => {
+    if (authStatus !== "authenticated") {
+      dispatch(
+        runSnack({
+          isOpen: true,
+          severity: "error",
+          description:
+            "LibreStack is in Offline mode and cannot modify books at this time",
+        }),
+      );
+      return;
+    }
     dispatch(selectBook(bookId));
   };
 
