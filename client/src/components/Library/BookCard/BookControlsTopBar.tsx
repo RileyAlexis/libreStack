@@ -67,6 +67,9 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
   const localSettings = useSelector(
     (state: LibreRootState) => state.localSettings,
   );
+  const authStatus = useSelector(
+    (state: LibreRootState) => state.auth.authStatus,
+  );
   const isSelected = selections.selectedBooks.includes(book.id);
   const [isResetProgressDialogOpen, setIsResetProgressDialogOpen] =
     useState(false);
@@ -217,6 +220,7 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
                   handleMenuClose();
                 }}
                 aria-label="View Description"
+                disabled={authStatus !== "authenticated"}
               >
                 Edit Metadata
               </MenuItem>
@@ -229,6 +233,7 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
                   handleMenuClose();
                 }}
                 aria-label="Mark as Unfinished"
+                disabled={authStatus !== "authenticated"}
               >
                 Mark as Unfinished
               </MenuItem>
@@ -239,6 +244,7 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
                   handleMenuClose();
                 }}
                 aria-label="Mark as Finished"
+                disabled={authStatus !== "authenticated"}
               >
                 Mark as Finished
               </MenuItem>
@@ -249,6 +255,7 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
                 handleMenuClose();
               }}
               aria-label="Reset Reading Progress"
+              disabled={authStatus !== "authenticated"}
             >
               Reset Reading Progress
             </MenuItem>
@@ -264,6 +271,7 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
                   handleMenuClose();
                 }}
                 aria-label="Fix Mismatch"
+                disabled={authStatus !== "authenticated"}
               >
                 Fix Mismatch
               </MenuItem>
@@ -279,7 +287,10 @@ export const BookControlsTopBar: React.FC<BookControlsTopBarProps> = ({
               </MenuItem>
             )}
             {book.seriesId !== null && !book.isShared && (
-              <MenuItem onClick={handleRemoveSeries}>
+              <MenuItem
+                onClick={handleRemoveSeries}
+                disabled={authStatus !== "authenticated"}
+              >
                 Remove From Series
               </MenuItem>
             )}
