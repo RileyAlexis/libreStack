@@ -6,6 +6,7 @@ import Epub, { Book, Rendition, type Location } from "@likecoin/epub-ts";
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { AppSettings } from "@/types/AppSettings";
 import type { AppDispatch } from "@/redux/store";
+import type { AuthStatus } from "@/types/AuthType";
 
 import "./Reader.css";
 
@@ -54,6 +55,7 @@ export const Reader: React.FC = () => {
   );
   const appSettingsRef = useRef<AppSettings>(appSettings);
   const localSettingsRef = useRef<LocalSettingsType>(localSettings);
+  const authStatusRef = useRef<AuthStatus>(authStatus);
 
   useKeepAwake(localSettings.keepAwake);
 
@@ -64,6 +66,10 @@ export const Reader: React.FC = () => {
   useEffect(() => {
     localSettingsRef.current = localSettings;
   }, [localSettings]);
+
+  useEffect(() => {
+    authStatusRef.current = authStatus;
+  }, [authStatus]);
 
   const ANIMATION_MS = 200;
   const isAnimatingRef = useRef(false);
@@ -96,25 +102,25 @@ export const Reader: React.FC = () => {
         ? (cfiLocation.start.percentage * 100).toFixed(0)
         : 0;
 
-    if (authStatus === "offline") {
+    if (authStatusRef.current === "offline") {
       dispatch(
         addReadingProgressSyncStack({
           bookId: parseInt(id!),
           cfiLocation: cfiLocation.start.cfi,
           percentComplete: Number(percentComplete),
           isComplete: false,
-          lastRead: new Date(),
-        }),
-      );
-    } else {
-      dispatch(
-        updateReadingProgress({
-          bookId: parseInt(id!),
-          cfiLocation: cfiLocation.start.cfi,
-          percentComplete: Number(percentComplete),
+          lastRead: new Date().toISOString(),
         }),
       );
     }
+
+    dispatch(
+      updateReadingProgress({
+        bookId: parseInt(id!),
+        cfiLocation: cfiLocation.start.cfi,
+        percentComplete: Number(percentComplete),
+      }),
+    );
   };
 
   const beginSuppressReadingLocationUpdate = () => {

@@ -15,6 +15,7 @@ import { setUser } from "./redux/reducers/AuthReducer";
 import { hydrateDownloads } from "./redux/reducers/DownloadReducer";
 import { closeLibreDialogs } from "@/redux/reducers/LibreDialogReducer";
 import { setAuthStatus } from "./redux/reducers/AuthReducer";
+import { SyncReadingProgress } from "./redux/reducers/SyncReducer";
 
 // UI
 import {
@@ -48,7 +49,6 @@ import { CollectionManager } from "./components/CollectionManager/CollectionMana
 import { useStandaloneMode } from "./utils/IsStandAlone";
 import { UserManager } from "./components/UserManager/UserManager";
 import { LibreStackInitialSetup } from "./components/Setup/LibreStackInitialSetup";
-import { SyncReadingProgress } from "./redux/reducers/SyncReducer";
 
 function useAuthBootstrap(): AuthStatus {
   const dispatch = useDispatch<AppDispatch>();
@@ -172,9 +172,13 @@ function App() {
       });
   }, [location.pathname]);
 
+  // ******* Calls Reading Progress Sync after coming back from offline mode
   useEffect(() => {
     setIsLoginOpen(authStatus === "unauthenticated");
-    if (authStatus === "authenticated" && syncData.readingProgress.length > 0) {
+    if (
+      authStatus === "authenticated" &&
+      syncData?.readingProgress.length > 0
+    ) {
       dispatch(SyncReadingProgress());
     }
   }, [authStatus]);

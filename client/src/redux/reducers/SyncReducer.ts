@@ -35,18 +35,24 @@ export const SyncReadingProgress = createAsyncThunk(
         await api
           .get(`readingProgress/readingProgress?bookId=${progress.bookId}`)
           .then((response) => {
-            console.log(response.data);
-            serverProgress = response.data;
+            serverProgress = response.data.value;
           })
           .catch((error) => {
             console.error(error.data.message);
           });
 
-        if (!serverProgress || serverProgress.lastRead < progress.lastRead) {
+        if (
+          !serverProgress ||
+          new Date(serverProgress.lastRead).getTime() <
+            new Date(progress.lastRead).getTime()
+        ) {
           await api
-            .post("readingProgress/updateProgress", progress)
-            .then((response) => {
-              console.log(response.data);
+            .post("readingProgress/updateProgress", {
+              bookId: progress.bookId,
+              cfiLocation: progress.cfiLocation,
+              percentComplete: progress.percentComplete,
+            })
+            .then((_) => {
               dispatch(removeReadingProgressFromStack(progress));
             })
             .catch((error) => {

@@ -22,7 +22,8 @@ import snackSlice from "./reducers/SnackReducer";
 import downloadSlice from "./reducers/DownloadReducer";
 import libreDialogs from "./reducers/LibreDialogReducer";
 import localSettings from "./reducers/LocalSettingsReducer";
-import syncReducer from "./reducers/SyncReducer";
+import locationStack from "./reducers/LocationStackReducer";
+import sync from "./reducers/SyncReducer";
 
 // const logger: Middleware = (store) => (next) => (action) => {
 //   if (import.meta.env.DEV) {
@@ -52,7 +53,8 @@ const allReducers = combineReducers({
   downloads: downloadSlice,
   libreDialogs: libreDialogs,
   localSettings: localSettings,
-  syncReducer: syncReducer,
+  locationStack: locationStack,
+  sync: sync,
 });
 
 export const resetApp = () => ({
@@ -75,7 +77,7 @@ const persistConfig = {
     "appSettings",
     "auth",
     "localSettings",
-    "syncReducer",
+    "sync",
   ],
   serialize: false,
   deserialize: false,
