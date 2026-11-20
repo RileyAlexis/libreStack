@@ -93,9 +93,8 @@ function useAuthBootstrap(): AuthStatus {
   }, [hasToken]);
 
   // Poll for the server coming back while offline
+  // Checks every 5 seconds
   useEffect(() => {
-    if (authStatus !== "offline") return;
-
     const id = setInterval(() => {
       api
         .get("/Auth/user")
@@ -110,7 +109,7 @@ function useAuthBootstrap(): AuthStatus {
             ),
           );
         });
-    }, 15000);
+    }, 5000);
 
     return () => {
       clearInterval(id);

@@ -21,8 +21,8 @@ import authSlice from "./reducers/AuthReducer";
 import snackSlice from "./reducers/SnackReducer";
 import downloadSlice from "./reducers/DownloadReducer";
 import libreDialogs from "./reducers/LibreDialogReducer";
-import locationStackReducer from "./reducers/LocationStackReducer";
 import localSettings from "./reducers/LocalSettingsReducer";
+import syncReducer from "./reducers/SyncReducer";
 
 // const logger: Middleware = (store) => (next) => (action) => {
 //   if (import.meta.env.DEV) {
@@ -51,8 +51,8 @@ const allReducers = combineReducers({
   snack: snackSlice,
   downloads: downloadSlice,
   libreDialogs: libreDialogs,
-  locationStack: locationStackReducer,
   localSettings: localSettings,
+  syncReducer: syncReducer,
 });
 
 export const resetApp = () => ({
@@ -69,7 +69,14 @@ const rootReducer: typeof allReducers = (state, action) => {
 const persistConfig = {
   key: "root",
   storage: idbStorage,
-  whitelist: ["library", "libraryList", "appSettings", "auth", "localSettings"],
+  whitelist: [
+    "library",
+    "libraryList",
+    "appSettings",
+    "auth",
+    "localSettings",
+    "syncReducer",
+  ],
   serialize: false,
   deserialize: false,
 };

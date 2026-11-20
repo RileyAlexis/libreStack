@@ -1,3 +1,5 @@
+// TODO: Remove reducer, no longer used
+
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type {
   BookLocationsType,
@@ -24,6 +26,7 @@ const LocationStackSlice = createSlice({
     },
     setReadingLocation(state, action: PayloadAction<string>) {
       state.readingCfiLocation = action.payload;
+      // if (state.stack.findIndex((book) => book.bookId === ))
     },
   },
 });

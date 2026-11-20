@@ -6,7 +6,6 @@ import Epub, { Book, Rendition, type Location } from "@likecoin/epub-ts";
 import type { LibreRootState } from "@/types/LibreRootState";
 import type { AppSettings } from "@/types/AppSettings";
 import type { AppDispatch } from "@/redux/store";
-import { setReadingLocation } from "@/redux/reducers/LocationStackReducer";
 
 import "./Reader.css";
 
@@ -92,7 +91,6 @@ export const Reader: React.FC = () => {
         ? (cfiLocation.start.percentage * 100).toFixed(0)
         : 0;
 
-    dispatch(setReadingLocation(cfiLocation.start.cfi));
     dispatch(
       updateReadingProgress({
         bookId: parseInt(id!),

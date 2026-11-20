@@ -1,9 +1,11 @@
+// ! Remove, no longer used
+
 export interface BookLocationsType {
   stack: LocationStackType[];
   readingCfiLocation: string;
 }
 
 export interface LocationStackType {
-  title: string;
+  bookId: number;
   cfiLocation: string;
 }

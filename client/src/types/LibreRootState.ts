@@ -7,6 +7,7 @@ import type { LibraryType, LibraryListType } from "./LibraryType";
 import type { LibreDialogType } from "./LibreDialogType";
 import type { BookLocationsType } from "./LocationStackType";
 import type { LocalSettingsType } from "./LocalSettingsType";
+import type { LibreStackSync } from "./LibreStackSync";
 
 export interface LibreRootState {
   library: LibraryType;
@@ -19,4 +20,5 @@ export interface LibreRootState {
   libreDialogs: LibreDialogType;
   locationStack: BookLocationsType;
   localSettings: LocalSettingsType;
+  sync: LibreStackSync;
 }
