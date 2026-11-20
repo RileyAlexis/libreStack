@@ -143,6 +143,10 @@ Librestack uses Dotnet 10 on the back end with a Postgres 17 database and a Reac
 Librestack currently is only compatible with DRM free epub formats and depends on epub-ts[https://likecoin.github.io/epub.ts/] for front end rendering and VersOne[https://os.vers.one/EpubReader/] for parsing Epubs on the server. Librestack
 does not have the capability to read .CBZ, .MOBI or any formats utilizing DRM. It does not support audio books. In case of parsing errors Librestack will attempt minimal repair of the offending file but its capabilities are limited. For more extensive repair or conversion of ebooks Calibre[https://calibre-ebook.com/download] is recommended.
 
+## Offline Capability
+
+Librestack can function offline but some features are limited while offline. Reading progress will be saved in offline mode and synced with the server once a connection has been restored. In order to read books in offline mode they must first be downloaded (press the download icon on the book card). Book metadata may not be edited in offline mode nor can libraries be switched. Deleting books, marking a book as finished and modifying the series or collection contents are not allowed in offline mode.
+
 ## License
 
 This project is open source under the AGPL v3 license. The logo and name are copyrighted by RileyAlexis and may not be reused or distributed.
