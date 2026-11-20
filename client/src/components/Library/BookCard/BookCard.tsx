@@ -164,6 +164,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book }) => {
               <IconButton
                 className="rounded-full"
                 onClick={(e) => handleDownloadBook(e)}
+                disabled={authStatus !== "authenticated"}
               >
                 <CloudDownload />
               </IconButton>
