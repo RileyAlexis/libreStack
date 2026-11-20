@@ -23,7 +23,6 @@ import {
   FormControlLabel,
   Dialog,
   DialogContent,
-  Tooltip,
   // Typography,
   // Box,
 } from "@mui/material";
@@ -35,7 +34,6 @@ import {
   Cog,
   ShieldIcon,
   XIcon,
-  GlobeOffIcon,
   InfoIcon,
 } from "lucide-react";
 import { ChangePasswordScreen } from "../LoginScreen/ChangePasswordScreen";
@@ -121,11 +119,6 @@ export const MainMenu: React.FC = () => {
                 >
                   <Cog size={18} style={{ marginRight: 8 }} />
                   Server Settings
-                  {auth.authStatus === "offline" && (
-                    <Tooltip title="LibreStack is in offline mode">
-                      <GlobeOffIcon style={{ marginLeft: "1em" }} color="red" />
-                    </Tooltip>
-                  )}
                 </MenuItem>
 
                 <Divider />
