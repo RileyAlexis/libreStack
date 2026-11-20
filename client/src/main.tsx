@@ -18,6 +18,17 @@ function Root() {
   );
 }
 
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.ready.then((registration) => {
+    const check = () => registration.update().catch(() => {});
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") check();
+    });
+    setInterval(check, 15 * 60 * 1000);
+  });
+}
+
 const container = document.getElementById("root");
 if (container) {
   const root = createRoot(container);
