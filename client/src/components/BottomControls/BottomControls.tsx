@@ -382,6 +382,7 @@ export const BottomControls: React.FC = () => {
             selected={item.id === appSettings.lastSelectedLibrary}
             onClick={() => handleSelectLibrary(item.id)}
             sx={{ justifyContent: "space-between" }}
+            disabled={authStatus !== "authenticated"}
           >
             {item.name}
             {item.isUserLibrary && (
