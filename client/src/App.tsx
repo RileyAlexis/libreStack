@@ -48,6 +48,7 @@ import { CollectionManager } from "./components/CollectionManager/CollectionMana
 import { useStandaloneMode } from "./utils/IsStandAlone";
 import { UserManager } from "./components/UserManager/UserManager";
 import { LibreStackInitialSetup } from "./components/Setup/LibreStackInitialSetup";
+import { SyncReadingProgress } from "./redux/reducers/SyncReducer";
 
 function useAuthBootstrap(): AuthStatus {
   const dispatch = useDispatch<AppDispatch>();
@@ -142,6 +143,7 @@ function App() {
   const libreDialogs = useSelector(
     (state: LibreRootState) => state.libreDialogs,
   );
+  const syncData = useSelector((state: LibreRootState) => state.sync);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -172,6 +174,9 @@ function App() {
 
   useEffect(() => {
     setIsLoginOpen(authStatus === "unauthenticated");
+    if (authStatus === "authenticated" && syncData.readingProgress.length > 0) {
+      dispatch(SyncReadingProgress());
+    }
   }, [authStatus]);
 
   useEffect(() => {

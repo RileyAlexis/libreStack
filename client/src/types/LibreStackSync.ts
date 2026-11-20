@@ -5,5 +5,7 @@ export interface LibreStackSync {
 export interface ReadingProgressSync {
   bookId: number;
   cfiLocation: string;
-  timeStamp: Date;
+  lastRead: Date;
+  isComplete: boolean;
+  percentComplete: number;
 }
