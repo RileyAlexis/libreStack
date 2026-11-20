@@ -16,7 +16,7 @@ export const AboutDialog: React.FC<AboutDialogProps> = ({ setIsAboutOpen }) => {
         <XIcon size={18} />
       </IconButton>
       <div className="aboutContainer">
-        <Typography variant="h6">LibreStack v1.01</Typography>
+        <Typography variant="h6">LibreStack v1.01.01</Typography>
         <Typography variant="body1">AGPL 3</Typography>
         <Link href="https://github.com/RileyAlexis/libreStack">Github</Link>
       </div>
