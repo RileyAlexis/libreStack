@@ -57,6 +57,8 @@ function useAuthBootstrap(): AuthStatus {
   const authStatus = useSelector(
     (state: LibreRootState) => state.auth.authStatus,
   );
+  const isOfflineError = (err: any) =>
+    !err.response || [502, 503, 504].includes(err.response.status);
 
   const prevHasTokenRef = useRef(hasToken);
   const statusRef = useRef(authStatus);
@@ -84,9 +86,7 @@ function useAuthBootstrap(): AuthStatus {
       .catch((err) => {
         console.error(err);
         dispatch(
-          setAuthStatus(
-            err.response.status === 502 ? "offline" : "unauthenticated",
-          ),
+          setAuthStatus(isOfflineError(err) ? "offline" : "unauthenticated"),
         );
       });
 
@@ -105,9 +105,7 @@ function useAuthBootstrap(): AuthStatus {
         })
         .catch((err) => {
           dispatch(
-            setAuthStatus(
-              err.response.status === 502 ? "offline" : "unauthenticated",
-            ),
+            setAuthStatus(isOfflineError(err) ? "offline" : "unauthenticated"),
           );
         });
     }, 5000);
