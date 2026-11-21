@@ -109,7 +109,7 @@ export const Reader: React.FC = () => {
           cfiLocation: cfiLocation.start.cfi,
           percentComplete: Number(percentComplete),
           isComplete: false,
-          lastRead: new Date().toISOString(),
+          lastRead: new Date(),
         }),
       );
     }
