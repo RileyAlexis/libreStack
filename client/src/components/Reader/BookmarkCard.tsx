@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useParams } from "react-router";
 
 // Redux
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch } from "@/redux/store";
 import { addLocationStack } from "@/redux/reducers/LocationStackReducer";
 
@@ -16,6 +16,11 @@ import {
   removeBookmark,
   updateBookmark,
 } from "@/redux/reducers/LibraryReducer";
+import type { LibreRootState } from "@/types/LibreRootState";
+import {
+  addBookmarkSyncStack,
+  removeBookmarkFromStack,
+} from "@/redux/reducers/SyncReducer";
 
 interface BookmarkCardProps {
   bookmark: BookmarkType;
@@ -32,6 +37,9 @@ export const BookmarkCard: React.FC<BookmarkCardProps> = ({
   const dispatch = useDispatch<AppDispatch>();
   const [isEditing, setIsEditing] = useState(false);
   const [newName, setNewName] = useState<string>("");
+  const authStatus = useSelector(
+    (state: LibreRootState) => state.auth.authStatus,
+  );
 
   const handleSelectBookmark = () => {
     if (!isEditing) {
@@ -51,6 +59,17 @@ export const BookmarkCard: React.FC<BookmarkCardProps> = ({
   };
 
   const handleSetName = () => {
+    if (authStatus === "offline") {
+      dispatch(
+        addBookmarkSyncStack({
+          bookId: Number(id),
+          id: bookmark.id,
+          action: "update",
+          cfiLocation: bookmark.cfiLocation,
+          name: newName,
+        }),
+      );
+    }
     dispatch(
       updateBookmark({
         bookId: Number(id),
@@ -68,6 +87,27 @@ export const BookmarkCard: React.FC<BookmarkCardProps> = ({
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.stopPropagation();
+    if (authStatus === "offline" && bookmark.id > 0) {
+      dispatch(
+        addBookmarkSyncStack({
+          bookId: Number(id),
+          id: bookmark.id,
+          action: "delete",
+          cfiLocation: bookmark.cfiLocation,
+          name: bookmark.name,
+        }),
+      );
+    } else if (authStatus === "offline" && bookmark.id <= 0) {
+      dispatch(
+        removeBookmarkFromStack({
+          bookId: Number(id),
+          id: bookmark.id,
+          action: "delete",
+          cfiLocation: bookmark.cfiLocation,
+          name: bookmark.name,
+        }),
+      );
+    }
     dispatch(removeBookmark({ bookId: Number(id), markId: bookmark.id }));
     setIsEditing(false);
   };

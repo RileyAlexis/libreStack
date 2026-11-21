@@ -1,11 +1,15 @@
+import type { BookmarkType, ReadingProgress } from "./BookType";
+
 export interface LibreStackSync {
   readingProgress: ReadingProgressSync[];
+  bookmarks: BookmarkSync[];
 }
 
-export interface ReadingProgressSync {
+export interface ReadingProgressSync extends ReadingProgress {
   bookId: number;
-  cfiLocation: string;
-  lastRead: string;
-  isComplete: boolean;
-  percentComplete: number;
+}
+
+export interface BookmarkSync extends BookmarkType {
+  bookId: number;
+  action: "create" | "update" | "delete";
 }

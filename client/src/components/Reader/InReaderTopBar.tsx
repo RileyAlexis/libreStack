@@ -64,6 +64,7 @@ import { availableReadingThemes } from "./AvailableReadingThemes";
 import "./InReaderTopBar.css";
 import { addBookmark, removeBookmark } from "@/redux/reducers/LibraryReducer";
 import { clearLocationStack } from "@/redux/reducers/LocationStackReducer";
+import { addBookmarkSyncStack } from "@/redux/reducers/SyncReducer";
 
 interface InReaderTopBarProps {
   currentCfiRef: React.RefObject<string | null>;
@@ -78,6 +79,9 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
   // const isTouchDevice = /iPad|iPhone|iPod|Android/.test(navigator.userAgent);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const authStatus = useSelector(
+    (state: LibreRootState) => state.auth.authStatus,
+  );
   const appSettings = useSelector((state: LibreRootState) => state.appSettings);
   const localSettings = useSelector(
     (state: LibreRootState) => state.localSettings,
@@ -123,17 +127,40 @@ export const InReaderTopBar: React.FC<InReaderTopBarProps> = ({
 
   const handleSetBookmark = () => {
     if (isCurrentPageBookmarked) {
-      const markId = bookmarks?.find(
+      const mark = bookmarks?.find(
         (mark) => mark.cfiLocation === currentCfiRef.current,
-      )?.id;
-      if (markId && id) {
-        dispatch(removeBookmark({ bookId: Number(id), markId: markId }));
+      );
+      if (mark?.id && id) {
+        dispatch(removeBookmark({ bookId: Number(id), markId: mark.id }));
       }
+      if (mark?.id && id && authStatus === "offline")
+        dispatch(
+          addBookmarkSyncStack({
+            bookId: Number(id),
+            id: mark.id,
+            action: "delete",
+            cfiLocation: mark.cfiLocation,
+            name: mark.name,
+          }),
+        );
     } else {
+      const tempId = -Date.now();
+      if (authStatus === "offline") {
+        dispatch(
+          addBookmarkSyncStack({
+            bookId: Number(id),
+            id: tempId,
+            action: "create",
+            cfiLocation: currentCfiRef.current!,
+            name: newBookmarkName,
+          }),
+        );
+      }
       dispatch(
         addBookmark({
           bookId: Number(id),
           name: newBookmarkName,
+          tempId: tempId,
           cfiLocation: currentCfiRef.current!,
         }),
       );

@@ -6,6 +6,7 @@ import {
 import type { LibraryType } from "../../types/LibraryType";
 import { api } from "@/utils/api";
 import type { BookmarkType } from "@/types/BookType";
+import type { LibreRootState } from "@/types/LibreRootState";
 
 export const fetchLibraryData = createAsyncThunk(
   "library/fetchLibraryData",
@@ -30,18 +31,27 @@ export const addBookmark = createAsyncThunk(
       bookId,
       name,
       cfiLocation,
-    }: { bookId: number; name: string; cfiLocation: string },
-    { rejectWithValue },
+      tempId,
+    }: { bookId: number; name: string; cfiLocation: string; tempId?: number },
+    { rejectWithValue, getState },
   ) => {
+    const state = getState() as LibreRootState;
     try {
-      const response = await api.post(
-        `Bookmark/createBookmark?bookId=${bookId}`,
-        {
+      if (state.auth.authStatus !== "offline") {
+        const response = await api.post(
+          `Bookmark/createBookmark?bookId=${bookId}`,
+          { name, cfiLocation },
+        );
+        return { bookId, bookmark: response.data as BookmarkType };
+      }
+      return {
+        bookId,
+        bookmark: {
+          id: tempId ?? -Date.now(),
           name,
           cfiLocation,
-        },
-      );
-      return { bookId, bookmark: response.data as BookmarkType };
+        } as BookmarkType,
+      };
     } catch (error) {
       console.error(error);
       return rejectWithValue((error as Error).message);
@@ -53,10 +63,13 @@ export const removeBookmark = createAsyncThunk(
   "library/removeBookmark",
   async (
     { bookId, markId }: { bookId: number; markId: number },
-    { rejectWithValue },
+    { rejectWithValue, getState },
   ) => {
+    const state = getState() as LibreRootState;
     try {
-      await api.delete(`Bookmark?id=${markId}`);
+      if (state.auth.authStatus !== "offline") {
+        await api.delete(`Bookmark?id=${markId}`);
+      }
       return { bookId, markId };
     } catch (error) {
       console.error(error);
@@ -69,14 +82,17 @@ export const updateBookmark = createAsyncThunk(
   "library/updateBookmark",
   async (
     { bookId, bookmark }: { bookId: number; bookmark: BookmarkType },
-    { rejectWithValue },
+    { rejectWithValue, getState },
   ) => {
+    const state = getState() as LibreRootState;
     try {
-      await api.post("Bookmark/updateBookmark", {
-        id: bookmark.id,
-        name: bookmark.name,
-        cfiLocation: bookmark.cfiLocation,
-      });
+      if (state.auth.authStatus !== "offline") {
+        await api.post("Bookmark/updateBookmark", {
+          id: bookmark.id,
+          name: bookmark.name,
+          cfiLocation: bookmark.cfiLocation,
+        });
+      }
       return { bookId, bookmark };
     } catch (error) {
       console.error(error);
@@ -93,14 +109,17 @@ export const updateReadingProgress = createAsyncThunk(
       cfiLocation,
       percentComplete,
     }: { bookId: number; cfiLocation: string; percentComplete: number },
-    { rejectWithValue },
+    { rejectWithValue, getState },
   ) => {
+    const state = getState() as LibreRootState;
     try {
-      await api.post("/ReadingProgress/updateProgress", {
-        bookId,
-        cfiLocation,
-        percentComplete,
-      });
+      if (state.auth.authStatus !== "offline") {
+        await api.post("/ReadingProgress/updateProgress", {
+          bookId,
+          cfiLocation,
+          percentComplete,
+        });
+      }
       return { bookId, cfiLocation, percentComplete };
     } catch (error) {
       console.error(error);
