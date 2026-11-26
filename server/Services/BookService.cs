@@ -5,6 +5,8 @@ using Librestack.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Librestack.Models.APIModels;
 using SkiaSharp;
+using Microsoft.AspNetCore.Http.Features;
+using System.Reflection;
 
 namespace Librestack.Services;
 
@@ -190,13 +192,15 @@ public class BookService : IBookService
         existing.Publisher = book.Publisher;
         existing.PublishDate = book.PublishDate;
         existing.SeriesOrder = book.SeriesOrder;
-        existing.ISBN = book.ISBN;
+        existing.ISBN = book.Isbn;
+        existing.ISBN13 = book.Isbn13;
         existing.LCCN = book.LCCN;
         existing.OCLCWorldCat = book.OCLCWorldCat;
         existing.OpenLibraryAuthorId = book.OpenLibraryAuthorId;
         existing.OpenLibraryEditionId = book.OpenLibraryEditionId;
         existing.OpenLibraryWorkId = book.OpenLibraryWorkId;
         existing.OpenLibraryCoverId = book.OpenLibraryCoverId;
+        existing.WikiAuthorURL = book.WikiAuthorURL;
         existing.WikidataId = book.WikidataId;
         existing.Description = book.Description;
 
@@ -224,8 +228,8 @@ public class BookService : IBookService
             PublishDate = existing.PublishDate,
             Description = existing.Description,
             SeriesOrder = existing.SeriesOrder,
-            ISBN = existing.ISBN,
-            ISBN13 = existing.ISBN13,
+            Isbn = existing.ISBN,
+            Isbn13 = existing.ISBN13,
             LCCN = existing.LCCN,
             OCLCWorldCat = existing.OCLCWorldCat,
             OpenLibraryWorkId = existing.OpenLibraryWorkId,
@@ -233,6 +237,8 @@ public class BookService : IBookService
             OpenLibraryAuthorId = existing.OpenLibraryAuthorId,
             OpenLibraryCoverId = existing.OpenLibraryCoverId,
             WikidataId = existing.WikidataId,
+            WikiAuthorURL = existing.WikiAuthorURL,
+            WikidataAuthorId = existing.WikidataId,
             Language = existing.Language,
             Series = existing.Series is null
                 ? null

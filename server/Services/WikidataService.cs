@@ -226,7 +226,7 @@ public class WikidataService : IWikidataService
         if (publishYear != null) book.PublishDate = publishYear;
 
         if (authorId != null) book.WikidataAuthorId = authorId;
-        if (wikiAuthorURL != null) book.wikiAuthorURL = wikiAuthorURL;
+        if (wikiAuthorURL != null) book.WikiAuthorURL = wikiAuthorURL;
 
         book.WikidataMetaLastUpdated = DateTime.UtcNow;
 

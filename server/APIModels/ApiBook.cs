@@ -14,8 +14,8 @@ public class ApiBook
     public byte[]? CoverImage { get; set; } = null;
     public string? CoverContentType { get; set; } = null;
     public double? SeriesOrder { get; set; }
-    public string? ISBN { get; set; } = "";
-    public string? ISBN13 { get; set; } = "";
+    public string? Isbn { get; set; } = "";
+    public string? Isbn13 { get; set; } = "";
     public string? LCCN { get; set; } = null;
     public string? OCLCWorldCat { get; set; } = null;
     public string? OpenLibraryWorkId { get; set; } = null;
@@ -24,7 +24,7 @@ public class ApiBook
     public string? OpenLibraryCoverId { get; set; } = null;
     public string? WikidataId { get; set; } = null;
     public string? WikidataAuthorId { get; set; } = null;
-    public string? wikiAuthorURL { get; set; } = null;
+    public string? WikiAuthorURL { get; set; } = null;
     public string? Language { get; set; } = null;
     // public required string EpubPath { get; set; }
     public DateTime? OpenLibraryMetadataLastUpdated { get; set; }
